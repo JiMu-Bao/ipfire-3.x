@@ -1,0 +1,133 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = docbook-dtds
+PKG_VER        = 1.0
+PKG_REL        = 0
+
+PKG_MAINTAINER =
+PKG_GROUP      = Applications/Text
+PKG_URL        = http://www.oasis-open.org/docbook/
+PKG_LICENSE    = Copyright only
+PKG_SUMMARY    = SGML and XML document type definitions for DocBook.
+
+PKG_BUILD_DEPS+= dos2unix unzip
+
+define PKG_DESCRIPTION
+	The DocBook Document Type Definition (DTD) describes the syntax of \
+	technical documentation texts (articles, books and manual pages). \
+	This syntax is XML-compliant and is developed by the OASIS consortium. \
+	This package contains SGML and XML versions of the DocBook DTD.
+endef
+
+# TODO XXX post-installation stuff
+
+PKG_OBJECTS += \
+	docbk30.zip \
+	docbk31.zip \
+	docbk40.zip \
+	docbk41.zip \
+	docbkx412.zip \
+	docbook-4.2.zip \
+	docbook-xml-4.2.zip \
+	docbook-4.3.zip \
+	docbook-xml-4.3.zip \
+	docbook-4.4.zip \
+	docbook-xml-4.4.zip \
+	docbook-4.5.zip \
+	docbook-xml-4.5.zip
+
+DIRECTORIES = \
+	3.0-sgml \
+	3.1-sgml \
+	4.0-sgml \
+	4.1-sgml \
+	4.1.2-xml \
+	4.2-sgml \
+	4.2-xml \
+	4.3-sgml \
+	4.3-xml \
+	4.4-sgml \
+	4.4-xml \
+	4.5-sgml \
+	4.5-xml
+
+DIR_APP = $(DIR_SRC)/$(PKG_NAME)-$(PKG_VER)
+
+define MACRO_EXTRACT
+	mkdir -pv $(DIR_APP)/$(2)
+	cd $(DIR_APP)/$(2) && unzip $(DIR_DL)/$(1)
+
+endef
+
+define STAGE_PREPARE
+	$(call MACRO_EXTRACT,docbk30.zip,3.0-sgml)
+	$(call MACRO_EXTRACT,docbk31.zip,3.1-sgml)
+	$(call MACRO_EXTRACT,docbk40.zip,4.0-sgml)
+	$(call MACRO_EXTRACT,docbk41.zip,4.1-sgml)
+	$(call MACRO_EXTRACT,docbkx412.zip,4.1.2-xml)
+	$(call MACRO_EXTRACT,docbook-4.2.zip,4.2-sgml)
+	$(call MACRO_EXTRACT,docbook-xml-4.2.zip,4.2-xml)
+	$(call MACRO_EXTRACT,docbook-4.3.zip,4.3-sgml)
+	$(call MACRO_EXTRACT,docbook-xml-4.3.zip,4.3-xml)
+	$(call MACRO_EXTRACT,docbook-4.4.zip,4.4-sgml)
+	$(call MACRO_EXTRACT,docbook-xml-4.4.zip,4.4-xml)
+	$(call MACRO_EXTRACT,docbook-4.5.zip,4.5-sgml)
+	$(call MACRO_EXTRACT,docbook-xml-4.5.zip,4.5-xml)
+
+	# Convert all catalog files to unix format
+	cd $(DIR_APP) && dos2unix */docbook.cat
+
+	$(DO_PATCHES)
+
+	cd $(DIR_APP) && sed -e's,\(NAMELEN\s\+\)44\(\s\*\)\?,\1256,' -i.namelen */docbook.dcl
+	cd $(DIR_APP) && sed -i 's/\r//' */*.txt
+	cd $(DIR_APP) && chown -R root:root .
+	cd $(DIR_APP) && chmod -R a+rX,g-w,o-w .
+endef
+
+STAGE_BUILD = # Nothing to do
+
+define STAGE_INSTALL
+	-mkdir -pv $(BUILDROOT)/etc/sgml
+	for fmt in sgml xml; do \
+		ln -svf $${fmt}-docbook-4.5.cat $(BUILDROOT)/etc/sgml/$${fmt}-docbook.cat; \
+	done
+
+	for dir in $(DIRECTORIES); do \
+		fmt=$${dir#*-}; ver=$${dir%%-*}; \
+		cd $(DIR_APP)/$${dir}; \
+		DESTDIR=$(BUILDROOT)/usr/share/sgml/docbook/$${fmt}-dtd-$${ver}; \
+			mkdir -pv $${DESTDIR}; \
+			case $${fmt} in \
+				sgml)   mkdir -pv $${DESTDIR}; install -v *.dcl $${DESTDIR} ;; \
+				xml)    mkdir -pv $${DESTDIR}/ent; install -v ent/* $${DESTDIR}/ent ;; \
+			esac; \
+		install -v *.dtd *.mod $${DESTDIR}; \
+		install -v docbook.cat $${DESTDIR}/catalog; \
+		touch $(BUILDROOT)/etc/sgml/$${dir#*-}-docbook-$${ver}.cat; \
+	done
+endef
