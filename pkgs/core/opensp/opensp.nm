@@ -1,0 +1,56 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = opensp
+PKG_VER        = 1.5.2
+PKG_REL        = 0
+
+PKG_MAINTAINER =
+PKG_GROUP      = Application/Text
+PKG_URL        = http://openjade.sourceforge.net/
+PKG_LICENSE    = MIT
+PKG_SUMMARY    = SGML and XML parser.
+
+PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
+
+PKG_BUILD_DEPS+= gcc-c++
+
+define PKG_DESCRIPTION
+	OpenSP is an implementation of the ISO/IEC 8879:1986 standard SGML \
+	(Standard Generalized Markup Language).
+endef
+
+PKG_TARBALL    = OpenSP-$(PKG_VER).tar.gz
+
+DIR_APP        = $(DIR_SRC)/OpenSP-$(PKG_VER)
+
+CONFIGURE_OPTIONS += \
+	--disable-dependency-tracking \
+	--disable-static \
+	--disable-rpath \
+	--disable-doc-build \
+	--enable-default-catalog=/etc/sgml/catalog \
+	--enable-default-search-path=/usr/share/sgml:/usr/share/xml
