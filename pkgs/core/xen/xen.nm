@@ -25,33 +25,65 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = xen
-PKG_VER        = 3.4.0-2
+PKG_VER        = 4.0.1
 PKG_REL        = 0
 
 PKG_MAINTAINER = Ben Schweikert <ben.schweikert@ipfire.org>
 PKG_GROUP      = Applications/Virtualization
 PKG_URL        = http://www.xen.org/
 PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = The Xen hypervisor.
+PKG_SUMMARY    = The Xen tools.
 
 define PKG_DESCRIPTION
-	The Xen hypervisor, the powerful open source industry standard \
-	for virtualization, offers a powerful, efficient, and secure \
-	feature set for virtualization.
+       The Xen hypervisor, the powerful open source industry standard \
+       for virtualization, offers a powerful, efficient, and secure \
+       feature set for virtualization.
 endef
 
+PKG_BUILD_DEPS+=gettext-deve openssl-devel python python-devel sdl-devel \
+	util-linux-ng-devel xorg-x11-proto-devel zlib zlib-devel
+
 PKG_TARBALL    = $(THISAPP).tar.gz
+
+PKG_PACKAGES  += $(PKG_NAME)-devel $(PKG_NAME)-libs $(PKG_NAME)-hypervisor \
+	$(PKG_NAME)-runtime
+
+PKG_SUMMARY-$(PKG_NAME)-hypervisor = This package contains the Xen hypervisor
+PKG_SUMMARY-$(PKG_NAME)-devel = This package contains what's needed to \
+	develop applications which manage Xen virtual machines.
+PKG_SUMMARY-$(PKG_NAME)-libs = This package contains the libraries needed to \
+	run applications which manage Xen virtual machines
+PKG_SUMMARY-$(PKG_NAME)-runtime = This package contains the runtime programs \
+	and daemons which form the core Xen userspace environment.
+
+define PKG_FILES-$(PKG_NAME)-hypervisor
+	/boot/*
+endef
+
+define PKG_FILES-$(PKG_NAME)-runtime
+	/usr/bin/*
+endef
+
+define PKG_FILES-$(PKG_NAME)-libs
+        /usr/lib/*
+endef
 
 define QUALITY_AGENT_WHITELIST_EXECSTACK
 	/boot/*
 endef
 
-DIR_APP = $(DIR_SRC)/$(PKG_NAME)-3.4.0
-
 define STAGE_BUILD
-	cd $(DIR_APP) && make xen $(PARALLELISMFLAGS)
+	ldconfig
+	# Following two lines are disabling HVM. HVM does not work because \
+	# of soem PIE errors we get when we try to build the firmware part \
+	# needed for different architektures.
+	cd $(DIR_APP) && sed -i -e '/^CONFIG_IOEMU := y$$/d' config/*.mk
+	cd $(DIR_APP) && sed -i -e '/SUBDIRS-$$(CONFIG_X86) += firmware/d' tools/Makefile
+
+	cd $(DIR_APP) && make tools xen $(PARALLELISMFLAGS)
 endef
 
 define STAGE_INSTALL
-	cd $(DIR_APP) && make install-xen DESTDIR=$(BUILDROOT)
+	cd $(DIR_APP) && make install-tools install-xen DESTDIR=$(BUILDROOT)
+	rm -R $(BUILDROOT)/etc/init.d
 endef
