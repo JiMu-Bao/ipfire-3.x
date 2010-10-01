@@ -64,9 +64,8 @@ define PKG_FILES-$(PKG_NAME)-runtime
 	/usr/bin/*
 endef
 
-define PKG_FILES-$(PKG_NAME)-libs
-        /usr/lib/*
-endef
+# libs: Use files from template and add /usr/lib/fs.
+PKG_FILES-$(PKG_NAME)-libs += /usr/lib/fs
 
 define QUALITY_AGENT_WHITELIST_EXECSTACK
 	/boot/*
