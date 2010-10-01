@@ -1,0 +1,60 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = docbook-utils
+PKG_VER        = 0.6.14
+PKG_REL        = 0
+
+PKG_MAINTAINER =
+PKG_GROUP      = Applications/Text
+PKG_URL        = http://sources.redhat.com/docbook-tools/
+PKG_LICENSE    = GPLv2+
+PKG_SUMMARY    = Shell scripts for managing DocBook documents.
+
+PKG_BUILD_DEPS+= openjade docbook-dsssl sgml-common 
+PKG_DEPS      += docbook-dsssl docbook-dtds
+
+define PKG_DESCRIPTION
+	 This package contains scripts are for easy conversion from DocBook \
+	files to other formats, and for comparing SGML files.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.gz
+
+# Manual list patches because they need to be applied in specical order
+PKG_PATCHES    = $(PKG_NAME)-spaces.patch
+PKG_PATCHES   += $(PKG_NAME)-2ndspaces.patch
+PKG_PATCHES   += $(PKG_NAME)-w3mtxtconvert.patch
+PKG_PATCHES   += $(PKG_NAME)-grepnocolors.patch
+PKG_PATCHES   += $(PKG_NAME)-sgmlinclude.patch
+PKG_PATCHES   += $(PKG_NAME)-rtfmanpage.patch
+PKG_PATCHES   += $(PKG_NAME)-papersize.patch
+PKG_PATCHES   += $(PKG_NAME)-nofinalecho.patch
+PKG_PATCHES   += $(PKG_NAME)-newgrep.patch
+
+CONFIGURE_OPTIONS += \
+	--libdir=/usr/lib \
+	--mandir=/usr/share/man \
