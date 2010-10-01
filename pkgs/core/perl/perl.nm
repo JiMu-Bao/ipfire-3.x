@@ -53,6 +53,7 @@ PKG_TARBALL    = $(THISAPP).tar.gz
 define QUALITY_AGENT_WHITELIST_RPATH
 	/lib
 	/usr/lib
+	/usr/lib/perl5/CORE
 endef
 
 define STAGE_PREPARE_CMDS
@@ -68,16 +69,29 @@ define STAGE_BUILD
 	cd $(DIR_APP) && \
 		sh ./Configure -des \
 			-Doptimize="$(CFLAGS)" \
+			-Dccdlflags="-Wl,--enable-new-dtags" \
+			-Dversion=$(PKG_VER) \
+			-Dmyhostname=localhost \
+			-Dperladmin=root@localhost \
+			-Dcc="gcc" \
+			-Dcf_by="$(DISTRO_VENDOR)" \
 			-Dprefix=/usr \
+			-Dvendorprefix=/usr \
+			-Dsiteprefix="/usr/local" \
+			-Dsitelib="/usr/local/share/perl5" \
+			-Dsitearch="/usr/local/lib/perl5" \
+			-Dprivlib="/usr/share/perl5" \
+			-Dvendorlib="/usr/share/perl5/vendor_perl" \
+			-Darchlib="/usr/lib/perl5" \
+			-Dvendorarch="/usr/lib/perl5/vendor_perl" \
+			-Darchname=$(PKG_ARCH)-linux-thread-multi \
+			-Dpager="/usr/bin/less -isr" \
 			-Dman1dir=/usr/share/man/man1 \
 			-Dman3dir=/usr/share/man/man3 \
-			-Dpager="/usr/bin/less -isR" \
-			-Dmyhostname=localhost
 			-Duseshrplib \
 			-Dusethreads \
 			-Duseithreads \
 			-Duselargefiles \
-			-Dd_dosuid \
 			-Dd_semctl_semun \
 			-Di_db \
 			-Ui_ndbm \
@@ -95,11 +109,17 @@ define STAGE_BUILD
 			-Ud_endprotoent_r_proto \
 			-Ud_setprotoent_r_proto \
 			-Ud_endservent_r_proto \
-			-Ud_setservent_r_proto
+			-Ud_setservent_r_proto \
+			-Dscriptdir="/usr/bin"
 
 	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
 endef
 
 define STAGE_TEST
 	cd $(DIR_APP) && make test
+endef
+
+define STAGE_INSTALL_CMDS
+	# Remove precreated directories
+	rm -rfv $(BUILDROOT)/usr/local
 endef
