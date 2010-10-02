@@ -34,7 +34,7 @@ PKG_URL        = http://search.cpan.org/dist/XML-Parser/
 PKG_LICENSE    = GPL+ or Artistic
 PKG_SUMMARY    = Perl module for parsing XML files.
 
-PKG_BUILD_DEPS+= expat-devel perl
+PKG_BUILD_DEPS+= expat-devel perl-devel perl-ExtUtils-MakeMaker
 PKG_DEPS      += perl
 
 define PKG_DESCRIPTION
@@ -50,6 +50,6 @@ define QUALITY_AGENT_WHITELIST_RPATH
 endef
 
 define STAGE_BUILD
-	cd $(DIR_APP) && perl Makefile.PL
+	cd $(DIR_APP) && perl Makefile.PL INSTALLDIRS=vendor
 	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
 endef
