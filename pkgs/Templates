@@ -5,6 +5,11 @@
 #
 ###############################################################################
 
+###############################################################################
+# Default template
+###############################################################################
+
+PKG_PROVIDES-$(PKG_NAME_REAL) = $(PKG_NAME_REAL)=$(THISVER)
 
 ###############################################################################
 # Devel template
@@ -13,7 +18,8 @@
 PKG_DESCRIPTION-$(PKG_NAME_REAL)-devel = Development files of $(THISAPP).
 PKG_SUMMARY-$(PKG_NAME_REAL)-devel = $(PKG_DESCRIPTION-$(PKG_NAME_REAL)-devel)
 
-PKG_DEPS-$(PKG_NAME_REAL)-devel = $(foreach dep,$(PKG_BUILD_DEPS),$(if $(findstring -devel,$(dep)),$(dep)))
+PKG_DEPS-$(PKG_NAME_REAL)-devel = $(PKG_NAME_REAL)=$(THISVER) \
+	$(foreach dep,$(PKG_BUILD_DEPS),$(if $(findstring -devel,$(dep)),$(dep)))
 
 define PKG_FILES-$(PKG_NAME_REAL)-devel
 	/usr/bin/*-config
@@ -34,6 +40,8 @@ endef
 
 PKG_DESCRIPTION-$(PKG_NAME_REAL)-libs  = Library files of $(THISAPP).
 PKG_SUMMARY-$(PKG_NAME_REAL)-libs = $(PKG_DESCRIPTION-$(PKG_NAME_REAL)-libs)
+
+PKG_DEPS-$(PKG_NAME_REAL)-libs = $(PKG_NAME_REAL)=$(THISVER)
 
 define PKG_FILES-$(PKG_NAME_REAL)-libs
 	/lib/lib*.so.*
