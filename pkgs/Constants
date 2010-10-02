@@ -83,13 +83,6 @@ export BUILD_ID
 #
 ###############################################################################
 #
-# Constants
-#
-
-# The suffix of the package name
-PKG_SUFFIX = -$(PKG_VER)-$(DISTRO_SNAME)$(DISTRO_EPOCH)-$(PKG_ARCH).$(PKG_REL).ipk
-
-#
 # Variables
 #
 
