@@ -1,0 +1,57 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = swig
+PKG_VER        = 2.0.1
+PKG_REL        = 0
+
+PKG_MAINTAINER =
+PKG_GROUP      = Development/Tools
+PKG_URL        = http://swig.sourceforge.net/
+PKG_LICENSE    = GPLv3+ and BSD
+PKG_SUMMARY    = Connects C/C++/Objective C to some high-level programming \
+	languages.
+
+PKG_BUILD_DEPS+= autoconf automake gcc-c++ pcre-devel perl python-devel
+
+define PKG_DESCRIPTION
+	Simplified Wrapper and Interface Generator (SWIG) is a software \
+	development tool for connecting C, C++ and Objective C programs with a \
+	variety of high-level programming languages.  SWIG is primarily used \
+	with Perl, Python and Tcl/TK, but it has also been extended to Java, \
+	Eiffel and Guile.  SWIG is normally used to create high-level \
+	interpreted programming environments, systems integration, and as a \
+	tool for building user interfaces.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.gz
+
+CONFIGURE_OPTIONS += \
+	--sbindir=/sbin
+
+define STAGE_PREPARE_CMDS
+	cd $(DIR_APP) && ./autogen.sh
+endef
