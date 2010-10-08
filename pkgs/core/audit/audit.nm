@@ -1,0 +1,70 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = audit
+PKG_VER        = 2.0.5
+PKG_REL        = 0
+
+PKG_MAINTAINER =
+PKG_GROUP      = System/Daemons
+PKG_URL        = http://people.redhat.com/sgrubb/audit/
+PKG_LICENSE    = GPLv2+
+PKG_SUMMARY    = User space tools for 2.6 kernel auditing.
+
+PKG_BUILD_DEPS+= autoconf automake libcap-ng-devel libtool openldap-devel \
+	python-devel swig
+
+define PKG_DESCRIPTION
+	The audit package contains the user space utilities for \
+	storing and searching the audit records generate by \
+	the audit subsystem in the Linux 2.6 kernel.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.gz
+
+CONFIGURE_OPTIONS += \
+	--sysconfdir=/etc \
+	--sbindir=/sbin \
+	--libdir=/lib \
+	--without-prelude \
+	--without-libwrap \
+	--enable-gssapi-krb5=no \
+	--with-libcap-ng=yes
+
+define STAGE_PREPARE_CMDS
+	cd $(DIR_APP) && autoreconf -fvi
+endef
+
+define STAGE_INSTALL_CMDS
+	rm -vf $(BUILDROOT)/lib/libau{dit,parse}.so
+	ln -svf ../../lib/libaudit.so.1 $(BUILDROOT)/usr/lib/libaudit.so
+	ln -svf ../../lib/libauparse.so.0 $(BUILDROOT)/usr/lib/libauparse.so
+
+	-mkdir -pv $(BUILDROOT)/usr/sbin
+	mv -v $(BUILDROOT)/sbin/audisp*remote $(BUILDROOT)/usr/sbin/
+
+	rm -rfv $(BUILDROOT)/etc/{rc.d,sysconfig}
+endef
