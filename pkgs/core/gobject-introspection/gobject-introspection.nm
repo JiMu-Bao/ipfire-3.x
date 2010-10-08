@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = gobject-introspection
 PKG_VER        = 0.9.3
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Development/Libraries 
@@ -36,6 +36,8 @@ PKG_SUMMARY    = Introspection system for GObject-based libraries.
 
 PKG_BUILD_DEPS+= bison cairo-devel flex glib2-devel libffi-devel libtool \
 	pkg-config python-devel
+
+PKG_DEPS-$(PKG_NAME_REAL)-devel += $(PKG_NAME_REAL)
 
 define PKG_DESCRIPTION
 	GObject Introspection can scan C header and source files in order \
