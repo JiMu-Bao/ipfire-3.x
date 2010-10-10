@@ -69,6 +69,8 @@ class Naoki(object):
 		# Initialize job queue
 		jobs = build.Jobs()
 
+		config["shell_on_failure"] = args.shell
+
 		if args.all:
 			raise Exception, "XXX to be implemented"
 		else:
