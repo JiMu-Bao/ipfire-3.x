@@ -11,6 +11,9 @@
 
 PKG_PROVIDES-$(PKG_NAME_REAL) = $(PKG_NAME_REAL)=$(THISVER)
 
+# Package all files by default
+PKG_FILES = /
+
 ###############################################################################
 # Devel template
 ###############################################################################

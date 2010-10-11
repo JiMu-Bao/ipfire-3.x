@@ -131,8 +131,8 @@ function __filelist() {
 	# Enable globbing again
 	set +f
 
-	# If not paths were found take all files
-	[ -z "${paths}" ] && paths="${BUILDROOT}"
+	# If not paths were found -> break
+	[ -z "${paths}" ] && return
 
 	for file in $(find ${paths} 2>/dev/null | sort); do
 		# Remove ${BUILDROOT}
