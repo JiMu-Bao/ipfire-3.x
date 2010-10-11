@@ -37,6 +37,7 @@ function find_requires() {
 	# Others
 	local others=$(find_python_requires ${dirs})
 	others="${others} $(find_weak_symbols_requires ${dirs})"
+	others="${others} $(find_perl_requires ${dirs})"
 
 	# Get provides, because packages should not depend on features they provide
 	# by themselves.
@@ -45,7 +46,7 @@ function find_requires() {
 	# Return a sorted and unique(!) list
 	local require
 	local requires
-	for require in $(listsort ${interpreters} ${neededs} ${links} ${others}); do
+	for require in $(listsort ${PKG_DEPS} ${interpreters} ${neededs} ${links} ${others}); do
 		[ "${require:0:3}" = "ld-" ] && continue
 		listmatch ${require} ${provides} || requires="${requires} ${require}"
 	done
@@ -66,8 +67,9 @@ function find_provides() {
 	# Others
 	local others=$(find_python_provides ${dirs})
 	others="${others} $(find_weak_symbols_provides ${dirs})"
+	others="${others} $(find_perl_provides ${dirs})"
 
-	listsort ${sonames} ${others}
+	listsort ${PKG_PROVIDES} ${sonames} ${others}
 }
 
 function find_interpreters() {
@@ -150,6 +152,23 @@ function find_python_requires() {
 			fi
 		fi
 	done
+}
+
+function find_perl_files() {
+	local extension
+	for extension in pm pl; do
+		find $@ -name "*.${extension}" 2>/dev/null
+	done
+}
+
+function find_perl_provides() {
+	[ -x "/usr/bin/perl" ] || return 0
+	${BASEDIR}/perl.prov $(find_perl_files $@) | sort -u
+}
+
+function find_perl_requires() {
+	[ -x "/usr/bin/perl" ] || return 0
+	${BASEDIR}/perl.req $(find_perl_files $@) | sort -u
 }
 
 function find_weak_symbols_provides() {

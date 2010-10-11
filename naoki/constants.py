@@ -93,6 +93,7 @@ class Config(object):
 		"distro_epoch"    : "unknown",
 		"distro_version"  : "unknown",
 		"distro_slogan"   : "unknown",
+		"disto_vendor"    : "unknown",
 		#
 		# Logging
 		"log_config_file" : os.path.join(CONFIGDIR, "logging.ini"),
@@ -153,6 +154,7 @@ class Config(object):
 			"DISTRO_EPOCH"   : self["distro_epoch"],
 			"DISTRO_VERSION" : self["distro_version"],
 			"DISTRO_SLOGAN"  : self["distro_slogan"],
+			"DISTRO_VENDOR"  : self["distro_vendor"],
 			#
 			"PARALLELISMFLAGS" : "-j%d" % self["parallelism"],
 		}
