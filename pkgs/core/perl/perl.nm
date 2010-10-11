@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = perl
 PKG_VER        = 5.12.2
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Development/Languages
@@ -59,6 +59,10 @@ endef
 define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && sed -i 's/command /command[ -]/' makedepend.SH
 endef
+
+# Perl passes -fstack-protector, if no argument is passed that enables the SSP.
+# So we need to pass it explicitely.
+CFLAGS += -fstack-protector-all
 
 define STAGE_BUILD
 	cd $(DIR_APP) && sed -i -e "s|BUILD_ZLIB\s*= True|BUILD_ZLIB = False|" \
