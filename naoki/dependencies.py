@@ -59,11 +59,21 @@ class DependencySet(object):
 		self._dependencies = []
 		self._items = []
 
+		# caches
+		self.__provides = {}
+		self.__dependencies = {}
+
 		# add all provided dependencies
 		for dependency in dependencies:
 			self.add_dependency(dependency)
 
 		logging.debug("Successfully initialized %s" % self)
+
+	@property
+	def hash(self):
+		hash = ["%s" % i for i in self._items]
+
+		return "".join(hash)
 
 	def __repr__(self):
 		return "<%s>" % (self.__class__.__name__)
@@ -106,13 +116,15 @@ class DependencySet(object):
 		# Safe for endless loop
 		counter = 1000
 
-		while self.unresolved_dependencies:
+		while True:
 			counter -= 1
 			if not counter:
 				logging.debug("Maximum count of dependency loop was reached")
 				break
 
-			dependency = self.unresolved_dependencies.pop(0)
+			dependency = self.next_unresolved_dependency
+			if not dependency:
+				break
 
 			logging.debug("Processing dependency: %s" % dependency.identifier)
 
@@ -151,10 +163,20 @@ class DependencySet(object):
 
 	@property
 	def unresolved_dependencies(self):
+		return self.calculate_unresolved_dependencies(next=False)
+
+	@property
+	def next_unresolved_dependency(self):
+		d = self.calculate_unresolved_dependencies(next=True)
+		if d:
+			return d[0]
+
+	def calculate_unresolved_dependencies(self, next=False):
 		dependencies = []
 
-		# XXX These are not so nice because they possibly check all packages
-		# and do not break after the first match
+		# Cache provides
+		provides = self.provides
+
 		for dependency in self._dependencies + self.dependencies:
 			if dependency.type == DEP_INVALID:
 				continue
@@ -168,20 +190,30 @@ class DependencySet(object):
 			if found:
 				continue
 
-			for provide in self.provides:
-				if dependency.match(provide):
-					found = True
-					break
-
-			if found:
-				continue
+			#for provide in provides:
+			#	if dependency.match(provide):
+			#		found = True
+			#		break
+			#
+			#if found:
+			#	continue
 
 			dependencies.append(dependency)
+
+			# If next is set return only one.
+			if next:
+				return dependencies
 
 		return dependencies
 
 	@property
 	def dependencies(self):
+		if not self.__dependencies.has_key(self.hash):
+			self.__dependencies[self.hash] = self.calculate_dependencies()
+
+		return self.__dependencies[self.hash]
+
+	def calculate_dependencies(self):
 		dependencies = []
 		for item in self._items:
 			dependencies += item.get_dependencies()
@@ -192,13 +224,19 @@ class DependencySet(object):
 	def packages(self):
 		return sorted(self._items)
 
-	@property
-	def provides(self):
+	def calculate_provides(self):
 		provides = []
 		for item in self._items:
 			provides += item.get_provides()
 
 		return list(set(provides))
+
+	@property
+	def provides(self):
+		if not self.__provides.has_key(self.hash):
+			self.__provides[self.hash] = self.calculate_provides()
+
+		return self.__provides[self.hash]
 
 
 if __name__ == "__main__":

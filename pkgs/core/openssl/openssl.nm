@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = openssl
 PKG_VER        = 1.0.0
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = System/Libraries
@@ -111,6 +111,11 @@ endef
 
 define STAGE_INSTALL
 	cd $(DIR_APP) && make install build-shared INSTALL_PREFIX=$(BUILDROOT)
+
+	-mkdir -pv $(BUILDROOT)/lib
+	mv -vf $(BUILDROOT)/usr/lib/lib{crypto,ssl}.so.* $(BUILDROOT)/lib
+	ln -svf ../../lib/libcrypto.so.10 $(BUILDROOT)/usr/lib/libcrypto.so
+	ln -svf ../../lib/libssl.so.10 $(BUILDROOT)/usr/lib/libssl.so
 
 	# Install manpages do right place
 	-mkdir -pv $(BUILDROOT)/usr/share

@@ -308,6 +308,10 @@ class Build(_Environment):
 		try:
 			self.make("package")
 		except:
+			if config["shell_on_failure"]:
+				self.shell()
+				return
+
 			if config["cleanup_on_failure"]:
 				self.clean()
 

@@ -4,6 +4,7 @@ from ConfigParser import ConfigParser, DEFAULTSECT
 import math
 import os
 import socket
+import sys
 
 BASEDIR = os.getcwd()
 
@@ -78,6 +79,9 @@ class Config(object):
 		# Cleanup settings
 		"cleanup_on_failure" : False,
 		"cleanup_on_success" : True,
+		#
+		# Shell settings
+		"shell_on_failure" : False,
 		#
 		# CLI variables
 		"debug" : False,

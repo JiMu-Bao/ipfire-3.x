@@ -1,8 +1,7 @@
-#!/bin/bash
 ###############################################################################
 #                                                                             #
 # IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2010  Michael Tremer & Christian Schmidt                      #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
 #                                                                             #
 # This program is free software: you can redistribute it and/or modify        #
 # it under the terms of the GNU General Public License as published by        #
@@ -19,58 +18,32 @@
 #                                                                             #
 ###############################################################################
 
-function ipv4_split_prefix() {
-	ip_split_prefix $@
-}
+###############################################################################
+# Definitions
+###############################################################################
 
-function ipv4_is_valid() {
-	local address=${1}
+include $(PKGROOT)/Include
 
-	assert isset address
+PKG_NAME       = libXaw
+PKG_VER        = 1.0.7
+PKG_REL        = 0
 
-	# Cut the /24 if there is one given
-	address=$(ipv4_split_prefix ${address})
+PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
+PKG_GROUP      = X/Libraries
+PKG_URL        = http://www.x.org/
+PKG_LICENSE    = MIT
+PKG_SUMMARY    = X Athena Widget Set.
 
-	local IFS="."
-	local octet
-	local count
-	for octet in ${address}; do
-		if [ ${octet} -ge 0 ] && [ ${octet} -le 255 ]; then
-			count=$(( ${count} + 1 ))
-			continue
-		fi
+PKG_BUILD_DEPS+= libX11-devel libXt-devel libXmu-devel libXpm-devel libXext-devel \
+	pkg-config xorg-x11-proto-devel
 
-		# If we get here the address was not valid
-		break
-	done
+PKG_PACKAGES  += $(PKG_NAME)-devel
 
-	if [ ${count} -eq 4 ]; then
-		return ${EXIT_OK}
-	fi
+define PKG_DESCRIPTION
+	Xaw is a widget set based on the X Toolkit Intrinsics (Xt) Library.
+endef
 
-	return ${EXIT_ERROR}
-}
+PKG_TARBALL    = $(THISAPP).tar.bz2
 
-function ipv4_detect_duplicate() {
-	local device=${1}
-	local address=${2}
-
-	assert isset address
-	assert isset device
-	assert device_exists ${device}
-
-	if ! arping -q -c 2 -w 3 -D -I ${device} ${address}; then
-		log DEBUG "Detected duplicate address '${address}' on device '${device}'."
-		return ${EXIT_OK}
-	fi
-
-	return ${EXIT_ERROR}
-}
-
-function ipv4_update_neighbours() {
-	local device=${1}
-	local address=${2}
-
-	arping -q -A -c 1 -I ${device} ${address}
-	( sleep 2; arping -q -U -c 1 -I ${device} ${address} ) >/dev/null 2>&1 </dev/null &
-}
+CONFIGURE_OPTIONS += \
+	--disable-static
