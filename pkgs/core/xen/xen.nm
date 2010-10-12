@@ -40,8 +40,8 @@ define PKG_DESCRIPTION
        feature set for virtualization.
 endef
 
-PKG_BUILD_DEPS+=gettext-deve openssl-devel python python-devel sdl-devel \
-	util-linux-ng-devel xorg-x11-proto-devel zlib zlib-devel
+PKG_BUILD_DEPS+= gettext-devel openssl-devel python python-devel sdl-devel \
+	util-linux-ng-devel xorg-x11-proto-devel zlib-devel
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
@@ -64,16 +64,18 @@ define PKG_FILES-$(PKG_NAME)-runtime
 	/usr/bin/*
 endef
 
-define PKG_FILES-$(PKG_NAME)-libs
-        /usr/lib/*
-endef
+# libs: Use files from template and add /usr/lib/fs.
+PKG_FILES-$(PKG_NAME)-libs += /usr/lib/fs
 
 define QUALITY_AGENT_WHITELIST_EXECSTACK
 	/boot/*
 endef
 
 define STAGE_BUILD
+	# This needs to be called because the configuration routine is
+	# damn crappy.
 	ldconfig
+
 	# Following two lines are disabling HVM. HVM does not work because \
 	# of soem PIE errors we get when we try to build the firmware part \
 	# needed for different architektures.
