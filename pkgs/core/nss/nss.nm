@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = nss
 PKG_VER        = 3.12.8
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
@@ -34,7 +34,8 @@ PKG_URL        = http://www.mozilla.org/projects/security/pki/nss/
 PKG_LICENSE    = MPLv1.1 or GPLv2+ or LGPLv2+
 PKG_SUMMARY    = Network Security Services.
 
-PKG_BUILD_DEPS+= nspr-devel perl pkg-config psmisc sqlite-devel zlib-devel
+PKG_BUILD_DEPS+= nspr-devel nss-util-devel perl pkg-config psmisc sqlite-devel \
+	zlib-devel
 
 define PKG_DESCRIPTION
 	Network Security Services (NSS) is a set of libraries designed to \
@@ -49,9 +50,13 @@ PKG_OBJECTS   += nss-pem-20100809.tar.bz2
 
 PKG_PACKAGES  += $(PKG_NAME_REAL)-devel $(PKG_NAME_REAL)-libs
 
+PKG_DEPS-$(PKG_NAME_REAL)-devel += nss-util-devel
+
 # Mozilla does no versioning :(
 define PKG_FILES-$(PKG_NAME_REAL)-devel
+	/usr/bin/*-config
 	/usr/include
+	/usr/lib/pkgconfig
 endef
 
 define PKG_FILES-$(PKG_NAME_REAL)-libs
@@ -171,7 +176,7 @@ define STAGE_INSTALL
 		-e "s,%includedir%,/usr/include/nss3,g" \
 		-e "s,%NSS_VERSION%,$(PKG_VER),g" \
 		-e "s,%NSPR_VERSION%,$$(nspr-config --version),g" \
-#		-e "s,%NSSUTIL_VERSION%,%{nss_util_version},g" \
+		-e "s,%NSSUTIL_VERSION%,$$(nss-util-config --version),g" \
 #		-e "s,%SOFTOKEN_VERSION%,%{nss_softokn_version},g" \
 		< $(DIR_SOURCE)/nss.pc.in \
 		> $(BUILDROOT)/usr/lib/pkgconfig/nss.pc
