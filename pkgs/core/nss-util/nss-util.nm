@@ -1,0 +1,112 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = nss-util
+PKG_VER        = 3.12.8
+PKG_REL        = 0
+
+PKG_MAINTAINER =
+PKG_GROUP      = System/Libraries
+PKG_URL        = http://www.mozilla.org/projects/security/pki/nss/
+PKG_LICENSE    = MPLv1.1 or GPLv2+ or LGPLv2+
+PKG_SUMMARY    = Network Security Services Utilities Library.
+
+PKG_BUILD_DEPS+= nspr-devel perl pkg-config psmisc zlib-devel
+
+define PKG_DESCRIPTION
+	Utilities for Network Security Services and the Softoken module.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.bz2
+
+PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
+
+# Mozilla does no versioning :(
+define PKG_FILES-$(PKG_NAME_REAL)-devel
+	/usr/bin/*-config
+	/usr/include
+	/usr/lib/pkgconfig
+endef
+
+# XXX -> need to be removed
+#define QUALITY_AGENT_WHITELIST_RPATH
+#	$$ORIGIN/../lib
+#endef
+
+## Define some global environment variables
+# Enable compiler optimizations and disable debugging code
+export BUILD_OPT=1
+export XCFLAGS=$(CFLAGS)
+
+export PKG_CONFIG_ALLOW_SYSTEM_LIBS=1
+export PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1
+
+export NSPR_INCLUDE_DIR=/usr/include/nspr4
+export NSPR_LIB_DIR=/usr/lib
+
+export NSS_INCLUDE_DIR=/usr/include/nss3
+export NSS_LIB_DIR=/usr/lib
+
+export NSS_USE_SYSTEM_SQLITE=1
+
+define STAGE_BUILD
+	cd $(DIR_APP) && make -C ./mozilla/security/coreconf
+	cd $(DIR_APP) && make -C ./mozilla/security/nss
+endef
+
+define STAGE_INSTALL
+	-mkdir -pv $(BUILDROOT)/usr/bin
+	-mkdir -pv $(BUILDROOT)/usr/include/nss3
+	-mkdir -pv $(BUILDROOT)/usr/lib/pkgconfig
+
+	install -p -v -m 755 $(DIR_APP)/mozilla/dist/*.OBJ/lib/libnssutil3.so \
+		$(BUILDROOT)/usr/lib
+
+	sed -e "s,@libdir@,/usr/lib,g" \
+		-e "s,@prefix@,/usr,g" \
+		-e "s,@exec_prefix@,/usr,g" \
+		-e "s,@includedir@,/usr/include/nss3,g" \
+		-e "s,@MOD_MAJOR_VERSION@,$$(grep "#define.*NSSUTIL_VMAJOR" $(DIR_APP)/mozilla/security/nss/lib/util/nssutil.h | awk '{print $3}'),g" \
+		-e "s,@MOD_MINOR_VERSION@,$$(grep "#define.*NSSUTIL_VMINOR" $(DIR_APP)/mozilla/security/nss/lib/util/nssutil.h | awk '{print $3}'),g" \
+		-e "s,@MOD_PATCH_VERSION@,$$(grep "#define.*NSSUTIL_VPATCH" $(DIR_APP)/mozilla/security/nss/lib/util/nssutil.h | awk '{print $3}'),g" \
+		< $(DIR_SOURCE)/nss-util-config.in \
+		> $(BUILDROOT)/usr/bin/nss-util-config
+	chmod -v 755 $(BUILDROOT)/usr/bin/nss-util-config
+
+	sed \
+		-e "s,%libdir%,/usr/lib,g" \
+		-e "s,%prefix%,/usr,g" \
+		-e "s,%exec_prefix%,/usr,g" \
+		-e "s,%includedir%,/usr/include/nss3,g" \
+		-e "s,%NSPR_VERSION%,$$(nspr-config --version),g" \
+		-e "s,%NSSUTIL_VERSION%,$(PKG_NAME),g" \
+		< $(DIR_SOURCE)/nss-util.pc.in \
+		> $(BUILDROOT)/usr/lib/pkgconfig/nss-util.pc
+
+	# The util headers, the rest come from softokn and nss
+	cp -vf $(DIR_APP)/mozilla/dist/public/nss/*.h $(BUILDROOT)/usr/include/nss3
+	chmod -v 644 $(BUILDROOT)/usr/include/nss3/*.h
+endef
