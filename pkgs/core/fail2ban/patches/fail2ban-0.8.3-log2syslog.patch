@@ -1,0 +1,11 @@
+--- fail2ban-0.8.3/config/fail2ban.conf~	2008-02-27 22:44:55.000000000 +0100
++++ fail2ban-0.8.3/config/fail2ban.conf	2009-08-27 20:48:25.000000000 +0200
+@@ -22,7 +22,7 @@
+ #          Only one log target can be specified.
+ # Values:  STDOUT STDERR SYSLOG file  Default:  /var/log/fail2ban.log
+ #
+-logtarget = /var/log/fail2ban.log
++logtarget = SYSLOG
+ 
+ # Option: socket
+ # Notes.: Set the socket file. This is used to communicate with the daemon. Do

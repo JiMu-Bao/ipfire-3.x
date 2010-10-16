@@ -1,0 +1,17 @@
+--- fail2ban-0.8.1/config/jail.conf.sshd	2007-08-09 00:49:59.000000000 +0200
++++ fail2ban-0.8.1/config/jail.conf	2007-08-15 21:41:33.000000000 +0200
+@@ -42,11 +42,11 @@
+ 
+ [ssh-iptables]
+ 
+-enabled  = false
++enabled  = true
+ filter   = sshd
+ action   = iptables[name=SSH, port=ssh, protocol=tcp]
+-           sendmail-whois[name=SSH, dest=you@mail.com, sender=fail2ban@mail.com]
+-logpath  = /var/log/sshd.log
++           sendmail-whois[name=SSH, dest=root, sender=fail2ban@mail.com]
++logpath  = /var/log/secure
+ maxretry = 5
+ 
+ [proftpd-iptables]

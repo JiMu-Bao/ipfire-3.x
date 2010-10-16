@@ -1,0 +1,22 @@
+--- fail2ban-0.8.2/server/filter.py.orig	2008-03-27 16:26:59.000000000 +0000
++++ fail2ban-0.8.2/server/filter.py	2008-03-27 15:29:48.000000000 +0000
+@@ -428,6 +428,7 @@
+ # is computed and compared to the previous hash of this line.
+ 
+ import md5
++import fcntl
+ 
+ class FileContainer:
+ 	
+@@ -455,6 +456,11 @@
+ 	
+ 	def open(self):
+ 		self.__handler = open(self.__filename)
++
++		# Set the file descriptor to be FD_CLOEXEC
++		fd = self.__handler.fileno()
++		fcntl.fcntl (self.__handler.fileno(), fcntl.F_SETFD, fd | fcntl.FD_CLOEXEC)
++
+ 		firstLine = self.__handler.readline()
+ 		# Computes the MD5 of the first line.
+ 		myHash = md5.new(firstLine).digest()
