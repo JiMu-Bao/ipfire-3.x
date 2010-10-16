@@ -26,7 +26,7 @@ DIR_TOOLS    = $(BASEDIR)/tools
 VPATH        = $(DIR_DL)
 
 # Paths to scripts
-DO_EXTRACT       = $(DIR_TOOLS)/extractor
+DO_EXTRACT       = tar xaf
 DO_QUALITY_AGENT = $(DIR_TOOLS)/quality-agent
 
 ###############################################################################
