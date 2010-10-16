@@ -36,7 +36,7 @@ PKG_SUMMARY    = A library for controlling VMs.
 
 PKG_BUILD_DEPS+= avahi-devel libcurl-devel cyrus-sasl-devel gnutls-devel \
 	libpciaccess-devel libssh2-devel libtool libxml2-devel lvm2 parted-devel \
-	pkg-config readline-devel libudev-devel
+	pkg-config readline-devel libudev-devel xen-tools
 PKG_DEPS      += lvm2
 
 define PKG_DESCRIPTION
@@ -57,7 +57,7 @@ CONFIGURE_OPTIONS += \
 	--without-polkit \
 	--without-uml \
 	--without-vbox \
-	--without-xen \
+	--with-xen \
 	--with-storage-fs \
 	--with-storage-lvm \
 	--with-storage-mpath \

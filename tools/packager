@@ -80,7 +80,7 @@ PKG_SUMMARY="${PKG_SUMMARY}"
 PKG_DESCRIPTION="${PKG_DESCRIPTION}"
 
 # Dependency info
-PKG_DEPS="${PKG_DEPS} $(find_requires ${files})"
+PKG_DEPS="$(find_requires ${files})"
 PKG_PROVIDES="$(find_provides ${files})"
 
 PKG_DATA_SIZE="$(du -cb ${files} | tail -n1 | awk '{ print $1 }')"
@@ -162,8 +162,8 @@ function __filelist() {
 	# Enable globbing again
 	set +f
 
-	# If not paths were found take all files
-	[ -z "${paths}" ] && paths="${BUILDROOT}"
+	# If not paths were found -> break
+	[ -z "${paths}" ] && return
 
 	local excludes
 	if [ -n "${exclude_paths}" ]; then

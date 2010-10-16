@@ -1,0 +1,59 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = dansguardian
+PKG_VER        = 2.10.1.1
+PKG_REL        = 0
+
+PKG_MAINTAINER =
+PKG_GROUP      = Networking/Proxy
+PKG_URL        = http://www.dansguardian.org/
+PKG_LICENSE    = GPLv2+
+PKG_SUMMARY    = A content filtering web proxy.
+
+PKG_BUILD_DEPS+= gcc-c++ pcre-devel pkg-config zlib-devel
+
+define PKG_DESCRIPTION
+	DansGuardian filters the content of pages based on many methods including \
+	phrase matching, PICS filtering and URL filtering. It does not purely filter \
+	based on a banned list of sites. \
+	\
+	It provides real-time virus scanning capabilities for content access. \
+	\
+	DansGuardian is designed to be completely flexible and allows you to tailor the \
+	filtering to your exact needs. It can be as draconian or as unobstructive as \
+	you want. The default settings are geared towards what a primary school might \
+	want but DansGuardian puts you in control of what you want to block. \
+	\
+	DansGuardian requires squid or another similar caching proxy server on your \
+	local network.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.gz
+
+CONFIGURE_OPTIONS += \
+	--sysconfdir=/etc \
+	--localstatedir=/var

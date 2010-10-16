@@ -4,6 +4,7 @@ from ConfigParser import ConfigParser, DEFAULTSECT
 import math
 import os
 import socket
+import sys
 
 BASEDIR = os.getcwd()
 
@@ -79,6 +80,9 @@ class Config(object):
 		"cleanup_on_failure" : False,
 		"cleanup_on_success" : True,
 		#
+		# Shell settings
+		"shell_on_failure" : False,
+		#
 		# CLI variables
 		"debug" : False,
 		"quiet" : False,
@@ -89,6 +93,7 @@ class Config(object):
 		"distro_epoch"    : "unknown",
 		"distro_version"  : "unknown",
 		"distro_slogan"   : "unknown",
+		"disto_vendor"    : "unknown",
 		#
 		# Logging
 		"log_config_file" : os.path.join(CONFIGDIR, "logging.ini"),
@@ -149,6 +154,7 @@ class Config(object):
 			"DISTRO_EPOCH"   : self["distro_epoch"],
 			"DISTRO_VERSION" : self["distro_version"],
 			"DISTRO_SLOGAN"  : self["distro_slogan"],
+			"DISTRO_VENDOR"  : self["distro_vendor"],
 			#
 			"PARALLELISMFLAGS" : "-j%d" % self["parallelism"],
 		}

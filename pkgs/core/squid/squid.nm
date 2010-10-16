@@ -25,16 +25,18 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = squid
-PKG_VER        = 3.0.STABLE25
+PKG_VER        = 3.1.8
 PKG_REL        = 0
 
-PKG_MAINTAINER =
+PKG_MAINTAINER = Christian Schmidt <christian.schmidt@ipfire.org>
 PKG_GROUP      = Networking/Daemons
 PKG_URL        = http://www.squid-cache.org/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = The Squid proxy caching server.
 
-PKG_BUILD_DEPS+= gcc-c++ libxml2-devel openssl-devel openldap-devel
+PKG_BUILD_DEPS+= gcc-c++ libxml2-devel openssl-devel openldap-devel samba-devel \
+	iptables-devel $(PKG_DEPS)
+PKG_DEPS      += /usr/bin/smbclient
 
 define PKG_DESCRIPTION
 	Squid is a high-performance proxy caching server for Web clients, \
@@ -53,7 +55,7 @@ CONFIGURE_OPTIONS += \
 	--libexecdir=/usr/lib/squid \
 	--localstatedir=/var \
 	--sysconfdir=/etc/squid \
-	--enable-storeio="aufs,diskd,ufs,null" \
+	--enable-storeio="aufs,diskd,ufs" \
 	--enable-removal-policies="heap,lru" \
 	--enable-icmp \
 	--enable-delay-pools \
@@ -66,6 +68,7 @@ CONFIGURE_OPTIONS += \
 	--enable-kill-parent-hack \
 	--enable-snmp \
 	--enable-arp-acl \
+	--enable-ipf-transparent \
 	--enable-htcp \
 	--enable-ssl \
 	--enable-forw-via-db \
@@ -80,8 +83,9 @@ CONFIGURE_OPTIONS += \
 	--enable-internal-dns \
 	--enable-auth=basic,ntlm \
 	--enable-basic-auth-helpers="LDAP,MSNT,multi-domain-NTLM,PAM,NCSA,SMB,squid_radius_auth" \
-	--enable-ntlm-auth-helpers="SMB" \
+	--enable-ntlm-auth-helpers="smb_lm,no_check,fakeauth" \
 	--enable-ntlm-fail-open \
+	--with-filedescriptors=16384 \
 	--enable-unlinkd \
 	--with-pthreads \
 	--with-aio \
@@ -91,7 +95,6 @@ CONFIGURE_OPTIONS += \
 define STAGE_INSTALL_CMDS
 	rm -vf $(BUILDROOT)/etc/squid/errors
 	rmdir  $(BUILDROOT)/var/logs
-	ln -svf ../../usr/lib/squid/errors/English $(BUILDROOT)/etc/squid/errors
 
 	-mkdir -pv $(BUILDROOT)/var/log/cache $(BUILDROOT)/var/log/squid
 	touch $(BUILDROOT)/var/log/squid/access.log

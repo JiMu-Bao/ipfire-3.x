@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = autoconf
-PKG_VER        = 2.67
+PKG_VER        = 2.68
 PKG_REL        = 0
 
 PKG_MAINTAINER =
@@ -44,4 +44,4 @@ define PKG_DESCRIPTION
 	specify various configuration options.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+PKG_TARBALL    = $(THISAPP).tar.xz

@@ -7,7 +7,10 @@
 
 include $(PKGROOT)/gmsl
 
-DO_PACKAGE_FILENAME = $(1)$(PKG_SUFFIX)
+DO_PACKAGE_FILENAME = $(1)$(call DO_PKG_SUFFIX,$(1))
+
+DO_PKG_SUFFIX = \
+	-$(if $(PKG_VER-$(1)),$(PKG_VER-$(1)),$(PKG_VER))-$(DISTRO_SNAME)$(DISTRO_EPOCH)-$(PKG_ARCH).$(if $(PKG_REL-$(1)),$(PKG_REL-$(1)),$(PKG_REL)).ipk
 
 define DO_PACKAGE
 	@echo "#####################################################################"

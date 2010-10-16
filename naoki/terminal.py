@@ -285,6 +285,7 @@ class Commandline(object):
 						Option("all", ["--all"], help="Build all packages"),
 						Option("ignore_dependency_errors", ["-i", "--ignore-dependency-errors"],
 							help="Ignore dependency errors."),
+						Option("shell", ["-s", "--shell"], help="Enter a shell after unsuccessfull build."),
 						List("packages", help="Give a list of packages to build."),
 					]),
 
