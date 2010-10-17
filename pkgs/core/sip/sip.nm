@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = sip
-PKG_VER        = 4.10.5
-PKG_REL        = 1
+PKG_VER        = 4.11.1
+PKG_REL        = 0
 
 PKG_MAINTAINER =
 PKG_GROUP      = Development/Tools
