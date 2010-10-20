@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = pyQt
-PKG_VER        = 4.7.7
+PKG_VER        = snapshot-4.8-3011e73e866d
 PKG_REL        = 0
 
 PKG_MAINTAINER =
@@ -63,3 +63,8 @@ define STAGE_BUILD
 endef
 
 STAGE_INSTALLTARGET += INSTALL_ROOT=$(BUILDROOT)
+
+define STAGE_INSTALL_CMDS
+	# Remove python3 port
+	rm -rfv $(BUILDROOT)/usr/lib/python*/site-packages/PyQt4/uic/port_v3
+endef
