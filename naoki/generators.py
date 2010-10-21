@@ -42,7 +42,17 @@ class Generator(_Environment):
 		self.installer_deps = dependencies.DependencySet(arch=self.arch)
 		deps = [
 			"basesystem",
-			#"installer",
+			"installer",
+			# TODO needs to be replaced
+			"xorg-x11-drv-ati",
+			"xorg-x11-drv-evdev",
+			"xorg-x11-drv-intel",
+			"xorg-x11-drv-keyboard",
+			"xorg-x11-drv-mouse",
+			"xorg-x11-drv-nv",
+			"xorg-x11-drv-synaptics",
+			"xorg-x11-drv-vesa",
+			"xorg-x11-drv-vmware",
 		]
 		for dep in deps:
 			dep = dependencies.Dependency(dep)

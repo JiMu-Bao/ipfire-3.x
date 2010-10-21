@@ -24,84 +24,49 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = qt
-PKG_VER        = 4.7.0
+PKG_NAME       = wpa_supplicant
+PKG_VER        = 0.7.3
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
-PKG_URL        = http://www.qtsoftware.com/
-PKG_LICENSE    = LGPLv2 with exceptions or GPLv3 with exceptions
-PKG_SUMMARY    = Qt toolkit.
+PKG_GROUP      = Sytem/Base
+PKG_URL        = http://hostap.epitest.fi/releases/
+PKG_LICENSE    = BSD
+PKG_SUMMARY    = WPA/WPA2/IEEE 802.1X Supplicant.
 
-PKG_BUILD_DEPS+= fontconfig-devel gcc-c++ libjpeg-devel libpng-devel \
-	libtiff-devel libX11-devel libXext-devel pcre-devel pkg-config \
-	xorg-x11-proto-devel zlib-devel
+PKG_BUILD_DEPS+= dbus-devel openssl-devel pkg-config
 
 define PKG_DESCRIPTION
-	Qt is a software toolkit for developing applications.
+	wpa_supplicant is a WPA Supplicant for Linux, BSD and Windows with support \
+	for WPA and WPA2 (IEEE 802.11i / RSN). Supplicant is the IEEE 802.1X/WPA \
+	component that is used in the client stations. It implements key negotiation \
+	with a WPA Authenticator and it controls the roaming and IEEE 802.11 \
+	authentication/association of the wlan driver.
 endef
 
-PKG_TARBALL    = $(PKG_NAME)-everywhere-opensource-src-$(PKG_VER).tar.gz
+PKG_TARBALL    = $(THISAPP).tar.gz
 
-CONFIGURE_OPTIONS = -v \
-	-prefix /usr \
-	-confirm-license \
-	-opensource \
-	-optimized-qmake \
-	-shared \
-	-release \
-	-largefile \
-	-reduce-relocations \
-	-openssl-linked \
-	-fontconfig \
-	-no-rpath \
-	-no-pch \
-	-no-qt3support \
-	-no-multimedia \
-	-no-audio-backend \
-	-no-phonon \
-	-no-phonon-backend \
-	-no-svg \
-	-no-javascript-jit \
-	-no-cups \
-	-no-gtkstyle \
-	-no-nas-sound \
-	-no-opengl \
-	-no-openvg \
-	-no-xinerama \
-	-no-sql-mysql \
-	-no-sql-odbc \
-	-no-sql-sqlite \
-	-no-sql-tds \
-	-no-webkit \
-	-no-script\
-	-no-scripttools \
-	-no-gif \
-	-no-libmng \
-	-no-separate-debug-info \
-	-no-sm \
-	-no-xshape \
-	-no-xvideo \
-	-no-xsync \
-	-no-mmx \
-	-no-sse \
-	-no-sse2 \
-	-no-3dnow \
-	-system-libpng \
-	-system-libjpeg \
-	-system-libtiff \
-	-system-zlib \
-	-nomake demos \
-	-nomake examples \
-	-nomake docs
+define STAGE_BUILD
+	# Copy our config file for build
+	cp $(DIR_SOURCE)/wpa_supplicant.config $(DIR_APP)/wpa_supplicant/.config
 
-DIR_APP = $(DIR_SRC)/$(PKG_NAME)-everywhere-opensource-src-$(PKG_VER)
-
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -e "s/-O2/$(CFLAGS)/g" -i mkspecs/*/qmake.conf
+	# Build wpa_supplicant
+	cd $(DIR_APP)/wpa_supplicant && make $(PARALLELISMFLAGS)
 endef
 
 define STAGE_INSTALL
-	cd $(DIR_APP) && make install INSTALL_ROOT=$(BUILDROOT)
+	-mkdir -pv $(BUILDROOT)/etc/logrotate.d
+	-mkdir -pv $(BUILDROOT)/etc/wpa_supplicant
+	-mkdir -pv $(BUILDROOT)/usr/sbin
+
+	# Install config file
+	install -D -m 0600 $(DIR_SOURCE)/wpa_supplicant.conf $(BUILDROOT)/etc/wpa_supplicant
+
+	# Install binaries
+	install -m 0755 $(DIR_APP)/wpa_supplicant/wpa_passphrase $(BUILDROOT)/usr/sbin
+	install -m 0755 $(DIR_APP)/wpa_supplicant/wpa_cli $(BUILDROOT)/usr/sbin
+	install -m 0755 $(DIR_APP)/wpa_supplicant/wpa_supplicant $(BUILDROOT)/usr/sbin
+
+	# Install logrotate file
+	install -D -m 0644 $(DIR_SOURCE)/wpa_supplicant.logrotate $(BUILDROOT)/etc/logrotate.d/wpa_supplicant
 endef
