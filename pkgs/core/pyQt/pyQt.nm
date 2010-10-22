@@ -25,8 +25,9 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = pyQt
-PKG_VER        = snapshot-4.8-3011e73e866d
+PKG_VER        = 4.8
 PKG_REL        = 0
+PKG_EPOCH      = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Development/Languages
