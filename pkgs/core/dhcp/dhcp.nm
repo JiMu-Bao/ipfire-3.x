@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = dhcp
 PKG_VER        = 4.1.1
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Networking/Daemons
@@ -63,4 +63,8 @@ define STAGE_INSTALL_CMDS
 	install -v -m 755 $(DIR_SOURCE)/dhclient-script \
 		$(BUILDROOT)/sbin/dhclient-script
 	-mkdir -pv $(BUILDROOT)/var/lib/dhclient
+
+	# Remove header files.
+	# There is nothing that makes use out of them.
+	rm -rfv $(BUILDROOT)/usr/include
 endef
