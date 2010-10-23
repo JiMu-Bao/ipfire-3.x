@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = qt
 PKG_VER        = 4.7.0
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
@@ -34,9 +34,18 @@ PKG_URL        = http://www.qtsoftware.com/
 PKG_LICENSE    = LGPLv2 with exceptions or GPLv3 with exceptions
 PKG_SUMMARY    = Qt toolkit.
 
-PKG_BUILD_DEPS+= fontconfig-devel gcc-c++ libjpeg-devel libpng-devel \
-	libtiff-devel libX11-devel libXext-devel pcre-devel pkg-config \
+PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
+PKG_FILES-$(PKG_NAME_REAL)-devel += \
+	/usr/lib/qt4/q3porting.xml \
+	/usr/bin \
+	/usr/lib/qt4/*.prl \
+	/usr/lib/qt4/mkspecs
+
+PKG_BUILD_DEPS+= fontconfig-devel gcc-c++ libjpeg-devel libmng-devel \
+	libpng-devel libtiff-devel libX11-devel libXext-devel libXfixes-devel \
+	libXrandr-devel libXrender-devel libXi-devel pcre-devel pkg-config \
 	xorg-x11-proto-devel zlib-devel
+
 
 define PKG_DESCRIPTION
 	Qt is a software toolkit for developing applications.
@@ -46,55 +55,66 @@ PKG_TARBALL    = $(PKG_NAME)-everywhere-opensource-src-$(PKG_VER).tar.gz
 
 CONFIGURE_OPTIONS = -v \
 	-prefix /usr \
+	-datadir /usr/lib/qt4 \
+	-headerdir /usr/include \
+	-plugindir /usr/lib/qt4/plugins \
+	-translationdir /usr/share/qt4/translations \
 	-confirm-license \
-	-opensource \
-	-optimized-qmake \
-	-shared \
-	-release \
-	-largefile \
-	-reduce-relocations \
-	-openssl-linked \
 	-fontconfig \
-	-no-rpath \
-	-no-pch \
-	-no-qt3support \
-	-no-multimedia \
+	-largefile \
+	-opensource \
+	-reduce-relocations \
+	-release \
+	-shared \
 	-no-audio-backend \
-	-no-phonon \
-	-no-phonon-backend \
-	-no-svg \
-	-no-javascript-jit \
-	-no-cups \
+	-no-dbus \
 	-no-gtkstyle \
+	-no-cups \
+	-no-javascript-jit \
+	-no-multimedia \
 	-no-nas-sound \
+	-no-nis \
+	-no-openssl \
 	-no-opengl \
 	-no-openvg \
-	-no-xinerama \
-	-no-sql-mysql \
-	-no-sql-odbc \
-	-no-sql-sqlite \
-	-no-sql-tds \
-	-no-webkit \
-	-no-script\
+	-no-qt3support \
+	-no-pch \
+	-no-phonon \
+	-no-phonon-backend \
+	-no-rpath \
+	-no-script \
 	-no-scripttools \
-	-no-gif \
-	-no-libmng \
 	-no-separate-debug-info \
 	-no-sm \
+	-no-sql-db2 \
+	-no-sql-ibase \
+	-no-sql-mysql \
+	-no-sql-oci \
+	-no-sql-odbc \
+	-no-sql-psql \
+	-no-sql-sqlite \
+	-no-sql-sqlite2 \
+	-no-sql-sqlite_symbian \
+	-no-sql-tds \
+	-no-stl \
+	-no-svg \
+	-no-webkit \
+	-no-xinerama \
 	-no-xshape \
-	-no-xvideo \
 	-no-xsync \
+	-no-xvideo \
 	-no-mmx \
 	-no-sse \
 	-no-sse2 \
 	-no-3dnow \
-	-system-libpng \
 	-system-libjpeg \
+	-system-libmng \
+	-system-libpng \
 	-system-libtiff \
 	-system-zlib \
 	-nomake demos \
-	-nomake examples \
-	-nomake docs
+	-nomake docs \
+	-nomake examples
 
 DIR_APP = $(DIR_SRC)/$(PKG_NAME)-everywhere-opensource-src-$(PKG_VER)
 
