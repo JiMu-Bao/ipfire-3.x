@@ -36,6 +36,7 @@ PKG_SUMMARY    = Qt toolkit.
 
 PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
 PKG_FILES-$(PKG_NAME_REAL)-devel += \
+	/usr/lib/*.prl \
 	/usr/lib/qt4/q3porting.xml \
 	/usr/bin \
 	/usr/lib/qt4/*.prl \
@@ -124,4 +125,11 @@ endef
 
 define STAGE_INSTALL
 	cd $(DIR_APP) && make install INSTALL_ROOT=$(BUILDROOT)
+	
+	# Remove libs for Qt designer
+	rm -rvf $(BUILDROOT)/usr/lib/libQtDesigner*
+	
+	# Remove translations for Qt assistant and designer
+	rm -rvf $(BUILDROOT)/usr/share/qt4/translations/assistant*
+	rm -rvf $(BUILDROOT)/usr/share/qt4/translations/designer*
 endef
