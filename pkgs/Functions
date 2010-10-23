@@ -12,6 +12,11 @@ DO_PACKAGE_FILENAME = $(1)$(call DO_PKG_SUFFIX,$(1))
 DO_PKG_SUFFIX = \
 	-$(if $(PKG_VER-$(1)),$(PKG_VER-$(1)),$(PKG_VER))-$(DISTRO_SNAME)$(DISTRO_EPOCH)-$(PKG_ARCH).$(if $(PKG_REL-$(1)),$(PKG_REL-$(1)),$(PKG_REL)).ipk
 
+define DO_INIT
+	# Run ldconfig
+	ldconfig
+endef
+
 define DO_PACKAGE
 	@echo "#####################################################################"
 	@echo "# $(1) - Package build started"
@@ -75,6 +80,9 @@ define DO_FIX_LIBTOOL
 endef
 
 define DO_PREPARE
+	# Initialize the environment at the beginning
+	$(DO_INIT)
+
 	@echo "#####################################################################"
 	@echo "# $(PKG_NAME) - Preparation started"
 	@echo "#####################################################################"
