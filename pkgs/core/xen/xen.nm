@@ -72,10 +72,6 @@ define QUALITY_AGENT_WHITELIST_EXECSTACK
 endef
 
 define STAGE_BUILD
-	# This needs to be called because the configuration routine is
-	# damn crappy.
-	ldconfig
-
 	# Following two lines are disabling HVM. HVM does not work because \
 	# of soem PIE errors we get when we try to build the firmware part \
 	# needed for different architektures.
