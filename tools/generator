@@ -34,10 +34,14 @@ function installer_image() {
 	#  (2) squashfs.img (installer)
 
 	local i
-	for i in dev proc sys; do
+	for i in dev proc sys lib/modules; do
 		mkdir -p ${dir}/${i} 2>/dev/null
 	done
 
+	# Copy kernel modules
+	cp -vfr /lib/modules/${KERNEL_RELEASE} ${dir}/lib/modules/
+
+	# Copy overlay
 	cp -vfr /usr/src/src/install/* ${dir}
 
 	_installer_image_ext3fs \
