@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = squashfs-tools
 PKG_VER        = 4.1
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Filesystem
@@ -35,6 +35,10 @@ PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Utility for the creation of squashfs filesystems.
 
 PKG_BUILD_DEPS+= libattr-devel xz-devel zlib-devel
+
+# XXX This package has a very weird dependency to libgcc_s.so.1.
+# Can we fix this in a non-hacky way?
+PKG_DEPS      += libgcc_s.so.1
 
 define PKG_DESCRIPTION
 	Squashfs is a highly compressed read-only filesystem for Linux.
