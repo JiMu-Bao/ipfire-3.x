@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = dbus-python
 PKG_VER        = 0.82.4
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
@@ -34,13 +34,15 @@ PKG_URL        = http://www.freedesktop.org/software/dbus/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = Dbus Python Bindings.
 
-PKG_BUILD_DEPS+= dbus-glib-devel pkg-config python
+PKG_BUILD_DEPS+= dbus-glib-devel pkg-config python-devel
 
 define PKG_DESCRIPTION
 	D-Bus python bindings for use with python programs.
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
+
+PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
 
 CONFIGURE_OPTIONS += \
 	--mandir=/usr/share/man
