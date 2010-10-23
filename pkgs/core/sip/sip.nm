@@ -25,8 +25,9 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = sip
-PKG_VER        = 4.11.2-snapshot-5167b98767e2
-PKG_REL        = 0
+PKG_VER        = 4.11.2
+PKG_REL        = 1
+PKG_EPOCH      = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Development/Tools
@@ -51,7 +52,9 @@ PKG_DEPS-$(PKG_NAME_REAL)-devel = sip
 
 define STAGE_BUILD
 	cd $(DIR_APP) && python configure.py \
-		CXXFLAGS="$(CXXFLAGS)" CFLAGS="$(CFLAGS)"
+		CFLAGS+="$(CFLAGS)" CXXFLAGS+="$(CXXFLAGS)"
 
 	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
 endef
+
+PKG_FILES-$(PKG_NAME)-devel += /usr/bin/sip
