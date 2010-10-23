@@ -35,7 +35,7 @@ PKG_URL        = http://www.riverbankcomputing.com/software/pyqt/
 PKG_LICENSE    = GPLv3 or GPLv2 with exceptions
 PKG_SUMMARY    = Python bindings for Qt4.
 
-PKG_BUILD_DEPS+= gcc-c++ libXext-devel python-devel qt sip-devel
+PKG_BUILD_DEPS+= gcc-c++ libXext-devel python-devel qt-devel sip-devel
 PKG_DEPS      += sip
 
 define PKG_DESCRIPTION
