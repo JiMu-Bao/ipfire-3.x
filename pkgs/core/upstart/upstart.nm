@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = upstart
 PKG_VER        = 0.6.6
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUP      = System/Base
@@ -65,7 +65,6 @@ endef
 define STAGE_INSTALL_CMDS
 	# These binaries are for the compatiblity mode, so we don´t need them
 	rm -vf $(BUILDROOT)/sbin/poweroff
-	rm -vf $(BUILDROOT)/sbin/restart
 	rm -vf $(BUILDROOT)/sbin/runlevel
 	rm -vf $(BUILDROOT)/sbin/shutdown
 	rm -vf $(BUILDROOT)/sbin/telinit	
