@@ -115,7 +115,7 @@ define STAGE_INSTALL
 	$(foreach package,$(SRC_PACKAGES),$(call MACRO_INSTALL,$(package)))
 
 	# Install unifont
-	cp -vf $(DIR_SRC)/cache/unifont-5.1.20080820.pcf.gz $(BUILDROOT)/usr/share/X11/fonts/misc/
+	cp -vf $(DIR_SRC)/cache/unifont-5.1.20080820.pcf.gz $(BUILDROOT)/usr/share/X11/fonts/misc/unifont.pcf.gz
 endef
 
 
