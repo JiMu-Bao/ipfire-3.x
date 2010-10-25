@@ -65,7 +65,4 @@ define STAGE_INSTALL
 	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT)
 
 	sed -e "s/pkgdatadir/pkglibdir/g" -i $(BUILDROOT)/usr/sbin/grub-install
-
-	mkdir -pv $(BUILDROOT)/boot/grub
-	cp -vf $(DIR_SOURCE)/splash.xpm.gz $(BUILDROOT)/boot/grub
 endef
