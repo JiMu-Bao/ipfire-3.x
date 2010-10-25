@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = xorg-x11-font-utils
 PKG_VER        = 7.4
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUP      = X/Fonts
@@ -64,7 +64,7 @@ define MACRO_BUILD
 	cd $(DIR_SRC)/$(1) && \
 		./configure \
 			--prefix=/usr \
-			--with-mapdir=/usr/share/x11/fonts/util
+			--with-mapdir=/usr/share/X11/fonts/util
 
 	cd $(DIR_SRC)/$(1) && make $(PARALLELISMFLAGS)
 
