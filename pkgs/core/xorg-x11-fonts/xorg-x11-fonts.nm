@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = xorg-x11-fonts
 PKG_VER        = 7.2
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUP      = X/Fonts
@@ -79,10 +79,11 @@ SRC_PACKAGES = \
 	font-xfree86-type1-1.0.2
 
 PKG_OBJECTS += $(foreach package,$(SRC_PACKAGES),$(package).tar.bz2)
+PKG_OBJECTS += unifont-5.1.20080820.pcf.gz
 
 define STAGE_PREPARE
-	for object in $(PKG_OBJECTS); do \
-		cd $(DIR_SRC) && $(DO_EXTRACT) $(DIR_DL)/$${object}; \
+	for object in $(SRC_PACKAGES); do \
+		cd $(DIR_SRC) && $(DO_EXTRACT) $(DIR_DL)/$${object}.tar.bz2; \
 	done
 endef
 
@@ -110,6 +111,11 @@ define MACRO_INSTALL
 
 endef
 
-STAGE_INSTALL = $(foreach package,$(SRC_PACKAGES),$(call MACRO_INSTALL,$(package)))
+define STAGE_INSTALL
+	$(foreach package,$(SRC_PACKAGES),$(call MACRO_INSTALL,$(package)))
+
+	# Install unifont
+	cp -vf $(DIR_SRC)/cache/unifont-5.1.20080820.pcf.gz $(BUILDROOT)/usr/share/X11/fonts/misc/
+endef
 
 
