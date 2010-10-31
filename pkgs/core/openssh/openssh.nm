@@ -35,6 +35,7 @@ PKG_LICENSE    = MIT
 PKG_SUMMARY    = An open source implementation of SSH protocol versions 1 and 2.
 
 PKG_BUILD_DEPS+= openssl-devel pam-devel
+PKG_DEPS-openssh = openssh-clients=$(THISVER) openssh-server=$(THISVER)
 
 define PKG_DESCRIPTION
 	SH (Secure SHell) is a program for logging into and executing \
@@ -45,6 +46,32 @@ endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
+PKG_PACKAGES  += openssh-clients openssh-server
+
+PKG_SUMMARY-openssh-server	= OpenSSH server applications.
+PKG_DESCRIPTION-openssh-server  = $(PKG_SUMMARY-openssh-server)
+PKG_FILES-openssh-server        = \
+        /etc/init/ \
+	/etc/pam.d/ \
+	/etc/ssh/moduli \
+	/etc/ssh/sshd_config \
+	/usr/lib/openssh/sftp-server \
+	/usr/sbin/ \
+	/usr/share/man/cat5/sshd_config.5* \
+	/usr/share/man/cat5/moduli.5* \
+	/usr/share/man/cat8/sshd.8* \
+	/usr/share/man/cat8/sftp-server.8* \
+	/usr/share/sshd/ \
+	/var/
+
+PKG_SUMMARY-openssh-clients     = OpenSSH client applications.
+PKG_DESCRIPTION-openssh-clients = $(PKG_SUMMARY-openssh-clients)
+PKG_FILES-openssh-clients       = \
+	/etc/ \
+	/usr/bin/ \
+	/usr/lib/ \
+	/usr/share/
+	
 CONFIGURE_OPTIONS += \
 	--sysconfdir=/etc/ssh \
 	--datadir=/usr/share/sshd \
