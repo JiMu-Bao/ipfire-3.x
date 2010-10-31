@@ -92,6 +92,7 @@ class Naoki(object):
 			return 1
 
 		actionmap = {
+			"dependencies" : self.call_package_dependencies,
 			"info" : self.call_package_info,
 			"list" : self.call_package_list,
 			"groups" : self.call_package_groups,
@@ -100,6 +101,24 @@ class Naoki(object):
 		}
 
 		return actionmap[args.action.name](args.action)
+
+	def call_package_dependencies(self, args):
+		repo = self._get_source_repos()
+
+		p = repo.find_package_by_name(args.package)
+		if not p:
+			raise Exception, "Could not find package: %s" % args.package
+
+		deps = dependencies.DependencySet()
+		for dep in p.get_dependencies() + p.get_dependencies("build"):
+			deps.add_dependency(dep)
+
+		deps.resolve()
+
+		identifiers = set([d.identifier for d in deps.dependencies])
+
+		for identifier in sorted(identifiers):
+			print identifier
 
 	def call_package_info(self, args):
 		# Source repositories
