@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = grub
 PKG_VER        = 1.98
-PKG_REL        = 0
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Boot
@@ -35,7 +35,7 @@ PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Grand Unified Boot Loader.
 
 PKG_BUILD_DEPS+= autoconf automake bison flex freetype-devel gettext \
-	ncurses-devel zlib-devel
+	ncurses-devel xorg-x11-fonts zlib-devel
 PKG_DEPS      += os-prober
 
 define PKG_DESCRIPTION
@@ -66,6 +66,17 @@ define STAGE_INSTALL
 
 	sed -e "s/pkgdatadir/pkglibdir/g" -i $(BUILDROOT)/usr/sbin/grub-install
 
-	mkdir -pv $(BUILDROOT)/boot/grub
-	cp -vf $(DIR_SOURCE)/splash.xpm.gz $(BUILDROOT)/boot/grub
+	-mkdir -pv $(BUILDROOT)/boot/grub
+
+	# Install theme file
+	install -m 0744 $(DIR_SOURCE)/05_theme $(BUILDROOT)/etc/grub.d/ 
+
+	# Install splash background
+	install $(DIR_SOURCE)/splash.png $(BUILDROOT)/boot/grub
+
+	# XXX - We will have to do this after the installation of the package by pakfire
+	# Generate grub compatible font for graphical boot menu
+	# This only converts Latin-1, Latin Extended A+B, Arrows, Box and Block characters
+	$(BUILDROOT)/usr/bin/grub-mkfont --output=$(BUILDROOT)/boot/grub/unifont.pf2 \
+		--range=0x0000-0x0241,0x2190-0x21FF,0x2500-0x259f /usr/share/X11/fonts/misc/unifont.pcf.gz
 endef
