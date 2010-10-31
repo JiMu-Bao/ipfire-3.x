@@ -51,7 +51,7 @@ PKG_PACKAGES  += openssh-clients openssh-server
 PKG_SUMMARY-openssh-server	= OpenSSH server applications.
 PKG_DESCRIPTION-openssh-server  = $(PKG_SUMMARY-openssh-server)
 PKG_FILES-openssh-server        = \
-        /etc/init/ \
+	/etc/init/ \
 	/etc/pam.d/ \
 	/etc/ssh/moduli \
 	/etc/ssh/sshd_config \
