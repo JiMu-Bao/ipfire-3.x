@@ -1,0 +1,11 @@
+diff -up net-tools-1.60/netstat.c.netstat-leak net-tools-1.60/netstat.c
+--- net-tools-1.60/netstat.c.netstat-leak	2010-09-16 10:49:49.000000000 +0200
++++ net-tools-1.60/netstat.c	2010-09-16 10:53:47.000000000 +0200
+@@ -558,6 +558,7 @@ static void tcp_node_hash_clear(void)
+       }
+ 
+       /* free the bucket itself */
++      free(tcp_node_hash[i]->socket_pair);
+       free(tcp_node_hash[i]);
+       tcp_node_hash[i] = NULL;
+     }

@@ -1,0 +1,166 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = net-tools
+PKG_VER        = 1.60
+PKG_REL        = 0
+
+PKG_MAINTAINER =
+PKG_GROUP      = Sytem/Base
+PKG_URL        = http://net-tools.berlios.de/
+PKG_LICENSE    = GPL+
+PKG_SUMMARY    = Basic networking tools.
+
+PKG_BUILD_DEPS+= gettext
+
+define PKG_DESCRIPTION
+	The net-tools package contains basic networking tools, \
+	including ifconfig, netstat, route, and others.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.bz2
+
+# Manual list patches because they need to be applied in speical order
+PKG_PATCHES    = net-tools-1.57-bug22040.patch
+PKG_PATCHES   += $(THISAPP)-miiioctl.patch
+PKG_PATCHES   += $(THISAPP)-virtualname.patch
+PKG_PATCHES   += $(THISAPP)-cycle.patch
+PKG_PATCHES   += $(THISAPP)-nameif.patch
+PKG_PATCHES   += $(THISAPP)-ipx.patch
+PKG_PATCHES   += $(THISAPP)-inet6-lookup.patch
+PKG_PATCHES   += $(THISAPP)-man.patch
+PKG_PATCHES   += $(THISAPP)-gcc33.patch
+PKG_PATCHES   += $(THISAPP)-trailingblank.patch
+PKG_PATCHES   += $(THISAPP)-interface.patch
+PKG_PATCHES   += $(THISAPP)-gcc34.patch
+PKG_PATCHES   += $(THISAPP)-overflow.patch
+PKG_PATCHES   += $(THISAPP)-siunits.patch
+PKG_PATCHES   += $(THISAPP)-trunc.patch
+PKG_PATCHES   += $(THISAPP)-return.patch
+PKG_PATCHES   += $(THISAPP)-parse.patch
+PKG_PATCHES   += $(THISAPP)-netmask.patch
+PKG_PATCHES   += $(THISAPP)-ulong.patch
+PKG_PATCHES   += $(THISAPP)-bcast.patch
+PKG_PATCHES   += $(THISAPP)-mii-tool-obsolete.patch
+PKG_PATCHES   += $(THISAPP)-netstat_ulong.patch
+PKG_PATCHES   += $(THISAPP)-note.patch
+PKG_PATCHES   += $(THISAPP)-num-ports.patch
+PKG_PATCHES   += $(THISAPP)-duplicate-tcp.patch
+PKG_PATCHES   += $(THISAPP)-statalias.patch
+PKG_PATCHES   += $(THISAPP)-isofix.patch
+PKG_PATCHES   += $(THISAPP)-ifconfig_ib.patch
+PKG_PATCHES   += $(THISAPP)-de.patch
+PKG_PATCHES   += $(THISAPP)-pie.patch
+PKG_PATCHES   += $(THISAPP)-ifaceopt.patch
+PKG_PATCHES   += $(THISAPP)-trim_iface.patch
+PKG_PATCHES   += $(THISAPP)-stdo.patch
+PKG_PATCHES   += $(THISAPP)-statistics.patch
+PKG_PATCHES   += $(THISAPP)-ifconfig.patch
+PKG_PATCHES   += $(THISAPP)-arp_overflow.patch
+PKG_PATCHES   += $(THISAPP)-hostname_man.patch
+PKG_PATCHES   += $(THISAPP)-interface_stack.patch
+PKG_PATCHES   += $(THISAPP)-selinux.patch
+PKG_PATCHES   += $(THISAPP)-netstat_stop_trim.patch
+PKG_PATCHES   += $(THISAPP)-netstat_inode.patch
+PKG_PATCHES   += $(THISAPP)-fgets.patch
+PKG_PATCHES   += $(THISAPP)-ifconfig_man.patch
+PKG_PATCHES   += $(THISAPP)-x25-proc.patch
+PKG_PATCHES   += $(THISAPP)-sctp.patch
+PKG_PATCHES   += $(THISAPP)-arp_man.patch
+PKG_PATCHES   += $(THISAPP)-ifconfig-long-iface-crasher.patch
+PKG_PATCHES   += $(THISAPP)-netdevice.patch
+PKG_PATCHES   += $(THISAPP)-skip.patch
+PKG_PATCHES   += $(THISAPP)-netstat-I-fix.patch
+PKG_PATCHES   += $(THISAPP)-nameif_strncpy.patch
+PKG_PATCHES   += $(THISAPP)-arp-unaligned-access.patch
+PKG_PATCHES   += $(THISAPP)-sctp-quiet.patch
+PKG_PATCHES   += $(THISAPP)-remove_node.patch
+PKG_PATCHES   += $(THISAPP)-netstat-interfaces-crash.patch
+PKG_PATCHES   += $(THISAPP)-ec_hw_null.patch
+PKG_PATCHES   += $(THISAPP)-statistics_buffer.patch
+PKG_PATCHES   += $(THISAPP)-sctp-addrs.patch
+PKG_PATCHES   += $(THISAPP)-i-option.patch
+PKG_PATCHES   += $(THISAPP)-a-option.patch
+PKG_PATCHES   += $(THISAPP)-clear-flag.patch
+PKG_PATCHES   += $(THISAPP)-metric-tunnel-man.patch
+PKG_PATCHES   += $(THISAPP)-netstat-probe.patch
+PKG_PATCHES   += $(THISAPP)-scanf-format.patch
+PKG_PATCHES   += $(THISAPP)-avoid-name-resolution.patch
+PKG_PATCHES   += $(THISAPP)-continous-flush-stdout.patch
+PKG_PATCHES   += $(THISAPP)-debug-fix.patch
+PKG_PATCHES   += $(THISAPP)-ib-warning.patch
+PKG_PATCHES   += $(THISAPP)-man-obsolete.patch
+PKG_PATCHES   += $(THISAPP)-man-RHEL-bugs.patch
+PKG_PATCHES   += $(THISAPP)-masqinfo-raw-ip.patch
+PKG_PATCHES   += $(THISAPP)-makefile-berlios.patch
+PKG_PATCHES   += $(THISAPP)-slattach-fchown.patch
+PKG_PATCHES   += $(THISAPP)-hostname-short.patch
+PKG_PATCHES   += $(THISAPP)-mii-refactor.patch
+PKG_PATCHES   += $(THISAPP)-IA64.patch
+PKG_PATCHES   += $(THISAPP)-large-indexes.patch
+PKG_PATCHES   += $(THISAPP)-statistics-doubleword.patch
+PKG_PATCHES   += $(THISAPP)-mii-gigabit.patch
+PKG_PATCHES   += $(THISAPP)-netstat-leak.patch
+
+define STAGE_PREPARE_CMDS
+	# Copy config files
+	cp  $(DIR_SOURCE)/config.h $(DIR_APP)
+	cp  $(DIR_SOURCE)/config.make $(DIR_APP)
+
+	# Copy additional man pages
+	cp $(DIR_SOURCE)/*.8 $(DIR_APP)/man/en_US
+
+	# Copy source for ether-wake and mii-diag
+	cp $(DIR_SOURCE)/ether-wake.c $(DIR_APP)
+	cp $(DIR_SOURCE)/mii-diag.c $(DIR_APP)
+endef
+
+define STAGE_BUILD
+	cd $(DIR_APP) && make $(PARELLISMFLAGS) CC=gcc
+
+	# Compile ether-wake
+	cd $(DIR_APP) && gcc $(CFLAGS) -o ether-wake ether-wake.c
+
+	# Compile mii-diag
+	cd $(DIR_APP) && gcc $(CFLAGS) -o mii-diag mii-diag.c
+endef
+
+define STAGE_INSTALL
+	cd $(DIR_APP) && mv man/de_DE man/de
+	cd $(DIR_APP) && mv man/fr_FR man/fr
+	cd $(DIR_APP) && mv man/pt_BR man/pt
+
+	cd $(DIR_APP) && make BASEDIR=$(BUILDROOT) mandir=/usr/share/man install
+
+	# Install ether-wake and mii-diag
+	install -m 755 $(DIR_APP)/ether-wake $(BUILDROOT)/sbin
+	install -m 755 $(DIR_APP)/mii-diag $(BUILDROOT)/sbin
+
+	# Remove tools we do not want
+	rm -rvf \
+		$(BUILDROOT)/sbin/{arp,ifconfig,ip,nameif,plipconfig,rarp,route,slattach}* \
+		$(BUILDROOT)/usr/share/man/{,*}/man*/{arp,ifconfig,ip,nameif,plipconfig,rarp,route,slattach}*
+endef
