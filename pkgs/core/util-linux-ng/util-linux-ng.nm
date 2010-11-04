@@ -45,7 +45,69 @@ endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+PKG_PACKAGES  += libblkid libblkid-devel libuuid libuuid-devel \
+	libmount libmount-devel
+
+# Package information for libblkid
+PKG_SUMMARY-libblkid =  Block device ID library.
+PKG_DESCRIPTION-libblkid = This is the block device identification library, \
+	part of util-linux-ng. 
+
+define PKG_FILES-libblkid
+	/lib/libblkid.*
+endef
+
+# Package information for libblkid-devel
+PKG_SUMMARY-libblkid-devel =  Development library and header of libblkid.
+PKG_DESCRIPTION-libblkid-devel = $(PKG_SUMMARY-libblkid-devel)
+
+define PKG_FILES-libblkid-devel
+	/usr/include/blkid/ \
+	/usr/lib/libblkid.* \
+	/usr/lib/pkgconfig/blkid.pc \
+	/usr/share/man/man3/*blkid* 
+endef
+
+# Package information for libuuid
+PKG_SUMMARY-libuuid =  Universally unique ID library.
+PKG_DESCRIPTION-libuuid = This is the universally unique ID library, \
+	part of util-linux-ng.
+
+define PKG_FILES-libuuid
+	/lib/libuuid.*
+endef
+
+# Package information for libuuid-devel
+PKG_SUMMARY-libuuid-devel =  Development library and header of libuuid.
+PKG_DESCRIPTION-libuuid-devel = $(PKG_SUMMARY-libuuid-devel)
+
+define PKG_FILES-libuuid-devel
+	/usr/include/uuid/ \
+	/usr/lib/libuuid.* \
+	/usr/lib/pkgconfig/uuid.pc \
+	/usr/share/man/man3/*uuid*
+endef
+
+# Package information for libmount
+PKG_SUMMARY-libmount =  Device mounting library.
+PKG_DESCRIPTION-libmount = This is the device mounting library, \
+	part of util-linux-ng.
+
+define PKG_FILES-libmount
+	/lib/libmount.*
+endef
+
+# Package information for libmount-devel
+PKG_SUMMARY-libmount-devel =  Development library and header of libmount.
+PKG_DESCRIPTION-libmount-devel = $(PKG_SUMMARY-libmount-devel)
+
+define PKG_FILES-libmount-devel
+	/usr/include/mount/ \
+	/usr/lib/libmount.* \
+	/usr/lib/pkgconfig/mount.pc \
+	/usr/share/man/man3/*mount*
+endef
+
 
 CFLAGS        += -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 
