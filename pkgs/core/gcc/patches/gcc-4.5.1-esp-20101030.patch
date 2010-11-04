@@ -1,6 +1,6 @@
-diff -Nur gcc-4.5.0-vanilla/configure gcc-4.5.0/configure
---- gcc-4.5.0-vanilla/configure	2010-04-02 19:35:47.000000000 +0200
-+++ gcc-4.5.0/configure	2010-04-21 15:21:09.762948361 +0200
+diff -Nur gcc-4.5.1-vanilla/configure gcc-4.5.1/configure
+--- gcc-4.5.1-vanilla/configure	2010-06-24 23:06:37.000000000 +0200
++++ gcc-4.5.1/configure	2010-10-30 15:13:15.694229807 +0200
 @@ -707,6 +707,7 @@
  CFLAGS
  CC
@@ -14,14 +14,14 @@ diff -Nur gcc-4.5.0-vanilla/configure gcc-4.5.0/configure
    --enable-gold           use gold instead of ld
    --enable-libada         build libada directory
 +  --enable-esp
-+			   Enable Stack protector, Position independent executable and
-+			   Fortify_sources as default if we have suppot for it when compiling
++			   Enable Stack protector, Position independent executable as
++			   default if we have suppot for it when compiling
 +			   and link with -z relro and -z now as default.
-+			   Linux targets supported i*86, x86_64, powerpc*, ia64, arm* and mips
++			   Linux targets supported i*86, x86_64, powerpc, powerpc64, ia64 and arm
    --enable-libssp         build libssp directory
    --enable-build-with-cxx build with C++ compiler instead of C compiler
    --disable-ppl-version-check    disable check for PPL version
-@@ -3164,6 +3170,24 @@
+@@ -3164,6 +3170,25 @@
    noconfigdirs="$noconfigdirs gnattools"
  fi
  
@@ -31,7 +31,7 @@ diff -Nur gcc-4.5.0-vanilla/configure gcc-4.5.0/configure
 +  enableval="$enable_esp"
 +
 +  case $target in
-+    i?86*-*-linux* | x86_64*-*-linux* | powerpc-*-linux* | powerpc64-*-linux* | arm*-*-linux* | ia64-*-linux* | mips-*-linux*)
++    i?86*-*-linux* | x86_64*-*-linux* | powerpc-*-linux* | powerpc64-*-linux* | arm*-*-linux* | ia64-*-linux*)
 +      enable_esp=yes
 +      ;;
 +    *)
@@ -43,10 +43,11 @@ diff -Nur gcc-4.5.0-vanilla/configure gcc-4.5.0/configure
 +
 +fi;
 +
++
  # Check whether --enable-libssp was given.
  if test "${enable_libssp+set}" = set; then :
    enableval=$enable_libssp; ENABLE_LIBSSP=$enableval
-@@ -14290,6 +14314,9 @@
+@@ -14354,6 +14379,9 @@
        *) stage1_cflags="-g -J" ;;
      esac ;;
  esac
@@ -56,33 +57,9 @@ diff -Nur gcc-4.5.0-vanilla/configure gcc-4.5.0/configure
  
  # This is aimed to mimic bootstrap with a non-GCC compiler to catch problems.
  if test "$GCC" = yes -a "$ENABLE_BUILD_WITH_CXX" != yes; then
-diff -Nur gcc-4.5.0-vanilla/gcc/config/i386/linux64.h gcc-4.5.0/gcc/config/i386/linux64.h
---- gcc-4.5.0-vanilla/gcc/config/i386/linux64.h	2010-03-24 21:44:48.000000000 +0100
-+++ gcc-4.5.0/gcc/config/i386/linux64.h	2010-04-21 15:21:16.730815972 +0200
-@@ -115,7 +115,7 @@
- /* This macro may be overridden in i386/k*bsd-gnu.h.  */
- #define REG_NAME(reg) reg
- 
--#ifdef TARGET_LIBC_PROVIDES_SSP
-+#if defined TARGET_LIBC_PROVIDES_SSP && !defined __UCLIBC__
- /* i386 glibc provides __stack_chk_guard in %gs:0x14,
-    x86_64 glibc provides it in %fs:0x28.  */
- #define TARGET_THREAD_SSP_OFFSET	(TARGET_64BIT ? 0x28 : 0x14)
-diff -Nur gcc-4.5.0-vanilla/gcc/config/i386/linux.h gcc-4.5.0/gcc/config/i386/linux.h
---- gcc-4.5.0-vanilla/gcc/config/i386/linux.h	2010-03-24 21:44:48.000000000 +0100
-+++ gcc-4.5.0/gcc/config/i386/linux.h	2010-04-21 15:21:16.721813554 +0200
-@@ -212,7 +212,7 @@
- /* This macro may be overridden in i386/k*bsd-gnu.h.  */
- #define REG_NAME(reg) reg
- 
--#ifdef TARGET_LIBC_PROVIDES_SSP
-+#if defined TARGET_LIBC_PROVIDES_SSP && !defined __UCLIBC__
- /* i386 glibc provides __stack_chk_guard in %gs:0x14.  */
- #define TARGET_THREAD_SSP_OFFSET	0x14
- #endif
-diff -Nur gcc-4.5.0-vanilla/gcc/config/linux.h gcc-4.5.0/gcc/config/linux.h
---- gcc-4.5.0-vanilla/gcc/config/linux.h	2009-04-09 17:00:19.000000000 +0200
-+++ gcc-4.5.0/gcc/config/linux.h	2010-04-21 15:21:16.667815357 +0200
+diff -Nur gcc-4.5.1-vanilla/gcc/config/linux.h gcc-4.5.1/gcc/config/linux.h
+--- gcc-4.5.1-vanilla/gcc/config/linux.h	2009-04-09 17:00:19.000000000 +0200
++++ gcc-4.5.1/gcc/config/linux.h	2010-10-30 15:13:15.845989169 +0200
 @@ -43,7 +43,11 @@
     object constructed before entering `main'.  */
     
@@ -96,9 +73,9 @@ diff -Nur gcc-4.5.0-vanilla/gcc/config/linux.h gcc-4.5.0/gcc/config/linux.h
  #define STARTFILE_SPEC \
    "%{!shared: %{pg|p|profile:gcrt1.o%s;pie:Scrt1.o%s;:crt1.o%s}} \
     crti.o%s %{static:crtbeginT.o%s;shared|pie:crtbeginS.o%s;:crtbegin.o%s}"
-diff -Nur gcc-4.5.0-vanilla/gcc/config/rs6000/linux64.h gcc-4.5.0/gcc/config/rs6000/linux64.h
---- gcc-4.5.0-vanilla/gcc/config/rs6000/linux64.h	2010-03-17 05:44:37.000000000 +0100
-+++ gcc-4.5.0/gcc/config/rs6000/linux64.h	2010-04-21 15:21:16.732816308 +0200
+diff -Nur gcc-4.5.1-vanilla/gcc/config/rs6000/linux64.h gcc-4.5.1/gcc/config/rs6000/linux64.h
+--- gcc-4.5.1-vanilla/gcc/config/rs6000/linux64.h	2010-03-17 05:44:37.000000000 +0100
++++ gcc-4.5.1/gcc/config/rs6000/linux64.h	2010-10-30 15:13:15.843989710 +0200
 @@ -162,7 +162,7 @@
  #endif
  
@@ -108,83 +85,26 @@ diff -Nur gcc-4.5.0-vanilla/gcc/config/rs6000/linux64.h gcc-4.5.0/gcc/config/rs6
  %{memb} %{!memb: %{msdata=eabi: -memb}} \
  %{!mlittle: %{!mlittle-endian: %{!mbig: %{!mbig-endian: \
      %{mcall-freebsd: -mbig} \
-@@ -525,7 +525,7 @@
- 
- #define MD_UNWIND_SUPPORT "config/rs6000/linux-unwind.h"
- 
--#ifdef TARGET_LIBC_PROVIDES_SSP
-+#if defined TARGET_LIBC_PROVIDES_SSP && !defined __UCLIBC__
- /* ppc32 glibc provides __stack_chk_guard in -0x7008(2),
-    ppc64 glibc provides it at -0x7010(13).  */
- #define TARGET_THREAD_SSP_OFFSET	(TARGET_64BIT ? -0x7010 : -0x7008)
-diff -Nur gcc-4.5.0-vanilla/gcc/config/rs6000/linux.h gcc-4.5.0/gcc/config/rs6000/linux.h
---- gcc-4.5.0-vanilla/gcc/config/rs6000/linux.h	2007-08-02 12:49:31.000000000 +0200
-+++ gcc-4.5.0/gcc/config/rs6000/linux.h	2010-04-21 15:21:16.731819651 +0200
-@@ -117,7 +117,7 @@
- 
- #define MD_UNWIND_SUPPORT "config/rs6000/linux-unwind.h"
- 
--#ifdef TARGET_LIBC_PROVIDES_SSP
-+#if defined TARGET_LIBC_PROVIDES_SSP && !defined __UCLIBC__
- /* ppc32 glibc provides __stack_chk_guard in -0x7008(2).  */
- #define TARGET_THREAD_SSP_OFFSET	-0x7008
- #endif
-diff -Nur gcc-4.5.0-vanilla/gcc/config/rs6000/sysv4.h gcc-4.5.0/gcc/config/rs6000/sysv4.h
---- gcc-4.5.0-vanilla/gcc/config/rs6000/sysv4.h	2009-11-25 21:23:20.000000000 +0100
-+++ gcc-4.5.0/gcc/config/rs6000/sysv4.h	2010-04-21 15:21:16.674812959 +0200
+diff -Nur gcc-4.5.1-vanilla/gcc/config/rs6000/sysv4.h gcc-4.5.1/gcc/config/rs6000/sysv4.h
+--- gcc-4.5.1-vanilla/gcc/config/rs6000/sysv4.h	2009-11-25 21:23:20.000000000 +0100
++++ gcc-4.5.1/gcc/config/rs6000/sysv4.h	2010-10-30 15:13:15.846988480 +0200
 @@ -883,7 +883,12 @@
  %{!mnewlib: %{pthread:-lpthread} %{shared:-lc} \
  %{!shared: %{profile:-lc_p} %{!profile:-lc}}}"
  
 -#ifdef HAVE_LD_PIE
 +#if defined (HAVE_LD_PIE) && defined (ENABLE_CRTBEGINTS)
-+#define STARTFILE_LINUX_SPEC \
-+  "%{!shared: %{pg|p|profile:gcrt1.o%s;pie:Scrt1.o%s;:crt1.o%s}} \
-+  %{mnewlib:ecrti.o%s;:crti.o%s} \
-+  {static:%{pie:crtbeginTS.o%s;:crtbeginT.o%s}} %{!static:%{shared|pie:crtbeginS.o%s;:crtbegin.o%s}}"
++#define STARTFILE_LINUX_SPEC "\
++%{!shared: %{pg|p|profile:gcrt1.o%s;pie:Scrt1.o%s;:crt1.o%s}} \
++%{mnewlib:ecrti.o%s;:crti.o%s} \
++%{static:%{pie:crtbeginTS.o%s;:crtbeginT.o%s}} %{!static:%{shared|pie:crtbeginS.o%s;:crtbegin.o%s}}"
 +#elif defined (HAVE_LD_PIE) && ! defined (ENABLE_CRTBEGINTS)
  #define	STARTFILE_LINUX_SPEC "\
  %{!shared: %{pg|p|profile:gcrt1.o%s;pie:Scrt1.o%s;:crt1.o%s}} \
  %{mnewlib:ecrti.o%s;:crti.o%s} \
-diff -Nur gcc-4.5.0-vanilla/gcc/config/s390/linux.h gcc-4.5.0/gcc/config/s390/linux.h
---- gcc-4.5.0-vanilla/gcc/config/s390/linux.h	2007-08-02 12:49:31.000000000 +0200
-+++ gcc-4.5.0/gcc/config/s390/linux.h	2010-04-21 15:21:16.738814124 +0200
-@@ -93,7 +93,7 @@
- 
- #define MD_UNWIND_SUPPORT "config/s390/linux-unwind.h"
- 
--#ifdef TARGET_LIBC_PROVIDES_SSP
-+#if defined TARGET_LIBC_PROVIDES_SSP && !defined __UCLIBC__
- /* s390 glibc provides __stack_chk_guard in 0x14(tp),
-    s390x glibc provides it at 0x28(tp).  */
- #define TARGET_THREAD_SSP_OFFSET        (TARGET_64BIT ? 0x28 : 0x14)
-diff -Nur gcc-4.5.0-vanilla/gcc/config/sparc/linux64.h gcc-4.5.0/gcc/config/sparc/linux64.h
---- gcc-4.5.0-vanilla/gcc/config/sparc/linux64.h	2009-12-08 00:31:01.000000000 +0100
-+++ gcc-4.5.0/gcc/config/sparc/linux64.h	2010-04-21 15:21:16.749816158 +0200
-@@ -298,7 +298,7 @@
- #undef NEED_INDICATE_EXEC_STACK
- #define NEED_INDICATE_EXEC_STACK 1
- 
--#ifdef TARGET_LIBC_PROVIDES_SSP
-+#if defined TARGET_LIBC_PROVIDES_SSP && !defined __UCLIBC__
- /* sparc glibc provides __stack_chk_guard in [%g7 + 0x14],
-    sparc64 glibc provides it at [%g7 + 0x28].  */
- #define TARGET_THREAD_SSP_OFFSET	(TARGET_ARCH64 ? 0x28 : 0x14)
-diff -Nur gcc-4.5.0-vanilla/gcc/config/sparc/linux.h gcc-4.5.0/gcc/config/sparc/linux.h
---- gcc-4.5.0-vanilla/gcc/config/sparc/linux.h	2009-12-08 00:31:01.000000000 +0100
-+++ gcc-4.5.0/gcc/config/sparc/linux.h	2010-04-21 15:21:16.746815839 +0200
-@@ -172,7 +172,7 @@
- #undef NEED_INDICATE_EXEC_STACK
- #define NEED_INDICATE_EXEC_STACK 1
- 
--#ifdef TARGET_LIBC_PROVIDES_SSP
-+#if defined TARGET_LIBC_PROVIDES_SSP && !defined __UCLIBC__
- /* sparc glibc provides __stack_chk_guard in [%g7 + 0x14].  */
- #define TARGET_THREAD_SSP_OFFSET	0x14
- #endif
-diff -Nur gcc-4.5.0-vanilla/gcc/config.in gcc-4.5.0/gcc/config.in
---- gcc-4.5.0-vanilla/gcc/config.in	2010-04-14 11:30:07.000000000 +0200
-+++ gcc-4.5.0/gcc/config.in	2010-04-21 15:21:09.879812904 +0200
+diff -Nur gcc-4.5.1-vanilla/gcc/config.in gcc-4.5.1/gcc/config.in
+--- gcc-4.5.1-vanilla/gcc/config.in	2010-07-31 11:34:58.000000000 +0200
++++ gcc-4.5.1/gcc/config.in	2010-10-30 15:13:15.784230669 +0200
 @@ -52,6 +52,12 @@
  #endif
  
@@ -211,23 +131,10 @@ diff -Nur gcc-4.5.0-vanilla/gcc/config.in gcc-4.5.0/gcc/config.in
  /* Define to 1 to enable fixed-point arithmetic extension to C. */
  #ifndef USED_FOR_TARGET
  #undef ENABLE_FIXED_POINT
-@@ -996,6 +1008,12 @@
- #endif
- 
- 
-+/* Define to 1 if your compiler supports -fstack-protector */
-+#ifndef USED_FOR_TARGET
-+#undef HAVE_GCC_SSP
-+#endif
-+
-+
- /* Define to 1 if you have the `getchar_unlocked' function. */
- #ifndef USED_FOR_TARGET
- #undef HAVE_GETCHAR_UNLOCKED
-diff -Nur gcc-4.5.0-vanilla/gcc/configure gcc-4.5.0/gcc/configure
---- gcc-4.5.0-vanilla/gcc/configure	2010-03-26 06:40:32.000000000 +0100
-+++ gcc-4.5.0/gcc/configure	2010-04-21 15:21:09.784072083 +0200
-@@ -678,6 +678,8 @@
+diff -Nur gcc-4.5.1-vanilla/gcc/configure gcc-4.5.1/gcc/configure
+--- gcc-4.5.1-vanilla/gcc/configure	2010-06-14 12:38:18.000000000 +0200
++++ gcc-4.5.1/gcc/configure	2010-10-30 15:13:15.707229526 +0200
+@@ -680,6 +680,8 @@
  HOST_LIBS
  GGC
  libgcc_visibility
@@ -236,7 +143,7 @@ diff -Nur gcc-4.5.0-vanilla/gcc/configure gcc-4.5.0/gcc/configure
  gcc_cv_readelf
  gcc_cv_objdump
  ORIGINAL_NM_FOR_TARGET
-@@ -24576,6 +24578,50 @@
+@@ -24831,6 +24833,50 @@
      ;;
  esac
  
@@ -287,83 +194,10 @@ diff -Nur gcc-4.5.0-vanilla/gcc/configure gcc-4.5.0/gcc/configure
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking linker --build-id support" >&5
  $as_echo_n "checking linker --build-id support... " >&6; }
  if test "${gcc_cv_ld_buildid+set}" = set; then :
-@@ -24729,6 +24775,146 @@
+@@ -25014,6 +25060,74 @@
  
  fi
  
-+if test x$gcc_cv_libc_provides_ssp = xyes; then
-+	echo "$as_me:$LINENO: checking whether $CC support -fstack-protector" >&5
-+echo $ECHO_N "checking whether $CC support -fstack-protector... $ECHO_C" >&6
-+if test "${gcc_cv_cc_stack_protector+set}" = set; then
-+  echo $ECHO_N "(cached) $ECHO_C" >&6
-+else
-+
-+	saved_CFLAGS="$CFLAGS"
-+	CFLAGS="$CFLAGS -fstack-protector"
-+      cat >conftest.$ac_ext <<_ACEOF
-+#ifndef __SSP__
-+#error
-+#endif
-+
-+_ACEOF
-+rm -f conftest.$ac_objext
-+if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
-+  (eval $ac_compile) 2>conftest.er1
-+  ac_status=$?
-+  grep -v '^ *+' conftest.er1 >conftest.err
-+  rm -f conftest.er1
-+  cat conftest.err >&5
-+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-+  (exit $ac_status); } &&
-+	 { ac_try='test -z "$ac_c_werror_flag"
-+			 || test ! -s conftest.err'
-+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-+  (eval $ac_try) 2>&5
-+  ac_status=$?
-+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-+  (exit $ac_status); }; } &&
-+	 { ac_try='test -s conftest.$ac_objext'
-+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-+  (eval $ac_try) 2>&5
-+  ac_status=$?
-+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-+  (exit $ac_status); }; }; then
-+
-+		case $target in
-+		i?86*-*-linux* | x86_64*-*-linux* | powerpc-*-linux* | powerpc64-*-linux*)
-+			if test x$set_have_as_tls = xyes; then
-+				gcc_cv_cc_stack_protector=yes
-+			else
-+				gcc_cv_cc_stack_protector=no
-+			fi
-+			;;
-+		*)
-+			cc_cv_cc_stack_protector=yes
-+			;;
-+		esac
-+
-+else
-+  echo "$as_me: failed program was:" >&5
-+sed 's/^/| /' conftest.$ac_ext >&5
-+
-+gcc_cv_cc_stack_protector=no
-+fi
-+rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
-+    CFLAGS="$saved_CFLAGS"
-+
-+fi
-+echo "$as_me:$LINENO: result: $gcc_cv_cc_stack_protector" >&5
-+echo "${ECHO_T}$gcc_cv_cc_stack_protector" >&6
-+fi
-+if test x$gcc_cv_cc_stack_protector = xyes; then
-+
-+cat >>confdefs.h <<\_ACEOF
-+#define HAVE_GCC_SSP 1
-+_ACEOF
-+
-+fi
-+
-+
 +if test x$enable_esp = xyes ; then
 +case $target in
 +		ia64*-*-linux*)
@@ -385,7 +219,7 @@ diff -Nur gcc-4.5.0-vanilla/gcc/configure gcc-4.5.0/gcc/configure
 +			;;
 +	esac
 +else
-+	enable_esp_ld=no
++	enable_espf_ld=no
 +fi
 +if test x$enable_esp_ld = xyes; then
 +
@@ -394,6 +228,7 @@ diff -Nur gcc-4.5.0-vanilla/gcc/configure gcc-4.5.0/gcc/configure
 +_ACEOF
 +
 +fi
++
 +if test x$enable_esp = xyes && test x$enable_esp_ld = xno; then
 +	{ { echo "$as_me:$LINENO: error: *** --enable-esp is not supported. You don't have -z,relro or -z,now support in the linker." >&5
 +echo "$as_me: error: *** --enable-esp is not supported. You don't have -z,relro or -z,now support in the linker." >&2;}
@@ -434,9 +269,9 @@ diff -Nur gcc-4.5.0-vanilla/gcc/configure gcc-4.5.0/gcc/configure
  # Check if TFmode long double should be used by default or not.
  # Some glibc targets used DFmode long double, but with glibc 2.4
  # and later they can use TFmode.
-diff -Nur gcc-4.5.0-vanilla/gcc/cp/lang-specs.h gcc-4.5.0/gcc/cp/lang-specs.h
---- gcc-4.5.0-vanilla/gcc/cp/lang-specs.h	2007-08-06 13:10:19.000000000 +0200
-+++ gcc-4.5.0/gcc/cp/lang-specs.h	2010-04-21 15:21:16.684816335 +0200
+diff -Nur gcc-4.5.1-vanilla/gcc/cp/lang-specs.h gcc-4.5.1/gcc/cp/lang-specs.h
+--- gcc-4.5.1-vanilla/gcc/cp/lang-specs.h	2007-08-06 13:10:19.000000000 +0200
++++ gcc-4.5.1/gcc/cp/lang-specs.h	2010-10-30 15:13:15.849979777 +0200
 @@ -47,7 +47,7 @@
  		%(cpp_options) %2 -o %{save-temps:%b.ii} %{!save-temps:%g.ii} \n}\
        cc1plus %{save-temps|no-integrated-cpp:-fpreprocessed %{save-temps:%b.ii} %{!save-temps:%g.ii}}\
@@ -460,9 +295,9 @@ diff -Nur gcc-4.5.0-vanilla/gcc/cp/lang-specs.h gcc-4.5.0/gcc/cp/lang-specs.h
 -    cc1plus -fpreprocessed %i %(cc1_options) %2 %{+e*}\
 +    cc1plus -fpreprocessed %i %(cc1_options) %(esp_options) %2 %{+e*}\
      %{!fsyntax-only:%(invoke_as)}}}}", 0, 0, 0},
-diff -Nur gcc-4.5.0-vanilla/gcc/doc/invoke.texi gcc-4.5.0/gcc/doc/invoke.texi
---- gcc-4.5.0-vanilla/gcc/doc/invoke.texi	2010-04-06 16:02:22.000000000 +0200
-+++ gcc-4.5.0/gcc/doc/invoke.texi	2010-04-21 15:21:16.796812184 +0200
+diff -Nur gcc-4.5.1-vanilla/gcc/doc/invoke.texi gcc-4.5.1/gcc/doc/invoke.texi
+--- gcc-4.5.1-vanilla/gcc/doc/invoke.texi	2010-04-06 16:02:22.000000000 +0200
++++ gcc-4.5.1/gcc/doc/invoke.texi	2010-10-30 15:13:15.864979490 +0200
 @@ -7856,6 +7856,11 @@
  @opindex fstack-protector-all
  Like @option{-fstack-protector} except that all functions are protected.
@@ -500,48 +335,51 @@ diff -Nur gcc-4.5.0-vanilla/gcc/doc/invoke.texi gcc-4.5.0/gcc/doc/invoke.texi
  @item -fno-jump-tables
  @opindex fno-jump-tables
  Do not use jump tables for switch statements even where it would be
-diff -Nur gcc-4.5.0-vanilla/gcc/esp.h gcc-4.5.0/gcc/esp.h
---- gcc-4.5.0-vanilla/gcc/esp.h	1970-01-01 01:00:00.000000000 +0100
-+++ gcc-4.5.0/gcc/esp.h	2010-04-21 15:21:16.622811922 +0200
-@@ -0,0 +1,148 @@
+diff -Nur gcc-4.5.1-vanilla/gcc/esp.h gcc-4.5.1/gcc/esp.h
+--- gcc-4.5.1-vanilla/gcc/esp.h	1970-01-01 01:00:00.000000000 +0100
++++ gcc-4.5.1/gcc/esp.h	2010-10-30 15:13:15.841979565 +0200
+@@ -0,0 +1,145 @@
 +/* License terms see GNU GENERAL PUBLIC LICENSE Version 3.
-+ * Version 20100409.1
++ * Version 20100527.1
 + * Magnus Granberg (Zorry) <zorry@gentoo.org>  */
 +#ifndef GCC_ESP_H
 +#define GCC_ESP_H
 +
-+/*	This file will add -fstack-protector, -fPIE, -pie -D_FORTIFY_SOURCES=2 -z,relro and -z,now 
++/*	This file will add -fstack-protector-all, -fPIE, -pie and -z now 
 +	as default if the defines and the spec allow it.
-+	
-+	On Gentoo
 +	Added a hack for gcc-specs-* in toolchain-funcs.eclass and _filter-hardened in flag-o-matic.eclass
 +	to support older hardened GCC patches and we don't need to change the code on gcc-specs-* and _filter-hardened.
-+	We use -fstack-protector-all instead of -fstack-protector
-+	This will add some unsupported upstream commands options as -nopie.
-+	-D__KERNEL__ is added so we don't have -fPIE and -fstack-protector-all when building kernels.
++	This will add some unsupported upstream commands options as -nopie and -nonow.
++	-D__KERNEL__ is added so we don't have -fPIE, -pie and -fstack-protector-all when building kernels.
 +	ESP_CC1_SPEC is added to CC1_SPEC.
-+	-D_FORTIFY_SOURCES=2 is added with gentoo's patchset as default so no need to set it hear.
-+	ESP_LINK_SPEC will not add -z,relro as it default on with binutils.
-+	ESP_CC1_STRICT_SPEC is added so we don't use gcc/opts.c to disable it.
-+	ESP_OPTIONS_PIE_CHECK_SPEC check for -pie, -p, -pg, -profile, -static and -shared.
++	ESP_CC1_STRICT_OVERFLOW_SPEC is added so we don't disable the strict-overflow check.
++	ESP_LINK_PIE_CHECK_SPEC check for -pie, -p, -pg, -profile and -static.
 +	ENABLE_CRTBEGINTS add support for crtbeginTS.o, build -static with -fPIE or -fpie.
 +*/
 +#ifdef ENABLE_ESP
 +	
 +	/* Hack to support gcc-specs-* in toolchain-funcs.eclass and _filter-hardened in flag-o-matic.eclass  */
-+	#define ESP_CC1_SPEC " %(esp_cc1_ssp) %(esp_cc1_pie) %(esp_cc1_strict)"
-+	#ifdef HAVE_GCC_SSP
++	#define ESP_CC1_SPEC " %(esp_cc1_ssp) %(esp_cc1_pie) %(esp_cc1_strict_overflow)"
++	#if defined ( EFAULT_SSP ) || defined ( EFAULT_PIE_SSP )
 +		#define ESP_CC1_SSP_SPEC "%{!fno-stack-protector: %{!fno-stack-protector-all: }}"
 +	#else
 +		#define ESP_CC1_SSP_SPEC ""
 +	#endif
-+	#define ESP_CC1_PIE_SPEC "%{!nopie: }"
-+	#define ESP_CC1_STRICT_SPEC "%{!fstrict-overflow:%{!fno-strict-overflow: -fno-strict-overflow}}"
++	#if defined ( EFAULT_PIE ) || defined ( EFAULT_PIE_SSP )
++		#define ESP_CC1_PIE_SPEC "%{!nopie: }"
++	#else
++		#define ESP_CC1_PIE_SPEC ""
++	#endif
++	#define ESP_CC1_STRICT_OVERFLOW_SPEC "%{!fstrict-overflow:%{!fno-strict-overflow: -fno-strict-overflow}}"
 +
 +	/*	ESP_LINK_SPEC is added to LINK_PIE_SPEC if esp is enable
-+		-z now will be added if we don't have -vanilla spec  */
-+	#define ESP_LINK_SPEC "%(esp_link_now)"
-+	#define ESP_LINK_NOW_SPEC "%{!now:-z now}"
++		-z now will be added if we don't have -vanilla spec. We do a -pie incompatible check
++		Don't remove the specs in the end  */
++	#define ESP_LINK_SPEC "%(esp_link_now) %(esp_link_pie_check) "
++	#define ESP_LINK_NOW_SPEC "%{!nonow:-z now}"
++
++	/*	We use ESP_COMMAND_OPTIONS_SPEC to add pie command-line options.  */
++	#define ESP_COMMAND_OPTIONS_SPEC "%{!D__KERNEL__:%{!nopie:%(esp_options_pie) %(esp_link_pie)}}"
 +	
 +	/*	ESP_OPTIONS_SPEC is added to the compiler spec in gcc/gcc.c  */
 +	#define ESP_OPTIONS_SPEC "%(esp_options_ssp)"
@@ -551,8 +389,8 @@ diff -Nur gcc-4.5.0-vanilla/gcc/esp.h gcc-4.5.0/gcc/esp.h
 +	#define ESP_CPP_OPTIONS_SPEC "%(esp_options_ssp)"
 +
 +	/*  This will add -fstack-protector-all if we don't have -nostdlib -nodefaultlibs -fno-stack-protector -fstack-protector
-+		-fstack-protector-all and we have TARGET_LIBC_PROVIDES_SSP and HAVE_GCC_SSP defined.  */
-+	#ifdef HAVE_GCC_SSP
++		-fstack-protector-all and we have EFAULT_SSP or EFAULT_PIE_SSP defined.  */
++	#if defined ( EFAULT_SSP ) || defined ( EFAULT_PIE_SSP )
 +		#define ESP_OPTIONS_SSP_SPEC \
 +			"%{!D__KERNEL__:%{!nostdlib:%{!nodefaultlibs: %{!fno-stack-protector: \
 +			%{!fstack-protector:%{!fstack-protector-all:-fstack-protector-all}}}}}}"
@@ -560,11 +398,8 @@ diff -Nur gcc-4.5.0-vanilla/gcc/esp.h gcc-4.5.0/gcc/esp.h
 +		#define ESP_OPTIONS_SSP_SPEC ""
 +	#endif
 +
-+	/* If HAVE_LD_PIE not defined we will not add any -fPIE -pie  */
-+	#ifdef HAVE_LD_PIE
-+
-+		/*	We use ESP_COMMAND_OPTIONS_SPEC to add pie command-line options.  */
-+		#define ESP_COMMAND_OPTIONS_SPEC "%{!D__KERNEL__:%{!nopie:%(esp_options_pie) %(esp_link_pie)}}"
++	/* If EFAULT_PIE or EFAULT_PIE_SSP is defined we will add -fPIE -pie  */
++	#if defined ( EFAULT_PIE ) || defined ( EFAULT_PIE_SSP )
 +
 +		/*  This will add -fPIE if we don't have -pie -fpic -fPIC -fpie -fPIE -fno-pic -fno-PIC -fno-pie -fno-PIE -shared -static
 +			-nostdlib -nostartfiles.  */
@@ -593,32 +428,29 @@ diff -Nur gcc-4.5.0-vanilla/gcc/esp.h gcc-4.5.0/gcc/esp.h
 +				%{!nostdlib:%{!nostartfiles:-pie}}}}}}}}}}}"
 +		#endif
 +		
-+		/*  This will check if shared is set when -static -pie -fPIE -fpie -fno-PIC -fno-pic, -pie is set when -static -pg -p -profile.  
-+			If set it will make gcc print out "-shared and -static|pie|fPIE|fpie|fno-PIC|fno-pic are incompatible" or
-+			"-pie and pg|p|profile are incompatible"  */
++		/*  This will check if -pie is set when (-static) -pg -p -profile. If set it will make gcc print out
++			"-pie and (static)|pg|p|profile are incompatible when linking"  */
 +		/*  With ENABLE_CRTBEGINTS we don't need to check for -static  */
 +		#ifdef ENABLE_CRTBEGINTS
-+			#define ESP_OPTIONS_PIE_CHECK_SPEC \
-+				"%{shared:%{static|pie|fPIE|fpie|fno-PIC|fno-pic:%e-shared and -static|pie|fPIE|fpie|fno-PIC|fno-pic are incompatible}} \
-+				%{pie:%{pg|p|profile:%e-pie and -pg|p|profile are incompatible}}"
++			#define ESP_LINK_PIE_CHECK_SPEC \
++				"%{pie:%{pg|p|profile:%e-pie and -pg|p|profile are incompatible when linking}}"
 +		#else
-+			#define ESP_OPTIONS_PIE_CHECK_SPEC \
-+				"%{shared:%{static|pie|fPIE|fpie|fno-PIC|fno-pic:%e-shared and -static|pie|fPIE|fpie|fno-PIC|fno-pic are incompatible}} \
-+				%{pie:%{static|pg|p|profile:%e-pie and -static|pg|p|profile are incompatible}}"
++			#define ESP_LINK_PIE_CHECK_SPEC \
++				"%{pie:%{static|pg|p|profile:%e-pie and -static|pg|p|profile are incompatible when linking}}"
 +		#endif
 +
-+		/*  We don't pass -pie to the linker when -static  */
++		/*  We don't pass -pie to the linker when -static.  */
 +		#ifdef ENABLE_CRTBEGINTS
-+			#define LINK_PIE_SPEC "%{!static:%{pie:-pie}} %(esp_link) "
++			#define LINK_PIE_SPEC "%{!static:%{pie:-pie}} %(esp_link)"
 +		#else
-+			#define LINK_PIE_SPEC "%{pie:-pie} %(esp_link) "
++			#define LINK_PIE_SPEC "%{pie:-pie} %(esp_link)"
 +		#endif
 +
 +	#else
 +		#define ESP_OPTIONS_PIE_SPEC ""
-+		#define ESP_OPTIONS_PIE_CHECK_SPEC ""
++		#define ESP_LINK_PIE_CHECK_SPEC ""
 +		#define ESP_LINK_PIE_SPEC ""
-+		#define LINK_PIE_SPEC "%{pie:-pie} %(esp_link) "
++		#define LINK_PIE_SPEC "%{pie:-pie} %(esp_link)"
 +	#endif
 +
 +	/*  We add extra spec name's to the EXTRA_SPECS list  */
@@ -626,15 +458,15 @@ diff -Nur gcc-4.5.0-vanilla/gcc/esp.h gcc-4.5.0/gcc/esp.h
 +		{ "esp_cc1",								ESP_CC1_SPEC },					\
 +		{ "esp_cc1_pie",							ESP_CC1_PIE_SPEC },				\
 +		{ "esp_cc1_ssp",							ESP_CC1_SSP_SPEC },				\
-+		{ "esp_cc1_strict",						ESP_CC1_STRICT_SPEC },				\
-+		{ "esp_link",								ESP_LINK_SPEC },					\
-+		{ "esp_link_now",							ESP_LINK_NOW_SPEC },				\
-+		{ "esp_link_pie",							ESP_LINK_PIE_SPEC },				\
++		{ "esp_cc1_strict_overflow",				ESP_CC1_STRICT_OVERFLOW_SPEC },	\
++		{ "esp_link",								ESP_LINK_SPEC },				\
++		{ "esp_link_now",							ESP_LINK_NOW_SPEC },			\
++		{ "esp_link_pie",							ESP_LINK_PIE_SPEC },			\
++		{ "esp_link_pie_check",						ESP_LINK_PIE_CHECK_SPEC },		\
 +		{ "esp_command_options",					ESP_COMMAND_OPTIONS_SPEC },		\
 +		{ "esp_cpp_options",						ESP_CPP_OPTIONS_SPEC },			\
 +		{ "esp_options",							ESP_OPTIONS_SPEC },				\
 +		{ "esp_options_pie",						ESP_OPTIONS_PIE_SPEC },			\
-+		{ "esp_options_pie_check",					ESP_OPTIONS_PIE_CHECK_SPEC },		\
 +		{ "esp_options_ssp",						ESP_OPTIONS_SSP_SPEC }
 +
 +	static const char *esp_command_options_spec = ESP_COMMAND_OPTIONS_SPEC;
@@ -652,9 +484,9 @@ diff -Nur gcc-4.5.0-vanilla/gcc/esp.h gcc-4.5.0/gcc/esp.h
 +
 +#endif
 +#endif /* End GCC_ESP_H */
-diff -Nur gcc-4.5.0-vanilla/gcc/gcc.c gcc-4.5.0/gcc/gcc.c
---- gcc-4.5.0-vanilla/gcc/gcc.c	2010-02-11 13:23:08.000000000 +0100
-+++ gcc-4.5.0/gcc/gcc.c	2010-04-21 15:21:16.589812777 +0200
+diff -Nur gcc-4.5.1-vanilla/gcc/gcc.c gcc-4.5.1/gcc/gcc.c
+--- gcc-4.5.1-vanilla/gcc/gcc.c	2010-04-18 19:46:08.000000000 +0200
++++ gcc-4.5.1/gcc/gcc.c	2010-10-30 15:13:15.834979921 +0200
 @@ -84,6 +84,7 @@
  #include "gcc.h"
  #include "flags.h"
@@ -682,17 +514,7 @@ diff -Nur gcc-4.5.0-vanilla/gcc/gcc.c gcc-4.5.0/gcc/gcc.c
  
  /* This contains cpp options which are not passed when the preprocessor
     output will be used by another program.  */
-@@ -893,6 +896,9 @@
- 
- /* NB: This is shared amongst all front-ends, except for Ada.  */
- static const char *cc1_options =
-+#ifdef ENABLE_ESP
-+"%(esp_options_pie_check)"
-+#endif
- "%{pg:%{fomit-frame-pointer:%e-pg and -fomit-frame-pointer are incompatible}}\
-  %1 %{!Q:-quiet} %{!dumpbase:-dumpbase %B} %{d*} %{m*} %{a*}\
-  %{fcompare-debug-second:%:compare-debug-auxbase-opt(%b)} \
-@@ -1075,15 +1081,15 @@
+@@ -1075,15 +1078,15 @@
  	  %{save-temps*|traditional-cpp|no-integrated-cpp:%(trad_capable_cpp) \
  		%(cpp_options) -o %{save-temps*:%b.i} %{!save-temps*:%g.i} \n\
  		    cc1 -fpreprocessed %{save-temps*:%b.i} %{!save-temps*:%g.i} \
@@ -711,7 +533,7 @@ diff -Nur gcc-4.5.0-vanilla/gcc/gcc.c gcc-4.5.0/gcc/gcc.c
                  %{!fsyntax-only:%(invoke_as)}}}}}}", 0, 1, 1},
    {"-",
     "%{!E:%e-E or -x required when input is from standard input}\
-@@ -1106,7 +1112,7 @@
+@@ -1106,7 +1109,7 @@
                      %W{o*:--output-pch=%*}%V}}}}}}", 0, 0, 0},
    {".i", "@cpp-output", 0, 1, 0},
    {"@cpp-output",
@@ -720,7 +542,7 @@ diff -Nur gcc-4.5.0-vanilla/gcc/gcc.c gcc-4.5.0/gcc/gcc.c
    {".s", "@assembler", 0, 1, 0},
    {"@assembler",
     "%{!M:%{!MM:%{!E:%{!S:as %(asm_debug) %(asm_options) %i %A }}}}", 0, 1, 0},
-@@ -1699,18 +1705,23 @@
+@@ -1699,18 +1702,23 @@
    INIT_STATIC_SPEC ("sysroot_hdrs_suffix_spec",	&sysroot_hdrs_suffix_spec),
  };
  
@@ -748,7 +570,7 @@ diff -Nur gcc-4.5.0-vanilla/gcc/gcc.c gcc-4.5.0/gcc/gcc.c
  
  /* List of dynamically allocates specs that have been defined so far.  */
  
-@@ -1798,7 +1809,6 @@
+@@ -1798,7 +1806,6 @@
    if (verbose_flag)
      notice ("Using built-in specs.\n");
  
@@ -756,7 +578,7 @@ diff -Nur gcc-4.5.0-vanilla/gcc/gcc.c gcc-4.5.0/gcc/gcc.c
    extra_specs = XCNEWVEC (struct spec_list, ARRAY_SIZE (extra_specs_1));
  
    for (i = ARRAY_SIZE (extra_specs_1) - 1; i >= 0; i--)
-@@ -1811,7 +1821,6 @@
+@@ -1811,7 +1818,6 @@
        sl->ptr_spec = &sl->ptr;
        next = sl;
      }
@@ -764,7 +586,7 @@ diff -Nur gcc-4.5.0-vanilla/gcc/gcc.c gcc-4.5.0/gcc/gcc.c
  
    for (i = ARRAY_SIZE (static_specs) - 1; i >= 0; i--)
      {
-@@ -7111,6 +7120,12 @@
+@@ -7111,6 +7117,12 @@
      gcc_exec_prefix = concat (gcc_exec_prefix, spec_machine, dir_separator_str,
  			      spec_version, dir_separator_str, NULL);
  
@@ -777,10 +599,10 @@ diff -Nur gcc-4.5.0-vanilla/gcc/gcc.c gcc-4.5.0/gcc/gcc.c
    /* Now we have the specs.
       Set the `valid' bits for switches that match anything in any spec.  */
  
-diff -Nur gcc-4.5.0-vanilla/gcc/Makefile.in gcc-4.5.0/gcc/Makefile.in
---- gcc-4.5.0-vanilla/gcc/Makefile.in	2010-04-02 09:49:06.000000000 +0200
-+++ gcc-4.5.0/gcc/Makefile.in	2010-04-21 15:21:10.033812913 +0200
-@@ -636,13 +636,24 @@
+diff -Nur gcc-4.5.1-vanilla/gcc/Makefile.in gcc-4.5.1/gcc/Makefile.in
+--- gcc-4.5.1-vanilla/gcc/Makefile.in	2010-06-30 15:26:17.000000000 +0200
++++ gcc-4.5.1/gcc/Makefile.in	2010-10-30 15:13:15.822979675 +0200
+@@ -640,13 +640,24 @@
  INHIBIT_LIBC_CFLAGS = -Dinhibit_libc
  endif
  
@@ -806,7 +628,7 @@ diff -Nur gcc-4.5.0-vanilla/gcc/Makefile.in gcc-4.5.0/gcc/Makefile.in
  
  # Additional options to use when compiling libgcc2.a.
  # Some targets override this to -isystem include
-@@ -655,7 +666,7 @@
+@@ -659,7 +670,7 @@
  CRTSTUFF_CFLAGS = -O2 $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) -g0 \
    -finhibit-size-directive -fno-inline -fno-exceptions \
    -fno-zero-initialized-in-bss -fno-toplevel-reorder -fno-tree-vectorize \
@@ -815,7 +637,7 @@ diff -Nur gcc-4.5.0-vanilla/gcc/Makefile.in gcc-4.5.0/gcc/Makefile.in
  
  # Additional sources to handle exceptions; overridden by targets as needed.
  LIB2ADDEH = $(srcdir)/unwind-dw2.c $(srcdir)/unwind-dw2-fde.c \
-@@ -685,6 +696,12 @@
+@@ -689,6 +700,12 @@
  # The rules for compiling them should be in the t-* file for the machine.
  EXTRA_PARTS = @extra_parts@
  
@@ -828,7 +650,7 @@ diff -Nur gcc-4.5.0-vanilla/gcc/Makefile.in gcc-4.5.0/gcc/Makefile.in
  # List of extra object files that should be compiled and linked with
  # compiler proper (cc1, cc1obj, cc1plus).
  EXTRA_OBJS = @extra_objs@
-@@ -1863,9 +1880,10 @@
+@@ -1867,9 +1884,10 @@
  	echo LIBGCC_SYNC = '$(LIBGCC_SYNC)' >> tmp-libgcc.mvars
  	echo LIBGCC_SYNC_CFLAGS = '$(LIBGCC_SYNC_CFLAGS)' >> tmp-libgcc.mvars
  	echo CRTSTUFF_CFLAGS = '$(CRTSTUFF_CFLAGS)' >> tmp-libgcc.mvars
@@ -840,7 +662,7 @@ diff -Nur gcc-4.5.0-vanilla/gcc/Makefile.in gcc-4.5.0/gcc/Makefile.in
  
  	mv tmp-libgcc.mvars libgcc.mvars
  
-@@ -1899,12 +1917,14 @@
+@@ -1903,12 +1921,14 @@
  $(T)crtbegin.o: crtstuff.c $(GCC_PASSES) $(TCONFIG_H) auto-host.h \
    gbl-ctors.h stmp-int-hdrs tsystem.h coretypes.h $(TM_H)
  	$(GCC_FOR_TARGET) $(CRTSTUFF_CFLAGS) $(CRTSTUFF_T_CFLAGS) \
@@ -855,7 +677,7 @@ diff -Nur gcc-4.5.0-vanilla/gcc/Makefile.in gcc-4.5.0/gcc/Makefile.in
  	  -c $(srcdir)/crtstuff.c -DCRT_END \
  	  -o $(T)crtend$(objext)
  
-@@ -1925,9 +1945,19 @@
+@@ -1929,9 +1949,19 @@
  $(T)crtbeginT.o: crtstuff.c $(GCC_PASSES) $(TCONFIG_H) auto-host.h \
    gbl-ctors.h stmp-int-hdrs tsystem.h coretypes.h $(TM_H)
  	$(GCC_FOR_TARGET) $(CRTSTUFF_CFLAGS) $(CRTSTUFF_T_CFLAGS) \
@@ -875,9 +697,9 @@ diff -Nur gcc-4.5.0-vanilla/gcc/Makefile.in gcc-4.5.0/gcc/Makefile.in
  # Compile the start modules crt0.o and mcrt0.o that are linked with
  # every program
  $(T)crt0.o: s-crt0 ; @true
-diff -Nur gcc-4.5.0-vanilla/gcc/objc/lang-specs.h gcc-4.5.0/gcc/objc/lang-specs.h
---- gcc-4.5.0-vanilla/gcc/objc/lang-specs.h	2007-08-02 12:37:36.000000000 +0200
-+++ gcc-4.5.0/gcc/objc/lang-specs.h	2010-04-21 15:21:16.702913793 +0200
+diff -Nur gcc-4.5.1-vanilla/gcc/objc/lang-specs.h gcc-4.5.1/gcc/objc/lang-specs.h
+--- gcc-4.5.1-vanilla/gcc/objc/lang-specs.h	2007-08-02 12:37:36.000000000 +0200
++++ gcc-4.5.1/gcc/objc/lang-specs.h	2010-10-30 15:13:15.851989223 +0200
 @@ -30,13 +30,13 @@
  	%{traditional|ftraditional|traditional-cpp:\
  %eGNU Objective C no longer supports traditional compilation}\
@@ -908,9 +730,9 @@ diff -Nur gcc-4.5.0-vanilla/gcc/objc/lang-specs.h gcc-4.5.0/gcc/objc/lang-specs.
 +	    cc1obj %(cpp_unique_options) %(cc1_options) %(esp_options) %{print-objc-runtime-info} %{gen-decls}\
                          -o %g.s %{!o*:--output-pch=%i.gch}\
                          %W{o*:--output-pch=%*}%V}}}}}", 0, 0, 0},
-diff -Nur gcc-4.5.0-vanilla/gcc/objcp/lang-specs.h gcc-4.5.0/gcc/objcp/lang-specs.h
---- gcc-4.5.0-vanilla/gcc/objcp/lang-specs.h	2007-08-02 12:38:44.000000000 +0200
-+++ gcc-4.5.0/gcc/objcp/lang-specs.h	2010-04-21 15:21:16.708817730 +0200
+diff -Nur gcc-4.5.1-vanilla/gcc/objcp/lang-specs.h gcc-4.5.1/gcc/objcp/lang-specs.h
+--- gcc-4.5.1-vanilla/gcc/objcp/lang-specs.h	2007-08-02 12:38:44.000000000 +0200
++++ gcc-4.5.1/gcc/objcp/lang-specs.h	2010-10-30 15:13:15.852989302 +0200
 @@ -36,7 +36,7 @@
  		%(cpp_options) %2 -o %{save-temps:%b.mii} %{!save-temps:%g.mii} \n}\
        cc1objplus %{save-temps|no-integrated-cpp:-fpreprocessed %{save-temps:%b.mii} %{!save-temps:%g.mii}}\
@@ -939,9 +761,9 @@ diff -Nur gcc-4.5.0-vanilla/gcc/objcp/lang-specs.h gcc-4.5.0/gcc/objcp/lang-spec
 -    cc1objplus -fpreprocessed %i %(cc1_options) %2 %{+e*}\
 +    cc1objplus -fpreprocessed %i %(cc1_options) %(esp_options) %2 %{+e*}\
      %{!fsyntax-only:%(invoke_as)}}}}", 0, 0, 0},
-diff -Nur gcc-4.5.0-vanilla/gcc/varasm.c gcc-4.5.0/gcc/varasm.c
---- gcc-4.5.0-vanilla/gcc/varasm.c	2010-03-27 12:56:30.000000000 +0100
-+++ gcc-4.5.0/gcc/varasm.c	2010-04-21 15:21:16.606812404 +0200
+diff -Nur gcc-4.5.1-vanilla/gcc/varasm.c gcc-4.5.1/gcc/varasm.c
+--- gcc-4.5.1-vanilla/gcc/varasm.c	2010-03-27 12:56:30.000000000 +0100
++++ gcc-4.5.1/gcc/varasm.c	2010-10-30 15:13:15.839995541 +0200
 @@ -5961,7 +5961,11 @@
    bool is_local;
  
@@ -955,9 +777,9 @@ diff -Nur gcc-4.5.0-vanilla/gcc/varasm.c gcc-4.5.0/gcc/varasm.c
      {
        if (is_local)
  	kind = TLS_MODEL_LOCAL_EXEC;
-diff -Nur gcc-4.5.0-vanilla/libgcc/Makefile.in gcc-4.5.0/libgcc/Makefile.in
---- gcc-4.5.0-vanilla/libgcc/Makefile.in	2010-03-30 15:08:52.000000000 +0200
-+++ gcc-4.5.0/libgcc/Makefile.in	2010-04-21 15:21:10.824811514 +0200
+diff -Nur gcc-4.5.1-vanilla/libgcc/Makefile.in gcc-4.5.1/libgcc/Makefile.in
+--- gcc-4.5.1-vanilla/libgcc/Makefile.in	2010-03-30 15:08:52.000000000 +0200
++++ gcc-4.5.1/libgcc/Makefile.in	2010-10-30 15:13:15.824991986 +0200
 @@ -291,6 +291,12 @@
  gen-hide-list = echo > \$@
  endif
@@ -985,9 +807,9 @@ diff -Nur gcc-4.5.0-vanilla/libgcc/Makefile.in gcc-4.5.0/libgcc/Makefile.in
  endif
  
  # Build extra startfiles in the libgcc directory.
-diff -Nur gcc-4.5.0-vanilla/libmudflap/configure gcc-4.5.0/libmudflap/configure
---- gcc-4.5.0-vanilla/libmudflap/configure	2009-12-05 18:18:53.000000000 +0100
-+++ gcc-4.5.0/libmudflap/configure	2010-04-21 15:21:09.843811773 +0200
+diff -Nur gcc-4.5.1-vanilla/libmudflap/configure gcc-4.5.1/libmudflap/configure
+--- gcc-4.5.1-vanilla/libmudflap/configure	2010-06-10 10:58:13.000000000 +0200
++++ gcc-4.5.1/libmudflap/configure	2010-10-30 15:13:15.768230485 +0200
 @@ -652,6 +652,7 @@
  MAINTAINER_MODE_FALSE
  MAINTAINER_MODE_TRUE
@@ -996,33 +818,31 @@ diff -Nur gcc-4.5.0-vanilla/libmudflap/configure gcc-4.5.0/libmudflap/configure
  am__tar
  AMTAR
  am__leading_dot
-diff -Nur gcc-4.5.0-vanilla/libmudflap/Makefile.in gcc-4.5.0/libmudflap/Makefile.in
---- gcc-4.5.0-vanilla/libmudflap/Makefile.in	2010-04-02 20:18:06.000000000 +0200
-+++ gcc-4.5.0/libmudflap/Makefile.in	2010-04-21 15:21:10.844815108 +0200
-@@ -304,10 +304,18 @@
+diff -Nur gcc-4.5.1-vanilla/libmudflap/Makefile.in gcc-4.5.1/libmudflap/Makefile.in
+--- gcc-4.5.1-vanilla/libmudflap/Makefile.in	2010-04-02 20:18:06.000000000 +0200
++++ gcc-4.5.1/libmudflap/Makefile.in	2010-10-30 15:13:15.826989769 +0200
+@@ -304,9 +304,17 @@
  MAINT_CHARSET = latin1
  SUBDIRS = testsuite
  
-+# Some stuff don't compile with PIE or SSP
++# Some stuff don't compile with SSP and FORTIFY_SOURCE
 +enable_esp = @enable_esp@
 +ifeq ($(enable_esp),yes)
-+NO_ESP_CFLAGS = -fno-stack-protector -U_FORTIFY_SOURCE
++	NO_ESP_CFLAGS = -fno-stack-protector -U_FORTIFY_SOURCE
 +else
-+NO_ESP_CFLAGS =
++	NO_ESP_CFLAGS =
 +endif
 +
  # May be used by various substitution variables.
  gcc_version := $(shell cat $(top_srcdir)/../gcc/BASE-VER)
 -AM_CFLAGS = -Wall $(SECTION_FLAGS)
--@LIBMUDFLAPTH_FALSE@libmudflapth = 
 +AM_CFLAGS = -Wall $(SECTION_FLAGS) $(NO_ESP_CFLAGS)
-+@LIBMUDFLAPTH_FALSE@libmudflapth =
+ @LIBMUDFLAPTH_FALSE@libmudflapth = 
  @LIBMUDFLAPTH_TRUE@libmudflapth = libmudflapth.la
  toolexeclib_LTLIBRARIES = libmudflap.la $(libmudflapth)
- libsubincludedir = $(libdir)/gcc/$(target_noncanonical)/$(gcc_version)/include
-diff -Nur gcc-4.5.0-vanilla/Makefile.in gcc-4.5.0/Makefile.in
---- gcc-4.5.0-vanilla/Makefile.in	2010-02-17 12:01:44.000000000 +0100
-+++ gcc-4.5.0/Makefile.in	2010-04-21 15:21:10.022812548 +0200
+diff -Nur gcc-4.5.1-vanilla/Makefile.in gcc-4.5.1/Makefile.in
+--- gcc-4.5.1-vanilla/Makefile.in	2010-06-10 19:05:59.000000000 +0200
++++ gcc-4.5.1/Makefile.in	2010-10-30 15:13:15.816979901 +0200
 @@ -350,9 +350,17 @@
  BUILD_PREFIX = @BUILD_PREFIX@
  BUILD_PREFIX_1 = @BUILD_PREFIX_1@

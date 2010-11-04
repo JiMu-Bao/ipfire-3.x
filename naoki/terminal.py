@@ -292,6 +292,11 @@ class Commandline(object):
 				# Package
 				Parser("package",
 					parsers=[
+						Parser("dependencies",
+							help="Show package dependencies.",
+							arguments=[
+								Argument("package", help="Name of the package."),
+							]),
 						Parser("info",
 							help="Show detailed information about given packages",
 							arguments=[

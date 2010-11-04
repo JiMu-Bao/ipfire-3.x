@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = gcc
 PKG_VER        = 4.5.1
-PKG_REL        = 0
+PKG_REL        = 2
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = Development/Compilers
@@ -178,4 +178,7 @@ define STAGE_INSTALL
 	-mkdir -pv $(BUILDROOT)/lib
 	ln -sfv ../usr/bin/cpp $(BUILDROOT)/lib/cpp
 	ln -sfv gcc $(BUILDROOT)/usr/bin/cc
+
+	# Remove some GNU debugger stuff.
+	rm -vf $(BUILDROOT)/usr/lib/lib*.py
 endef
