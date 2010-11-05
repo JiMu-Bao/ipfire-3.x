@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = sip
-PKG_VER        = 4.11.2
-PKG_REL        = 1
+PKG_VER        = 4.12-snapshot-12acbffd0085
+PKG_REL        = 0
 PKG_EPOCH      = 1
 
 PKG_MAINTAINER =
