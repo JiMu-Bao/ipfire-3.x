@@ -57,6 +57,7 @@ DIR_APP        = $(DIR_SRC)/PyQt-x11-gpl-$(PKG_VER)
 
 define STAGE_BUILD
 	cd $(DIR_APP) && python configure.py \
+		--assume-shared \
 		--confirm-license \
 		--verbose
 
