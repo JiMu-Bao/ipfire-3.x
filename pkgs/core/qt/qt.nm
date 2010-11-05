@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = qt
 PKG_VER        = 4.7.0
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
@@ -125,11 +125,4 @@ endef
 
 define STAGE_INSTALL
 	cd $(DIR_APP) && make install INSTALL_ROOT=$(BUILDROOT)
-	
-	# Remove libs for Qt designer
-	rm -rvf $(BUILDROOT)/usr/lib/libQtDesigner*
-	
-	# Remove translations for Qt assistant and designer
-	rm -rvf $(BUILDROOT)/usr/share/qt4/translations/assistant*
-	rm -rvf $(BUILDROOT)/usr/share/qt4/translations/designer*
 endef
