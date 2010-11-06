@@ -34,8 +34,8 @@ PKG_URL        = ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = A userspace implementation of devfs.
 
-PKG_BUILD_DEPS+= glib2-devel gperf kbd libacl-devel libusb-compat-devel \
-	pciutils pkg-config usbutils util-linux-ng-devel
+PKG_BUILD_DEPS+= glib2-devel gperf kbd libacl-devel libuuid-devel \
+	libusb-compat-devel pciutils pkg-config usbutils
 
 define PKG_DESCRIPTION
 	The udev package contains an implementation of devfs in userspace using \

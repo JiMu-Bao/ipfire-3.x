@@ -40,8 +40,8 @@ define PKG_DESCRIPTION
        feature set for virtualization.
 endef
 
-PKG_BUILD_DEPS+= gettext-devel openssl-devel python python-devel sdl-devel \
-	util-linux-ng-devel xorg-x11-proto-devel zlib-devel
+PKG_BUILD_DEPS+= gettext-devel libuuid-devel openssl-devel python python-devel \
+	sdl-devel xorg-x11-proto-devel zlib-devel
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
