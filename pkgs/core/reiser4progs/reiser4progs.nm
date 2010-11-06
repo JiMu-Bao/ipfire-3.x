@@ -35,7 +35,7 @@ PKG_LICENSE    = GPL
 PKG_SUMMARY    = Administration utilities for the Reiser4 filesystem.
 
 PKG_BUILD_DEPS+= autoconf automake e2fsprogs-devel libaal-devel libtool \
-	ncurses-devel readline-devel util-linux-ng-devel
+	libuuid-devel ncurses-devel readline-devel
 
 define PKG_DESCRIPTION
 	The filesystem utilities for the reiser4 filesystem, including: \
