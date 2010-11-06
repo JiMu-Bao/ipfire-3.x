@@ -34,8 +34,8 @@ PKG_URL        = http://oss.sgi.com/projects/xfs/
 PKG_LICENSE    = GPL+ and LGPLv2+
 PKG_SUMMARY    = Utilities for managing the XFS filesystem
 
-PKG_BUILD_DEPS+= libacl-devel e2fsprogs-devel libtool gettext readline-devel \
-	util-linux-ng-devel
+PKG_BUILD_DEPS+= e2fsprogs-devel gettext libacl-devel libblkid-devel libtool \
+	libuuid-devel readline-devel
 
 define PKG_DESCRIPTION
 	A set of commands to use the XFS filesystem, including mkfs.xfs.

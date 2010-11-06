@@ -34,8 +34,8 @@ PKG_URL        = http://www.gupnp.org
 PKG_LICENSE    = LGPL
 PKG_SUMMARY    = An UPNP framework.
 
-PKG_BUILD_DEPS+= glib2-devel gssdp-devel libsoup-devel libxml2-devel \
-	pkg-config util-linux-ng-devel
+PKG_BUILD_DEPS+= glib2-devel gssdp-devel libsoup-devel libuuid-devel \
+	libxml2-devel pkg-config
 
 define PKG_DESCRIPTION
 	GUPnP is an object-oriented open source framework for creating UPnP\
