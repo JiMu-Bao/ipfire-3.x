@@ -1,0 +1,8 @@
+description		"Starts the netplug daemon"
+author			"IPFire Team"
+
+start on started network
+stop on stopping network
+
+exec /sbin/netplugd -F
+respawn
