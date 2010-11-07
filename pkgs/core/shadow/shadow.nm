@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = shadow
 PKG_VER        = 4.1.4.2
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Base
@@ -34,7 +34,7 @@ PKG_URL        = ftp://pkg-shadow.alioth.debian.org/pub/pkg-shadow/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Utilities to deal with user accounts.
 
-PKG_BUILD_DEPS+= libcap
+PKG_BUILD_DEPS+= audit-devel libcap-devel libselinux-devel
 
 define PKG_DESCRIPTION
 	The shadow-utils package includes the necessary programs \
@@ -48,7 +48,7 @@ CONFIGURE_OPTIONS += \
 	--sysconfdir=/etc \
 	--enable-shadowgrp \
 	--with-sha-crypt \
-	--without-selinux \
+	--with-selinux \
 	--without-libcrack \
 	--without-libpam \
 	--disable-static

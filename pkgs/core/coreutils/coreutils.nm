@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = coreutils
 PKG_VER        = 8.5
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Base
@@ -40,7 +40,7 @@ define PKG_DESCRIPTION
 endef
 
 PKG_BUILD_DEPS+= autoconf automake libacl-devel libattr-devel libcap \
-	ncurses-devel e2fsprogs pam-devel
+	ncurses-devel e2fsprogs pam-devel libselinux-devel
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 

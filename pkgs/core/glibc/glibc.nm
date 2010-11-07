@@ -26,13 +26,15 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = glibc
 PKG_VER        = 2.12.1
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = System/Base
 PKG_URL        = http://sources.redhat.com/glibc/
 PKG_LICENSE    = GPLv2+ LGPLv2+
 PKG_SUMMARY    = The GNU libc libraries.
+
+PKG_BUILD_DEPS+= autoconf automake gettext libselinux-devel texinfo
 
 PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
 
@@ -226,7 +228,7 @@ define STAGE_BUILD
 			--disable-profile \
 			--enable-add-ons \
 			--enable-kernel=$(OPTIMIZED_KERNEL) \
-			--without-selinux \
+			--with-selinux \
 			--disable-werror \
 			--enable-bind-now \
 			--enable-stackguard-randomization \

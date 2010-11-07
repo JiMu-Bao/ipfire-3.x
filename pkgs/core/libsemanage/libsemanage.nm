@@ -24,41 +24,46 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = tar
-PKG_VER        = 1.23
-PKG_REL        = 1
+PKG_NAME       = libsemanage
+PKG_VER        = 2.0.45
+PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Packaging
-PKG_URL        = http://www.gnu.org/software/tar/
-PKG_LICENSE    = GPLv3+
-PKG_SUMMARY    = A GNU file archiving program.
+PKG_GROUP      = System/Libraries
+PKG_URL        = http://www.selinuxproject.org
+PKG_LICENSE    = LGPLv2+
+PKG_SUMMARY    = SELinux binary policy manipulation library.
 
-PKG_BUILD_DEPS+= autoconf automake libacl-devel libattr-devel libselinux-devel
+PKG_BUILD_DEPS+= bison flex libselinux-devel libsepol-devel \
+	python-devel swig ustr-devel
 
 define PKG_DESCRIPTION
-	The GNU tar program saves many files together in one archive \
-	and can restore individual files (or all of the files) from  \
-	that archive. Tar can also be used to add supplemental files \
-	to an archive and to update or list files in the archive. Tar \
-	includes multivolume support,automatic archive \
-	compression/decompression, the ability to perform remote archives, \
-	and the ability to perform incremental and full backups.
+	libsemanage provides an API for the manipulation of SELinux \
+	binary policies.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+PKG_TARBALL    = $(THISAPP).tgz
 
-CONFIGURE_ENVIRONMENT = CC="gcc -std=gnu99 -fgnu89-inline"
+PKG_PACKAGES  += $(PKG_NAME_REAL)-devel python-selinux-manage
 
-CONFIGURE_OPTIONS += \
-	--bindir=/bin \
-	--libexecdir=/usr/sbin
+# Package information for python-selinux-manage
+PKG_SUMMARY-python-selinux-manage =  SELinux manage python bindings.
+PKG_DESCRIPTION-selinux-manage = SELinux python bindings for libsemanage.
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -i /SIGPIPE/d src/tar.c
+define PKG_FILES-python-selinux-manage
+	/usr/lib/python*
 endef
 
-define STAGE_TEST
-	cd $(DIR_APP) && sed -i '35 i AT_UNPRIVILEGED_PREREQ' tests/remfiles01.at
-	cd $(DIR_APP) && make check
+define STAGE_BUILD
+	cd $(DIR_APP) && make clean
+	cd $(DIR_APP) && make CC=gcc LIBDIR="/usr/lib" CFLAGS="-g $(CFLAGS)" swigify
+	cd $(DIR_APP) && make CC=gcc LIBDIR="/usr/lib" CFLAGS="-g $(CFLAGS)" all
+	cd $(DIR_APP) && make CC=gcc LIBDIR="/usr/lib" CFLAGS="-g $(CFLAGS)" pywrap
+endef
+
+define STAGE_INSTALL_CMDS
+	cd $(DIR_APP) && make install-pywrap DESTDIR=$(BUILDROOT)
+	
+	# Install our config file
+	cp -vf $(DIR_SOURCE)/semanage.conf $(BUILDROOT)/etc/selinux/semanage.conf
 endef

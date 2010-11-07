@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = passwd
 PKG_VER        = 0.76
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Base
@@ -34,7 +34,8 @@ PKG_URL        = http://fedorahosted.org/passwd
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = An utility for setting or changing passwords using PAM.
 
-PKG_DEPS      += glib2 libuser pam
+PKG_BUILD_DEPS+= audit-devel glib2-devel libuser-devel pam-devel pkg-config \
+	libselinux-devel
 
 define PKG_DESCRIPTION
 	This package contains a system utility (passwd) which sets \
@@ -44,16 +45,12 @@ endef
 
 PKG_TARBALL    = $(THISAPP).tar.bz2
 
-###############################################################################
-# Installation Details
-###############################################################################
-
 define STAGE_BUILD
 	cd $(DIR_APP) && \
 		./configure \
 			--prefix=/usr \
-			--without-selinux \
-			--without-audit \
+			--with-selinux \
+			--with-audit \
 			--disable-static
 
 	cd $(DIR_APP) && make DEBUG= RPM_OPT_FLAGS="$(CFLAGS)" $(PARALLELISMFLAGS)

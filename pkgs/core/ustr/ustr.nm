@@ -24,41 +24,45 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = tar
-PKG_VER        = 1.23
-PKG_REL        = 1
+PKG_NAME       = ustr
+PKG_VER        = 1.0.4
+PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Packaging
-PKG_URL        = http://www.gnu.org/software/tar/
-PKG_LICENSE    = GPLv3+
-PKG_SUMMARY    = A GNU file archiving program.
+PKG_GROUP      = System/Libraries
+PKG_URL        = http://www.and.org/ustr/
+PKG_LICENSE    = MIT or LGPLv2+ or BSD
+PKG_SUMMARY    = String library, very low memory overhead, simple to import.
 
-PKG_BUILD_DEPS+= autoconf automake libacl-devel libattr-devel libselinux-devel
+PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
 
 define PKG_DESCRIPTION
-	The GNU tar program saves many files together in one archive \
-	and can restore individual files (or all of the files) from  \
-	that archive. Tar can also be used to add supplemental files \
-	to an archive and to update or list files in the archive. Tar \
-	includes multivolume support,automatic archive \
-	compression/decompression, the ability to perform remote archives, \
-	and the ability to perform incremental and full backups.
+	Micro string library, with very low overhead.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+PKG_TARBALL    = $(THISAPP).tar.bz2
 
-CONFIGURE_ENVIRONMENT = CC="gcc -std=gnu99 -fgnu89-inline"
+define PKG_FILES-$(PKG_NAME_REAL)-devel
+	/usr/bin
+	/usr/include
+	/usr/lib/pkgconfig
+	*/lib/*.so
+endef
 
-CONFIGURE_OPTIONS += \
-	--bindir=/bin \
-	--libexecdir=/usr/sbin
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -i /SIGPIPE/d src/tar.c
+
+define STAGE_BUILD
+	cd $(DIR_APP) && make all-shared CFLAGS="$(CFLAGS)" $(PARALELLISMFLAGS)
 endef
 
 define STAGE_TEST
-	cd $(DIR_APP) && sed -i '35 i AT_UNPRIVILEGED_PREREQ' tests/remfiles01.at
 	cd $(DIR_APP) && make check
 endef
+
+define STAGE_INSTALL_CMDS
+	rm -rf $(BUILDROOT)/usr/share
+	rm -rf $(BUILDROOT)/usr/lib/pkgconfig/*debug*
+	rm -rf $(BUILDROOT)/lib/*debug*
+	rm -rf $(BUILDROOT)/usr/lib/*debug*
+endef
+	
