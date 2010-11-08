@@ -183,6 +183,7 @@ function find_weak_symbols_provides() {
 
 		for symbol in $(objdump -p ${file} | grep -E "^[0-9]+" | awk '{ print $4 }'); do
 			[ "${symbol}" = "${soname}" ] && continue
+			[ "${symbol}" = "GLIBC_PRIVATE" ] && continue
 
 			echo "${soname}(${symbol})"
 		done
