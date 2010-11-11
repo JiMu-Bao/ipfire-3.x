@@ -26,7 +26,9 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = glibc
 PKG_VER        = 2.12.1
-PKG_REL        = 3
+PKG_REL        = 4
+
+# TODO tzdata
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = System/Base
@@ -35,8 +37,6 @@ PKG_LICENSE    = GPLv2+ LGPLv2+
 PKG_SUMMARY    = The GNU libc libraries.
 
 PKG_BUILD_DEPS+= autoconf automake gettext libselinux-devel texinfo
-
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
 
 define PKG_DESCRIPTION
 	The glibc package contains standard libraries which are used by \
@@ -48,7 +48,7 @@ define PKG_DESCRIPTION
 	Linux system will not function.
 endef
 
-GLIBC_FLAGS += -fno-strict-aliasing -mno-tls-direct-seg-refs
+GLIBC_FLAGS += -fno-strict-aliasing -mno-tls-direct-seg-refs -DNDEBUG
 
 CFLAGS   += $(GLIBC_FLAGS)
 CXXFLAGS += $(GLIBC_FLAGS)
@@ -279,8 +279,115 @@ define STAGE_INSTALL
 
 	# Configuration
 	cp -vf $(DIR_SOURCE)/{ld.so.conf,nsswitch.conf} $(BUILDROOT)/etc
-	-mkdir -pv $(BUILDROOT)/etc/ld.so.conf.d
+	-mkdir -pv $(BUILDROOT)/etc/{default,ld.so.conf.d}
+	install -p -m644 $(DIR_APP)/nis/nss $(BUILDROOT)/etc/default/nss
 
 	# Remove unused binaries
-	rm -vf $(BUILDROOT)/sbin/sln
+	rm -vf $(BUILDROOT)/sbin/sln \
+		$(BUILDROOT)/usr/bin/rpcinfo
+
+	# Don't distribute linker cache
+	rm -vf $(BUILDROOT)/etc/ld.so.cache
+
+	# Include /usr/lib/gconv/gconv-modules.cache
+	> $(BUILDROOT)/usr/lib/gconv/gconv-modules.cache
+	chmod 644 $(BUILDROOT)/usr/lib/gconv/gconv-modules.cache
+
+	strip -g $(BUILDROOT)/usr/lib/*.o
+
+	# Move some libs to correct place
+	mv -v $(BUILDROOT)/lib/lib{memusage,pcprofile}.so $(BUILDROOT)/usr/lib/
+endef
+
+### Packages
+
+# glibc-common
+PKG_PACKAGES  += $(PKG_NAME)-common
+PKG_DEPS      += $(PKG_NAME)-common
+
+define PKG_FILES-$(PKG_NAME)-common
+	/usr/bin
+	/usr/sbin
+	/usr/share
+	!/usr/share/zoneinfo
+endef
+
+# glibc-devel
+PKG_PACKAGES  += $(PKG_NAME)-devel
+
+PKG_SUMMARY-$(PKG_NAME)-devel = \
+	Object files for development using standard C libraries.
+PKG_GROUP-$(PKG_NAME)-devel = Development/Libraries
+PKG_DEPS-$(PKG_NAME)-devel += $(PKG_NAME)-headers
+
+define PKG_DESCRIPTION-$(PKG_NAME)-devel
+	The glibc-devel package contains the object files necessary
+	for developing programs which use the standard C libraries (which are
+	used by nearly all programs).  If you are developing programs which
+	will use the standard C libraries, your system needs to have these
+	standard object files available in order to create the
+	executables.
+
+	Install glibc-devel if you are going to develop programs which will
+	use the standard C libraries.
+endef
+
+PKG_FILES-$(PKG_NAME)-devel += /usr/lib/*.a /usr/lib/*.o
+
+# glibc-headers
+PKG_PACKAGES  += $(PKG_NAME)-headers
+
+PKG_DEPS-$(PKG_NAME)-headers += kernel-headers
+
+define PKG_DESCRIPTION-$(PKG_NAME)-heasders
+	The glibc-headers package contains the header files necessary
+	for developing programs which use the standard C libraries (which are
+	used by nearly all programs).  If you are developing programs which
+	will use the standard C libraries, your system needs to have these
+	standard header files available in order to create the
+	executables.
+
+	Install glibc-headers if you are going to develop programs which will
+	use the standard C libraries.
+endef
+
+define PKG_FILES-$(PKG_NAME)-headers
+	/usr/include
+	!/usr/include/linuxthreads
+	!/usr/include/gnu/stubs-[32164]*.h
+endef
+
+# nscd
+PKG_PACKAGES  += nscd
+
+PKG_SUMMARY-nscd = A Name Service Caching Daemon (nscd).
+PKG_GROUP-nscd   = System/Daemons
+
+define PKG_DESCRIPTION-nscd
+	Nscd caches name service lookups and can dramatically improve \
+	performance with NIS+, and may help with DNS as well.
+endef
+
+define PKG_FILES-nscd
+	/usr/sbin/nscd
+endef
+
+# glibc-utils
+PKG_PACKAGES  += $(PKG_NAME)-utils
+
+PKG_SUMMARY-$(PKG_NAME)-utils = Development utilities from GNU C library.
+PKG_GROUP-$(PKG_NAME)-utils   = Development/Tools
+define PKG_DESCRIPTION_$(PKG_NAME)-utils
+	The glibc-utils package contains memusage, a memory usage profiler, \
+	mtrace, a memory leak tracer and xtrace, a function call tracer \
+	which can be helpful during program debugging.
+endef
+
+define PKG_FILES-$(PKG_NAME)-utils
+	/usr/bin/memusage{,stat}
+	/usr/bin/mtrace
+	/usr/bin/pcprofiledump
+	/usr/bin/xtrace
+	/usr/lib/libmemusage.so
+	/usr/lib/libpcprofile.so
 endef
