@@ -210,5 +210,5 @@ function find_weak_symbols_requires() {
 			(START==2) && (LIBNAME!="") && ($4!="") && (($4~/^GLIBC_*/) || ($4~/^GCC_*/)) {
 			    print LIBNAME "(" $4 ")";
 			}'
-	done | sort -u
+	done | grep -v "GLIBC_PRIVATE" | sort -u
 }
