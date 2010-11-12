@@ -5,7 +5,7 @@
 DESC="Decompressing man-pages..."
 
 function check() {
-	for file in $(find ${BUILDROOT}/usr/share/man -type f); do
+	for file in $(find ${BUILDROOT}/usr/share/man -type f 2>/dev/null); do
 		log DEBUG "  Processing: ${file}"
 		if [[ ${file} =~ \.gz$ ]]; then
 			gzip -d ${file}
