@@ -132,7 +132,7 @@ function find_python_provides() {
 		file=${file#python}
 
 		if [ -n "${file}" ]; then
-			echo "python-api-${file}"
+			echo "python-api=${file}"
 		fi
 	done
 }
@@ -148,7 +148,7 @@ function find_python_requires() {
 			file=${file#python}
 
 			if [ -n "${file}" ]; then
-				echo "python-api-${file}"
+				echo "python-api=${file}"
 			fi
 		fi
 	done
