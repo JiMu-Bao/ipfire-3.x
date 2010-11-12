@@ -2,6 +2,7 @@
 
 import ConfigParser
 import fcntl
+import logging
 import os.path
 import random
 import sys
@@ -20,18 +21,27 @@ import util
 
 from constants import *
 
+# Initialize logging
+log = logger.Logging()
+
 class Naoki(object):
 	def __init__(self):
-		# First, setup the logging
-		self.logging = logger.Logging(self)
-		self.log = self.logging.log
-
 		# Second, parse the command line options
 		self.cli = terminal.Commandline(self)
 
-		self.log.debug("Successfully initialized naoki instance")
+		logging.debug("Successfully initialized naoki instance")
 		for k, v in config.items():
-			self.log.debug("    %s: %s" % (k, v))
+			logging.debug("    %s: %s" % (k, v))
+
+	def debug(self, state):
+		"""
+			Enable or disable debugging mode.
+		"""
+
+		# Set logging to debug mode
+		log.debug(state)
+
+		config.debug = state
 
 	def run(self):
 		args = self.cli.args

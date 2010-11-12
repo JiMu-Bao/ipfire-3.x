@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
+import logging
 import sys
+
 import naoki
 
 # silence Python 2.6 buggy warnings about Exception.message
@@ -24,6 +26,6 @@ except (SystemExit,):
 
 except (KeyboardInterrupt,):
 	exitStatus = 7
-	n.log.error("Exiting on user interrupt, <CTRL>-C")
+	logging.error("Exiting on user interrupt, <CTRL>-C")
 
 sys.exit(exitStatus)

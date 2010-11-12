@@ -96,7 +96,6 @@ class Config(object):
 		"disto_vendor"    : "unknown",
 		#
 		# Logging
-		"log_config_file" : os.path.join(CONFIGDIR, "logging.ini"),
 		"log_file"        : os.path.join(LOGDIR, "naoki.log"),
 		#
 		# Reporting

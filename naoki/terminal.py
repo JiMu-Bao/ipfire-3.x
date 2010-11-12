@@ -257,12 +257,8 @@ class Commandline(object):
 		self.__process_global(self.args)
 
 	def __process_global(self, args):
-		# Set quiet mode
-		self.naoki.logging.quiet(args.quiet)
-
 		# Set debugging mode
-		config.debug = args.debug
-		self.naoki.logging.debug(args.debug)
+		self.naoki.debug(args.debug)
 
 		# Set architecture
 		arches.set_default(args.arch)

@@ -2,7 +2,6 @@
 
 import curses
 import logging
-import logging.config
 import logging.handlers
 import sys
 import time
@@ -13,77 +12,45 @@ logging.raiseExceptions = 0
 from constants import *
 
 class Logging(object):
-	def __init__(self, naoki):
-		self.naoki = naoki
-
-		self.setup()
-
-	def setup(self):
+	def __init__(self):
 		self.log = logging.getLogger()
+		self.log.setLevel(logging.NOTSET)
 
-		log_ini = config["log_config_file"]
-		if os.path.exists(log_ini):
-			logging.config.fileConfig(log_ini)
+		# Initialize console
+		ch = self.console
+		ch.setLevel(logging.INFO)
 
 		if sys.stderr.isatty():
 			curses.setupterm()
-			self.log.handlers[0].setFormatter(_ColorLogFormatter())
+			ch.setFormatter(_ColorLogFormatter())
+		else:
+			ch.setFormatter(logging.Formatter("[%(levelname)s] %(message)s"))
+		self.log.addHandler(ch)
 
-		# Set default configuration
-		self.quiet(config["quiet"])
-
-		self.log.handlers[0].setLevel(logging.DEBUG)
-		logging.getLogger("naoki").propagate = 1
-
+		# Initialize log file
 		if not os.path.isdir(LOGDIR):
 			os.makedirs(LOGDIR)
 		fh = logging.handlers.RotatingFileHandler(config["log_file"],
 			maxBytes=10*1024**2, backupCount=6)
 		fh.setFormatter(logging.Formatter("[%(levelname)s] %(message)s"))
-		fh.setLevel(logging.NOTSET)
+		fh.setLevel(logging.DEBUG)
 		self.log.addHandler(fh)
-
-	def quiet(self, val):
-		if val:
-			self.log.debug("Enabled quiet logging mode")
-			self.log.handlers[0].setLevel(logging.WARNING)
-		else:
-			#self.log.debug("Enabled verbose logging mode")
-			self.log.handlers[0].setLevel(logging.INFO)
 
 	def debug(self, val):
 		if val:
-			self.log.handlers[0].setLevel(logging.DEBUG)
+			self.console.setLevel(logging.DEBUG)
 			self.log.debug("Enabled debug logging mode")
 		else:
 			self.log.debug("Disabled debug logging mode")
-			self.log.handlers[0].setLevel(logging.INFO)
+			self.console.setLevel(logging.INFO)
 
-	def _setupBuildLogger(self, logger, package):
-		logger.setLevel(logging.DEBUG)
-		logger.parent = self.log
-		logger.propagate = 1
+	@property
+	def console(self):
+		console = self.log.handlers[0]
 
-		logfile = package.logfile
-		logdir  = os.path.dirname(logfile)
+		assert isinstance(console, logging.StreamHandler)
 
-		if not os.path.exists(logdir):
-			os.makedirs(logdir)
-
-		handler = logging.handlers.RotatingFileHandler(logfile,
-			maxBytes=10*1024**2, backupCount=5)
-
-		formatter = logging.Formatter("[BUILD] %(message)s")
-		handler.setFormatter(formatter)
-
-		logger.addHandler(handler)
-
-	def getBuildLogger(self, package):
-		logger = logging.getLogger(package.id)
-		if not logger.handlers:
-			self._setupBuildLogger(logger, package)
-
-		return logger
+		return console
 
 
 # defaults to module verbose log
