@@ -4,6 +4,7 @@ import grp
 import logging
 import os
 import stat
+import time
 
 import logger
 import mail
@@ -322,6 +323,9 @@ class Build(_Environment):
 		return v
 
 	def build(self, *args, **kwargs):
+		# Save starting time
+		time_start = time.time()
+
 		try:
 			self.make("package")
 		except:
@@ -335,6 +339,9 @@ class Build(_Environment):
 			# Send email report about an error
 			mail.report_error(self.package)
 			raise
+
+		# Log time that was needed to build the package
+		self.logger.info("Build time: %.2fs" % (time.time() - time_start))
 
 		if config["cleanup_on_success"]:
 			self.clean()
