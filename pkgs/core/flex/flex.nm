@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = flex
 PKG_VER        = 2.5.35
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Development/Tools
@@ -34,10 +34,8 @@ PKG_URL        = http://flex.sourceforge.net/
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = A tool for creating scanners (text pattern recognizers).
 
-PKG_BUILD_DEPS+= bison m4
+PKG_BUILD_DEPS+= bison gcc-c++ m4
 PKG_DEPS      += m4
-
-# XXX possibly we can remove libfl_pic and things in /usr/include
 
 define PKG_DESCRIPTION
 	The flex program generates scanners. Scanners are programs which can \
@@ -64,4 +62,6 @@ define STAGE_INSTALL_CMDS
 	echo "#!/bin/sh"			>  $(BUILDROOT)/usr/bin/lex
 	echo "exec /usr/bin/flex -l \"$$@\""	>> $(BUILDROOT)/usr/bin/lex
 	chmod 755 $(BUILDROOT)/usr/bin/lex
+
+	rm -rvf $(BUILDROOT)/usr/{include,lib}
 endef
