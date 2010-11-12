@@ -282,9 +282,26 @@ class Build(_Environment):
 
 		_Environment.__init__(self, self.package.arch)
 
+		self._logger = None
+
 	@property
 	def logger(self):
-		return logging.getLogger() # XXX just for now
+		if not self._logger:
+			logfile = os.path.join(LOGDIR, self.package.repository.name,
+				self.package.name, self.package.id + ".log")
+
+			# Ensure that logging directory exists
+			util.mkdir(os.path.dirname(logfile))
+
+			self._logger = logging.getLogger(self.package.id)
+
+			fh = logging.FileHandler(logfile)
+			fh.setFormatter(logging.Formatter("%(message)s"))
+			fh.setLevel(logging.NOTSET)
+
+			self._logger.addHandler(fh)
+
+		return self._logger
 
 	def chrootPath(self, *args):
 		return os.path.join(BUILDDIR, "environments", self.package.id, *args)
