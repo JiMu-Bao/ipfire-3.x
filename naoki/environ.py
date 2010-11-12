@@ -39,7 +39,7 @@ class _Environment(object):
 		}
 		self._settings.update(settings)
 
-		logging.debug("Successfully initialized %s" % self)
+		self.logger.debug("Successfully initialized %s" % self)
 
 		# XXX check if already locked
 		self.prepare()
@@ -48,14 +48,14 @@ class _Environment(object):
 		raise NotImplementedError
 
 	def clean(self):
-		logging.debug("Cleaning environment %s" % self)
+		self.logger.debug("Cleaning environment %s" % self)
 		if os.path.exists(self.chrootPath()):
 			util.rm(self.chrootPath())
 	
 	def prepare(self):
 		self.clean()
 
-		logging.debug("Preparing environment %s" % self)
+		self.logger.debug("Preparing environment %s" % self)
 
 		dirs = (
 			CACHEDIR,
@@ -155,20 +155,20 @@ class _Environment(object):
 				nameservers.append(line.split(" ")[-1].strip())
 		f.close()
 
-		logging.debug("Using nameservers: %s" % nameservers)
+		self.logger.debug("Using nameservers: %s" % nameservers)
 
 		f = open(self.chrootPath("etc", "resolv.conf"), "w")
 		for nameserver in nameservers:
 			f.write("nameserver %s" % nameserver)
 		f.close()
 
-		logging.debug("Creating record for localhost")
+		self.logger.debug("Creating record for localhost")
 		f = open(self.chrootPath("etc", "hosts"), "w")
 		f.write("127.0.0.1 localhost\n")
 		f.close()
 
 	def extract(self, package, *args):
-		logging.info("Extracting %s" % package)
+		self.logger.info("Extracting %s" % package)
 
 		package.extract(self.chrootPath(*args))
 
@@ -222,12 +222,12 @@ class _Environment(object):
 		return ret
 
 	def _mountall(self):
-		logging.debug("Mounting environment")
+		self.logger.debug("Mounting environment")
 		for cmd in self.mountCmds:
 			util.do(cmd, shell=True)
 
 	def _umountall(self):
-		logging.debug("Umounting environment")
+		self.logger.debug("Umounting environment")
 		for cmd in self.umountCmds:
 			util.do(cmd, raiseExc=0, shell=True)
 
@@ -283,11 +283,9 @@ class Build(_Environment):
 
 		_Environment.__init__(self, self.package.arch)
 
-		self._logger = None
-
 	@property
 	def logger(self):
-		if not self._logger:
+		if not hasattr(self, "_logger"):
 			logfile = os.path.join(LOGDIR, self.package.repository.name,
 				self.package.name, self.package.id + ".log")
 
