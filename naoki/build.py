@@ -70,41 +70,6 @@ class Build(object):
 		e.build()
 
 
-class Jobs(object):
-	def __init__(self):
-		self.__jobs = []
-		self.__error_jobs = []
-
-		logging.debug("Initialized jobs queue")
-
-	def __len__(self):
-		return len(self.__jobs)
-
-	def add(self, job):
-		assert isinstance(job, Build)
-
-		self.__jobs.append(job)
-
-	@property
-	def all(self):
-		return self.__jobs[:]
-
-	@property
-	def has_jobs(self):
-		return self.__jobs != []
-
-	def process_next(self):
-		if not self.__jobs:
-			return
-
-		job = self.__jobs[0]
-
-		try:
-			job.build()
-		finally:
-			self.__jobs.remove(job)
-
-
 class PackageShell(Build):
 	def __init__(self, *args, **kwargs):
 		Build.__init__(self, *args, **kwargs)

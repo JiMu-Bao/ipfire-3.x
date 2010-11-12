@@ -76,25 +76,17 @@ class Naoki(object):
 		# Source repository
 		repo = self._get_source_repos()
 
-		# Initialize job queue
-		jobs = build.Jobs()
-
 		config["shell_on_failure"] = args.shell
 
-		if args.all:
-			raise Exception, "XXX to be implemented"
-		else:
-			for name in args.packages:
-				p = repo.find_package_by_name(name)
-				if not p:
-					raise Exception, "Could not find package: %s" % name
+		package = repo.find_package_by_name(args.package)
+		if not package:
+			raise Exception, "Could not find package: %s" % name
 
-				p = build.Build(p, ignore_dependency_errors=args.ignore_dependency_errors)
-				jobs.add(p)
+		# We found a package... build it:
+		b = build.Build(package,
+				ignore_dependency_errors=args.ignore_dependency_errors)
 
-		#return builder.run(ignore_dependency_errors=args.ignore_dependency_errors)
-		while jobs.has_jobs:
-			jobs.process_next()
+		b.build()
 
 	def call_package(self, args):
 		if not args.has_key("action"):

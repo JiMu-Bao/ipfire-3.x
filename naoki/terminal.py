@@ -282,7 +282,7 @@ class Commandline(object):
 						Option("ignore_dependency_errors", ["-i", "--ignore-dependency-errors"],
 							help="Ignore dependency errors."),
 						Option("shell", ["-s", "--shell"], help="Enter a shell after unsuccessfull build."),
-						List("packages", help="Give a list of packages to build."),
+						Argument("package", help="Name of a package to build."),
 					]),
 
 				# Package
