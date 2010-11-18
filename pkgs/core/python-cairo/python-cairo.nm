@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = python-cairo
 PKG_VER        = 1.8.10
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUP      = Development/Tools
@@ -44,3 +44,6 @@ PKG_TARBALL    = py2cairo-$(PKG_VER).tar.gz
 DIR_APP        = $(DIR_SRC)/pycairo-$(PKG_VER)
 
 PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
+
+# The development headers need the cairo headers.
+PKG_DEPS-$(PKG_NAME_REAL)-devel += cairo-devel
