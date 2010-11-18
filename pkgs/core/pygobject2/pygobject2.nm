@@ -1,0 +1,59 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = pygobject2
+PKG_VER        = 2.27.0
+PKG_REL        = 0
+
+PKG_MAINTAINER =
+PKG_GROUP      = Development/Tools
+PKG_URL        = http://www.pygtk.org/
+PKG_LICENSE    = LGPLv2+
+PKG_SUMMARY    = Python 2 bindings for GObject.
+
+PKG_BUILD_DEPS+= autoconf automake glib2-devel gobject-introspection-devel \
+	libffi-devel libtool pkg-config python-cairo-devel python-devel
+
+define PKG_DESCRIPTION
+	The $(PKG_NAME) package provides a convenient wrapper for the GObject library \
+	for use in Python programs.
+endef
+
+PKG_TARBALL    = pygobject-$(PKG_VER).tar.gz
+DIR_APP        = $(DIR_SRC)/pygobject-$(PKG_VER)
+
+define STAGE_PREPARE_CMDS
+	cd $(DIR_APP) && find -name '*.py' | xargs sed -i "1s|^#!python|#!$(shell which python)|"
+endef
+
+PKG_PACKAGES  += $(PKG_NAME_REAL)-codegen $(PKG_NAME_REAL)-devel
+
+define PKG_FILES-$(PKG_NAME_REAL)-codegen
+	/usr/bin/pygobject-codegen-2.0
+	/usr/share/pygobject/2.0/codegen
+endef
+
+PKG_DEPS-$(PKG_NAME_REAL)-devel += glib2-devel $(PKG_NAME_REAL)-codegen
