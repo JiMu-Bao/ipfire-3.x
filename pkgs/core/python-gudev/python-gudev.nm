@@ -1,0 +1,52 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = python-gudev
+PKG_VER        = 147.1
+PKG_REL        = 1
+
+PKG_MAINTAINER =
+PKG_GROUP      = Development/Tools
+PKG_URL        = http://flex.sourceforge.net/
+PKG_LICENSE    = LGPLv3+
+PKG_SUMMARY    = Python (PyGObject) bindings to the GUDev library.
+
+PKG_BUILD_DEPS+= autoconf automake libtool libudev-devel pkg-config \
+	pygobject2-devel python-devel
+PKG_DEPS      += pygobject2
+
+define PKG_DESCRIPTION
+	python-gudev is a Python (PyGObject) binding to the GUDev UDEV library.
+endef
+
+PKG_TARBALL    = nzjrs-python-gudev-$(PKG_VER)-0-gcb29211.tar.gz
+DIR_APP        = $(DIR_SRC)/nzjrs-python-gudev-5fac65a
+
+define STAGE_PREPARE_CMDS
+	cd $(DIR_APP) && ./autogen.sh
+endef
+
+export CFLAGS += -I$(wildcard /usr/include/pygtk*)
