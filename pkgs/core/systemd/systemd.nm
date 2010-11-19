@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = systemd
-PKG_VER        = 20100513
+PKG_VER        = 12
 PKG_REL        = 0
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -34,17 +34,16 @@ PKG_URL        = http://www.freedesktop.org/wiki/Software/systemd
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = systemd is a System and Session Manager.
 
-PKG_BUILD_DEPS+= autoconf automake pkg-config vala
-PKG_DEPS      += dbus dbus-glib libcap libcgroup udev
+PKG_BUILD_DEPS+= autoconf automake dbus-devel dbus-glib-devel \
+	libcap-devel libcgroup-devel libudev-devel libtool \
+	pkg-config vala vala-devel
 
 define PKG_DESCRIPTION
 	systemd is a replacement of the old sysvinit and provides also \
 	a Session Manager for it's started services.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.gz
-
-DIR_APP = $(DIR_SRC)/systemd
+PKG_TARBALL    = $(THISAPP).tar.bz2
 
 define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && ./bootstrap.sh ac
@@ -55,4 +54,4 @@ CONFIGURE_OPTIONS += \
 	--sysconfdir=/etc \
 	--libexecdir=/usr/lib \
 	--disable-gtk \
-	--with-distro=none
+	--with-distro=other
