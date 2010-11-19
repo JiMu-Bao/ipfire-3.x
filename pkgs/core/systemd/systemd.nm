@@ -49,6 +49,10 @@ define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && ./bootstrap.sh ac
 endef
 
+define STAGE_CONFIGURE_CMDS
+	cd $(DIR_APP) && patch -Np1 -i $(DIR_SOURCE)/*.patch
+endef
+
 CONFIGURE_OPTIONS += \
 	--sbindir=/sbin \
 	--sysconfdir=/etc \
