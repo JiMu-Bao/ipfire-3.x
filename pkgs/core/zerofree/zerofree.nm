@@ -1,0 +1,63 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = zerofree
+PKG_VER        = 1.0.1
+PKG_REL        = 1
+
+PKG_MAINTAINER =
+PKG_GROUP      = Filesystem/Tools
+PKG_URL        = http://intgat.tigress.co.uk/rmy/uml/
+PKG_LICENSE    = GPL+
+PKG_SUMMARY    = Utility to force unused ext2 inodes and blocks to zero.
+
+PKG_BUILD_DEPS+= e2fsprogs-devel
+
+define PKG_DESCRIPTION
+	zerofree is a utility to set unused filesystem inodes and blocks of an
+	ext2 filesystem to zero.  This can improve the compressibility and
+	privacy of an ext2 filesystem.
+
+	This tool was inspired by the ext2fs privacy (i.e. secure deletion)
+	patch described in a Linux kernel mailing list thread.
+
+	WARNING: The filesystem to be processed should be unmounted or mounted
+	read-only. The tool tries to check this before running, but you
+	should be careful.
+endef
+
+PKG_TARBALL    = $(THISAPP).tgz
+
+define STAGE_BUILD
+	cd $(DIR_APP) && make $(PARALLELISMFLAGS) \
+		CC="gcc $(CFLAGS)"
+endef
+
+define STAGE_INSTALL
+	-mkdir -pv $(BUILDROOT)/usr/sbin
+	cd $(DIR_APP) && install -D -p -m 755 zerofree \
+		$(BUILDROOT)/usr/sbin
+endef
