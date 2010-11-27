@@ -123,6 +123,9 @@ function _ext3fs_resize() {
 
 	e2fsck -f -y ${device}
 	resize2fs ${device} ${size}
+
+	# Resparse after every resize operation
+	_ext3fs_resparse ${device}
 }
 
 function _ext3fs_sparse() {
@@ -135,16 +138,8 @@ function _ext3fs_sparse() {
 
 function _ext3fs_resparse() {
 	local file=${1}
-	local device=${2}
 
-	local size=$(stat --format="%s" ${file})
-
-	# Shrink FS to minimal size
-	_ext3fs_resize ${device}
-	truncate -s $(_ext3fs_bytes ${device}) ${file}
-
-	_ext3fs_sparse ${file} ${size}
-	_ext3fs_resize ${device} ${size}
+	zerofree ${file}
 }
 
 function _installer_image_ext3fs() {
@@ -180,9 +175,9 @@ function _installer_image_ext3fs() {
 	cp -frp ${dir}/* ${tmp_dir}
 	umount ${tmp_dir}
 
-	#_ext3fs_resparse ${file} ${loop}
-
 	losetup -d ${loop}
+
+	_ext3fs_resparse ${file}
 
 	rm -rf ${tmp_dir}
 }

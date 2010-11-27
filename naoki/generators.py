@@ -32,6 +32,7 @@ class Generator(_Environment):
 			"squashfs-tools",
 			"syslinux",
 			"util-linux-ng",
+			"zerofree",
 			"/sbin/dmsetup",
 			"/usr/bin/mkisofs",
 		]
