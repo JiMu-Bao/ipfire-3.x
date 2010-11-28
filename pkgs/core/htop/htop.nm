@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = htop
 PKG_VER        = 0.9
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Applications/System
@@ -42,6 +42,9 @@ define PKG_DESCRIPTION
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
+
+CONFIGURE_OPTIONS += \
+	--sysconfdir=/etc
 
 define STAGE_INSTALL_CMDS
 	rm -rf $(BUILDROOT)/usr/share/{applications,pixmaps}
