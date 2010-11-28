@@ -103,7 +103,7 @@ class DependencySet(object):
 		for package in self._items:
 			if package.name == item.name:
 				if item > package:
-					logging.update("Replacing package %s by %s" % (package, item))
+					logging.debug("Replacing package %s by %s" % (package, item))
 					self._items.remove(package)
 					break
 
