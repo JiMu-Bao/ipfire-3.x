@@ -3,7 +3,13 @@
 for patch in $@; do
 	echo "Applying file ${patch}..."
 
-	patch -Np1 -i ${patch}
+	if [ "${patch##*/*.}" = "patch0" ]; then
+		cmd="patch -Np0"
+	else
+		cmd="patch -Np1"
+	fi
+
+	${cmd} -i ${patch}
 	ret=$?
 
 	if [ ${ret} -ne 0 ]; then
