@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = vim
-PKG_VER        = 7.2
+PKG_VER        = 7.3
 PKG_REL        = 0
 
 PKG_MAINTAINER =
@@ -44,7 +44,7 @@ endef
 
 PKG_TARBALL    = $(THISAPP).tar.bz2
 
-DIR_APP        = $(DIR_SRC)/$(PKG_NAME)72
+DIR_APP        = $(DIR_SRC)/$(PKG_NAME)73
 
 CONFIGURE_OPTIONS += --enable-multibyte
 
