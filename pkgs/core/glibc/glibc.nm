@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = glibc
 PKG_VER        = 2.12.2
-PKG_REL        = 1
+PKG_REL        = 2
 
 # TODO tzdata
 
@@ -36,7 +36,8 @@ PKG_URL        = http://sources.redhat.com/glibc/
 PKG_LICENSE    = GPLv2+ LGPLv2+
 PKG_SUMMARY    = The GNU libc libraries.
 
-PKG_BUILD_DEPS+= autoconf automake gettext libselinux-devel texinfo
+PKG_BUILD_DEPS+= audit-devel autoconf automake gettext libcap-devel \
+	libselinux-devel texinfo
 
 define PKG_DESCRIPTION
 	The glibc package contains standard libraries which are used by \
