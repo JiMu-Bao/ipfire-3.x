@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = pango
 PKG_VER        = 1.28.3
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
@@ -36,6 +36,8 @@ PKG_SUMMARY    = System for layout and rendering of internationalized text.
 
 PKG_BUILD_DEPS+= cairo-devel fontconfig-devel gcc-c++ glib2-devel perl \
 	pkg-config
+
+PKG_DEPS-$(PKG_NAME)-devel += glib2-devel
 
 define PKG_DESCRIPTION
 	Pango is a library for laying out and rendering of text, with an \
