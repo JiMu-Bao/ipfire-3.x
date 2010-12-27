@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = upstart
-PKG_VER        = 0.6.6
-PKG_REL        = 1
+PKG_VER        = 0.6.7
+PKG_REL        = 0
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUP      = System/Base

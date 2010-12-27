@@ -25,12 +25,12 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = vim
-PKG_VER        = 7.2
+PKG_VER        = 7.3
 PKG_REL        = 0
 
 PKG_MAINTAINER =
 PKG_GROUP      = Applications/Editors
-PKG_URL        = http://flex.sourceforge.net/
+PKG_URL        = http://www.vim.org
 PKG_LICENSE    = PublicDomain/Charityware
 PKG_SUMMARY    = Very feature- and powerful editor.
 
@@ -44,7 +44,7 @@ endef
 
 PKG_TARBALL    = $(THISAPP).tar.bz2
 
-DIR_APP        = $(DIR_SRC)/$(PKG_NAME)72
+DIR_APP        = $(DIR_SRC)/$(PKG_NAME)73
 
 CONFIGURE_OPTIONS += --enable-multibyte
 
@@ -58,4 +58,7 @@ define STAGE_INSTALL_CMDS
 	# Install configuration
 	-mkdir -pv $(BUILDROOT)/etc
 	cp -vf $(DIR_SOURCE)/vimrc $(BUILDROOT)/etc/vimrc
+
+	# Remove script for c-shell
+	rm -rf $(BUILDROOT)/usr/share/vim/vim73/tools/vim132
 endef

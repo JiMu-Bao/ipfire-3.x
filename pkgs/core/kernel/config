@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.36
-# Wed Dec  8 22:53:03 2010
+# Mon Dec 13 01:18:10 2010
 #
 # CONFIG_64BIT is not set
 CONFIG_X86_32=y
@@ -3668,7 +3668,7 @@ CONFIG_NLS_UTF8=y
 # Kernel hacking
 #
 CONFIG_TRACE_IRQFLAGS_SUPPORT=y
-# CONFIG_PRINTK_TIME is not set
+CONFIG_PRINTK_TIME=y
 # CONFIG_ENABLE_WARN_DEPRECATED is not set
 # CONFIG_ENABLE_MUST_CHECK is not set
 CONFIG_FRAME_WARN=1024
