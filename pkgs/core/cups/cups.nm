@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = cups
 PKG_VER        = 1.4.5
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUP      = Applications/Printing
@@ -73,4 +73,8 @@ define STAGE_INSTALL
 
 	-mkdir -pv $(BUILDROOT)/etc/cups
 	cp -vf $(DIR_APP)/conf/cupsd.conf $(BUILDROOT)/etc/cups/
+
+	# Logrotate
+	-mkdir -pv $(BUILDROOT)/etc/logrotate.d/
+	cp -vf $(DIR_SOURCE)/cups.logrotate $(BUILDROOT)/etc/logrotate.d/cups 
 endef
