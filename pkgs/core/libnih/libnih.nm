@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = libnih
-PKG_VER        = 1.0.2
+PKG_VER        = 1.0.3
 PKG_REL        = 0
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -34,7 +34,7 @@ PKG_URL        = https://launchpad.net/libnih
 PKG_LICENSE    = GPL2+
 PKG_SUMMARY    = Small library with advanced functions.
 
-PKG_BUILD_DEPS+= dbus-devel pkg-config
+PKG_BUILD_DEPS+= dbus-devel expat-devel pkg-config
 
 define PKG_DESCRIPTION
 	libnih is a small library for C application development containing \
@@ -49,8 +49,7 @@ PKG_PACKAGES  += $(PKG_NAME)-devel
 CONFIGURE_OPTIONS += \
         --libdir=/lib
 
-# Testsuite fails
-# Testing nih_child_poll() ...with exec by traced child hangs forever.
+# Testsuite still fails - 3 tests fail
 #define STAGE_TEST
 #	cd $(DIR_APP) && make check
 #endef
