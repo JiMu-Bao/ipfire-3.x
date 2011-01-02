@@ -2,7 +2,7 @@ description		"Starts the free RADIUS server"
 author			"IPFire Team"
 
 start on started network
-stop on starting shutdown
+stop on kill-all-network-services or stopping network
 
 exec /usr/sbin/radiusd -f
 respawn
