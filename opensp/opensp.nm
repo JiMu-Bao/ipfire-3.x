@@ -1,0 +1,44 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = opensp
+version    = 1.5.2
+release    = 1
+
+groups     = Application/Text
+url        = http://openjade.sourceforge.net/
+license    = MIT
+summary    = SGML and XML parser.
+
+description
+	OpenSP is an implementation of the ISO/IEC 8879:1986 standard SGML
+	(Standard Generalized Markup Language).
+end
+
+source_dl = http://downloads.sourceforge.net/project/%{name}/%{name}/%{thisapp}
+
+thisapp = OpenSP-%{version}
+
+build
+	requires
+		gcc-c++
+	end
+
+	configure_options += \
+		--disable-dependency-tracking \
+		--disable-static \
+		--disable-rpath \
+		--disable-doc-build \
+		--enable-default-catalog=/etc/sgml/catalog \
+		--enable-default-search-path=/usr/share/sgml:/usr/share/xml
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+end
