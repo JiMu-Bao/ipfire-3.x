@@ -2,7 +2,7 @@ description		"OpenSSH Server"
 author			"IPFire Team"
 
 start on started network
-stop on stopping network
+stop on kill-all-network-services or stopping network
 
 pre-start script
 	for algo in dsa rsa; do
