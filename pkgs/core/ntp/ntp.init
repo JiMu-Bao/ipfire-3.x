@@ -2,7 +2,7 @@ description		"Start system time daemon"
 author			"IPFire Team"
 
 start on started network
-stop on stopping network
+stop on kill-all-network-services or stopping network
 
 exec /usr/sbin/ntpd -4 -n -c /etc/ntp.conf
 respawn

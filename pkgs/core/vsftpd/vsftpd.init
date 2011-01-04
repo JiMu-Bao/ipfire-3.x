@@ -2,7 +2,7 @@ description             "Very secure FTP daemon"
 author                  "IPFire Team"
 
 start on started network
-stop on stopping network
+stop on kill-all-network-services or stopping network
 
 exec /usr/bin/vsftpd /etc/vsftpd/vsftpd.conf -obackground=NO
 expect daemon
