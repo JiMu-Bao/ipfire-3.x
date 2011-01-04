@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = flex
 PKG_VER        = 2.5.35
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUP      = Development/Tools
@@ -51,6 +51,8 @@ endef
 
 PKG_TARBALL    = $(THISAPP).tar.bz2
 
+PKG_PACKAGES  += $(PKG_NAME)-devel
+
 CONFIGURE_OPTIONS += \
 	--mandir=/usr/share/man
 
@@ -62,6 +64,4 @@ define STAGE_INSTALL_CMDS
 	echo "#!/bin/sh"			>  $(BUILDROOT)/usr/bin/lex
 	echo "exec /usr/bin/flex -l \"$$@\""	>> $(BUILDROOT)/usr/bin/lex
 	chmod 755 $(BUILDROOT)/usr/bin/lex
-
-	rm -rvf $(BUILDROOT)/usr/{include,lib}
 endef
