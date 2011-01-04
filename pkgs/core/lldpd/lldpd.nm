@@ -34,7 +34,7 @@ PKG_URL        = https://trac.luffy.cx/lldpd/
 PKG_LICENSE    = GPL
 PKG_SUMMARY    = Utilities for the Link Layer Discovery Protocol.
 
-PKG_DEPS      += libxml2
+PKG_BUILD_DEPS+= libxml2-devel pkg-config
 
 define PKG_DESCRIPTION
 	The LLDPD project aims to provide a comprehensive implementation of \
