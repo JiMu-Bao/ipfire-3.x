@@ -51,10 +51,6 @@ PKG_TARBALL    = $(THISAPP).tar.gz
 PKG_PACKAGES   = $(PKG_NAME_REAL)-devel $(PKG_NAME_REAL)-utils \
 	$(PKG_NAME_REAL) $(PKG_NAME_REAL)-cxx
 
-# Add a shortcut to be compatible to older versions of this package.
-# At some time this will only be called db4-devel.
-PKG_PROVIDES-$(PKG_NAME_REAL)-devel += db-devel
-
 PKG_FILES                        = /usr/lib/libdb-$(PKG_VER_MAJ).so
 PKG_FILES-$(PKG_NAME_REAL)-cxx   = /usr/lib/libdb_cxx-$(PKG_VER_MAJ).so
 PKG_FILES-$(PKG_NAME_REAL)-devel = /usr/include /usr/lib
