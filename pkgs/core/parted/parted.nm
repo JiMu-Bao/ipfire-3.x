@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = parted
 PKG_VER        = 2.1
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Applications/System
@@ -34,7 +34,8 @@ PKG_URL        = http://www.gnu.org/software/parted
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = The GNU disk partition manipulation program.
 
-PKG_BUILD_DEPS+= libdevmapper-devel libuuid-devel readline-devel
+PKG_BUILD_DEPS+= libdevmapper-devel libselinux-devel libuuid-devel\
+	 readline-devel
 
 define PKG_DESCRIPTION
 	The GNU Parted program allows you to create, destroy, resize, move, \
@@ -48,7 +49,8 @@ PKG_TARBALL    = $(THISAPP).tar.gz
 PKG_PACKAGES  += $(PKG_NAME)-devel
 
 CONFIGURE_OPTIONS += \
-	--libdir=/lib
+	--libdir=/lib \
+	--enable-selinux
 
 define STAGE_INSTALL_CMDS
 	-mkdir -pv $(BUILDROOT)/usr/lib
