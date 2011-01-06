@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = logrotate
 PKG_VER        = 3.7.7
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Base
@@ -34,7 +34,7 @@ PKG_URL        = https://fedorahosted.org/releases/l/o/logrotate/
 PKG_LICENSE    = GPL+
 PKG_SUMMARY    = Rotates, compresses, removes and mails system log files.
 
-PKG_DEPS      += coreutils gzip popt which
+PKG_BUILD_DEPS+= coreutils gzip libselinux-devel popt-devel which
 
 define PKG_DESCRIPTION
 	The logrotate utility is designed to simplify the administration of \
@@ -47,7 +47,7 @@ endef
 PKG_TARBALL    = $(THISAPP).tar.gz
 
 define STAGE_BUILD
-	cd $(DIR_APP) && make RPM_OPT_FLAGS="$(CFLAGS)" $(PARALLELISMFLAGS)
+	cd $(DIR_APP) && make RPM_OPT_FLAGS="$(CFLAGS)" WITH_SELINUX=yes $(PARALLELISMFLAGS)
 endef
 
 define STAGE_TEST
