@@ -34,7 +34,7 @@ PKG_URL        = http://flex.sourceforge.net/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = A set of tools that watches HDD S.M.A.R.T status.
 
-PKG_BUILD_DEPS+= libselinux-devel
+PKG_BUILD_DEPS+= gcc-c++ libselinux-devel
 
 define PKG_DESCRIPTION
 	The smartmontools package contains two utility programs (smartctl \
