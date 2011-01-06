@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = smartmontools
-PKG_VER        = 5.37
+PKG_VER        = 5.40
 PKG_REL        = 0
 
 PKG_MAINTAINER =
@@ -33,6 +33,8 @@ PKG_GROUP      = System/Statistics
 PKG_URL        = http://flex.sourceforge.net/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = A set of tools that watches HDD S.M.A.R.T status.
+
+PKG_BUILD_DEPS+= libselinux-devel
 
 define PKG_DESCRIPTION
 	The smartmontools package contains two utility programs (smartctl \
@@ -47,7 +49,8 @@ PKG_TARBALL    = $(THISAPP).tar.gz
 
 CONFIGURE_OPTIONS += \
 	--mandir=/usr/share/man \
-	--sysconfdir=/etc
+	--sysconfdir=/etc \
+	--with-selinux
 
 define STAGE_INSTALL_CMDS
 	rm -rvf $(BUILDROOT)/etc/rc.d
