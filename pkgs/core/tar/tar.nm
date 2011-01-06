@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = tar
 PKG_VER        = 1.23
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Packaging
@@ -52,7 +52,8 @@ CONFIGURE_ENVIRONMENT = CC="gcc -std=gnu99 -fgnu89-inline"
 
 CONFIGURE_OPTIONS += \
 	--bindir=/bin \
-	--libexecdir=/usr/sbin
+	--libexecdir=/usr/sbin \
+	--enable-selinux
 
 define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && sed -i /SIGPIPE/d src/tar.c
