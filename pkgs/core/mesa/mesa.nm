@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = mesa
 PKG_VER        = 7.8.2
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Development/Tools
@@ -34,8 +34,8 @@ PKG_URL        = http://www.mesa3d.org
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = Mesa graphics libraries.
 
-PKG_BUILD_DEPS+= pkg-config libX11-devel libXdamage-devel libXext-devel\
-	libXxf86vm-devel libdrm-devel libxcb-devel 
+PKG_BUILD_DEPS+= expat-devel pkg-config libX11-devel libXdamage-devel libXext-devel\
+	libXxf86vm-devel libdrm-devel libselinux-devel libxcb-devel 
 
 PKG_PACKAGES  += $(PKG_NAME)-devel
 
