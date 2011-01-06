@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = openssh
 PKG_VER        = 5.4p1
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Application/Internet
@@ -34,7 +34,7 @@ PKG_URL        = http://www.openssh.com/portable.html
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = An open source implementation of SSH protocol versions 1 and 2.
 
-PKG_BUILD_DEPS+= openssl-devel pam-devel
+PKG_BUILD_DEPS+= openssl-devel pam-devel zlib-devel
 PKG_DEPS-openssh = openssh-clients=$(THISVER) openssh-server=$(THISVER)
 
 define PKG_DESCRIPTION

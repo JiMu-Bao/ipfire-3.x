@@ -34,7 +34,7 @@ PKG_URL        = http://bzr.savannah.gnu.org/r/man-db/
 PKG_LICENSE    = GPL
 PKG_SUMMARY    = man-db is an on-line manual database.
 
-PKG_BUILD_DEPS+= db-devel groff
+PKG_BUILD_DEPS+= db4-devel groff
 PKG_DEPS      += groff less
 
 define PKG_DESCRIPTION

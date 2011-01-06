@@ -2,7 +2,7 @@ description		"Control the powerdns recursor"
 author			"IPFire Team"
 
 start on starting network
-stop on stopped network
+stop on kill-all-network-services or stopping network
 
 exec /usr/sbin/pdns_recursor
 expect fork

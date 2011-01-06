@@ -2,7 +2,7 @@ description		"Starts the LLDP Daemon"
 author			"IPFire Team"
 
 start on started network
-stop on stopping network
+stop on kill-all-network-services or stopping network
 
 exec /usr/sbin/lldpd -c
 respawn
