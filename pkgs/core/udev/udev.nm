@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = udev
 PKG_VER        = 160
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Base
@@ -34,8 +34,8 @@ PKG_URL        = ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = A userspace implementation of devfs.
 
-PKG_BUILD_DEPS+= glib2-devel gperf kbd libacl-devel libuuid-devel \
-	libusb-compat-devel pciutils pkg-config usbutils
+PKG_BUILD_DEPS+= glib2-devel gperf kbd libacl-devel libselinux-devel\
+	libuuid-devel libusb-compat-devel pciutils pkg-config usbutils
 
 define PKG_DESCRIPTION
 	The udev package contains an implementation of devfs in userspace using \
@@ -52,6 +52,7 @@ CONFIGURE_OPTIONS += \
 	--sysconfdir=/etc \
 	--libexecdir=/lib/udev \
 	--with-rootlibdir=/lib \
+	--with-selinux \
 	--disable-introspection
 
 define STAGE_INSTALL_CMDS
