@@ -26,7 +26,9 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = joe
 PKG_VER        = 3.7
-PKG_REL        = 0
+PKG_REL        = 1
+
+PKG_BUILD_DEPS+= libselinux-devel
 
 PKG_MAINTAINER =
 PKG_GROUP      = Applications/Editors
