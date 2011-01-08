@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = net-tools
 PKG_VER        = 1.60
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Sytem/Base
@@ -34,7 +34,7 @@ PKG_URL        = http://net-tools.berlios.de/
 PKG_LICENSE    = GPL+
 PKG_SUMMARY    = Basic networking tools.
 
-PKG_BUILD_DEPS+= gettext
+PKG_BUILD_DEPS+= gettext libselinux-devel
 
 define PKG_DESCRIPTION
 	The net-tools package contains basic networking tools, \
