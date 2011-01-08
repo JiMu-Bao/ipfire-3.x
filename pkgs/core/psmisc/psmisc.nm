@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = psmisc
 PKG_VER        = 22.10
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Applications/System
@@ -34,7 +34,7 @@ PKG_URL        = http://sourceforge.net/projects/psmisc
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Utilities for managing processes on your system.
 
-PKG_BUILD_DEPS+= ncurses-devel
+PKG_BUILD_DEPS+= libselinux-devel ncurses-devel
 
 define PKG_DESCRIPTION
 	The psmisc package contains utilities for managing processes on your \
@@ -47,3 +47,6 @@ define PKG_DESCRIPTION
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
+
+CONFIGURE_OPTIONS += \
+	--enable-selinux
