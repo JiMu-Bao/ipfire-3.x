@@ -34,7 +34,7 @@ PKG_URL        = http://www.perl.org/
 PKG_LICENSE    = GPL+ or Artistic and GPLv2+ or Artistic
 PKG_SUMMARY    = Practical Extraction and Report Language.
 
-PKG_BUILD_DEPS+= db-devel gcc-c++ gdbm-devel iana-etc perl procps zlib-devel
+PKG_BUILD_DEPS+= db4-devel gcc-c++ gdbm-devel iana-etc perl procps zlib-devel
 
 define PKG_DESCRIPTION
 	Perl is a high-level programming language with roots in C, sed, awk \

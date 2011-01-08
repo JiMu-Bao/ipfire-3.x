@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = openldap
 PKG_VER        = 2.4.21
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Daemons
@@ -34,7 +34,7 @@ PKG_URL        = http://www.openldap.org/
 PKG_LICENSE    = OpenLDAP
 PKG_SUMMARY    = LDAP support libraries.
 
-PKG_BUILD_DEPS+= db-devel cyrus-sasl-devel groff libtool libtool-devel \
+PKG_BUILD_DEPS+= db4-devel cyrus-sasl-devel groff libtool libtool-devel \
 	openssl-devel pth-devel
 
 define PKG_DESCRIPTION

@@ -34,7 +34,7 @@ PKG_URL        = http://www.python.org
 PKG_LICENSE    = Python
 PKG_SUMMARY    = An interpreted, interactive, object-oriented programming language.
 
-PKG_BUILD_DEPS+= autoconf automake bzip2-devel db-devel expat-devel gdbm-devel \
+PKG_BUILD_DEPS+= autoconf automake bzip2-devel db4-devel expat-devel gdbm-devel \
 	libffi-devel libselinux-devel ncurses-devel openssl-devel pkg-config \
 	readline-devel sqlite-devel tar zlib-devel
 
