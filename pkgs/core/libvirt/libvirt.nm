@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = libvirt
 PKG_VER        = 0.8.1
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Applications/Virtualization
@@ -35,9 +35,9 @@ PKG_LICENSE    = LGPLv2.1+
 PKG_SUMMARY    = A library for controlling VMs.
 
 PKG_BUILD_DEPS+= avahi-devel libcurl-devel cyrus-sasl-devel gnutls-devel \
-	libpciaccess-devel libssh2-devel libtool libxml2-devel lvm2-devel \
-	lvm2 parted-devel perl-core pkg-config readline-devel libudev-devel \
-	xen-devel
+	libselinux-devel libpciaccess-devel libssh2-devel libtool libxml2-devel \
+	lvm2-devel lvm2 parted-devel perl-core pkg-config readline-devel \
+	libudev-devel xen-devel
 
 PKG_DEPS      += lvm2
 
@@ -66,4 +66,5 @@ CONFIGURE_OPTIONS += \
 	--with-storage-disk \
 	--with-avahi \
 	--with-udev \
-	--with-libvirtd
+	--with-libvirtd \
+	--with-selinux
