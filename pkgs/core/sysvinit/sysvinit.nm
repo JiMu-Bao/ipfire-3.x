@@ -26,13 +26,15 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = sysvinit
 PKG_VER        = 2.86
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Base
 PKG_URL        = https://alioth.debian.org/projects/pkg-sysvinit/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Programs which control basic system processes.
+
+PKG_BUILD_DEPS+= libselinux-devel
 
 define PKG_DESCRIPTION
 	The sysvinit package contains a group of processes that control \
