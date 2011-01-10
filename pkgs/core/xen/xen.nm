@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = xen
 PKG_VER        = 4.0.1
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER = Ben Schweikert <ben.schweikert@ipfire.org>
 PKG_GROUP      = Applications/Virtualization
@@ -40,8 +40,9 @@ define PKG_DESCRIPTION
        feature set for virtualization.
 endef
 
-PKG_BUILD_DEPS+= gettext-devel libuuid-devel openssl-devel python python-devel \
-	sdl-devel xorg-x11-proto-devel zlib-devel
+PKG_BUILD_DEPS+= gettext-devel kernel-headers libuuid-devel ncurses-devel \
+	openssl-devel python python-devel sdl-devel xorg-x11-proto-devel \
+	zlib-devel
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
