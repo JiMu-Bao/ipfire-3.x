@@ -35,8 +35,10 @@ PKG_LICENSE    = LGPLv2.1+
 PKG_SUMMARY    = A library for controlling VMs.
 
 PKG_BUILD_DEPS+= avahi-devel libcurl-devel cyrus-sasl-devel gnutls-devel \
-	libpciaccess-devel libssh2-devel libtool libxml2-devel lvm2 parted-devel \
-	pkg-config readline-devel libudev-devel xen-tools
+	libpciaccess-devel libssh2-devel libtool libxml2-devel lvm2-devel \
+	lvm2 parted-devel perl-core pkg-config readline-devel libudev-devel \
+	xen-devel
+
 PKG_DEPS      += lvm2
 
 define PKG_DESCRIPTION
