@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = LVM2
 PKG_VER        = 2.02.54
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Base
@@ -34,7 +34,7 @@ PKG_URL        = http://sources.redhat.com/lvm2/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = Userland logical volume management tools.
 
-PKG_BUILD_DEPS+= pkg-config ncurses-devel readline-devel
+PKG_BUILD_DEPS+= libselinux-devel pkg-config ncurses-devel readline-devel
 
 define PKG_DESCRIPTION
 	LVM2 includes all of the support for handling read/write operations on \

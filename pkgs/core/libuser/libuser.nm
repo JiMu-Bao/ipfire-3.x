@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = libuser
 PKG_VER        = 0.56.9
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
@@ -34,7 +34,8 @@ PKG_URL        = https://fedorahosted.org/libuser/
 PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = A user and group account administration library.
 
-PKG_BUILD_DEPS+= glib2-devel openldap-devel pkg-config popt-devel python-devel
+PKG_BUILD_DEPS+= glib2-devel libselinux-devel openldap-devel pkg-config\
+	popt-devel python-devel
 
 define PKG_DESCRIPTION
 	The libuser library implements a standardized interface for \
@@ -48,7 +49,8 @@ PKG_PACKAGES  += $(PKG_NAME)-devel
 
 CONFIGURE_OPTIONS += \
 	--sysconfdir=/etc \
-	--with-ldap
+	--with-ldap \
+	--with-selinux
 
 define STAGE_PREPARE_CMDS
 	# Little hack that we don't build documentation that requires sgml2html

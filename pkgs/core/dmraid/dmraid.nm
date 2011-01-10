@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = dmraid
 PKG_VER        = 1.0.0.rc15
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Filesystems
@@ -34,7 +34,7 @@ PKG_URL        = http://people.redhat.com/heinzm/sw/dmraid
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Device-mapper RAID tool and library.
 
-PKG_BUILD_DEPS+= libdevmapper-devel
+PKG_BUILD_DEPS+= libdevmapper-devel libselinux-devel
 
 define PKG_DESCRIPTION
 	DMRAID supports RAID device discovery, RAID set activation, creation, \
@@ -56,7 +56,8 @@ CONFIGURE_OPTIONS += \
 	--sbindir=/sbin \
 	--libdir=/lib \
 	--disable-static \
-	--disable-static_link
+	--disable-static_link \
+	--enable-libselinux
 
 define STAGE_BUILD_CMDS
 	cd $(DIR_APP) && make -C lib libdmraid.so

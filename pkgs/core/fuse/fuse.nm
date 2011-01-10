@@ -34,6 +34,8 @@ PKG_URL        = http://fuse.sf.net/
 PKG_LICENSE    = GPL+
 PKG_SUMMARY    = File System in Userspace (FUSE) utilities.
 
+PKG_BUILD_DEPS+= libselinux-devel
+
 PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
 
 define PKG_DESCRIPTION

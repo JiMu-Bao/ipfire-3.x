@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = e2fsprogs
 PKG_VER        = 1.41.11
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Filesystems
@@ -42,7 +42,8 @@ define PKG_DESCRIPTION
 	and third extended (ext2/ext3) filesystems.
 endef
 
-PKG_BUILD_DEPS+= libblkid-devel libuuid-devel pkg-config
+PKG_BUILD_DEPS+= libblkid-devel libselinux-devel libsepol-devel libuuid-devel\
+	pkg-config
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 

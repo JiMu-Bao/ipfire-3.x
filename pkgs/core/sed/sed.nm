@@ -26,13 +26,15 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = sed
 PKG_VER        = 4.1.5
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Applications/Text
 PKG_URL        = http://sed.sourceforge.net/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = A GNU stream text editor.
+
+PKG_BUILD_DEPS+= libselinux-devel
 
 define PKG_DESCRIPTION
 	The sed (Stream EDitor) editor is a stream or batch (non-interactive) \
@@ -44,20 +46,10 @@ endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
-###############################################################################
-# Installation Details
-###############################################################################
-
-define STAGE_BUILD
-	cd $(DIR_APP) && \
-		./configure \
-			--prefix=/usr \
-			--bindir=/bin \
-			--without-included-regex \
-			--mandir=/usr/share/man
-
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
-endef
+CONFIGURE_OPTIONS += \
+	--bindir=/bin \
+	--without-included-regex \
+	--mandir=/usr/share/man
 
 define STAGE_TEST
 	cd $(DIR_APP) && make check
