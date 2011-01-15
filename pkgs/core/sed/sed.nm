@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = sed
-PKG_VER        = 4.1.5
-PKG_REL        = 1
+PKG_VER        = 4.2.1
+PKG_REL        = 0
 
 PKG_MAINTAINER =
 PKG_GROUP      = Applications/Text
