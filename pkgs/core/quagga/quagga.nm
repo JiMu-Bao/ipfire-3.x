@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = quagga
-PKG_VER        = 0.99.11
+PKG_VER        = 0.99.17
 PKG_REL        = 0
 
 PKG_MAINTAINER =
