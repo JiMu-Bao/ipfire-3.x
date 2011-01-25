@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = hdparm
-PKG_VER        = 9.36
+PKG_VER        = 9.37
 PKG_REL        = 0
 
 PKG_MAINTAINER =
