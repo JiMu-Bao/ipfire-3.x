@@ -120,6 +120,8 @@ PKG_PATCHES = \
 	$(foreach patch,$(wildcard $(DIR_PATCHES)/*.patch),$(notdir $(patch)))
 PKG_PATCHES += \
 	$(foreach patch,$(wildcard $(DIR_PATCHES)/*.patch0),$(notdir $(patch)))
+PKG_PATCHES += \
+	$(foreach patch,$(wildcard $(DIR_PATCHES)/*.diff),$(notdir $(patch)))
 
 # Dynamic command that applies all patches
 DO_PATCHES = cd $(DIR_APP) && $(DIR_TOOLS)/patch $(foreach patch,$(PKG_PATCHES),$(DIR_PATCHES)/$(patch))
