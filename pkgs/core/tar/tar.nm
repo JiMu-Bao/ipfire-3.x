@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = tar
-PKG_VER        = 1.23
-PKG_REL        = 2
+PKG_VER        = 1.25
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Packaging
@@ -34,7 +34,8 @@ PKG_URL        = http://www.gnu.org/software/tar/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = A GNU file archiving program.
 
-PKG_BUILD_DEPS+= autoconf automake libacl-devel libattr-devel libselinux-devel
+PKG_BUILD_DEPS+= autoconf automake gettext libacl-devel libattr-devel \
+	libselinux-devel
 
 define PKG_DESCRIPTION
 	The GNU tar program saves many files together in one archive \
@@ -46,9 +47,9 @@ define PKG_DESCRIPTION
 	and the ability to perform incremental and full backups.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+PKG_TARBALL    = $(THISAPP).tar.xz
 
-CONFIGURE_ENVIRONMENT = CC="gcc -std=gnu99 -fgnu89-inline"
+CONFIGURE_ENVIRONMENT = FORCE_UNSAFE_CONFIGURE=1
 
 CONFIGURE_OPTIONS += \
 	--bindir=/bin \
@@ -56,10 +57,9 @@ CONFIGURE_OPTIONS += \
 	--enable-selinux
 
 define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -i /SIGPIPE/d src/tar.c
+	cd  $(DIR_APP) && autoreconf -vfi
 endef
 
 define STAGE_TEST
-	cd $(DIR_APP) && sed -i '35 i AT_UNPRIVILEGED_PREREQ' tests/remfiles01.at
 	cd $(DIR_APP) && make check
 endef
