@@ -64,4 +64,8 @@ define STAGE_INSTALL
 	# Install chroot shell
 	cp -vf chroot-shell $(BUILDROOT)/usr/bin/chroot-shell
 	chmod -v 755 $(BUILDROOT)/usr/bin/chroot-shell
+
+	# Install patch utility
+	cp -vf patch $(BUILDROOT)/usr/lib/buildsystem/patch
+	chmod -v 755 $(BUILDROOT)/usr/lib/buildsystem/patch
 endef
