@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = build-essentials
 PKG_VER        = $(DISTRO_VERSION)
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = Development/Tools
@@ -47,6 +47,7 @@ STAGE_BUILD = # Nothing to do here
 
 define STAGE_INSTALL
 	# Install the quality-agent and buildsystem header files.
+	-mkdir -pv $(BUILDROOT)/usr/bin
 	-mkdir -pv $(BUILDROOT)/usr/sbin
 	-mkdir -pv $(BUILDROOT)/usr/lib/buildsystem
 	-mkdir -pv $(BUILDROOT)/usr/lib/quality-agent
@@ -59,4 +60,8 @@ define STAGE_INSTALL
 
 	-mkdir -pv $(BUILDROOT)/etc/profile.d
 	cp -vf buildsystem.sh $(BUILDROOT)/etc/profile.d/
+
+	# Install chroot shell
+	cp -vf chroot-shell $(BUILDROOT)/usr/bin/chroot-shell
+	chmod -v 755 $(BUILDROOT)/usr/bin/chroot-shell
 endef
