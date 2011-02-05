@@ -5,21 +5,18 @@
 #
 ###############################################################################
 
-# If we are running in a chroot, we map all directories to $(BASEDIR), otherwise
-# BASEDIR will be the absolute path (for gathering information from the source
-# packages)
-ifeq "$(CHROOT)" "1"
-	BASEDIR = /usr/src
-endif
+BASEDIR = /build
+
+BUILD_TOOLS = /usr/lib/buildsystem-tools
 
 # Set default directories
 DIR_APP      = $(DIR_SRC)/$(THISAPP)
-DIR_DL       = $(BASEDIR)/cache
+DIR_DL       = $(BASEDIR)/files
 DIR_PACKAGES = /usr/src/packages/$(PKG_ARCH)
-DIR_PATCHES  = $(DIR_SOURCE)/patches
+DIR_PATCHES  = $(BASEDIR)/patches
 DIR_SRC      = /usr/src
 DIR_TMP      = /tmp
-DIR_SOURCE   = $(CURDIR)
+DIR_SOURCE   = $(BASEDIR)
 DIR_TOOLS    = $(BASEDIR)/tools
 
 # Directory where to search for object files
@@ -27,7 +24,7 @@ VPATH        = $(DIR_DL)
 
 # Paths to scripts
 DO_EXTRACT       = tar xaf
-DO_QUALITY_AGENT = $(DIR_TOOLS)/quality-agent
+DO_QUALITY_AGENT = quality-agent
 
 ###############################################################################
 #
@@ -36,11 +33,18 @@ DO_QUALITY_AGENT = $(DIR_TOOLS)/quality-agent
 ###############################################################################
 
 # Export CFLAGS + CXXFLAGS
-export CFLAGS
-export CXXFLAGS
+GLOBAL_CFLAGS = -O2 -g -pipe -Wall -fexceptions --param=ssp-buffer-size=4
+
+CFLAGS_i686   = -m32 -march=i686 -mtune=atom -fasynchronous-unwind-tables
+CFLAGS_x86_64 = -m64 -mtune=generic
+
+export CFLAGS   = $(GLOBAL_CFLAGS) $(CFLAGS_$(DISTRO_ARCH))
+export CXXFLAGS = $(CFLAGS)
 
 # Options that get passed to configure by default
 CONFIGURE_OPTIONS = \
+	--host=$(DISTRO_MACHINE) \
+	--build=$(DISTRO_MACHINE) \
 	--prefix=/usr
 
 ###############################################################################
@@ -66,7 +70,7 @@ PKG_VARIABLES = \
 	PKG_MAINTAINER \
 	PKG_LICENSE \
 	PKG_PROVIDES \
-	PKG_REL \
+	PKG_RELEASE \
 	PKG_SUMMARY \
 	PKG_URL \
 	PKG_VER
@@ -87,11 +91,13 @@ export BUILD_ID
 #
 
 # The actual package name (the name of the directory)
-PKG_NAME_REAL  = $(notdir $(CURDIR))
+PKG_NAME_REAL  = $(notdir $(subst .nm,,$(firstword $(MAKEFILE_LIST))))
 PKG_NAME       = $(PKG_NAME_REAL)
 
-# Set default epoch
+# Set default epoch, release and arch
 PKG_EPOCH      = 0
+PKG_RELEASE    = $(PKG_REL).$(DISTRO_DISTTAG)
+PKG_ARCH       = $(DISTRO_ARCH)
 
 # Shortcut to package name + version
 THISAPP        = $(PKG_NAME)-$(PKG_VER)
@@ -124,7 +130,8 @@ PKG_PATCHES += \
 	$(foreach patch,$(wildcard $(DIR_PATCHES)/*.diff),$(notdir $(patch)))
 
 # Dynamic command that applies all patches
-DO_PATCHES = cd $(DIR_APP) && $(DIR_TOOLS)/patch $(foreach patch,$(PKG_PATCHES),$(DIR_PATCHES)/$(patch))
+DO_PATCHES = cd $(DIR_APP) && $(BUILD_TOOLS)/patch \
+	$(foreach patch,$(PKG_PATCHES),$(DIR_PATCHES)/$(patch))
 
 # Get a list of files that are installed automatically
 PKG_DEFAULT_FILES  = $(wildcard *.default)

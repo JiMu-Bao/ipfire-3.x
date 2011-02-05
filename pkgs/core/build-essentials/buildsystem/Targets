@@ -5,45 +5,51 @@
 #
 ###############################################################################
 
-.PHONY: info
-info:
-	@echo "PKG_ARCH=\"$(PKG_ARCH)\""
+.PHONY: packageinfo
+packageinfo:
+	$(foreach package,$(PKG_PACKAGES),$(call DO_PACKAGE_INFO,$(package)))
+
+.PHONY: buildinfo
+buildinfo:
+	@echo "PKG_NAME=\"$(PKG_NAME_REAL)\""
+	@echo "PKG_EPOCH=\"$(PKG_EPOCH)\""
+	@echo "PKG_VER=\"$(PKG_VER)\""
+	@echo "PKG_RELEASE=\"$(PKG_RELEASE)\""
+
+	@echo "PKG_ARCH=\"src\""
 	@echo "PKG_BUILD_DEPENDENCIES=\"$(PKG_BUILD_DEPS)\""
 	@echo "PKG_DEPENDENCIES=\"$(PKG_DEPS)\""
 	@echo "PKG_DESCRIPTION=\"$(strip $(PKG_DESCRIPTION))\""
-	@echo "PKG_EPOCH=\"$(PKG_EPOCH)\""
 	@echo "PKG_GROUP=\"$(PKG_GROUP)\""
 	@echo "PKG_LICENSE=\"$(PKG_LICENSE)\""
 	@echo "PKG_MAINTAINER=\"$(PKG_MAINTAINER)\""
-	@echo "PKG_NAME=\"$(PKG_NAME_REAL)\""
-	@echo "PKG_OBJECTS=\"$(strip $(OBJECTS))\""
-	@echo "PKG_PACKAGES=\"$(PKG_PACKAGES)\""
-	@echo "PKG_PACKAGES_FILES=\"$(PKG_PACKAGES_FILES)\""
-	@echo "PKG_PATCHES=\"$(PKG_PATCHES)\""
-	@echo "PKG_VER=\"$(PKG_VER)\""
-	@echo "PKG_REL=\"$(PKG_REL)\""
-	@echo "PKG_SUMMARY=\"$(strip $(PKG_SUMMARY))\""
 	@echo "PKG_URL=\"$(PKG_URL)\""
-	@echo "SOURCE_DIR=\"$(DIR_APP)\""
+
+	@echo "PKG_FILES=\"$(PKG_OBJECTS)\""
+	@echo "PKG_BUILD_DEPS=\"$(PKG_BUILD_DEPS)\""
+
+	@echo "CFLAGS=\"$(CFLAGS)\""
+	@echo "CXXFLAGS=\"$(CXXFLAGS)\""
 
 $(OBJECTS):
 	@echo "Object file \"$@\" is required." >&2
 	@exit 1
 
-.PHONY: build
-build: $(STAGE_DONE)
+.PHONY: package
+package: $(STAGE_DONE)
 	$(foreach package,$(call reverse,$(PKG_PACKAGES)),$(call DO_PACKAGE,$(package)))
 
 .PHONY: shell
 shell: $(OBJECTS)
 	$(if $(STAGE_PREPARE),$(DO_PREPARE))
 
-prepare:
+.PHONY: prepare
+prepare: $(OBJECTS)
 	$(if $(STAGE_PREPARE),$(DO_PREPARE))
 
-$(STAGE_DONE): $(OBJECTS)
+.PHONY: build
+build: $(OBJECTS)
 	$(if $(STAGE_PREPARE),$(DO_PREPARE))
 	$(if $(STAGE_BUILD),$(DO_BUILD))
 	$(if $(STAGE_TEST),$(DO_TEST))
 	$(if $(STAGE_INSTALL),$(DO_INSTALL))
-	@touch $@

@@ -27,6 +27,7 @@ include $(PKGROOT)/Include
 PKG_NAME       = build-essentials
 PKG_VER        = $(DISTRO_VERSION)
 PKG_REL        = 2
+#PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = Development/Tools
@@ -47,12 +48,12 @@ STAGE_BUILD = # Nothing to do here
 
 define STAGE_INSTALL
 	# Install the quality-agent and buildsystem header files.
-	-mkdir -pv $(BUILDROOT)/usr/bin
-	-mkdir -pv $(BUILDROOT)/usr/sbin
-	-mkdir -pv $(BUILDROOT)/usr/lib/buildsystem
+	-mkdir -pv $(BUILDROOT)/usr/{,s}bin
+	-mkdir -pv $(BUILDROOT)/usr/lib/buildsystem{,-tools}
 	-mkdir -pv $(BUILDROOT)/usr/lib/quality-agent
 
 	cp -vf buildsystem/* $(BUILDROOT)/usr/lib/buildsystem
+	cp -vf buildsystem-tools/* $(BUILDROOT)/usr/lib/buildsystem-tools
 
 	cp -vf quality-agent/quality-agent $(BUILDROOT)/usr/sbin/
 	cp -vrf quality-agent/quality-agent.d/* \
@@ -61,11 +62,7 @@ define STAGE_INSTALL
 	-mkdir -pv $(BUILDROOT)/etc/profile.d
 	cp -vf buildsystem.sh $(BUILDROOT)/etc/profile.d/
 
-	# Install chroot shell
-	cp -vf chroot-shell $(BUILDROOT)/usr/bin/chroot-shell
-	chmod -v 755 $(BUILDROOT)/usr/bin/chroot-shell
-
-	# Install patch utility
-	cp -vf patch $(BUILDROOT)/usr/lib/buildsystem/patch
-	chmod -v 755 $(BUILDROOT)/usr/lib/buildsystem/patch
+	# Create symlink to chroot-shell
+	ln -svf ../lib/buildsystem-tools/chroot-shell \
+		$(BUILDROOT)/usr/bin/chroot-shell
 endef
