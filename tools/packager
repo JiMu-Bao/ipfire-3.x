@@ -24,7 +24,7 @@ BASEDIR=$(dirname ${0})
 PACKAGER_HASH_ALGORITHMS="md5 sha1 sha256 sha512"
 PACKAGER_VERSION="1"
 
-TAR_OPTIONS="--posix --acls --xattrs --selinux --no-recursion --sparse --xz"
+TAR_OPTIONS="--posix --acls --no-recursion --sparse --xz"
 
 . ${BASEDIR}/common-functions
 
