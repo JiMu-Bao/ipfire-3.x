@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = glibc
-PKG_VER        = 2.12.2
-PKG_REL        = 2
+PKG_VER        = 2.13
+PKG_REL        = 1
 
 # TODO tzdata
 
