@@ -1,7 +1,7 @@
 ###############################################################################
 #                                                                             #
 # IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008, 2009 Michael Tremer & Christian Schmidt           #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
 #                                                                             #
 # This program is free software: you can redistribute it and/or modify        #
 # it under the terms of the GNU General Public License as published by        #
@@ -24,44 +24,45 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = zlib
-PKG_VER        = 1.2.5
-PKG_REL        = 0
+PKG_NAME       = build-essentials
+PKG_VER        = $(DISTRO_VERSION)
+PKG_REL        = 2
+#PKG_ARCH       = noarch
 
-PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
-PKG_URL        = http://www.gzip.org/zlib/
-PKG_LICENSE    = zlib
-PKG_SUMMARY    = The zlib compression and decompression library.
+PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
+PKG_GROUP      = Development/Tools
+PKG_URL        = http://www.ipfire.org
+PKG_LICENSE    = GPL
+PKG_SUMMARY    = Elementary scripts for the build system.
+
+PKG_BUILD_DEPS =
+PKG_DEPS      += bash bzip2 ccache coreutils cpio diffutils file findutils \
+	gawk grep gzip make patch sed system-release tar which xz
 
 define PKG_DESCRIPTION
-	Zlib is a general-purpose, patent-free, lossless data compression \
-	library which is used by many different programs.
+	This package contains elementary scripts for the pakfire build system.
 endef
 
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
+STAGE_PREPARE = # Nothing to do here
+STAGE_BUILD = # Nothing to do here
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+define STAGE_INSTALL
+	# Install the quality-agent and buildsystem header files.
+	-mkdir -pv $(BUILDROOT)/usr/{,s}bin
+	-mkdir -pv $(BUILDROOT)/usr/lib/buildsystem{,-tools}
+	-mkdir -pv $(BUILDROOT)/usr/lib/quality-agent
 
-CFLAGS        += -fPIC -DPIC
+	cp -vf buildsystem/* $(BUILDROOT)/usr/lib/buildsystem
+	cp -vf buildsystem-tools/* $(BUILDROOT)/usr/lib/buildsystem-tools
 
-CONFIGURE_ENVIRONMENT += ac_cv_func_working_mktime=yes
+	cp -vf quality-agent/quality-agent $(BUILDROOT)/usr/sbin/
+	cp -vrf quality-agent/quality-agent.d/* \
+		$(BUILDROOT)/usr/lib/quality-agent/
 
-CONFIGURE_OPTIONS = \
-	--prefix=/usr \
-	--libdir=/lib
+	-mkdir -pv $(BUILDROOT)/etc/profile.d
+	cp -vf buildsystem.sh $(BUILDROOT)/etc/profile.d/
 
-PARALLELISMFLAGS = # No parallelism
-
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
-
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/usr/{include,lib}
-	cd $(DIR_APP) && cp -pfv zconf.h zlib.h $(BUILDROOT)/usr/include
-	rm -vf $(BUILDROOT)/lib/libz.so
-	ln -sfv ../../lib/libz.so.$(PKG_VER) $(BUILDROOT)/usr/lib/libz.so
-
-	mv -v $(BUILDROOT)/lib/pkgconfig $(BUILDROOT)/usr/lib/
+	# Create symlink to chroot-shell
+	ln -svf ../lib/buildsystem-tools/chroot-shell \
+		$(BUILDROOT)/usr/bin/chroot-shell
 endef

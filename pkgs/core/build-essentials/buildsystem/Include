@@ -18,50 +18,9 @@
 #                                                                             #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+.SECONDEXPANSION:
 
-include $(PKGROOT)/Include
-
-PKG_NAME       = zlib
-PKG_VER        = 1.2.5
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
-PKG_URL        = http://www.gzip.org/zlib/
-PKG_LICENSE    = zlib
-PKG_SUMMARY    = The zlib compression and decompression library.
-
-define PKG_DESCRIPTION
-	Zlib is a general-purpose, patent-free, lossless data compression \
-	library which is used by many different programs.
-endef
-
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
-
-PKG_TARBALL    = $(THISAPP).tar.gz
-
-CFLAGS        += -fPIC -DPIC
-
-CONFIGURE_ENVIRONMENT += ac_cv_func_working_mktime=yes
-
-CONFIGURE_OPTIONS = \
-	--prefix=/usr \
-	--libdir=/lib
-
-PARALLELISMFLAGS = # No parallelism
-
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
-
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/usr/{include,lib}
-	cd $(DIR_APP) && cp -pfv zconf.h zlib.h $(BUILDROOT)/usr/include
-	rm -vf $(BUILDROOT)/lib/libz.so
-	ln -sfv ../../lib/libz.so.$(PKG_VER) $(BUILDROOT)/usr/lib/libz.so
-
-	mv -v $(BUILDROOT)/lib/pkgconfig $(BUILDROOT)/usr/lib/
-endef
+include $(PKGROOT)/Constants
+include $(PKGROOT)/Functions
+include $(PKGROOT)/Targets
+include $(PKGROOT)/Templates

@@ -47,24 +47,16 @@ PKG_TARBALL    = $(THISAPP).tar.gz
 
 PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
 
-define STAGE_BUILD
-	cd $(DIR_APP) && \
-		./configure \
-			--prefix=/usr \
-			--mandir=/usr/share/man \
-			--with-shared \
-			--without-debug \
-			--enable-widec \
-			--disable-static \
-			--enable-symlinks \
-			--disable-root-environ
+CONFIGURE_OPTIONS += \
+	--mandir=/usr/share/man \
+	--with-shared \
+	--without-debug \
+	--enable-widec \
+	--disable-static \
+	--enable-symlinks \
+	--disable-root-environ
 
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
-endef
-
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT)
-
+define STAGE_INSTALL_CMDS
 	-mkdir -pv $(BUILDROOT)/lib
 	mv -v $(BUILDROOT)/usr/lib/libncursesw.so.5* $(BUILDROOT)/lib
 	ln -sfv ../../lib/libncursesw.so.5 $(BUILDROOT)/usr/lib/libncursesw.so
