@@ -43,6 +43,9 @@ export CXXFLAGS
 CONFIGURE_OPTIONS = \
 	--prefix=/usr
 
+# For compatibility with pakfire3
+DISTRO_MACHINE=$(TARGET)
+
 ###############################################################################
 #
 # Packager variables
