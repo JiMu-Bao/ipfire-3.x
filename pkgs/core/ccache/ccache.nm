@@ -66,7 +66,7 @@ define STAGE_INSTALL_CMDS
 	mkdir -pv $(BUILDROOT)/usr/lib/ccache
 	for i in gcc g++ cc c++; do \
 		ln -svf ../../bin/ccache $(BUILDROOT)/usr/lib/ccache/$${i}; \
-		ln -svf ../../bin/ccache $(BUILDROOT)/usr/lib/ccache/$(TARGET)-$${i}; \
+		ln -svf ../../bin/ccache $(BUILDROOT)/usr/lib/ccache/$(DISTRO_MACHINE)-$${i}; \
 	done
 
 	-mkdir -pv $(BUILDROOT)/etc/profile.d
