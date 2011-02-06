@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = util-linux-ng
 PKG_VER        = 2.18
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Base
@@ -34,7 +34,8 @@ PKG_URL        = ftp://ftp.kernel.org/pub/linux/utils/util-linux-ng
 PKG_LICENSE    = GPLv2 and GPLv2+ and BSD with advertising and Public Domain
 PKG_SUMMARY    = A collection of basic system utilities.
 
-PKG_BUILD_DEPS+= gettext libcap-devel ncurses-devel pam-devel zlib-devel
+PKG_BUILD_DEPS+= audit-devel gettext libcap-devel libselinux-devel \
+	libsepol-devel ncurses-devel pam-devel zlib-devel
 
 define PKG_DESCRIPTION
 	The util-linux-ng package contains a large variety of low-level system \
@@ -120,6 +121,8 @@ CONFIGURE_OPTIONS += \
 	--enable-login-utils \
 	--enable-partx \
 	--enable-write \
+	--with-selinux \
+	--with-audit \
 	--disable-makeinstall-chown \
 	--disable-static
 	

@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = libpng
-PKG_VER        = 1.4.3
+PKG_VER        = 1.4.5
 PKG_REL        = 0
 
 PKG_MAINTAINER =
@@ -46,4 +46,4 @@ define PKG_DESCRIPTION
 	data compression algorithm.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+PKG_TARBALL    = $(THISAPP).tar.xz

@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = coreutils
-PKG_VER        = 8.5
-PKG_REL        = 2
+PKG_VER        = 8.9
+PKG_REL        = 0
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Base
@@ -40,7 +40,7 @@ define PKG_DESCRIPTION
 endef
 
 PKG_BUILD_DEPS+= autoconf automake libacl-devel libattr-devel libcap \
-	ncurses-devel e2fsprogs pam-devel libselinux-devel
+	libselinux-devel ncurses-devel e2fsprogs pam-devel
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
@@ -48,6 +48,7 @@ CFLAGS        += -D_GNU_SOURCE=1 -fno-strict-aliasing
 
 CONFIGURE_OPTIONS += \
 	--enable-pam \
+	--enable-selinux \
 	--enable-largefile \
 	--enable-install-program=arch,hostname,su \
 	--enable-no-install-program=kill,uptime
@@ -57,9 +58,9 @@ define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && autoconf --force
 endef
 
-#define STAGE_TEST
-#	cd $(DIR_APP) && make RUN_EXPENSIVE_TESTS=yes check
-#endef
+define STAGE_TEST
+	cd $(DIR_APP) && make check
+endef
 
 define STAGE_INSTALL_CMDS
 	-mkdir -pv $(BUILDROOT)/{bin,etc/profile.d,usr/sbin}

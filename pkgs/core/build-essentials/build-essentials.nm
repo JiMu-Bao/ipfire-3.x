@@ -1,0 +1,68 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = build-essentials
+PKG_VER        = $(DISTRO_VERSION)
+PKG_REL        = 2
+#PKG_ARCH       = noarch
+
+PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
+PKG_GROUP      = Development/Tools
+PKG_URL        = http://www.ipfire.org
+PKG_LICENSE    = GPL
+PKG_SUMMARY    = Elementary scripts for the build system.
+
+PKG_BUILD_DEPS =
+PKG_DEPS      += bash bzip2 ccache coreutils cpio diffutils file findutils \
+	gawk grep gzip make patch sed system-release tar which xz
+
+define PKG_DESCRIPTION
+	This package contains elementary scripts for the pakfire build system.
+endef
+
+STAGE_PREPARE = # Nothing to do here
+STAGE_BUILD = # Nothing to do here
+
+define STAGE_INSTALL
+	# Install the quality-agent and buildsystem header files.
+	-mkdir -pv $(BUILDROOT)/usr/{,s}bin
+	-mkdir -pv $(BUILDROOT)/usr/lib/buildsystem{,-tools}
+	-mkdir -pv $(BUILDROOT)/usr/lib/quality-agent
+
+	cp -vf buildsystem/* $(BUILDROOT)/usr/lib/buildsystem
+	cp -vf buildsystem-tools/* $(BUILDROOT)/usr/lib/buildsystem-tools
+
+	cp -vf quality-agent/quality-agent $(BUILDROOT)/usr/sbin/
+	cp -vrf quality-agent/quality-agent.d/* \
+		$(BUILDROOT)/usr/lib/quality-agent/
+
+	-mkdir -pv $(BUILDROOT)/etc/profile.d
+	cp -vf buildsystem.sh $(BUILDROOT)/etc/profile.d/
+
+	# Create symlink to chroot-shell
+	ln -svf ../lib/buildsystem-tools/chroot-shell \
+		$(BUILDROOT)/usr/bin/chroot-shell
+endef

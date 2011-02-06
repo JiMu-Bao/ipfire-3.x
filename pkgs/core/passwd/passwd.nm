@@ -35,7 +35,7 @@ PKG_LICENSE    = BSD
 PKG_SUMMARY    = An utility for setting or changing passwords using PAM.
 
 PKG_BUILD_DEPS+= audit-devel glib2-devel libuser-devel pam-devel pkg-config \
-	libselinux-devel
+	libselinux-devel popt-devel
 
 define PKG_DESCRIPTION
 	This package contains a system utility (passwd) which sets \
@@ -45,13 +45,9 @@ endef
 
 PKG_TARBALL    = $(THISAPP).tar.bz2
 
-define STAGE_BUILD
-	cd $(DIR_APP) && \
-		./configure \
-			--prefix=/usr \
-			--with-selinux \
-			--with-audit \
-			--disable-static
+CONFIGURE_OPTIONS +=\
+	--with-selinux \
+	--with-audit \
+	--disable-static
 
-	cd $(DIR_APP) && make DEBUG= RPM_OPT_FLAGS="$(CFLAGS)" $(PARALLELISMFLAGS)
-endef
+STAGE_BUILD_TARGETS = DEBUG= RPM_OPT_FLAGS="$(CFLAGS)"

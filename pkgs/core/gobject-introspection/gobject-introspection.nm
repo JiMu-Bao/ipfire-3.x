@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = gobject-introspection
-PKG_VER        = 0.9.3
+PKG_VER        = 0.9.12
 PKG_REL        = 1
 
 PKG_MAINTAINER =

@@ -1,0 +1,76 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+# XXX man pages are missing
+# XXX initscripts for daemons are missing
+
+PKG_NAME       = icecream
+PKG_VER        = 0.9.6
+PKG_REL        = 1
+
+PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
+PKG_GROUP      = Development/Compilers
+PKG_URL        = http://en.opensuse.org/Icecream
+PKG_LICENSE    = GPLv2+
+PKG_SUMMARY    = Distributed compiler.
+
+PKG_DEPS      += gcc-c++
+PKG_BUILD_DEPS+= gcc-c++
+
+define PKG_DESCRIPTION
+	Icecream is a distributed compile system. It allows parallel compiling by \
+	distributing the compile jobs to several nodes of a compile network running the \
+	icecc daemon. The icecc scheduler routes the jobs and provides status and \
+	statistics information to the icecc monitor. Each compile node can accept one \
+	or more compile jobs depending on the number of processors and the settings of \
+	the daemon. Link jobs and other jobs which cannot be distributed are executed \
+	locally on the node where the compilation is started.
+endef
+
+PKG_PACKAGES  += $(PKG_NAME)-devel
+
+DIR_APP        = $(DIR_SRC)/icecc-$(PKG_VER)
+PKG_TARBALL    = icecc-$(PKG_VER).tar.bz2
+
+CONFIGURE_OPTIONS += \
+	--disable-static \
+	--enable-shared
+
+define STAGE_INSTALL_CMDS
+	mkdir -pv $(BUILDROOT)/usr/lib/icecc/bin
+	for i in gcc g++ cc c++; do \
+		ln -svf ../../../bin/icecc $(BUILDROOT)/usr/lib/icecc/bin/$${i}; \
+		ln -svf ../../../bin/icecc $(BUILDROOT)/usr/lib/icecc/bin/$(DISTRO_MACHINE)-$${i}; \
+	done
+	sed -e 's|^#!.*|#!/bin/bash|' -i $(BUILDROOT)/usr/lib/icecc/icecc-create-env
+
+	-mkdir -pv $(BUILDROOT)/etc/profile.d
+	sed -e "s|@LIBDIR@|/usr/lib|g" \
+		< $(DIR_SOURCE)/icecream.sh > $(BUILDROOT)/etc/profile.d/icecream.sh
+
+	# create default working dir
+	-mkdir -pv $(BUILDROOT)/var/cache/icecream
+endef

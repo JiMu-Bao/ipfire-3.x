@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = glib
-PKG_VER        = 2.27.1
-PKG_REL        = 0
+PKG_VER        = 2.27.3
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
@@ -34,7 +34,7 @@ PKG_URL        = http://www.gtk.org
 PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = A library of handy utility functions.
 
-PKG_BUILD_DEPS+= gettext pcre-devel pkg-config zlib-devel
+PKG_BUILD_DEPS+= gettext libselinux-devel pcre-devel pkg-config zlib-devel
 
 define PKG_DESCRIPTION
 	GLib is the low-level core library that forms the basis \

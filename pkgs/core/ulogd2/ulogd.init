@@ -2,7 +2,7 @@ description		"A userspace logging daemon"
 author			"IPFire Team"
 
 start on started firewall
-stop on stopping firewall
+stop on kill-all-services or stopping firewall
 
 exec /usr/sbin/ulogd -c /etc/ulogd.conf
 respawn

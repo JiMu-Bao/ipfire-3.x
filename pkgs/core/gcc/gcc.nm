@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = gcc
-PKG_VER        = 4.5.1
-PKG_REL        = 3
+PKG_VER        = 4.5.2
+PKG_REL        = 2
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = Development/Compilers
@@ -67,7 +67,7 @@ endef
 # libgcc
 PKG_PACKAGES += libgcc
 define PKG_FILES-libgcc
-	/usr/lib/libgcc*.so.*
+	/lib/libgcc*.so.*
 endef
 
 PKG_PACKAGES += libgcc-devel
@@ -146,6 +146,7 @@ define STAGE_BUILD
 		TCFLAGS="$(CFLAGS)" \
 		../$(THISAPP)/configure \
 			$(CONFIG_CPU) \
+			--build=$(DISTRO_MACHINE) \
 			--prefix=/usr \
 			--libexecdir=/usr/lib \
 			--mandir=/usr/share/man \
@@ -178,6 +179,10 @@ define STAGE_INSTALL
 	-mkdir -pv $(BUILDROOT)/lib
 	ln -sfv ../usr/bin/cpp $(BUILDROOT)/lib/cpp
 	ln -sfv gcc $(BUILDROOT)/usr/bin/cc
+
+	# Move libgcc_s to /lib
+	mv -vf $(BUILDROOT)/usr/lib/libgcc_s.so.1 $(BUILDROOT)/lib/
+	ln -svf ../../lib/libgcc_s.so.1 $(BUILDROOT)/usr/lib/libgcc_s.so
 
 	# Remove some GNU debugger stuff.
 	rm -vf $(BUILDROOT)/usr/lib/lib*.py

@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = gnupg
-PKG_VER        = 2.0.16
+PKG_VER        = 2.0.17
 PKG_REL        = 0
 
 PKG_MAINTAINER =
@@ -35,7 +35,7 @@ PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = Utility for secure communication and data storage.
 
 PKG_BUILD_DEPS+= libassuan-devel libcurl-devel libgcrypt-devel libksba-devel \
-	pinentry pth-devel
+	pinentry pth-devel zlib-devel
 
 define PKG_DESCRIPTION
 	The GnuPG 2 package is GNU's tool for secure communication and data \

@@ -43,6 +43,9 @@ export CXXFLAGS
 CONFIGURE_OPTIONS = \
 	--prefix=/usr
 
+# For compatibility with pakfire3
+DISTRO_MACHINE=$(TARGET)
+
 ###############################################################################
 #
 # Packager variables
@@ -118,6 +121,10 @@ PKG_PACKAGES_FILES = $(foreach package,$(PKG_PACKAGES),$(call DO_PACKAGE_FILENAM
 # Automatically detect all patches in "patches"
 PKG_PATCHES = \
 	$(foreach patch,$(wildcard $(DIR_PATCHES)/*.patch),$(notdir $(patch)))
+PKG_PATCHES += \
+	$(foreach patch,$(wildcard $(DIR_PATCHES)/*.patch0),$(notdir $(patch)))
+PKG_PATCHES += \
+	$(foreach patch,$(wildcard $(DIR_PATCHES)/*.diff),$(notdir $(patch)))
 
 # Dynamic command that applies all patches
 DO_PATCHES = cd $(DIR_APP) && $(DIR_TOOLS)/patch $(foreach patch,$(PKG_PATCHES),$(DIR_PATCHES)/$(patch))

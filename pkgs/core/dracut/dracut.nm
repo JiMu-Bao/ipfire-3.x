@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = dracut
 PKG_VER        = 007
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Boot
@@ -56,10 +56,10 @@ define STAGE_PREPARE_CMDS
 endef
 
 define STAGE_BUILD
-	cd $(DIR_APP) && make WITH_SWITCH_ROOT=1
+	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
 endef
 
 define STAGE_INSTALL
-	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT) WITH_SWITCH_ROOT=1 \
+	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT) \
 		sbindir=/sbin sysconfdir=/etc mandir=/usr/share/man
 endef

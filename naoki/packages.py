@@ -209,7 +209,11 @@ class BinaryPackage(Package):
 		return ret
 
 	def _readfile(self, name):
-		f = io.CpioArchive(self.filename)
+		try:
+			f = io.CpioArchive(self.filename)
+		except ValueError, e:
+			raise Exception, "Could not open package '%s' correctly: %s" \
+				% (self.filename, e)
 
 		# If file is not available, return None
 		ret = None

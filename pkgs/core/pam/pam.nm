@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = Linux-PAM
 PKG_VER        = 1.1.0
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Base
@@ -34,7 +34,7 @@ PKG_URL        = http://www.us.kernel.org/pub/linux/libs/pam/index.html
 PKG_LICENSE    = BSD and GPLv2+ and BSD with advertising
 PKG_SUMMARY    = An extensible library which provides authentication for applications.
 
-PKG_BUILD_DEPS+= bison cracklib-devel flex
+PKG_BUILD_DEPS+= audit-devel bison cracklib-devel flex libselinux-devel
 
 define PKG_DESCRIPTION
 	PAM (Pluggable Authentication Modules) is a system security tool that \
@@ -46,21 +46,14 @@ PKG_TARBALL    = $(THISAPP).tar.bz2
 
 PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
 
-define STAGE_BUILD
-	cd $(DIR_APP) && \
-		./configure \
-			--libdir=/lib \
-			--sbindir=/lib/security \
-            --enable-securedir=/lib/security \
-            --docdir=/usr/share/doc/Linux-PAM-$(PKG_VER) \
-            --enable-read-both-confs
+CONFIGURE_OPTIONS += \
+	--libdir=/lib \
+	--sbindir=/lib/security \
+        --enable-securedir=/lib/security \
+        --docdir=/usr/share/doc/Linux-PAM-$(PKG_VER) \
+        --enable-read-both-confs
 
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
-endef
-
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT)
-
+define STAGE_INSTALL_CMDS
 	-mkdir -pv $(BUILDROOT)/sbin
 	chmod -v 4755 $(BUILDROOT)/lib/security/unix_chkpwd
 	mv -v $(BUILDROOT)/lib/security/pam_tally $(BUILDROOT)/sbin

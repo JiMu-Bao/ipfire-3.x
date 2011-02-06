@@ -1,5 +1,124 @@
---- glibc-2.12-2-gc4ccff1/ChangeLog.15
-+++ glibc-2.12-1/ChangeLog.15
+--- glibc-2.13/ChangeLog
++++ glibc-2.13-1/ChangeLog
+@@ -285,6 +285,11 @@
+ 
+ 	* sysdeps/unix/sysv/linux/sys/swap.h (SWAP_FLAG_DISCARD): Define.
+ 
++2010-12-13  Andreas Schwab  <schwab@redhat.com>
++
++	* elf/dl-object.c (_dl_new_object): Ignore origin of privileged
++	program.
++
+ 2010-11-11  Andreas Schwab  <schwab@redhat.com>
+ 
+ 	* posix/fnmatch_loop.c (NEW_PATTERN): Fix use of alloca.
+@@ -606,6 +611,11 @@
+ 	* string/str-two-way.h (two_way_long_needle): Always clear memory
+ 	when skipping input due to the shift table.
+ 
++2010-10-05  Andreas Schwab  <schwab@redhat.com>
++
++	* sysdeps/posix/getaddrinfo.c (gaih_inet): Don't discard result of
++	decoding ACE if AI_CANONIDN.
++
+ 2010-10-03  Ulrich Drepper  <drepper@gmail.com>
+ 
+ 	[BZ #12005]
+@@ -648,6 +658,34 @@
+ 	* sysdeps/unix/sysv/linux/internal_statvfs.c (INTERNAL_STATVFS):
+ 	Mask out sign-bit copies when constructing f_fsid.
+ 
++2010-09-28  Andreas Schwab  <schwab@redhat.com>
++
++	* elf/rtld.c (dl_main): Move setting of GLRO(dl_init_all_dirs)
++	before performing relro protection.
++
++2010-09-27  Andreas Schwab  <schwab@redhat.com>
++
++	* include/link.h (struct link_map): Add l_free_initfini.
++	* elf/dl-deps.c (_dl_map_object_deps): Set it when assigning
++	l_initfini.
++	* elf/rtld.c (dl_main): Clear it on all objects loaded on startup.
++	* elf/dl-libc.c (free_mem): Free l_initfini if l_free_initfini is
++	set.
++
++	[BZ #11561]
++	* posix/regcomp.c (parse_bracket_exp): When looking up collating
++	elements compare against the byte sequence of it, not its name.
++
++	[BZ #6530]
++	* stdio-common/vfprintf.c (process_string_arg): Revert 2000-07-22
++	change.
++
++	* nss/nss_files/files-XXX.c (internal_getent): Declare linebuflen
++	as size_t.
++
++	* sysdeps/i386/i686/multiarch/strspn.S (ENTRY): Add missing
++	backslash.
++
+ 2010-09-24  Petr Baudis <pasky@suse.cz>
+ 
+ 	* debug/stack_chk_fail_local.c: Add missing licence exception.
+@@ -1439,6 +1477,32 @@
+ 	call returning > 0 value.
+ 	* sysdeps/unix/sysv/linux/getlogin.c (getlogin): Likewise.
+ 
++2010-07-01  Andreas Schwab  <schwab@redhat.com>
++
++	* include/sys/resource.h (__getrlimit): Add hidden proto.
++	* sysdeps/unix/sysv/linux/i386/getrlimit.c: Add libc_hidden_weak.
++	* sysdeps/mach/hurd/getrlimit.c: Add libc_hidden_def.
++	* resource/getrlimit.c: Likewise.
++
++2010-06-28  Andreas Schwab  <schwab@redhat.com>
++
++	* allocatestack.c (setxid_mark_thread): Ensure that the exiting
++	thread is woken up.
++
++	* elf/Makefile: Add rules to build and run unload8 test.
++	* elf/unload8.c: New file.
++	* elf/unload8mod1.c: New file.
++	* elf/unload8mod1x.c: New file.
++	* elf/unload8mod2.c: New file.
++	* elf/unload8mod3.c: New file.
++
++	* elf/dl-close.c (_dl_close_worker): Reset private search list if
++	it wasn't used.
++
++2010-06-21  Andreas Schwab  <schwab@redhat.com>
++
++	* sysdeps/i386/i686/Makefile: Don't pass -mtune to assembler.
++
+ 2010-06-07  Andreas Schwab  <schwab@redhat.com>
+ 
+ 	* dlfcn/Makefile: Remove explicit dependencies on libc.so and
+@@ -1491,6 +1555,24 @@
+ 	* hurd/hurd/fd.h (__file_name_lookup_at): Update comment.
+ 	* sysdeps/mach/hurd/linkat.c (linkat): Pass O_NOLINK in FLAGS.
+ 
++2010-06-11  Andreas Schwab  <schwab@redhat.com>
++
++	* elf/rtld.c (_dl_starting_up): Always define.
++	(dl_main): Always set _dl_starting_up.
++	* elf/dl-support.c (_dl_starting_up): Always define.
++	* elf/dl-init.c (_dl_init): Always clear _dl_starting_up.
++
++2010-06-10  Andreas Schwab  <schwab@redhat.com>
++
++	* sysdeps/unix/sysv/linux/getpagesize.c: Don't assume AT_PAGESIZE
++	is always available.
++
++	* sysdeps/unix/sysv/linux/i386/Versions: Export __uname under
++	GLIBC_PRIVATE.
++	* nptl/Versions: Export __getrlimit under GLIBC_PRIVATE.
++	* sysdeps/unix/sysv/linux/i386/smp.h: Call __uname instead of uname.
++	* nptl/nptl-init.c: Call __getrlimit instead of getrlimit.
++
+ 2010-05-28  Luis Machado  <luisgpm@br.ibm.com>
+ 
+ 	* sysdeps/powerpc/powerpc32/power7/memcpy.S: Exchange srdi for srwi.
+--- glibc-2.13/ChangeLog.15
++++ glibc-2.13-1/ChangeLog.15
 @@ -477,6 +477,14 @@
  
  2004-11-26  Jakub Jelinek  <jakub@redhat.com>
@@ -65,8 +184,8 @@
  2004-08-30  Roland McGrath  <roland@frob.com>
  
  	* scripts/extract-abilist.awk: If `lastversion' variable defined, omit
---- glibc-2.12-2-gc4ccff1/ChangeLog.16
-+++ glibc-2.12-1/ChangeLog.16
+--- glibc-2.13/ChangeLog.16
++++ glibc-2.13-1/ChangeLog.16
 @@ -2042,6 +2042,9 @@
  	(__MATHDECL_2): Use __REDIRECT_NTH instead of __REDIRECT
  	followed by __THROW.
@@ -120,8 +239,88 @@
  2005-07-28  Thomas Schwinge  <schwinge@nic-nac-project.de>
  
  	[BZ #1137]
---- glibc-2.12-2-gc4ccff1/Makeconfig
-+++ glibc-2.12-1/Makeconfig
+--- glibc-2.13/ChangeLog.17
++++ glibc-2.13-1/ChangeLog.17
+@@ -256,6 +256,12 @@
+ 
+ 	* Makerules (libc-abis): Fix search for libc-abis in add-ons.
+ 
++2010-04-06  Ulrich Drepper  <drepper@redhat.com>
++
++	* sysdeps/posix/getaddrinfo.c (default_scopes): Assign global
++	scope to RFC 1918 addresses.
++	* posix/gai.conf: Document difference from RFC 3484.
++
+ 2010-04-05  Thomas Schwinge  <thomas@schwinge.name>
+ 
+ 	* sysdeps/gnu/unwind-resume.c: New, moved from nptl/sysdeps/pthread/.
+@@ -1010,6 +1016,13 @@
+ 	* sysdeps/x86_64/fpu/fegetenv.c: Likewise
+ 	* sysdeps/s390/fpu/fegetenv.c: Likewise.  Remove unused headers.
+ 
++2009-10-27  Aurelien Jarno  <aurelien@aurel32.net>
++
++	[BZ #10855]
++	* locale/programs/locarchive.c: use MMAP_SHARED to reserve memory
++	used later with MMAP_FIXED | MMAP_SHARED to cope with different
++	alignment restrictions.
++
+ 2010-02-05  H.J. Lu  <hongjiu.lu@intel.com>
+ 
+ 	[BZ #11230]
+@@ -2953,6 +2966,11 @@ d2009-10-30  Ulrich Drepper  <drepper@redhat.com>
+ 	* sysdeps/generic/ldsodefs.h (struct rtld_global): The map element in
+ 	the unique symbol hash table should not be const.
+ 
++2009-07-22  Jakub Jelinek  <jakub@redhat.com>
++
++	* Makeconfig (ASFLAGS): Append $(sysdep-ASFLAGS).
++	* sysdeps/i386/Makefile (sysdep-ASFLAGS): Add -U__i686.
++
+ 2009-07-21  Ulrich Drepper  <drepper@redhat.com>
+ 
+ 	* sysdeps/x86_64/multiarch/strstr.c: Minor cleanups.  Remove
+@@ -3218,6 +3236,11 @@ d2009-10-30  Ulrich Drepper  <drepper@redhat.com>
+ 	out common code into new function get_common_indeces. Determine
+ 	extended family and model for Intel processors.
+ 
++2009-06-26  Andreas Schwab  <aschwab@redhat.com>
++
++	* timezone/zic.c (stringzone): Don't try to generate a POSIX TZ
++	string when the timezone ends in DST.
++
+ 2009-06-26  Ulrich Drepper  <drepper@redhat.com>
+ 
+ 	* resolv/resolv.h: Define RES_SNGLKUPREOP.
+@@ -11818,6 +11841,10 @@ d2009-10-30  Ulrich Drepper  <drepper@redhat.com>
+ 	[BZ #4368]
+ 	* stdlib/stdlib.h: Remove obsolete part of comment for realpath.
+ 
++2007-04-16  Jakub Jelinek  <jakub@redhat.com>
++
++	* locale/programs/locarchive.c (add_alias, insert_name): Remove static.
++
+ 2007-04-16  Ulrich Drepper  <drepper@redhat.com>
+ 
+ 	[BZ #4364]
+@@ -13075,6 +13102,15 @@ d2009-10-30  Ulrich Drepper  <drepper@redhat.com>
+ 	separators also if no non-zero digits found.
+ 	* stdlib/Makefile (tests): Add tst-strtod3.
+ 
++2006-12-10  Jakub Jelinek  <jakub@redhat.com>
++
++	* sysdeps/unix/sysv/linux/netlinkaccess.h: Include linux/if_addr.h
++	if IFA_MAX is not defined.
++	(IFA_RTA, IFA_PAYLOAD, IFLA_RTA, IFLA_PAYLOAD): Define if not
++	defined.
++	* sysdeps/unix/sysv/linux/check_pf.c: Include netlinkaccess.h
++	instead of asm/types.h, linux/netlink.h and linux/rtnetlink.h.
++
+ 2006-12-09  Ulrich Drepper  <drepper@redhat.com>
+ 
+ 	[BZ #3632]
+--- glibc-2.13/Makeconfig
++++ glibc-2.13-1/Makeconfig
 @@ -789,12 +789,12 @@ endif
  # The assembler can generate debug information too.
  ifndef ASFLAGS
@@ -138,8 +337,8 @@
  
  ifndef BUILD_CC
  BUILD_CC = $(CC)
---- glibc-2.12-2-gc4ccff1/csu/Makefile
-+++ glibc-2.12-1/csu/Makefile
+--- glibc-2.13/csu/Makefile
++++ glibc-2.13-1/csu/Makefile
 @@ -93,7 +93,8 @@ omit-deps += $(crtstuff)
  $(crtstuff:%=$(objpfx)%.o): %.o: %.S $(objpfx)defs.h
  	$(compile.S) -g0 $(ASFLAGS-.os) -o $@
@@ -150,9 +349,9 @@
  
  vpath initfini.c $(sysdirs)
  
---- glibc-2.12-2-gc4ccff1/csu/elf-init.c
-+++ glibc-2.12-1/csu/elf-init.c
-@@ -63,6 +63,23 @@ extern void (*__init_array_end []) (int,
+--- glibc-2.13/csu/elf-init.c
++++ glibc-2.13-1/csu/elf-init.c
+@@ -63,6 +63,23 @@ extern void (*__init_array_end []) (int, char **, char **)
  extern void (*__fini_array_start []) (void) attribute_hidden;
  extern void (*__fini_array_end []) (void) attribute_hidden;
  
@@ -176,8 +375,8 @@
  
  /* These function symbols are provided for the .init/.fini section entry
     points automagically by the linker.  */
---- glibc-2.12-2-gc4ccff1/debug/tst-chk1.c
-+++ glibc-2.12-1/debug/tst-chk1.c
+--- glibc-2.13/debug/tst-chk1.c
++++ glibc-2.13-1/debug/tst-chk1.c
 @@ -17,6 +17,9 @@
     Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
     02111-1307 USA.  */
@@ -206,8 +405,174 @@
  #  define O 0
  # else
  #  define O 1
---- glibc-2.12-2-gc4ccff1/elf/ldconfig.c
-+++ glibc-2.12-1/elf/ldconfig.c
+--- glibc-2.13/elf/Makefile
++++ glibc-2.13-1/elf/Makefile
+@@ -89,6 +89,7 @@ distribute	:= rtld-Rules \
+ 		   unload4mod1.c unload4mod2.c unload4mod3.c unload4mod4.c \
+ 		   unload6mod1.c unload6mod2.c unload6mod3.c \
+ 		   unload7mod1.c unload7mod2.c \
++		   unload8mod1.c unload8mod1x.c unload8mod2.c unload8mod3.c \
+ 		   tst-audit1.c tst-audit2.c tst-audit3.c tst-audit4.c \
+ 		   tst-auditmod1.c tst-auditmod3a.c tst-auditmod3b.c \
+ 		   tst-auditmod4a.c tst-auditmod4b.c \
+@@ -129,6 +130,7 @@ include ../Makeconfig
+ ifeq ($(unwind-find-fde),yes)
+ routines += unwind-dw2-fde-glibc
+ shared-only-routines += unwind-dw2-fde-glibc
++CFLAGS-unwind-dw2-fde-glibc.c = -fno-strict-aliasing
+ endif
+ 
+ before-compile  = $(objpfx)trusted-dirs.h
+@@ -195,7 +197,7 @@ tests += loadtest restest1 preloadtest loadfail multiload origtest resolvfail \
+ 	 tst-align tst-align2 $(tests-execstack-$(have-z-execstack)) \
+ 	 tst-dlmodcount tst-dlopenrpath tst-deep1 \
+ 	 tst-dlmopen1 tst-dlmopen2 tst-dlmopen3 \
+-	 unload3 unload4 unload5 unload6 unload7 tst-global1 order2 \
++	 unload3 unload4 unload5 unload6 unload7 unload8 tst-global1 order2 \
+ 	 tst-audit1 tst-audit2 \
+ 	 tst-stackguard1 tst-addr1 tst-thrlock \
+ 	 tst-unique1 tst-unique2
+@@ -248,6 +250,7 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
+ 		unload4mod1 unload4mod2 unload4mod3 unload4mod4 \
+ 		unload6mod1 unload6mod2 unload6mod3 \
+ 		unload7mod1 unload7mod2 \
++		unload8mod1 unload8mod1x unload8mod2 unload8mod3 \
+ 		order2mod1 order2mod2 order2mod3 order2mod4 \
+ 		tst-unique1mod1 tst-unique1mod2 \
+ 		tst-unique2mod1 tst-unique2mod2
+@@ -531,6 +534,9 @@ $(objpfx)unload6mod2.so: $(libdl)
+ $(objpfx)unload6mod3.so: $(libdl)
+ $(objpfx)unload7mod1.so: $(libdl)
+ $(objpfx)unload7mod2.so: $(objpfx)unload7mod1.so
++$(objpfx)unload8mod1.so: $(objpfx)unload8mod2.so
++$(objpfx)unload8mod2.so: $(objpfx)unload8mod3.so
++$(objpfx)unload8mod3.so: $(libdl)
+ 
+ LDFLAGS-tst-tlsmod5.so = -nostdlib
+ LDFLAGS-tst-tlsmod6.so = -nostdlib
+@@ -832,6 +838,9 @@ $(objpfx)unload7: $(libdl)
+ $(objpfx)unload7.out: $(objpfx)unload7mod1.so $(objpfx)unload7mod2.so
+ unload7-ENV = MALLOC_PERTURB_=85
+ 
++$(objpfx)unload8: $(libdl)
++$(objpfx)unload8.out: $(objpfx)unload8mod1.so $(objpfx)unload8mod1x.so
++
+ ifdef libdl
+ $(objpfx)tst-tls9-static: $(common-objpfx)dlfcn/libdl.a
+ $(objpfx)tst-tls9-static.out: $(objpfx)tst-tlsmod5.so $(objpfx)tst-tlsmod6.so
+--- glibc-2.13/elf/dl-close.c
++++ glibc-2.13-1/elf/dl-close.c
+@@ -421,6 +421,13 @@ _dl_close_worker (struct link_map *map)
+ 
+ 	      imap->l_scope_max = new_size;
+ 	    }
++	  else if (new_list != NULL)
++	    {
++	      /* We didn't change the scope array, so reset the search
++		 list.  */
++	      imap->l_searchlist.r_list = NULL;
++	      imap->l_searchlist.r_nlist = 0;
++	    }
+ 
+ 	  /* The loader is gone, so mark the object as not having one.
+ 	     Note: l_idx != IDX_STILL_USED -> object will be removed.  */
+--- glibc-2.13/elf/dl-deps.c
++++ glibc-2.13-1/elf/dl-deps.c
+@@ -478,6 +478,7 @@ _dl_map_object_deps (struct link_map *map,
+ 		  nneeded * sizeof needed[0]);
+ 	  atomic_write_barrier ();
+ 	  l->l_initfini = l_initfini;
++	  l->l_free_initfini = 1;
+ 	}
+ 
+       /* If we have no auxiliary objects just go on to the next map.  */
+@@ -662,6 +663,7 @@ Filters not supported with LD_TRACE_PRELINKING"));
+   l_initfini[nlist] = NULL;
+   atomic_write_barrier ();
+   map->l_initfini = l_initfini;
++  map->l_free_initfini = 1;
+   if (l_reldeps != NULL)
+     {
+       atomic_write_barrier ();
+--- glibc-2.13/elf/dl-init.c
++++ glibc-2.13-1/elf/dl-init.c
+@@ -24,11 +24,9 @@
+ /* Type of the initializer.  */
+ typedef void (*init_t) (int, char **, char **);
+ 
+-#ifndef HAVE_INLINED_SYSCALLS
+ /* Flag, nonzero during startup phase.  */
+ extern int _dl_starting_up;
+ extern int _dl_starting_up_internal attribute_hidden;
+-#endif
+ 
+ 
+ static void
+@@ -133,9 +131,7 @@ _dl_init (struct link_map *main_map, int argc, char **argv, char **env)
+   while (i-- > 0)
+     call_init (main_map->l_initfini[i], argc, argv, env);
+ 
+-#ifndef HAVE_INLINED_SYSCALLS
+   /* Finished starting up.  */
+   INTUSE(_dl_starting_up) = 0;
+-#endif
+ }
+ INTDEF (_dl_init)
+--- glibc-2.13/elf/dl-libc.c
++++ glibc-2.13-1/elf/dl-libc.c
+@@ -265,13 +265,13 @@ libc_freeres_fn (free_mem)
+ 
+   for (Lmid_t ns = 0; ns < GL(dl_nns); ++ns)
+     {
+-      /* Remove all additional names added to the objects.  */
+       for (l = GL(dl_ns)[ns]._ns_loaded; l != NULL; l = l->l_next)
+ 	{
+ 	  struct libname_list *lnp = l->l_libname->next;
+ 
+ 	  l->l_libname->next = NULL;
+ 
++	  /* Remove all additional names added to the objects.  */
+ 	  while (lnp != NULL)
+ 	    {
+ 	      struct libname_list *old = lnp;
+@@ -279,6 +279,10 @@ libc_freeres_fn (free_mem)
+ 	      if (! old->dont_free)
+ 		free (old);
+ 	    }
++
++	  /* Free the initfini dependency list.  */
++	  if (l->l_free_initfini)
++	    free (l->l_initfini);
+ 	}
+ 
+       if (__builtin_expect (GL(dl_ns)[ns]._ns_global_scope_alloc, 0) != 0
+--- glibc-2.13/elf/dl-object.c
++++ glibc-2.13-1/elf/dl-object.c
+@@ -220,6 +220,9 @@ _dl_new_object (char *realname, const char *libname, int type,
+     out:
+       new->l_origin = origin;
+     }
++  else if (INTUSE(__libc_enable_secure) && type == lt_executable)
++    /* The origin of a privileged program cannot be trusted.  */
++    new->l_origin = (char *) -1;
+ 
+   return new;
+ }
+--- glibc-2.13/elf/dl-support.c
++++ glibc-2.13-1/elf/dl-support.c
+@@ -81,10 +81,8 @@ unsigned long long _dl_load_adds;
+    create a fake scope containing nothing.  */
+ struct r_scope_elem _dl_initial_searchlist;
+ 
+-#ifndef HAVE_INLINED_SYSCALLS
+ /* Nonzero during startup.  */
+ int _dl_starting_up = 1;
+-#endif
+ 
+ /* Random data provided by the kernel.  */
+ void *_dl_random;
+--- glibc-2.13/elf/ldconfig.c
++++ glibc-2.13-1/elf/ldconfig.c
 @@ -1031,17 +1031,19 @@ search_dirs (void)
  
  
@@ -230,7 +595,7 @@
  
    if (do_chroot && opt_chroot)
      {
-@@ -1102,7 +1104,14 @@ parse_conf (const char *filename, bool d
+@@ -1102,7 +1104,14 @@ parse_conf (const char *filename, bool do_chroot)
  	  cp += 8;
  	  while ((dir = strsep (&cp, " \t")) != NULL)
  	    if (dir[0] != '\0')
@@ -246,7 +611,7 @@
  	}
        else if (!strncasecmp (cp, "hwcap", 5) && isblank (cp[5]))
  	{
-@@ -1165,7 +1174,7 @@ parse_conf (const char *filename, bool d
+@@ -1165,7 +1174,7 @@ parse_conf (const char *filename, bool do_chroot)
     config files to read.  */
  static void
  parse_conf_include (const char *config_file, unsigned int lineno,
@@ -255,7 +620,7 @@
  {
    if (opt_chroot && pattern[0] != '/')
      error (EXIT_FAILURE, 0,
-@@ -1197,7 +1206,7 @@ parse_conf_include (const char *config_f
+@@ -1197,7 +1206,7 @@ parse_conf_include (const char *config_file, unsigned int lineno,
      {
      case 0:
        for (size_t i = 0; i < gl.gl_pathc; ++i)
@@ -288,9 +653,68 @@
 +      add_arch_dirs (config_file);
      }
  
-   char *aux_cache_file = _PATH_LDCONFIG_AUX_CACHE;
---- glibc-2.12-2-gc4ccff1/elf/tst-stackguard1.c
-+++ glibc-2.12-1/elf/tst-stackguard1.c
+   const char *aux_cache_file = _PATH_LDCONFIG_AUX_CACHE;
+--- glibc-2.13/elf/rtld.c
++++ glibc-2.13-1/elf/rtld.c
+@@ -107,7 +107,6 @@ static struct audit_list
+   struct audit_list *next;
+ } *audit_list;
+ 
+-#ifndef HAVE_INLINED_SYSCALLS
+ /* Set nonzero during loading and initialization of executable and
+    libraries, cleared before the executable's entry point runs.  This
+    must not be initialized to nonzero, because the unused dynamic
+@@ -117,7 +116,6 @@ static struct audit_list
+    never be called.  */
+ int _dl_starting_up = 0;
+ INTVARDEF(_dl_starting_up)
+-#endif
+ 
+ /* This is the structure which defines all variables global to ld.so
+    (except those which cannot be added for some reason).  */
+@@ -923,10 +921,8 @@ dl_main (const ElfW(Phdr) *phdr,
+   /* Process the environment variable which control the behaviour.  */
+   process_envvars (&mode);
+ 
+-#ifndef HAVE_INLINED_SYSCALLS
+   /* Set up a flag which tells we are just starting.  */
+   INTUSE(_dl_starting_up) = 1;
+-#endif
+ 
+   if (*user_entry == (ElfW(Addr)) ENTRY_POINT)
+     {
+@@ -2179,6 +2175,10 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
+      we need it in the memory handling later.  */
+   GLRO(dl_initial_searchlist) = *GL(dl_ns)[LM_ID_BASE]._ns_main_searchlist;
+ 
++  /* Remember the last search directory added at startup, now that
++     malloc will no longer be the one from dl-minimal.c.  */
++  GLRO(dl_init_all_dirs) = GL(dl_all_dirs);
++
+   if (prelinked)
+     {
+       if (main_map->l_info [ADDRIDX (DT_GNU_CONFLICT)] != NULL)
+@@ -2251,6 +2251,7 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
+ 	      lnp->dont_free = 1;
+ 	      lnp = lnp->next;
+ 	    }
++	  l->l_free_initfini = 0;
+ 
+ 	  if (l != &GL(dl_rtld_map))
+ 	    _dl_relocate_object (l, l->l_scope, GLRO(dl_lazy) ? RTLD_LAZY : 0,
+@@ -2298,10 +2299,6 @@ ERROR: ld.so: object '%s' cannot be loaded as audit interface: %s; ignored.\n",
+ 			  lossage);
+     }
+ 
+-  /* Remember the last search directory added at startup, now that
+-     malloc will no longer be the one from dl-minimal.c.  */
+-  GLRO(dl_init_all_dirs) = GL(dl_all_dirs);
+-
+   if (! prelinked && rtld_multiple_ref)
+     {
+       /* There was an explicit ref to the dynamic linker as a shared lib.
+--- glibc-2.13/elf/tst-stackguard1.c
++++ glibc-2.13-1/elf/tst-stackguard1.c
 @@ -160,17 +160,21 @@ do_test (void)
       the 16 runs, something is very wrong.  */
    int ndifferences = 0;
@@ -315,17 +739,107 @@
      {
        puts ("stack guard canaries are not randomized enough");
        puts ("nor equal to the default canary value");
---- glibc-2.12-2-gc4ccff1/include/bits/stdlib-ldbl.h
-+++ glibc-2.12-1/include/bits/stdlib-ldbl.h
+--- glibc-2.13/elf/unload8.c
++++ glibc-2.13-1/elf/unload8.c
+@@ -0,0 +1,33 @@
++#include <dlfcn.h>
++#include <stdio.h>
++
++int
++main (void)
++{
++  void *h = dlopen ("$ORIGIN/unload8mod1.so", RTLD_LAZY);
++  if (h == NULL)
++    {
++      puts ("dlopen unload8mod1.so failed");
++      return 1;
++    }
++
++  void *h2 = dlopen ("$ORIGIN/unload8mod1x.so", RTLD_LAZY);
++  if (h2 == NULL)
++    {
++      puts ("dlopen unload8mod1x.so failed");
++      return 1;
++    }
++  dlclose (h2);
++
++  int (*mod1) (void) = dlsym (h, "mod1");
++  if (mod1 == NULL)
++    {
++      puts ("dlsym failed");
++      return 1;
++    }
++
++  mod1 ();
++  dlclose (h);
++
++  return 0;
++}
+--- glibc-2.13/elf/unload8mod1.c
++++ glibc-2.13-1/elf/unload8mod1.c
+@@ -0,0 +1,7 @@
++extern void mod2 (void);
++
++void
++mod1 (void)
++{
++  mod2 ();
++}
+--- glibc-2.13/elf/unload8mod1x.c
++++ glibc-2.13-1/elf/unload8mod1x.c
+@@ -0,0 +1 @@
++int mod1x;
+--- glibc-2.13/elf/unload8mod2.c
++++ glibc-2.13-1/elf/unload8mod2.c
+@@ -0,0 +1,7 @@
++extern void mod3 (void);
++
++void
++mod2 (void)
++{
++  mod3 ();
++}
+--- glibc-2.13/elf/unload8mod3.c
++++ glibc-2.13-1/elf/unload8mod3.c
+@@ -0,0 +1,27 @@
++#include <dlfcn.h>
++#include <stdio.h>
++#include <stdlib.h>
++
++void
++mod3_fini2 (void)
++{
++}
++
++void
++mod3_fini (void)
++{
++  mod3_fini2 ();
++}
++
++void
++mod3 (void)
++{
++  void *h = dlopen ("$ORIGIN/unload8mod2.so", RTLD_LAZY);
++  if (h == NULL)
++    {
++      puts ("dlopen unload8mod2.so failed");
++      exit (1);
++    }
++
++  atexit (mod3_fini);
++}
+--- glibc-2.13/include/bits/stdlib-ldbl.h
++++ glibc-2.13-1/include/bits/stdlib-ldbl.h
 @@ -0,0 +1 @@
 +#include <stdlib/bits/stdlib-ldbl.h>
---- glibc-2.12-2-gc4ccff1/include/bits/wchar-ldbl.h
-+++ glibc-2.12-1/include/bits/wchar-ldbl.h
+--- glibc-2.13/include/bits/wchar-ldbl.h
++++ glibc-2.13-1/include/bits/wchar-ldbl.h
 @@ -0,0 +1 @@
 +#include <wcsmbs/bits/wchar-ldbl.h>
---- glibc-2.12-2-gc4ccff1/include/features.h
-+++ glibc-2.12-1/include/features.h
-@@ -308,8 +308,13 @@
+--- glibc-2.13/include/features.h
++++ glibc-2.13-1/include/features.h
+@@ -309,8 +309,13 @@
  #endif
  
  #if defined _FORTIFY_SOURCE && _FORTIFY_SOURCE > 0 \
@@ -341,8 +855,39 @@
  #  define __USE_FORTIFY_LEVEL 2
  # else
  #  define __USE_FORTIFY_LEVEL 1
---- glibc-2.12-2-gc4ccff1/intl/locale.alias
-+++ glibc-2.12-1/intl/locale.alias
+--- glibc-2.13/include/link.h
++++ glibc-2.13-1/include/link.h
+@@ -192,6 +192,9 @@ struct link_map
+ 						 during LD_TRACE_PRELINKING=1
+ 						 contains any DT_SYMBOLIC
+ 						 libraries.  */
++    unsigned int l_free_initfini:1; /* Nonzero if l_initfini can be
++				       freed, ie. not allocated with
++				       the dummy malloc in ld.so.  */
+ 
+     /* Collected information about own RPATH directories.  */
+     struct r_search_path_struct l_rpath_dirs;
+--- glibc-2.13/include/sys/resource.h
++++ glibc-2.13-1/include/sys/resource.h
+@@ -13,4 +13,5 @@ extern int __getrusage (enum __rusage_who __who, struct rusage *__usage)
+ 
+ extern int __setrlimit (enum __rlimit_resource __resource,
+ 			const struct rlimit *__rlimits);
++libc_hidden_proto (__getrlimit)
+ #endif
+--- glibc-2.13/inet/Makefile
++++ glibc-2.13-1/inet/Makefile
+@@ -57,6 +57,8 @@ tests := htontest test_ifindex tst-ntoa tst-ether_aton tst-network \
+ 
+ include ../Rules
+ 
++CFLAGS-tst-inet6_rth.c = -fno-strict-aliasing
++
+ ifeq ($(have-thread-library),yes)
+ 
+ CFLAGS-gethstbyad_r.c = -DUSE_NSCD=1 -fexceptions
+--- glibc-2.13/intl/locale.alias
++++ glibc-2.13-1/intl/locale.alias
 @@ -57,8 +57,6 @@ korean		ko_KR.eucKR
  korean.euc 	ko_KR.eucKR
  ko_KR		ko_KR.eucKR
@@ -352,8 +897,8 @@
  norwegian       nb_NO.ISO-8859-1
  nynorsk		nn_NO.ISO-8859-1
  polish          pl_PL.ISO-8859-2
---- glibc-2.12-2-gc4ccff1/libio/stdio.h
-+++ glibc-2.12-1/libio/stdio.h
+--- glibc-2.13/libio/stdio.h
++++ glibc-2.13-1/libio/stdio.h
 @@ -165,10 +165,12 @@ typedef _G_fpos64_t fpos64_t;
  extern struct _IO_FILE *stdin;		/* Standard input stream.  */
  extern struct _IO_FILE *stdout;		/* Standard output stream.  */
@@ -367,8 +912,8 @@
  
  __BEGIN_NAMESPACE_STD
  /* Remove file FILENAME.  */
---- glibc-2.12-2-gc4ccff1/locale/iso-4217.def
-+++ glibc-2.12-1/locale/iso-4217.def
+--- glibc-2.13/locale/iso-4217.def
++++ glibc-2.13-1/locale/iso-4217.def
 @@ -8,6 +8,7 @@
   *
   * !!! The list has to be sorted !!!
@@ -377,7 +922,7 @@
  DEFINE_INT_CURR("AED")		/* United Arab Emirates Dirham  */
  DEFINE_INT_CURR("AFN")		/* Afghanistan Afgani  */
  DEFINE_INT_CURR("ALL")		/* Albanian Lek  */
-@@ -15,12 +16,14 @@ DEFINE_INT_CURR("AMD")		/* Armenia Dram 
+@@ -15,12 +16,14 @@ DEFINE_INT_CURR("AMD")		/* Armenia Dram  */
  DEFINE_INT_CURR("ANG")		/* Netherlands Antilles  */
  DEFINE_INT_CURR("AOA")		/* Angolan Kwanza  */
  DEFINE_INT_CURR("ARS")		/* Argentine Peso  */
@@ -392,7 +937,7 @@
  DEFINE_INT_CURR("BGN")		/* Bulgarian Lev  */
  DEFINE_INT_CURR("BHD")		/* Bahraini Dinar  */
  DEFINE_INT_CURR("BIF")		/* Burundi Franc  */
-@@ -44,6 +47,7 @@ DEFINE_INT_CURR("CUP")		/* Cuban Peso  *
+@@ -44,6 +47,7 @@ DEFINE_INT_CURR("CUP")		/* Cuban Peso  */
  DEFINE_INT_CURR("CVE")		/* Cape Verde Escudo  */
  DEFINE_INT_CURR("CYP")		/* Cypriot Pound  */
  DEFINE_INT_CURR("CZK")		/* Czech Koruna  */
@@ -400,7 +945,7 @@
  DEFINE_INT_CURR("DJF")		/* Djibouti Franc  */
  DEFINE_INT_CURR("DKK")		/* Danish Krone (Faroe Islands, Greenland)  */
  DEFINE_INT_CURR("DOP")		/* Dominican Republic  */
-@@ -51,16 +55,20 @@ DEFINE_INT_CURR("DZD")		/* Algerian Dina
+@@ -51,16 +55,20 @@ DEFINE_INT_CURR("DZD")		/* Algerian Dinar  */
  DEFINE_INT_CURR("EEK")		/* Estonian Kroon  */
  DEFINE_INT_CURR("EGP")		/* Egyptian Pound  */
  DEFINE_INT_CURR("ERN")		/* Eritrean Nakfa  */
@@ -421,7 +966,7 @@
  DEFINE_INT_CURR("GTQ")		/* Guatemala Quetzal  */
  DEFINE_INT_CURR("GYD")		/* Guyana Dollar  */
  DEFINE_INT_CURR("HKD")		/* Hong Kong Dollar  */
-@@ -69,12 +77,14 @@ DEFINE_INT_CURR("HRK")		/* Croatia Kuna 
+@@ -69,12 +77,14 @@ DEFINE_INT_CURR("HRK")		/* Croatia Kuna  */
  DEFINE_INT_CURR("HTG")		/* Haiti Gourde  */
  DEFINE_INT_CURR("HUF")		/* Hungarian Forint  */
  DEFINE_INT_CURR("IDR")		/* Indonesia Rupiah  */
@@ -436,7 +981,7 @@
  DEFINE_INT_CURR("JEP")		/* Jersey Pound  */
  DEFINE_INT_CURR("JMD")		/* Jamaican Dollar  */
  DEFINE_INT_CURR("JOD")		/* Jordanian Dinar  */
-@@ -94,6 +104,7 @@ DEFINE_INT_CURR("LKR")		/* Sri Lankan Ru
+@@ -94,6 +104,7 @@ DEFINE_INT_CURR("LKR")		/* Sri Lankan Rupee  */
  DEFINE_INT_CURR("LRD")		/* Liberian Dollar  */
  DEFINE_INT_CURR("LSL")		/* Lesotho Maloti  */
  DEFINE_INT_CURR("LTL")		/* Lithuanian Litas  */
@@ -444,7 +989,7 @@
  DEFINE_INT_CURR("LVL")		/* Latvia Lat  */
  DEFINE_INT_CURR("LYD")		/* Libyan Arab Jamahiriya Dinar  */
  DEFINE_INT_CURR("MAD")		/* Moroccan Dirham  */
-@@ -114,6 +125,7 @@ DEFINE_INT_CURR("MZM")		/* Mozambique Me
+@@ -114,6 +125,7 @@ DEFINE_INT_CURR("MZM")		/* Mozambique Metical  */
  DEFINE_INT_CURR("NAD")		/* Namibia Dollar  */
  DEFINE_INT_CURR("NGN")		/* Nigeria Naira  */
  DEFINE_INT_CURR("NIO")		/* Nicaragua Cordoba Oro  */
@@ -452,7 +997,7 @@
  DEFINE_INT_CURR("NOK")		/* Norwegian Krone  */
  DEFINE_INT_CURR("NPR")		/* Nepalese Rupee  */
  DEFINE_INT_CURR("NZD")		/* New Zealand Dollar  */
-@@ -124,6 +136,7 @@ DEFINE_INT_CURR("PGK")		/* Papau New Gui
+@@ -124,6 +136,7 @@ DEFINE_INT_CURR("PGK")		/* Papau New Guinea Kina  */
  DEFINE_INT_CURR("PHP")		/* Philippines Peso  */
  DEFINE_INT_CURR("PKR")		/* Pakistan Rupee  */
  DEFINE_INT_CURR("PLN")		/* Polish Zloty  */
@@ -460,9 +1005,9 @@
  DEFINE_INT_CURR("PYG")		/* Paraguay Guarani  */
  DEFINE_INT_CURR("QAR")		/* Qatar Rial  */
  DEFINE_INT_CURR("ROL")		/* Romanian Leu  */
---- glibc-2.12-2-gc4ccff1/locale/programs/locarchive.c
-+++ glibc-2.12-1/locale/programs/locarchive.c
-@@ -134,7 +134,7 @@ create_archive (const char *archivefname
+--- glibc-2.13/locale/programs/locarchive.c
++++ glibc-2.13-1/locale/programs/locarchive.c
+@@ -134,7 +134,7 @@ create_archive (const char *archivefname, struct locarhandle *ah)
    size_t reserved = RESERVE_MMAP_SIZE;
    int xflags = 0;
    if (total < reserved
@@ -471,7 +1016,7 @@
  		       -1, 0)) != MAP_FAILED))
      xflags = MAP_FIXED;
    else
-@@ -241,9 +241,9 @@ oldlocrecentcmp (const void *a, const vo
+@@ -241,9 +241,9 @@ oldlocrecentcmp (const void *a, const void *b)
  /* forward decls for below */
  static uint32_t add_locale (struct locarhandle *ah, const char *name,
  			    locale_data_t data, bool replace);
@@ -484,7 +1029,7 @@
  
  
  static bool
-@@ -396,7 +396,7 @@ enlarge_archive (struct locarhandle *ah,
+@@ -396,7 +396,7 @@ enlarge_archive (struct locarhandle *ah, const struct locarhead *head)
    size_t reserved = RESERVE_MMAP_SIZE;
    int xflags = 0;
    if (total < reserved
@@ -493,7 +1038,7 @@
  		       -1, 0)) != MAP_FAILED))
      xflags = MAP_FIXED;
    else
-@@ -614,7 +614,7 @@ open_archive (struct locarhandle *ah, bo
+@@ -614,7 +614,7 @@ open_archive (struct locarhandle *ah, bool readonly)
    int xflags = 0;
    void *p;
    if (st.st_size < reserved
@@ -520,9 +1065,20 @@
  add_alias (struct locarhandle *ah, const char *alias, bool replace,
  	   const char *oldname, uint32_t *locrec_offset_p)
  {
---- glibc-2.12-2-gc4ccff1/localedata/Makefile
-+++ glibc-2.12-1/localedata/Makefile
-@@ -227,6 +227,7 @@ $(INSTALL-SUPPORTED-LOCALES): install-lo
+--- glibc-2.13/localedata/ChangeLog
++++ glibc-2.13-1/localedata/ChangeLog
+@@ -1,3 +1,8 @@
++2010-12-08  Andreas Schwab  <schwab@redhat.com>
++
++	* SUPPORTED: Remove .UTF-8 suffix from az_AZ, as_IN, tt_RU locale
++	names.
++
+ 2010-05-17  Andreas Schwab  <schwab@redhat.com>
+ 
+ 	* locales/es_CR (LC_ADDRESS): Fix character names in lang_ab.
+--- glibc-2.13/localedata/Makefile
++++ glibc-2.13-1/localedata/Makefile
+@@ -227,6 +227,7 @@ $(INSTALL-SUPPORTED-LOCALES): install-locales-dir
  	echo -n '...'; \
  	input=`echo $$locale | sed 's/\([^.]*\)[^@]*\(.*\)/\1\2/'`; \
  	$(LOCALEDEF) --alias-file=../intl/locale.alias \
@@ -530,8 +1086,19 @@
  		     -i locales/$$input -c -f charmaps/$$charset \
  		     $(addprefix --prefix=,$(install_root)) $$locale; \
  	echo ' done'; \
---- glibc-2.12-2-gc4ccff1/localedata/SUPPORTED
-+++ glibc-2.12-1/localedata/SUPPORTED
+--- glibc-2.13/localedata/SUPPORTED
++++ glibc-2.13-1/localedata/SUPPORTED
+@@ -46,8 +46,8 @@ ar_TN.UTF-8/UTF-8 \
+ ar_TN/ISO-8859-6 \
+ ar_YE.UTF-8/UTF-8 \
+ ar_YE/ISO-8859-6 \
+-az_AZ.UTF-8/UTF-8 \
+-as_IN.UTF-8/UTF-8 \
++az_AZ/UTF-8 \
++as_IN/UTF-8 \
+ ast_ES.UTF-8/UTF-8 \
+ ast_ES/ISO-8859-15 \
+ be_BY.UTF-8/UTF-8 \
 @@ -85,6 +85,7 @@ cy_GB.UTF-8/UTF-8 \
  cy_GB/ISO-8859-14 \
  da_DK.UTF-8/UTF-8 \
@@ -573,9 +1140,20 @@
  ta_IN/UTF-8 \
  te_IN/UTF-8 \
  tg_TJ.UTF-8/UTF-8 \
---- glibc-2.12-2-gc4ccff1/localedata/locales/cy_GB
-+++ glibc-2.12-1/localedata/locales/cy_GB
-@@ -248,8 +248,11 @@ mon         "<U0049><U006F><U006E><U0061
+@@ -385,8 +391,8 @@ tr_CY/ISO-8859-9 \
+ tr_TR.UTF-8/UTF-8 \
+ tr_TR/ISO-8859-9 \
+ ts_ZA/UTF-8 \
+-tt_RU.UTF-8/UTF-8 \
+-tt_RU.UTF-8@iqtelif/UTF-8 \
++tt_RU/UTF-8 \
++tt_RU@iqtelif/UTF-8 \
+ ug_CN/UTF-8 \
+ uk_UA.UTF-8/UTF-8 \
+ uk_UA/KOI8-U \
+--- glibc-2.13/localedata/locales/cy_GB
++++ glibc-2.13-1/localedata/locales/cy_GB
+@@ -248,8 +248,11 @@ mon         "<U0049><U006F><U006E><U0061><U0077><U0072>";/
  d_t_fmt     "<U0044><U0079><U0064><U0064><U0020><U0025><U0041><U0020><U0025><U0064><U0020><U006d><U0069><U0073><U0020><U0025><U0042><U0020><U0025><U0059><U0020><U0025><U0054><U0020><U0025><U005A>"
  d_fmt       "<U0025><U0064><U002E><U0025><U006D><U002E><U0025><U0079>"
  t_fmt       "<U0025><U0054>"
@@ -589,9 +1167,9 @@
  END LC_TIME
  
  LC_MESSAGES
---- glibc-2.12-2-gc4ccff1/localedata/locales/en_GB
-+++ glibc-2.12-1/localedata/locales/en_GB
-@@ -116,8 +116,8 @@ mon         "<U004A><U0061><U006E><U0075
+--- glibc-2.13/localedata/locales/en_GB
++++ glibc-2.13-1/localedata/locales/en_GB
+@@ -116,8 +116,8 @@ mon         "<U004A><U0061><U006E><U0075><U0061><U0072><U0079>";/
  d_t_fmt     "<U0025><U0061><U0020><U0025><U0064><U0020><U0025><U0062><U0020><U0025><U0059><U0020><U0025><U0054><U0020><U0025><U005A>"
  d_fmt       "<U0025><U0064><U002F><U0025><U006D><U002F><U0025><U0079>"
  t_fmt       "<U0025><U0054>"
@@ -602,8 +1180,8 @@
  date_fmt	"<U0025><U0061><U0020><U0025><U0062><U0020><U0025><U0065>/
  <U0020><U0025><U0048><U003A><U0025><U004D><U003A><U0025><U0053><U0020>/
  <U0025><U005A><U0020><U0025><U0059>"
---- glibc-2.12-2-gc4ccff1/localedata/locales/no_NO
-+++ glibc-2.12-1/localedata/locales/no_NO
+--- glibc-2.13/localedata/locales/no_NO
++++ glibc-2.13-1/localedata/locales/no_NO
 @@ -0,0 +1,69 @@
 +escape_char	/
 +comment_char    %
@@ -674,8 +1252,8 @@
 +LC_ADDRESS
 +copy "nb_NO"
 +END LC_ADDRESS
---- glibc-2.12-2-gc4ccff1/localedata/locales/zh_TW
-+++ glibc-2.12-1/localedata/locales/zh_TW
+--- glibc-2.13/localedata/locales/zh_TW
++++ glibc-2.13-1/localedata/locales/zh_TW
 @@ -1,7 +1,7 @@
  comment_char %
  escape_char /
@@ -703,14 +1281,15 @@
  revision   "0.2"
  date       "2000-08-02"
  %
---- glibc-2.12-2-gc4ccff1/malloc/mcheck.c
-+++ glibc-2.12-1/malloc/mcheck.c
-@@ -24,9 +24,25 @@
+--- glibc-2.13/malloc/mcheck.c
++++ glibc-2.13-1/malloc/mcheck.c
+@@ -25,10 +25,26 @@
  # include <mcheck.h>
  # include <stdint.h>
  # include <stdio.h>
 +# include <stdlib.h>
  # include <libintl.h>
+ # include <errno.h>
  #endif
  
 +#ifdef _LIBC
@@ -731,7 +1310,7 @@
  /* Old hook values.  */
  static void (*old_free_hook) (__ptr_t ptr, __const __ptr_t);
  static __ptr_t (*old_malloc_hook) (__malloc_size_t size, const __ptr_t);
-@@ -197,7 +213,7 @@ freehook (__ptr_t ptr, const __ptr_t cal
+@@ -199,7 +215,7 @@ freehook (__ptr_t ptr, const __ptr_t caller)
    if (old_free_hook != NULL)
      (*old_free_hook) (ptr, caller);
    else
@@ -740,7 +1319,7 @@
    __free_hook = freehook;
  }
  
-@@ -214,7 +230,7 @@ mallochook (__malloc_size_t size, const 
+@@ -222,7 +238,7 @@ mallochook (__malloc_size_t size, const __ptr_t caller)
      hdr = (struct hdr *) (*old_malloc_hook) (sizeof (struct hdr) + size + 1,
  					     caller);
    else
@@ -749,7 +1328,7 @@
    __malloc_hook = mallochook;
    if (hdr == NULL)
      return NULL;
-@@ -245,7 +261,7 @@ memalignhook (__malloc_size_t alignment,
+@@ -259,7 +275,7 @@ memalignhook (__malloc_size_t alignment, __malloc_size_t size,
    if (old_memalign_hook != NULL)
      block = (*old_memalign_hook) (alignment, slop + size + 1, caller);
    else
@@ -758,7 +1337,7 @@
    __memalign_hook = memalignhook;
    if (block == NULL)
      return NULL;
-@@ -300,8 +316,8 @@ reallochook (__ptr_t ptr, __malloc_size_
+@@ -320,8 +336,8 @@ reallochook (__ptr_t ptr, __malloc_size_t size, const __ptr_t caller)
  					      sizeof (struct hdr) + size + 1,
  					      caller);
    else
@@ -769,7 +1348,7 @@
    __free_hook = freehook;
    __malloc_hook = mallochook;
    __memalign_hook = memalignhook;
-@@ -361,8 +377,8 @@ mcheck (func)
+@@ -381,8 +397,8 @@ mcheck (func)
    if (__malloc_initialized <= 0 && !mcheck_used)
      {
        /* We call malloc() once here to ensure it is initialized.  */
@@ -780,8 +1359,8 @@
  
        old_free_hook = __free_hook;
        __free_hook = freehook;
---- glibc-2.12-2-gc4ccff1/manual/libc.texinfo
-+++ glibc-2.12-1/manual/libc.texinfo
+--- glibc-2.13/manual/libc.texinfo
++++ glibc-2.13-1/manual/libc.texinfo
 @@ -5,7 +5,7 @@
  @c setchapternewpage odd
  
@@ -791,8 +1370,8 @@
  @direntry
  * Libc: (libc).                 C library.
  @end direntry
---- glibc-2.12-2-gc4ccff1/misc/sys/cdefs.h
-+++ glibc-2.12-1/misc/sys/cdefs.h
+--- glibc-2.13/misc/sys/cdefs.h
++++ glibc-2.13-1/misc/sys/cdefs.h
 @@ -132,7 +132,10 @@
  #define __bos(ptr) __builtin_object_size (ptr, __USE_FORTIFY_LEVEL > 1)
  #define __bos0(ptr) __builtin_object_size (ptr, 0)
@@ -836,8 +1415,19 @@
  # define __va_arg_pack() __builtin_va_arg_pack ()
  # define __va_arg_pack_len() __builtin_va_arg_pack_len ()
  #endif
---- glibc-2.12-2-gc4ccff1/nis/nss
-+++ glibc-2.12-1/nis/nss
+--- glibc-2.13/nis/Makefile
++++ glibc-2.13-1/nis/Makefile
+@@ -69,6 +69,8 @@ libnss_nisplus-inhibit-o = $(filter-out .os,$(object-suffixes))
+ 
+ include ../Rules
+ 
++CFLAGS-nis_findserv.c = -fno-strict-aliasing
++CFLAGS-ypclnt.c = -fno-strict-aliasing
+ 
+ $(objpfx)libnss_compat.so: $(objpfx)libnsl.so$(libnsl.so-version)
+ $(objpfx)libnss_nis.so: $(objpfx)libnsl.so$(libnsl.so-version) \
+--- glibc-2.13/nis/nss
++++ glibc-2.13-1/nis/nss
 @@ -25,7 +25,7 @@
  #  memory with every getXXent() call.  Otherwise each getXXent() call
  #  might result into a network communication with the server to get
@@ -847,9 +1437,9 @@
  #
  # ADJUNCT_AS_SHADOW
  #  If set to TRUE, the passwd routines in the NIS NSS module will not
---- glibc-2.12-2-gc4ccff1/nptl/ChangeLog
-+++ glibc-2.12-1/nptl/ChangeLog
-@@ -3884,6 +3884,15 @@
+--- glibc-2.13/nptl/ChangeLog
++++ glibc-2.13-1/nptl/ChangeLog
+@@ -3982,6 +3982,15 @@
  	Use __sigfillset.  Document that sigfillset does the right thing wrt
  	to SIGSETXID.
  
@@ -865,7 +1455,7 @@
  2005-07-11  Jakub Jelinek  <jakub@redhat.com>
  
  	[BZ #1102]
-@@ -4620,6 +4629,11 @@
+@@ -4718,6 +4727,11 @@
  	Move definition inside libpthread, libc, librt check.  Provide
  	definition for rtld.
  
@@ -877,7 +1467,7 @@
  2004-09-02  Ulrich Drepper  <drepper@redhat.com>
  
  	* sysdeps/alpha/jmpbuf-unwind.h: Define __libc_unwind_longjmp.
-@@ -6694,6 +6708,11 @@
+@@ -6792,6 +6806,11 @@
  
  	* Makefile [$(build-shared) = yes] (tests): Depend on $(test-modules).
  
@@ -889,9 +1479,9 @@
  2003-07-25  Jakub Jelinek  <jakub@redhat.com>
  
  	* tst-cancel17.c (do_test): Check if aio_cancel failed.
---- glibc-2.12-2-gc4ccff1/nptl/Makefile
-+++ glibc-2.12-1/nptl/Makefile
-@@ -341,7 +341,8 @@ endif
+--- glibc-2.13/nptl/Makefile
++++ glibc-2.13-1/nptl/Makefile
+@@ -342,7 +342,8 @@ endif
  extra-objs += $(crti-objs) $(crtn-objs)
  omit-deps += crti crtn
  
@@ -901,7 +1491,7 @@
  endif
  
  CFLAGS-flockfile.c = -D_IO_MTSAFE_IO
-@@ -527,15 +528,19 @@ $(addprefix $(objpfx), \
+@@ -529,15 +530,19 @@ $(addprefix $(objpfx), \
      $(tests) $(xtests) $(test-srcs))): $(objpfx)libpthread.so \
  				       $(objpfx)libpthread_nonshared.a
  $(objpfx)tst-unload: $(common-objpfx)dlfcn/libdl.so
@@ -923,8 +1513,49 @@
  else
  $(addprefix $(objpfx),$(tests) $(test-srcs)): $(objpfx)libpthread.a
  endif
---- glibc-2.12-2-gc4ccff1/nptl/sysdeps/unix/sysv/linux/bits/posix_opt.h
-+++ glibc-2.12-1/nptl/sysdeps/unix/sysv/linux/bits/posix_opt.h
+--- glibc-2.13/nptl/Versions
++++ glibc-2.13-1/nptl/Versions
+@@ -30,6 +30,7 @@ libc {
+     __libc_alloca_cutoff;
+     # Internal libc interface to libpthread
+     __libc_dl_error_tsd;
++    __getrlimit;
+   }
+ }
+ 
+--- glibc-2.13/nptl/allocatestack.c
++++ glibc-2.13-1/nptl/allocatestack.c
+@@ -994,7 +994,16 @@ setxid_mark_thread (struct xid_command *cmdp, struct pthread *t)
+ 
+       /* If the thread is exiting right now, ignore it.  */
+       if ((ch & EXITING_BITMASK) != 0)
+-	return;
++	{
++	  /* Release the futex if there is no other setxid in
++	     progress.  */
++	  if ((ch & SETXID_BITMASK) == 0)
++	    {
++	      t->setxid_futex = 1;
++	      lll_futex_wake (&t->setxid_futex, 1, LLL_PRIVATE);
++	    }
++	  return;
++	}
+     }
+   while (atomic_compare_and_exchange_bool_acq (&t->cancelhandling,
+ 					       ch | SETXID_BITMASK, ch));
+--- glibc-2.13/nptl/nptl-init.c
++++ glibc-2.13-1/nptl/nptl-init.c
+@@ -396,7 +396,7 @@ __pthread_initialize_minimal_internal (void)
+   /* Determine the default allowed stack size.  This is the size used
+      in case the user does not specify one.  */
+   struct rlimit limit;
+-  if (getrlimit (RLIMIT_STACK, &limit) != 0
++  if (__getrlimit (RLIMIT_STACK, &limit) != 0
+       || limit.rlim_cur == RLIM_INFINITY)
+     /* The system limit is not usable.  Use an architecture-specific
+        default.  */
+--- glibc-2.13/nptl/sysdeps/unix/sysv/linux/bits/posix_opt.h
++++ glibc-2.13-1/nptl/sysdeps/unix/sysv/linux/bits/posix_opt.h
 @@ -189,4 +189,7 @@
  /* Typed memory objects are not available.  */
  #define _POSIX_TYPED_MEMORY_OBJECTS	-1
@@ -933,8 +1564,28 @@
 +#define _XOPEN_STREAMS	-1
 +
  #endif /* bits/posix_opt.h */
---- glibc-2.12-2-gc4ccff1/nptl/sysdeps/unix/sysv/linux/kernel-features.h
-+++ glibc-2.12-1/nptl/sysdeps/unix/sysv/linux/kernel-features.h
+--- glibc-2.13/nptl/sysdeps/unix/sysv/linux/i386/Versions
++++ glibc-2.13-1/nptl/sysdeps/unix/sysv/linux/i386/Versions
+@@ -0,0 +1,6 @@
++libc {
++  GLIBC_PRIVATE {
++    # Internal libc interface to libpthread
++    __uname;
++  }
++}
+--- glibc-2.13/nptl/sysdeps/unix/sysv/linux/i386/smp.h
++++ glibc-2.13-1/nptl/sysdeps/unix/sysv/linux/i386/smp.h
+@@ -37,7 +37,7 @@ is_smp_system (void)
+   char *cp;
+ 
+   /* Try reading the number using `sysctl' first.  */
+-  if (uname (&u.uts) == 0)
++  if (__uname (&u.uts) == 0)
+     cp = u.uts.version;
+   else
+     {
+--- glibc-2.13/nptl/sysdeps/unix/sysv/linux/kernel-features.h
++++ glibc-2.13-1/nptl/sysdeps/unix/sysv/linux/kernel-features.h
 @@ -0,0 +1,6 @@
 +#include_next <kernel-features.h>
 +
@@ -942,8 +1593,8 @@
 +#ifndef __ASSUME_CLONE_THREAD_FLAGS
 +# define __ASSUME_CLONE_THREAD_FLAGS	1
 +#endif
---- glibc-2.12-2-gc4ccff1/nptl/tst-stackguard1.c
-+++ glibc-2.12-1/nptl/tst-stackguard1.c
+--- glibc-2.13/nptl/tst-stackguard1.c
++++ glibc-2.13-1/nptl/tst-stackguard1.c
 @@ -190,17 +190,21 @@ do_test (void)
       the 16 runs, something is very wrong.  */
    int ndifferences = 0;
@@ -968,8 +1619,8 @@
      {
        puts ("stack guard canaries are not randomized enough");
        puts ("nor equal to the default canary value");
---- glibc-2.12-2-gc4ccff1/nscd/nscd.conf
-+++ glibc-2.12-1/nscd/nscd.conf
+--- glibc-2.13/nscd/nscd.conf
++++ glibc-2.13-1/nscd/nscd.conf
 @@ -33,7 +33,7 @@
  #	logfile			/var/log/nscd.log
  #	threads			4
@@ -979,8 +1630,8 @@
  #	stat-user		somebody
  	debug-level		0
  #	reload-count		5
---- glibc-2.12-2-gc4ccff1/nscd/nscd.init
-+++ glibc-2.12-1/nscd/nscd.init
+--- glibc-2.13/nscd/nscd.init
++++ glibc-2.13-1/nscd/nscd.init
 @@ -9,6 +9,7 @@
  #		slow naming services like NIS, NIS+, LDAP, or hesiod.
  # processname: /usr/sbin/nscd
@@ -1021,7 +1672,7 @@
      RETVAL=$?
      echo
      [ $RETVAL -eq 0 ] && touch /var/lock/subsys/nscd
-@@ -83,7 +72,7 @@ restart() {
+@@ -83,11 +72,11 @@ restart() {
  # See how we were called.
  case "$1" in
      start)
@@ -1030,6 +1681,11 @@
  	RETVAL=$?
  	;;
      stop)
+-	stop
++	[ ! -e /var/lock/subsys/nscd ] || stop
+ 	RETVAL=$?
+ 	;;
+     status)
 @@ -99,14 +88,17 @@ case "$1" in
  	RETVAL=$?
  	;;
@@ -1052,9 +1708,37 @@
  	;;
      *)
  	echo $"Usage: $0 {start|stop|status|restart|reload|condrestart}"
---- glibc-2.12-2-gc4ccff1/posix/Makefile
-+++ glibc-2.12-1/posix/Makefile
-@@ -305,15 +305,8 @@ $(inst_libexecdir)/getconf: $(inst_bindi
+--- glibc-2.13/nss/Makefile
++++ glibc-2.13-1/nss/Makefile
+@@ -75,6 +75,7 @@ endif
+ 
+ include ../Rules
+ 
++CFLAGS-files-hosts.c = -fno-strict-aliasing
+ 
+ ifeq (yes,$(build-static-nss))
+ $(objpfx)getent: $(objpfx)libnss_files.a
+--- glibc-2.13/nss/nss_files/files-XXX.c
++++ glibc-2.13-1/nss/nss_files/files-XXX.c
+@@ -1,5 +1,5 @@
+ /* Common code for file-based databases in nss_files module.
+-   Copyright (C) 1996-1999,2001,2002,2004,2007,2008
++   Copyright (C) 1996-1999,2001,2002,2004,2007,2008,2010
+    Free Software Foundation, Inc.
+    This file is part of the GNU C Library.
+ 
+@@ -190,7 +190,7 @@ internal_getent (struct STRUCTURE *result,
+ {
+   char *p;
+   struct parser_data *data = (void *) buffer;
+-  int linebuflen = buffer + buflen - data->linebuffer;
++  size_t linebuflen = buffer + buflen - data->linebuffer;
+   int parse_result;
+ 
+   if (buflen < sizeof *data + 2)
+--- glibc-2.13/posix/Makefile
++++ glibc-2.13-1/posix/Makefile
+@@ -325,15 +325,8 @@ $(inst_libexecdir)/getconf: $(inst_bindir)/getconf \
  	  mv -f $@/$$spec.new $@/$$spec; \
  	done < $(objpfx)getconf.speclist
  
@@ -1074,8 +1758,8 @@
 +	  | sed -n -e '/START_OF_STRINGS/,$${/\(POSIX_V[67]\|_XBS5\)_/{s/^[^"]*"//;s/".*$$//;p}}' \
 +	  > $@.new
  	mv -f $@.new $@
---- glibc-2.12-2-gc4ccff1/posix/gai.conf
-+++ glibc-2.12-1/posix/gai.conf
+--- glibc-2.13/posix/gai.conf
++++ glibc-2.13-1/posix/gai.conf
 @@ -41,7 +41,7 @@
  #
  # precedence  <mask>   <value>
@@ -1100,8 +1784,8 @@
  #scopev4 ::ffff:0.0.0.0/96       14
 +#
 +#    This is what the Red Hat setting currently uses.
---- glibc-2.12-2-gc4ccff1/posix/getconf.speclist.h
-+++ glibc-2.12-1/posix/getconf.speclist.h
+--- glibc-2.13/posix/getconf.speclist.h
++++ glibc-2.13-1/posix/getconf.speclist.h
 @@ -0,0 +1,39 @@
 +#include <unistd.h>
 +const char *START_OF_STRINGS =
@@ -1142,8 +1826,208 @@
 +"XBS5_LPBIG_OFFBIG"
 +#endif
 +"";
---- glibc-2.12-2-gc4ccff1/streams/Makefile
-+++ glibc-2.12-1/streams/Makefile
+--- glibc-2.13/posix/regcomp.c
++++ glibc-2.13-1/posix/regcomp.c
+@@ -2745,40 +2745,29 @@ parse_bracket_exp (re_string_t *regexp, re_dfa_t *dfa, re_token_t *token,
+ 
+   /* Local function for parse_bracket_exp used in _LIBC environement.
+      Seek the collating symbol entry correspondings to NAME.
+-     Return the index of the symbol in the SYMB_TABLE.  */
++     Return the index of the symbol in the SYMB_TABLE,
++     or -1 if not found.  */
+ 
+   auto inline int32_t
+   __attribute ((always_inline))
+-  seek_collating_symbol_entry (name, name_len)
+-	 const unsigned char *name;
+-	 size_t name_len;
++  seek_collating_symbol_entry (const unsigned char *name, size_t name_len)
+     {
+-      int32_t hash = elem_hash ((const char *) name, name_len);
+-      int32_t elem = hash % table_size;
+-      if (symb_table[2 * elem] != 0)
+-	{
+-	  int32_t second = hash % (table_size - 2) + 1;
+-
+-	  do
+-	    {
+-	      /* First compare the hashing value.  */
+-	      if (symb_table[2 * elem] == hash
+-		  /* Compare the length of the name.  */
+-		  && name_len == extra[symb_table[2 * elem + 1]]
+-		  /* Compare the name.  */
+-		  && memcmp (name, &extra[symb_table[2 * elem + 1] + 1],
+-			     name_len) == 0)
+-		{
+-		  /* Yep, this is the entry.  */
+-		  break;
+-		}
++      int32_t elem;
+ 
+-	      /* Next entry.  */
+-	      elem += second;
+-	    }
+-	  while (symb_table[2 * elem] != 0);
+-	}
+-      return elem;
++      for (elem = 0; elem < table_size; elem++)
++	if (symb_table[2 * elem] != 0)
++	  {
++	    int32_t idx = symb_table[2 * elem + 1];
++	    /* Skip the name of collating element name.  */
++	    idx += 1 + extra[idx];
++	    if (/* Compare the length of the name.  */
++		name_len == extra[idx]
++		/* Compare the name.  */
++		&& memcmp (name, &extra[idx + 1], name_len) == 0)
++	      /* Yep, this is the entry.  */
++	      return elem;
++	  }
++      return -1;
+     }
+ 
+   /* Local function for parse_bracket_exp used in _LIBC environment.
+@@ -2787,8 +2776,7 @@ parse_bracket_exp (re_string_t *regexp, re_dfa_t *dfa, re_token_t *token,
+ 
+   auto inline unsigned int
+   __attribute ((always_inline))
+-  lookup_collation_sequence_value (br_elem)
+-	 bracket_elem_t *br_elem;
++  lookup_collation_sequence_value (bracket_elem_t *br_elem)
+     {
+       if (br_elem->type == SB_CHAR)
+ 	{
+@@ -2816,7 +2804,7 @@ parse_bracket_exp (re_string_t *regexp, re_dfa_t *dfa, re_token_t *token,
+ 	      int32_t elem, idx;
+ 	      elem = seek_collating_symbol_entry (br_elem->opr.name,
+ 						  sym_name_len);
+-	      if (symb_table[2 * elem] != 0)
++	      if (elem != -1)
+ 		{
+ 		  /* We found the entry.  */
+ 		  idx = symb_table[2 * elem + 1];
+@@ -2834,7 +2822,7 @@ parse_bracket_exp (re_string_t *regexp, re_dfa_t *dfa, re_token_t *token,
+ 		  /* Return the collation sequence value.  */
+ 		  return *(unsigned int *) (extra + idx);
+ 		}
+-	      else if (symb_table[2 * elem] == 0 && sym_name_len == 1)
++	      else if (sym_name_len == 1)
+ 		{
+ 		  /* No valid character.  Match it as a single byte
+ 		     character.  */
+@@ -2856,11 +2844,8 @@ parse_bracket_exp (re_string_t *regexp, re_dfa_t *dfa, re_token_t *token,
+ 
+   auto inline reg_errcode_t
+   __attribute ((always_inline))
+-  build_range_exp (sbcset, mbcset, range_alloc, start_elem, end_elem)
+-	 re_charset_t *mbcset;
+-	 int *range_alloc;
+-	 bitset_t sbcset;
+-	 bracket_elem_t *start_elem, *end_elem;
++  build_range_exp (bitset_t sbcset, re_charset_t *mbcset, int *range_alloc,
++		   bracket_elem_t *start_elem, bracket_elem_t *end_elem)
+     {
+       unsigned int ch;
+       uint32_t start_collseq;
+@@ -2939,25 +2924,22 @@ parse_bracket_exp (re_string_t *regexp, re_dfa_t *dfa, re_token_t *token,
+ 
+   auto inline reg_errcode_t
+   __attribute ((always_inline))
+-  build_collating_symbol (sbcset, mbcset, coll_sym_alloc, name)
+-	 re_charset_t *mbcset;
+-	 int *coll_sym_alloc;
+-	 bitset_t sbcset;
+-	 const unsigned char *name;
++  build_collating_symbol (bitset_t sbcset, re_charset_t *mbcset,
++			  int *coll_sym_alloc, const unsigned char *name)
+     {
+       int32_t elem, idx;
+       size_t name_len = strlen ((const char *) name);
+       if (nrules != 0)
+ 	{
+ 	  elem = seek_collating_symbol_entry (name, name_len);
+-	  if (symb_table[2 * elem] != 0)
++	  if (elem != -1)
+ 	    {
+ 	      /* We found the entry.  */
+ 	      idx = symb_table[2 * elem + 1];
+ 	      /* Skip the name of collating element name.  */
+ 	      idx += 1 + extra[idx];
+ 	    }
+-	  else if (symb_table[2 * elem] == 0 && name_len == 1)
++	  else if (name_len == 1)
+ 	    {
+ 	      /* No valid character, treat it as a normal
+ 		 character.  */
+--- glibc-2.13/resolv/Makefile
++++ glibc-2.13-1/resolv/Makefile
+@@ -77,6 +77,7 @@ CPPFLAGS += -Dgethostbyname=res_gethostbyname \
+ 	    -Dgetnetbyaddr=res_getnetbyaddr
+ 
+ CFLAGS-res_hconf.c = -fexceptions
++CFLAGS-res_send.c = -fno-strict-aliasing
+ 
+ # The BIND code elicits some harmless warnings.
+ +cflags += -Wno-strict-prototypes -Wno-write-strings
+--- glibc-2.13/resource/getrlimit.c
++++ glibc-2.13-1/resource/getrlimit.c
+@@ -28,6 +28,7 @@ __getrlimit (enum __rlimit_resource resource, struct rlimit *rlimits)
+   __set_errno (ENOSYS);
+   return -1;
+ }
++libc_hidden_def (__getrlimit)
+ weak_alias (__getrlimit, getrlimit)
+ 
+ stub_warning (getrlimit)
+--- glibc-2.13/stdio-common/vfprintf.c
++++ glibc-2.13-1/stdio-common/vfprintf.c
+@@ -1160,41 +1160,9 @@ vfprintf (FILE *s, const CHAR_T *format, va_list ap)
+ 	else if (!is_long && spec != L_('S'))				      \
+ 	  {								      \
+ 	    if (prec != -1)						      \
+-	      {								      \
+-		/* Search for the end of the string, but don't search past    \
+-		   the length (in bytes) specified by the precision.  Also    \
+-		   don't use incomplete characters.  */			      \
+-		if (_NL_CURRENT_WORD (LC_CTYPE, _NL_CTYPE_MB_CUR_MAX) == 1)   \
+-		  len = __strnlen (string, prec);			      \
+-		else							      \
+-		  {							      \
+-		    /* In case we have a multibyte character set the	      \
+-		       situation is more complicated.  We must not copy	      \
+-		       bytes at the end which form an incomplete character. */\
+-		    size_t ignore_size = (unsigned) prec > 1024 ? 1024 : prec;\
+-		    wchar_t ignore[ignore_size];			      \
+-		    const char *str2 = string;				      \
+-		    const char *strend = string + prec;			      \
+-		    if (strend < string)				      \
+-		      strend = (const char *) UINTPTR_MAX;		      \
+-									      \
+-		    mbstate_t ps;					      \
+-		    memset (&ps, '\0', sizeof (ps));			      \
+-									      \
+-		    while (str2 != NULL && str2 < strend)		      \
+-		      if (__mbsnrtowcs (ignore, &str2, strend - str2,	      \
+-					ignore_size, &ps) == (size_t) -1)     \
+-			{						      \
+-			  done = -1;					      \
+-			  goto all_done;				      \
+-			}						      \
+-									      \
+-		    if (str2 == NULL)					      \
+-		      len = strlen (string);				      \
+-		    else						      \
+-		      len = str2 - string - (ps.__count & 7);		      \
+-		  }							      \
+-	      }								      \
++	      /* Search for the end of the string, but don't search past      \
++		 the length (in bytes) specified by the precision.  */	      \
++	      len = __strnlen (string, prec);				      \
+ 	    else							      \
+ 	      len = strlen (string);					      \
+ 	  }								      \
+--- glibc-2.13/streams/Makefile
++++ glibc-2.13-1/streams/Makefile
 @@ -21,7 +21,7 @@
  #
  subdir	:= streams
@@ -1153,8 +2037,21 @@
  routines	= isastream getmsg getpmsg putmsg putpmsg fattach fdetach
  
  include ../Rules
---- glibc-2.12-2-gc4ccff1/sysdeps/generic/dl-cache.h
-+++ glibc-2.12-1/sysdeps/generic/dl-cache.h
+--- glibc-2.13/sunrpc/Makefile
++++ glibc-2.13-1/sunrpc/Makefile
+@@ -129,6 +129,10 @@ CFLAGS-openchild.c = -fexceptions
+ 
+ CPPFLAGS += -D_RPC_THREAD_SAFE_
+ 
++CFLAGS-clnt_tcp.c = -fno-strict-aliasing
++CFLAGS-clnt_udp.c = -fno-strict-aliasing
++CFLAGS-clnt_unix.c = -fno-strict-aliasing
++
+ include ../Rules
+ 
+ $(objpfx)rpcgen: $(addprefix $(objpfx),$(rpcgen-objs)) \
+--- glibc-2.13/sysdeps/generic/dl-cache.h
++++ glibc-2.13-1/sysdeps/generic/dl-cache.h
 @@ -36,6 +36,14 @@
  # define add_system_dir(dir) add_dir (dir)
  #endif
@@ -1170,8 +2067,8 @@
  #define CACHEMAGIC "ld.so-1.7.0"
  
  /* libc5 and glibc 2.0/2.1 use the same format.  For glibc 2.2 another
---- glibc-2.12-2-gc4ccff1/sysdeps/i386/Makefile
-+++ glibc-2.12-1/sysdeps/i386/Makefile
+--- glibc-2.13/sysdeps/i386/Makefile
++++ glibc-2.13-1/sysdeps/i386/Makefile
 @@ -2,6 +2,8 @@
  # Every i386 port in use uses gas syntax (I think).
  asm-CPPFLAGS += -DGAS_SYNTAX
@@ -1181,7 +2078,7 @@
  # The i386 `long double' is a distinct type we support.
  long-double-fcts = yes
  
-@@ -64,6 +66,14 @@ endif
+@@ -65,6 +67,14 @@ endif
  
  ifneq (,$(filter -mno-tls-direct-seg-refs,$(CFLAGS)))
  defines += -DNO_TLS_DIRECT_SEG_REFS
@@ -1196,8 +2093,43 @@
  endif
  
  ifeq ($(subdir),elf)
---- glibc-2.12-2-gc4ccff1/sysdeps/ia64/Makefile
-+++ glibc-2.12-1/sysdeps/ia64/Makefile
+--- glibc-2.13/sysdeps/i386/i686/Makefile
++++ glibc-2.13-1/sysdeps/i386/i686/Makefile
+@@ -9,19 +9,3 @@ stack-align-test-flags += -msse
+ ifeq ($(subdir),string)
+ sysdep_routines += cacheinfo
+ endif
+-
+-ifeq (yes,$(config-asflags-i686))
+-CFLAGS-.o += -Wa,-mtune=i686
+-CFLAGS-.os += -Wa,-mtune=i686
+-CFLAGS-.op += -Wa,-mtune=i686
+-CFLAGS-.og += -Wa,-mtune=i686
+-CFLAGS-.ob += -Wa,-mtune=i686
+-CFLAGS-.oS += -Wa,-mtune=i686
+-
+-ASFLAGS-.o += -Wa,-mtune=i686
+-ASFLAGS-.os += -Wa,-mtune=i686
+-ASFLAGS-.op += -Wa,-mtune=i686
+-ASFLAGS-.og += -Wa,-mtune=i686
+-ASFLAGS-.ob += -Wa,-mtune=i686
+-ASFLAGS-.oS += -Wa,-mtune=i686
+-endif
+--- glibc-2.13/sysdeps/i386/i686/multiarch/strspn.S
++++ glibc-2.13-1/sysdeps/i386/i686/multiarch/strspn.S
+@@ -76,8 +76,8 @@ END(strspn)
+ # define ENTRY(name) \
+ 	.type __strspn_ia32, @function; \
+ 	.globl __strspn_ia32; \
+-	.p2align 4
+-	__strspn_ia32: cfi_startproc; \
++	.p2align 4; \
++__strspn_ia32: cfi_startproc; \
+ 	CALL_MCOUNT
+ # undef END
+ # define END(name) \
+--- glibc-2.13/sysdeps/ia64/Makefile
++++ glibc-2.13-1/sysdeps/ia64/Makefile
 @@ -12,8 +12,8 @@ elide-routines.os += hp-timing
  
  ifeq (yes,$(build-shared))
@@ -1209,8 +2141,8 @@
  endif
  endif
  
---- glibc-2.12-2-gc4ccff1/sysdeps/ia64/ia64libgcc.S
-+++ glibc-2.12-1/sysdeps/ia64/ia64libgcc.S
+--- glibc-2.13/sysdeps/ia64/ia64libgcc.S
++++ glibc-2.13-1/sysdeps/ia64/ia64libgcc.S
 @@ -1,350 +0,0 @@
 -/* From the Intel IA-64 Optimization Guide, choose the minimum latency
 -   alternative.  */
@@ -1562,8 +2494,8 @@
 -	.symver	___multi3, __multi3@GLIBC_2.2
 -
 -#endif
---- glibc-2.12-2-gc4ccff1/sysdeps/ia64/libgcc-compat.c
-+++ glibc-2.12-1/sysdeps/ia64/libgcc-compat.c
+--- glibc-2.13/sysdeps/ia64/libgcc-compat.c
++++ glibc-2.13-1/sysdeps/ia64/libgcc-compat.c
 @@ -0,0 +1,84 @@
 +/* pre-.hidden libgcc compatibility
 +   Copyright (C) 2002 Free Software Foundation, Inc.
@@ -1649,9 +2581,25 @@
 +symbol_version (INTUSE (__multi3), __multi3, GLIBC_2.2);
 +
 +#endif
---- glibc-2.12-2-gc4ccff1/sysdeps/posix/getaddrinfo.c
-+++ glibc-2.12-1/sysdeps/posix/getaddrinfo.c
-@@ -1099,10 +1099,12 @@ static const struct scopeentry
+--- glibc-2.13/sysdeps/mach/hurd/getrlimit.c
++++ glibc-2.13-1/sysdeps/mach/hurd/getrlimit.c
+@@ -44,4 +44,5 @@ __getrlimit (enum __rlimit_resource resource, struct rlimit *rlimits)
+ 
+   return 0;
+ }
++libc_hidden_def (__getrlimit)
+ weak_alias (__getrlimit, getrlimit)
+--- glibc-2.13/sysdeps/posix/getaddrinfo.c
++++ glibc-2.13-1/sysdeps/posix/getaddrinfo.c
+@@ -965,6 +965,7 @@ gaih_inet (const char *name, const struct gaih_service *service,
+ 		   make a copy.  */
+ 		if (out == canon)
+ 		  goto make_copy;
++		canon = out;
+ 	      }
+ 	    else
+ #endif
+@@ -1100,10 +1101,12 @@ static const struct scopeentry
      /* Link-local addresses: scope 2.  */
      { { { 169, 254, 0, 0 } }, htonl_c (0xffff0000), 2 },
      { { { 127, 0, 0, 0 } }, htonl_c (0xff000000), 2 },
@@ -1664,8 +2612,8 @@
      /* Default: scope 14.  */
      { { { 0, 0, 0, 0 } }, htonl_c (0x00000000), 14 }
    };
---- glibc-2.12-2-gc4ccff1/sysdeps/powerpc/powerpc64/Makefile
-+++ glibc-2.12-1/sysdeps/powerpc/powerpc64/Makefile
+--- glibc-2.13/sysdeps/powerpc/powerpc64/Makefile
++++ glibc-2.13-1/sysdeps/powerpc/powerpc64/Makefile
 @@ -30,6 +30,7 @@ ifneq ($(elf),no)
  # we use -fpic instead which is much better.
  CFLAGS-initfini.s += -fpic -O1
@@ -1674,8 +2622,16 @@
  endif
  
  ifeq ($(subdir),elf)
---- glibc-2.12-2-gc4ccff1/sysdeps/unix/nice.c
-+++ glibc-2.12-1/sysdeps/unix/nice.c
+--- glibc-2.13/sysdeps/powerpc/powerpc64/elf/Makefile
++++ glibc-2.13-1/sysdeps/powerpc/powerpc64/elf/Makefile
+@@ -9,3 +9,5 @@ CFLAGS-rtld-mempcpy.os = $(no-special-regs)
+ CFLAGS-rtld-memmove.os = $(no-special-regs)
+ CFLAGS-rtld-memchr.os = $(no-special-regs)
+ CFLAGS-rtld-strnlen.os = $(no-special-regs)
++
++CFLAGS-gmon-start.c = -fno-strict-aliasing
+--- glibc-2.13/sysdeps/unix/nice.c
++++ glibc-2.13-1/sysdeps/unix/nice.c
 @@ -42,7 +42,12 @@ nice (int incr)
  	__set_errno (save);
      }
@@ -1690,8 +2646,8 @@
    if (result == -1)
      {
        if (errno == EACCES)
---- glibc-2.12-2-gc4ccff1/sysdeps/unix/sysv/linux/check_pf.c
-+++ glibc-2.12-1/sysdeps/unix/sysv/linux/check_pf.c
+--- glibc-2.13/sysdeps/unix/sysv/linux/check_pf.c
++++ glibc-2.13-1/sysdeps/unix/sysv/linux/check_pf.c
 @@ -27,13 +27,10 @@
  #include <unistd.h>
  #include <sys/socket.h>
@@ -1707,8 +2663,8 @@
  
  #ifndef IFA_F_HOMEADDRESS
  # define IFA_F_HOMEADDRESS 0
---- glibc-2.12-2-gc4ccff1/sysdeps/unix/sysv/linux/dl-osinfo.h
-+++ glibc-2.12-1/sysdeps/unix/sysv/linux/dl-osinfo.h
+--- glibc-2.13/sysdeps/unix/sysv/linux/dl-osinfo.h
++++ glibc-2.13-1/sysdeps/unix/sysv/linux/dl-osinfo.h
 @@ -17,10 +17,13 @@
     Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
     02111-1307 USA.  */
@@ -1723,7 +2679,7 @@
  
  #ifndef MIN
  # define MIN(a,b) (((a)<(b))?(a):(b))
-@@ -80,6 +83,32 @@ _dl_setup_stack_chk_guard (void *dl_rand
+@@ -80,6 +83,32 @@ _dl_setup_stack_chk_guard (void *dl_random)
        unsigned char *p = (unsigned char *) &ret;
        p[sizeof (ret) - 1] = 255;
        p[sizeof (ret) - 2] = '\n';
@@ -1756,8 +2712,8 @@
      }
    else
  #endif
---- glibc-2.12-2-gc4ccff1/sysdeps/unix/sysv/linux/futimesat.c
-+++ glibc-2.12-1/sysdeps/unix/sysv/linux/futimesat.c
+--- glibc-2.13/sysdeps/unix/sysv/linux/futimesat.c
++++ glibc-2.13-1/sysdeps/unix/sysv/linux/futimesat.c
 @@ -37,14 +37,14 @@ futimesat (fd, file, tvp)
  {
    int result;
@@ -1800,8 +2756,19 @@
      {
        size_t filelen = strlen (file);
        if (__builtin_expect (filelen == 0, 0))
---- glibc-2.12-2-gc4ccff1/sysdeps/unix/sysv/linux/i386/dl-cache.h
-+++ glibc-2.12-1/sysdeps/unix/sysv/linux/i386/dl-cache.h
+--- glibc-2.13/sysdeps/unix/sysv/linux/getpagesize.c
++++ glibc-2.13-1/sysdeps/unix/sysv/linux/getpagesize.c
+@@ -28,7 +28,7 @@
+ int
+ __getpagesize ()
+ {
+-#ifdef __ASSUME_AT_PAGESIZE
++#if 0 && defined __ASSUME_AT_PAGESIZE
+   assert (GLRO(dl_pagesize) != 0);
+   return GLRO(dl_pagesize);
+ #else
+--- glibc-2.13/sysdeps/unix/sysv/linux/i386/dl-cache.h
++++ glibc-2.13-1/sysdeps/unix/sysv/linux/i386/dl-cache.h
 @@ -0,0 +1,59 @@
 +/* Support for reading /etc/ld.so.cache files written by Linux ldconfig.
 +   Copyright (C) 2004 Free Software Foundation, Inc.
@@ -1862,8 +2829,16 @@
 +  } while (0)
 +
 +#include_next <dl-cache.h>
---- glibc-2.12-2-gc4ccff1/sysdeps/unix/sysv/linux/ia64/dl-cache.h
-+++ glibc-2.12-1/sysdeps/unix/sysv/linux/ia64/dl-cache.h
+--- glibc-2.13/sysdeps/unix/sysv/linux/i386/getrlimit.c
++++ glibc-2.13-1/sysdeps/unix/sysv/linux/i386/getrlimit.c
+@@ -79,4 +79,5 @@ __new_getrlimit (enum __rlimit_resource resource, struct rlimit *rlimits)
+ }
+ 
+ weak_alias (__new_getrlimit, __getrlimit);
++libc_hidden_weak (__getrlimit)
+ versioned_symbol (libc, __new_getrlimit, getrlimit, GLIBC_2_2);
+--- glibc-2.13/sysdeps/unix/sysv/linux/ia64/dl-cache.h
++++ glibc-2.13-1/sysdeps/unix/sysv/linux/ia64/dl-cache.h
 @@ -22,4 +22,31 @@
  #define _dl_cache_check_flags(flags) \
    ((flags) == _DL_CACHE_DEFAULT_ID)
@@ -1896,29 +2871,29 @@
 +  } while (0)
 +
  #include_next <dl-cache.h>
---- glibc-2.12-2-gc4ccff1/sysdeps/unix/sysv/linux/ia64/dl-procinfo.c
-+++ glibc-2.12-1/sysdeps/unix/sysv/linux/ia64/dl-procinfo.c
+--- glibc-2.13/sysdeps/unix/sysv/linux/ia64/dl-procinfo.c
++++ glibc-2.13-1/sysdeps/unix/sysv/linux/ia64/dl-procinfo.c
 @@ -0,0 +1,5 @@
 +#ifdef IS_IN_ldconfig
 +#include <sysdeps/i386/dl-procinfo.c>
 +#else
 +#include <sysdeps/generic/dl-procinfo.c>
 +#endif
---- glibc-2.12-2-gc4ccff1/sysdeps/unix/sysv/linux/ia64/dl-procinfo.h
-+++ glibc-2.12-1/sysdeps/unix/sysv/linux/ia64/dl-procinfo.h
+--- glibc-2.13/sysdeps/unix/sysv/linux/ia64/dl-procinfo.h
++++ glibc-2.13-1/sysdeps/unix/sysv/linux/ia64/dl-procinfo.h
 @@ -0,0 +1,5 @@
 +#ifdef IS_IN_ldconfig
 +#include <sysdeps/unix/sysv/linux/i386/dl-procinfo.h>
 +#else
 +#include <sysdeps/generic/dl-procinfo.h>
 +#endif
---- glibc-2.12-2-gc4ccff1/sysdeps/unix/sysv/linux/ia64/ldd-rewrite.sed
-+++ glibc-2.12-1/sysdeps/unix/sysv/linux/ia64/ldd-rewrite.sed
+--- glibc-2.13/sysdeps/unix/sysv/linux/ia64/ldd-rewrite.sed
++++ glibc-2.13-1/sysdeps/unix/sysv/linux/ia64/ldd-rewrite.sed
 @@ -1 +1 @@
 -s_^\(RTLDLIST=\)\([^ 	]*\)-ia64\(\.so\.[0-9.]*\)[ 	]*$_\1"\2-ia64\3 \2\3"_
 +s_^\(RTLDLIST=\)\([^ 	]*\)-ia64\(\.so\.[0-9.]*\)[ 	]*$_\1"\2-ia64\3 /emul/ia32-linux\2\3"_
---- glibc-2.12-2-gc4ccff1/sysdeps/unix/sysv/linux/netlinkaccess.h
-+++ glibc-2.12-1/sysdeps/unix/sysv/linux/netlinkaccess.h
+--- glibc-2.13/sysdeps/unix/sysv/linux/netlinkaccess.h
++++ glibc-2.13-1/sysdeps/unix/sysv/linux/netlinkaccess.h
 @@ -25,6 +25,24 @@
  
  #include <kernel-features.h>
@@ -1944,8 +2919,8 @@
  
  struct netlink_res
  {
---- glibc-2.12-2-gc4ccff1/sysdeps/unix/sysv/linux/paths.h
-+++ glibc-2.12-1/sysdeps/unix/sysv/linux/paths.h
+--- glibc-2.13/sysdeps/unix/sysv/linux/paths.h
++++ glibc-2.13-1/sysdeps/unix/sysv/linux/paths.h
 @@ -62,7 +62,7 @@
  #define	_PATH_TTY	"/dev/tty"
  #define	_PATH_UNIX	"/boot/vmlinux"
@@ -1955,14 +2930,9 @@
  #define _PATH_WTMP	"/var/log/wtmp"
  
  /* Provide trailing slash, since mostly used for building pathnames. */
---- glibc-2.12-2-gc4ccff1/sysdeps/unix/sysv/linux/sparc/sparc64/fxstat.c
-+++ glibc-2.12-1/sysdeps/unix/sysv/linux/sparc/sparc64/fxstat.c
-@@ -1 +1 @@
--#include "../../fxstat.c"
-+#include "../../i386/fxstat.c"
---- glibc-2.12-2-gc4ccff1/sysdeps/unix/sysv/linux/tcsetattr.c
-+++ glibc-2.12-1/sysdeps/unix/sysv/linux/tcsetattr.c
-@@ -49,6 +49,7 @@ tcsetattr (fd, optional_actions, termios
+--- glibc-2.13/sysdeps/unix/sysv/linux/tcsetattr.c
++++ glibc-2.13-1/sysdeps/unix/sysv/linux/tcsetattr.c
+@@ -49,6 +49,7 @@ tcsetattr (fd, optional_actions, termios_p)
  {
    struct __kernel_termios k_termios;
    unsigned long int cmd;
@@ -1970,7 +2940,7 @@
  
    switch (optional_actions)
      {
-@@ -80,6 +81,35 @@ tcsetattr (fd, optional_actions, termios
+@@ -80,6 +81,35 @@ tcsetattr (fd, optional_actions, termios_p)
    memcpy (&k_termios.c_cc[0], &termios_p->c_cc[0],
  	  __KERNEL_NCCS * sizeof (cc_t));
  
@@ -2007,8 +2977,8 @@
 +  return retval;
  }
  libc_hidden_def (tcsetattr)
---- glibc-2.12-2-gc4ccff1/timezone/zic.c
-+++ glibc-2.12-1/timezone/zic.c
+--- glibc-2.13/timezone/zic.c
++++ glibc-2.13-1/timezone/zic.c
 @@ -1921,7 +1921,7 @@ const int			zonecount;
  		if (stdrp != NULL && stdrp->r_hiyear == 2037)
  			return;

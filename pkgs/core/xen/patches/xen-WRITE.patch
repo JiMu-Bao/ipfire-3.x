@@ -1,0 +1,23 @@
+diff -r d70d7c3311c4 -r 0236d8adb081 tools/blktap/drivers/blk_linux.c
+--- xen-4.0.1/tools/blktap/drivers/blk_linux.c Tue Dec 14 17:10:49 2010 +0000
++++ xen-4.0.1/tools/blktap/drivers/blk_linux.c Thu Dec 16 09:33:54 2010 +0000
+@@ -1,6 +1,6 @@
+ #include <inttypes.h>
+ #include <sys/ioctl.h>
+-#include <linux/fs.h>
++#include <sys/mount.h>
+ #include "tapdisk.h"
+ #include "blk.h"
+ 
+diff -r d70d7c3311c4 -r 0236d8adb081 tools/blktap2/drivers/blk_linux.c
+--- xen-4.0.1/tools/blktap2/drivers/blk_linux.c Tue Dec 14 17:10:49 2010 +0000
++++ xen-4.0.1/tools/blktap2/drivers/blk_linux.c Thu Dec 16 09:33:54 2010 +0000
+@@ -1,7 +1,7 @@
+ #include <inttypes.h>
++#include <errno.h>
+ #include <sys/ioctl.h>
+-#include <linux/fs.h>
+-#include <linux/errno.h>
++#include <sys/mount.h>
+ #include "tapdisk.h"
+ #include "blk.h" 

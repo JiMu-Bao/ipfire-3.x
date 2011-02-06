@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = openssl
-PKG_VER        = 1.0.0
-PKG_REL        = 1
+PKG_VER        = 1.0.0c
+PKG_REL        = 0
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = System/Libraries
@@ -60,11 +60,6 @@ endif
 #endif
 
 define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -e 's/__OpenBSD__/__linux__/' -e 's/arandom/urandom/' \
-				-i crypto/rand/randfile.c
-
-	cd $(DIR_APP) && sed -e 's/__OpenBSD__/__linux__/' -i crypto/rand/rand_unix.c
-
 	cd $(DIR_APP) && find crypto/ -name Makefile -exec \
 		sed 's/^ASFLAGS=/&-Wa,--noexecstack /' -i {} \;
 

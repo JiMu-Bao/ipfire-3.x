@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = dbus
 PKG_VER        = 1.3.2
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Daemons
@@ -34,7 +34,7 @@ PKG_URL        = http://www.freedesktop.org/software/dbus/
 PKG_LICENSE    = GPLv2+ AFL
 PKG_SUMMARY    = D-BUS message bus.
 
-PKG_BUILD_DEPS+= expat-devel
+PKG_BUILD_DEPS+= audit-devel expat-devel libselinux-devel
 
 define PKG_DESCRIPTION
 	D-BUS is a system for sending messages between applications. It is \
@@ -52,7 +52,9 @@ CONFIGURE_OPTIONS += \
 	--sysconfdir=/etc \
 	--localstatedir=/var \
 	--libdir=/lib \
-	--libexecdir=/lib
+	--libexecdir=/lib \
+	--enable-libaudit \
+	--enable-selinux=yes
 
 define STAGE_INSTALL_CMDS
 	-mkdir -pv $(BUILDROOT)/usr/lib

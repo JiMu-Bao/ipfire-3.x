@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = iproute2
-PKG_VER        = 2.6.34
+PKG_VER        = 2.6.37
 PKG_REL        = 0
 
 PKG_MAINTAINER =
@@ -34,7 +34,7 @@ PKG_URL        = http://www.linuxfoundation.org/en/Net:Iproute2
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Advanced IP routing and network device configuration tools.
 
-PKG_BUILD_DEPS+= bison db-devel flex
+PKG_BUILD_DEPS+= bison db4-devel flex
 
 define PKG_DESCRIPTION
 	The iproute package contains networking utilities (ip and rtmon, for \
