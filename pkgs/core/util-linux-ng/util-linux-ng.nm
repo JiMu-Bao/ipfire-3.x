@@ -34,8 +34,8 @@ PKG_URL        = ftp://ftp.kernel.org/pub/linux/utils/util-linux-ng
 PKG_LICENSE    = GPLv2 and GPLv2+ and BSD with advertising and Public Domain
 PKG_SUMMARY    = A collection of basic system utilities.
 
-PKG_BUILD_DEPS+= audit-devel gettext libcap-devel libselinux-devel ncurses-devel\
-	 pam-devel zlib-devel
+PKG_BUILD_DEPS+= audit-devel gettext libcap-devel libselinux-devel \
+	libsepol-devel ncurses-devel pam-devel zlib-devel
 
 define PKG_DESCRIPTION
 	The util-linux-ng package contains a large variety of low-level system \
