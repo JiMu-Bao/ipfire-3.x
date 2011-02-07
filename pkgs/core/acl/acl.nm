@@ -53,6 +53,8 @@ CONFIGURE_OPTIONS += \
 	--disable-static \
 	--mandir=/usr/share/man
 
+STAGE_BUILD_TARGETS += LIBTOOL="libtool --tag=CC"
+
 define STAGE_INSTALL_CMDS
 	-mkdir -pv $(BUILDROOT)/{,usr/}lib $(BUILDROOT)/usr/include/{acl,sys}
 	install -v -m0755 $(DIR_APP)/libacl/.libs/libacl.so.1.2.0 $(BUILDROOT)/lib
