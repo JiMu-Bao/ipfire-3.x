@@ -41,7 +41,9 @@ export CXXFLAGS
 
 # Options that get passed to configure by default
 CONFIGURE_OPTIONS = \
-	--prefix=/usr
+	--prefix=/usr \
+	--build=$(TARGET) \
+	--host=$(TARGET)
 
 # For compatibility with pakfire3
 DISTRO_MACHINE=$(TARGET)
