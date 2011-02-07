@@ -43,10 +43,6 @@ PKG_BUILD_DEPS+= dejagnu texinfo zlib-devel
 
 PKG_TARBALL   += $(THISAPP).tar.bz2
 
-###############################################################################
-# Installation Details
-###############################################################################
-
 define STAGE_PREPARE_CMDS
 	-mkdir -pv $(DIR_SRC)/binutils-build
 
@@ -56,9 +52,14 @@ define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && sed -e '/^INFO/s/standards.info //' -i etc/Makefile.in
 endef
 
+BINUTILS_TARGET_PLATFORM = $(subst -gnu,,$(DISTRO_MACHINE))
+
 define STAGE_BUILD
 	cd $(DIR_SRC)/binutils-build && \
 		../$(THISAPP)/configure \
+			--host=$(BINUTILS_TARGET_PLATFORM) \
+			--build=$(BINUTILS_TARGET_PLATFORM) \
+			--target=$(BINUTILS_TARGET_PLATFORM) \
 			--prefix=/usr \
 			--mandir=/usr/share/man \
 			--enable-shared \
