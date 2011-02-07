@@ -53,6 +53,8 @@ CONFIGURE_OPTIONS += \
 	--enable-shared \
 	--mandir=/usr/share/man
 
+STAGE_BUILD_TARGETS += LIBTOOL="libtool --tag=CC"
+
 define STAGE_INSTALL_CMDS
 	-mkdir -pv $(BUILDROOT)/{,usr/}lib
 	install -v -m0755 $(DIR_APP)/libattr/.libs/libattr.so.1.1.0 $(BUILDROOT)/lib
