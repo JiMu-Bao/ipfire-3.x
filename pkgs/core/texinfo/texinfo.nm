@@ -34,7 +34,7 @@ PKG_URL        = http://www.gnu.org/software/texinfo/
 PKG_LICENSE    = GPLv3
 PKG_SUMMARY    = Tools needed to create Texinfo format documentation files.
 
-PKG_DEPS      += ncurses
+PKG_BUILD_DEPS+= ncurses-devel
 
 define PKG_DESCRIPTION
 	Texinfo is a documentation system that can produce both online \
@@ -46,18 +46,7 @@ PKG_TARBALL    = $(THISAPP).tar.gz
 
 DIR_APP        = $(DIR_SRC)/$(PKG_NAME)-4.13
 
-###############################################################################
-# Installation Details
-###############################################################################
-
-define STAGE_BUILD
-	cd $(DIR_APP) && \
-		LDFLAGS="-lncursesw" \
-		./configure \
-			--prefix=/usr
-
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
-endef
+export LDFLAGS = -lncursesw
 
 define STAGE_TEST
         cd $(DIR_APP) && make check
