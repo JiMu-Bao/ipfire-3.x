@@ -46,7 +46,7 @@ function find_requires() {
 	# Return a sorted and unique(!) list
 	local require
 	local requires
-	for require in $(listsort ${PKG_DEPENDENCIES} ${interpreters} ${neededs} ${links} ${others}); do
+	for require in $(listsort ${PKG_DEPS} ${interpreters} ${neededs} ${links} ${others}); do
 		[ "${require:0:3}" = "ld-" ] && continue
 		listmatch ${require} ${provides} || requires="${requires} ${require}"
 	done
