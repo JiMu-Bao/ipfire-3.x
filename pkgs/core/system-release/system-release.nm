@@ -26,7 +26,8 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = system-release
 PKG_VER        = $(DISTRO_VERSION)
-PKG_REL        = 0
+PKG_REL        = 1
+PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = System/Base

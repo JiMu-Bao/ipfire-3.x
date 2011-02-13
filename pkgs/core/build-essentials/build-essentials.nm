@@ -26,8 +26,8 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = build-essentials
 PKG_VER        = $(DISTRO_VERSION)
-PKG_REL        = 2
-#PKG_ARCH       = noarch
+PKG_REL        = 4
+PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = Development/Tools
@@ -52,15 +52,15 @@ define STAGE_INSTALL
 	-mkdir -pv $(BUILDROOT)/usr/lib/buildsystem{,-tools}
 	-mkdir -pv $(BUILDROOT)/usr/lib/quality-agent
 
-	cp -vf buildsystem/* $(BUILDROOT)/usr/lib/buildsystem
-	cp -vf buildsystem-tools/* $(BUILDROOT)/usr/lib/buildsystem-tools
+	cp -vf $(DIR_SOURCE)/buildsystem/* $(BUILDROOT)/usr/lib/buildsystem
+	cp -vf $(DIR_SOURCE)/buildsystem-tools/* $(BUILDROOT)/usr/lib/buildsystem-tools
 
-	cp -vf quality-agent/quality-agent $(BUILDROOT)/usr/sbin/
-	cp -vrf quality-agent/quality-agent.d/* \
+	cp -vf $(DIR_SOURCE)/quality-agent/quality-agent $(BUILDROOT)/usr/sbin/
+	cp -vrf $(DIR_SOURCE)/quality-agent/quality-agent.d/* \
 		$(BUILDROOT)/usr/lib/quality-agent/
 
 	-mkdir -pv $(BUILDROOT)/etc/profile.d
-	cp -vf buildsystem.sh $(BUILDROOT)/etc/profile.d/
+	cp -vf $(DIR_SOURCE)/buildsystem.sh $(BUILDROOT)/etc/profile.d/
 
 	# Create symlink to chroot-shell
 	ln -svf ../lib/buildsystem-tools/chroot-shell \

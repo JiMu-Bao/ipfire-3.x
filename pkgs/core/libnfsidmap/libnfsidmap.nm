@@ -34,6 +34,8 @@ PKG_URL        = http://www.citi.umich.edu/projects/nfsv4/linux/libnfsidmap/
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = Library to help mapping id's, mainly for NFSv4.
 
+PKG_BUILD_DEPS+= gcc-c++
+
 define PKG_DESCRIPTION
 	libnfsidmap provides functions to map between NFSv4 names \
 	(which are of the form user@domain) and local uid's and gid's.

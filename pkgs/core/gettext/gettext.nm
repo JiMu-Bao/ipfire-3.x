@@ -49,8 +49,7 @@ define PKG_DESCRIPTION
 	programs.
 endef
 
-PKG_BUILD_DEPS+= bison
-PKG_DEPS      += libxml2
+PKG_BUILD_DEPS+= bison libxml2-devel
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 

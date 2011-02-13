@@ -27,6 +27,7 @@ include $(PKGROOT)/Include
 PKG_NAME       = iana-etc
 PKG_VER        = 2.30
 PKG_REL        = 0
+PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
 PKG_GROUP      = Networking/Tools
