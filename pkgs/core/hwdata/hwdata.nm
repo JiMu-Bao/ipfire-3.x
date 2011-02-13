@@ -27,6 +27,7 @@ include $(PKGROOT)/Include
 PKG_NAME       = hwdata
 PKG_VER        = 0.232
 PKG_REL        = 0
+PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Base
