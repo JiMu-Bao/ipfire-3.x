@@ -27,6 +27,7 @@ include $(PKGROOT)/Include
 PKG_NAME       = network
 PKG_VER        = 0.99.0
 PKG_REL        = 2
+PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = Networking/Tools
