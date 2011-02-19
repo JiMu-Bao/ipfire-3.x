@@ -389,7 +389,8 @@ define PKG_DESCRIPTION_$(PKG_NAME)-utils
 endef
 
 define PKG_FILES-$(PKG_NAME)-utils
-	/usr/bin/memusage{,stat}
+	/usr/bin/memusage
+	/usr/bin/memusagestat
 	/usr/bin/mtrace
 	/usr/bin/pcprofiledump
 	/usr/bin/xtrace
