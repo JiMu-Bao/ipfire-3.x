@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = gcc
 PKG_VER        = 4.5.2
-PKG_REL        = 4
+PKG_REL        = 5
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = Development/Compilers
@@ -40,21 +40,29 @@ define PKG_DESCRIPTION
 endef
 
 PKG_BUILD_DEPS+= autogen cloog-devel dejagnu elfutils-devel expect gmp-devel \
-	libffi-devel mpc-devel mpfr-devel pkg-config ppl-devel zlib-devel
+	libffi-devel mpc-devel mpfr-devel pkg-config ppl-devel texinfo zlib-devel
 PKG_DEPS-gcc  += binutils libgcc-devel
 
 # Make the GCC target platform
 GCC_TARGET_PLATFORM = $(subst -gnu,,$(DISTRO_MACHINE))
 
-ifeq "$(MACHINE)" "i586"
-	CONFIGURE_ARGS = --disable-decimal-float
+ifeq "$(DISTRO_ARCH)" "x86_64"
+	CONFIGURE_ARGS = --disable-multilib
 endif
 
-ifeq "$(MACHINE)" "x86_64"
-	CONFIGURE_ARGS = --disable-multilib
-else
-	CONFIG_CPU = --with-cpu=$(TARGET_MACHINE) --with-arch=$(TARGET_MACHINE)
+ifeq "$(DISTRO_ARCH)" "i686"
+	CONFIGURE_ARGS = --with-arch=$(DISTRO_ARCH) --with-tune=generic
 endif
+
+# Modify CFLAGS
+#  Remove -m32 and -m64
+CFLAGS := $(subst -m32,,$(CFLAGS))
+CFLAGS := $(subst -m64,,$(CFLAGS))
+#  Remove -march=i686
+CFLAGS := $(subst -march=i686,,$(CFLAGS))
+
+export CFLAGS
+export CXXFLAGS = $(subst -Wall,,$(CFLAGS))
 
 PKG_TARBALL   += $(THISAPP).tar.gz
 
@@ -141,14 +149,18 @@ define STAGE_PREPARE_CMDS
 	# are known to not require fixing, issue the following command to prevent
 	# the fixincludes script from running:
 	cd $(DIR_APP) && sed -i 's@\./fixinc\.sh@-c true@' gcc/Makefile.in
+
+	cd $(DIR_APP) && sed -i gcc/Makefile.in \
+		-e "s/-fno-exceptions/& -fno-asynchronous-unwind-tables/"
 endef
 
 define STAGE_BUILD
 	cd $(DIR_SRC)/gcc-build && \
+		CFLAGS="$(CFLAGS)" \
+		CXXFLAGS="$(CXXFLAGS)" \
 		XCFLAGS="$(CFLAGS)" \
 		TCFLAGS="$(CFLAGS)" \
 		../$(THISAPP)/configure \
-			$(CONFIG_CPU) \
 			--build=$(GCC_TARGET_PLATFORM) \
 			--prefix=/usr \
 			--libexecdir=/usr/lib \
