@@ -26,7 +26,8 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = dracut
 PKG_VER        = 007
-PKG_REL        = 3
+PKG_REL        = 4
+PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Boot
