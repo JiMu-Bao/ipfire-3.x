@@ -26,7 +26,8 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = xcb-proto
 PKG_VER        = 1.6
-PKG_REL        = 0
+PKG_REL        = 1
+PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUP      = X/Headers
