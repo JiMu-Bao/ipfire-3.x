@@ -26,7 +26,8 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = xorg-x11-proto-devel
 PKG_VER        = 7.4
-PKG_REL        = 0
+PKG_REL        = 1
+PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUP      = Development/System

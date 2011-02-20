@@ -26,7 +26,8 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = tornado
 PKG_VER        = 0.2
-PKG_REL        = 0
+PKG_REL        = 1
+PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = Development/Libraries

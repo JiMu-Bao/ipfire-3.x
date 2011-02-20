@@ -175,6 +175,7 @@ PKG_PACKAGES   += perl-Archive-Extract
 
 PKG_EPOCH-perl-Archive-Extract = 0
 PKG_VER-perl-Archive-Extract = 0.38
+PKG_ARCH-perl-Archive-Extract = noarch
 
 PKG_SUMMARY-perl-Archive-Extract = Generic archive extracting mechanism.
 define PKG_DESCRIPTION-perl-Archive-Extract
@@ -192,6 +193,7 @@ PKG_PACKAGES   += perl-Archive-Tar
 
 PKG_EPOCH-perl-Archive-Tar = 0
 PKG_VER-perl-Archive-Tar = 1.54
+PKG_ARCH-perl-Archive-Tar = noarch
 
 PKG_SUMMARY-perl-Archive-Tar = A module for Perl manipulation of .tar files.
 define PKG_DESCRIPTION-perl-Archive-Tar
@@ -238,6 +240,7 @@ PKG_PACKAGES   += perl-CPAN
 
 PKG_EPOCH-perl-CPAN = 0
 PKG_VER-perl-CPAN = 1.9402
+PKG_ARCH-perl-CPAN = noarch
 
 PKG_SUMMARY-perl-CPAN = \
 	Query, download and build perl modules from CPAN sites.
@@ -260,6 +263,7 @@ PKG_PACKAGES   += perl-CPANPLUS
 
 PKG_EPOCH-perl-CPANPLUS = 0
 PKG_VER-perl-CPANPLUS = 0.9
+PKG_ARCH-perl-CPANPLUS = noarch
 
 PKG_SUMMARY-perl-CPANPLUS = \
 	API & CLI access to the CPAN mirrors.
@@ -311,6 +315,7 @@ PKG_PACKAGES   += perl-ExtUtils-CBuilder
 
 PKG_EPOCH-perl-ExtUtils-CBuilder = 0
 PKG_VER-perl-ExtUtils-CBuilder = 0.27
+PKG_ARCH-perl-ExtUtils-CBuilder = noarch
 
 PKG_SUMMARY-perl-ExtUtils-CBuilder = \
 	Compile and link C code for Perl modules.
@@ -333,6 +338,7 @@ PKG_PACKAGES   += perl-ExtUtils-Embed
 
 PKG_EPOCH-perl-ExtUtils-Embed = 0
 PKG_VER-perl-ExtUtils-Embed = 1.28
+PKG_ARCH-perl-ExtUtils-Embed = noarch
 
 PKG_SUMMARY-perl-ExtUtils-Embed = \
 	Utilities for embedding Perl in C/C++ applications.
@@ -352,6 +358,7 @@ PKG_PACKAGES   += perl-ExtUtils-MakeMaker
 
 PKG_EPOCH-perl-ExtUtils-MakeMaker = 0
 PKG_VER-perl-ExtUtils-MakeMaker = 6.56
+PKG_ARCH-perl-ExtUtils-MakeMaker = noarch
 
 PKG_SUMMARY-perl-ExtUtils-MakeMaker = Create a module Makefile.
 define PKG_DESCRIPTION-perl-ExtUtils-MakeMaker
@@ -397,6 +404,7 @@ PKG_PACKAGES   += perl-ExtUtils-ParseXS
 
 PKG_EPOCH-perl-ExtUtils-ParseXS = 0
 PKG_VER-perl-ExtUtils-ParseXS = 2.21
+PKG_ARCH-perl-ExtUtils-ParseXS = noarch
 
 PKG_SUMMARY-perl-ExtUtils-ParseXS = \
 	Module and a script for converting Perl XS code into C code.
@@ -419,6 +427,7 @@ PKG_PACKAGES   += perl-File-Fetch
 
 PKG_EPOCH-perl-File-Fetch = 0
 PKG_VER-perl-File-Fetch = 6.56
+PKG_ARCH-perl-File-Fetch = noarch
 
 PKG_SUMMARY-perl-File-Fetch = Generic file fetching mechanism.
 define PKG_DESCRIPTION-perl-File-Fetch
@@ -469,6 +478,7 @@ PKG_PACKAGES   += perl-IO-Zlib
 
 PKG_EPOCH-perl-IO-Zlib = 0
 PKG_VER-perl-IO-Zlib = 1.10
+PKG_ARCH-perl-IO-Zlib = noarch
 
 PKG_SUMMARY-perl-IO-Zlib = Perl IO:: style interface to Compress::Zlib.
 define PKG_DESCRIPTION-perl-IO-Zlib
@@ -490,6 +500,7 @@ PKG_PACKAGES   += perl-IPC-Cmd
 
 PKG_EPOCH-perl-IPC-Cmd = 0
 PKG_VER-perl-IPC-Cmd = 0.54
+PKG_ARCH-perl-IPC-Cmd = noarch
 
 PKG_SUMMARY-perl-IPC-Cmd = Finding and running system commands made easy.
 define PKG_DESCRIPTION-perl-IPC-Cmd
@@ -509,6 +520,7 @@ PKG_PACKAGES   += perl-Locale-Maketext-Simple
 
 PKG_EPOCH-perl-Locale-Maketext-Simple = 0
 PKG_VER-perl-Locale-Maketext-Simple = 0.21
+PKG_ARCH-perl-Locale-Maketext-Simple = noarch
 PKG_LICENSE-perl-Locale-Maketext-Simple = MIT
 
 PKG_SUMMARY-perl-Locale-Maketext-Simple = \
@@ -530,6 +542,7 @@ PKG_PACKAGES   += perl-Log-Message
 
 PKG_EPOCH-perl-Log-Message = 0
 PKG_VER-perl-Log-Message = 0.02
+PKG_ARCH-perl-Log-Message = noarch
 
 PKG_SUMMARY-perl-Log-Message = Generic message storage mechanism.
 define PKG_DESCRIPTION-perl-Log-Message
@@ -560,6 +573,7 @@ PKG_PACKAGES   += perl-Log-Message-Simple
 
 PKG_EPOCH-perl-Log-Message-Simple = 0
 PKG_VER-perl-Log-Message-Simple = 0.06
+PKG_ARCH-perl-LogMessage-Simple = noarch
 
 PKG_SUMMARY-perl-Log-Message-Simple = Simplified frontend to Log::Message.
 define PKG_DESCRIPTION-perl-Log-Message-Simple
@@ -579,6 +593,7 @@ PKG_PACKAGES   += perl-Module-Build
 
 PKG_EPOCH-perl-Module-Build = 0
 PKG_VER-perl-Module-Build = 0.3603
+PKG_ARCH-perl-Module-Build = noarch
 
 PKG_SUMMARY-perl-Module-Build = \
 	Perl module for building and installing Perl modules.
@@ -611,6 +626,7 @@ PKG_PACKAGES   += perl-Module-CoreList
 
 PKG_EPOCH-perl-Module-CoreList = 0
 PKG_VER-perl-Module-CoreList = 2.29
+PKG_ARCH-perl-Module-CoreList = noarch
 
 PKG_SUMMARY-perl-Module-CoreList = \
 	Perl core modules indexed by perl versions.
@@ -634,6 +650,7 @@ PKG_PACKAGES   += perl-Module-Load
 
 PKG_EPOCH-perl-Module-Load = 0
 PKG_VER-perl-Module-Load = 0.16
+PKG_ARCH-perl-Module-Load = noarch
 
 PKG_SUMMARY-perl-Module-Load = \
 	Runtime require of both modules and files.
@@ -654,6 +671,7 @@ PKG_PACKAGES   += perl-Module-Load-Conditional
 
 PKG_EPOCH-perl-Module-Load-Conditional = 0
 PKG_VER-perl-Module-Load-Conditional = 0.34
+PKG_ARCH-perl-Module-Load-Conditional = noarch
 
 PKG_SUMMARY-perl-Module-Load-Conditional = \
 	Looking up module information / loading at runtime.
@@ -674,6 +692,7 @@ PKG_PACKAGES   += perl-Module-Loaded
 
 PKG_EPOCH-perl-Module-Loaded = 0
 PKG_VER-perl-Module-Loaded = 0.06
+PKG_ARCH-perl-Module-Loaded = noarch
 
 PKG_SUMMARY-perl-Module-Loaded = \
 	Mark modules as loaded or unloaded.
@@ -697,6 +716,7 @@ PKG_PACKAGES   += perl-Module-Plugable
 
 PKG_EPOCH-perl-Module-Plugable = 0
 PKG_VER-perl-Module-Plugable = 3.90
+PKG_ARCH-perl-Module-Plugable = noarch
 
 PKG_SUMMARY-perl-Module-Plugable = \
 	Automatically give your module the ability to have plugins.
@@ -720,6 +740,7 @@ PKG_PACKAGES   += perl-Object-Accessor
 
 PKG_EPOCH-perl-Object-Accessor = 0
 PKG_VER-perl-Object-Accessor = 0.36
+PKG_ARCH-perl-Object-Accessor = noarch
 
 PKG_SUMMARY-perl-Object-Accessor = \
 	Perl module that allows per object accessors.
@@ -740,6 +761,7 @@ PKG_PACKAGES   += perl-Package-Constants
 
 PKG_EPOCH-perl-Package-Constants = 0
 PKG_VER-perl-Package-Constants = 0.02
+PKG_ARCH-perl-Package-Constants = noarch
 
 PKG_SUMMARY-perl-Package-Constants = \
 	List all constants declared in a package.
@@ -761,6 +783,7 @@ PKG_PACKAGES   += perl-Params-Check
 
 PKG_EPOCH-perl-Params-Check = 0
 PKG_VER-perl-Params-Check = 0.26
+PKG_ARCH-perl-Params-Check = noarch
 
 PKG_SUMMARY-perl-Params-Check = \
 	Generic input parsing/checking mechanism.
@@ -780,6 +803,7 @@ PKG_PACKAGES   += perl-Parse-CPAN-Meta
 
 PKG_EPOCH-perl-Parse-CPAN-Meta = 0
 PKG_VER-perl-Parse-CPAN-Meta = 1.40
+PKG_ARCH-perl-Parse-CPAN-Meta = noarch
 
 PKG_SUMMARY-perl-Parse-CPAN-Meta = \
 	Parse META.yml and other similar CPAN metadata files.
@@ -800,6 +824,7 @@ PKG_PACKAGES   += perl-Pod-Escapes
 
 PKG_EPOCH-perl-Pod-Escapes = 0
 PKG_VER-perl-Pod-Escapes = 1.04
+PKG_ARCH-perl-Pod-Escapes = noarch
 
 PKG_SUMMARY-perl-Pod-Escapes = \
 	Perl module for resolving POD escape sequences.
@@ -820,6 +845,7 @@ PKG_PACKAGES   += perl-Pod-Simple
 
 PKG_EPOCH-perl-Pod-Simple = 0
 PKG_VER-perl-Pod-Simple = 3.13
+PKG_ARCH-perl-Pod-Simple = noarch
 
 PKG_SUMMARY-perl-Pod-Simple = \
 	Framework for parsing POD documentation.
@@ -843,6 +869,7 @@ PKG_PACKAGES   += perl-Term-UI
 
 PKG_EPOCH-perl-Term-UI = 0
 PKG_VER-perl-Term-UI = 0.20
+PKG_ARCH-perl-Term-UI = noarch
 
 PKG_SUMMARY-perl-Term-UI = \
 	Term::ReadLine UI made easy.
@@ -865,6 +892,7 @@ PKG_PACKAGES   += perl-Test-Harness
 
 PKG_EPOCH-perl-Test-Harness = 0
 PKG_VER-perl-Test-Harness = 3.17
+PKG_ARCH-perl-Test-Harness = noarch
 
 PKG_SUMMARY-perl-Test-Harness = \
 	Run Perl standard test scripts with statistics.
@@ -891,6 +919,7 @@ PKG_PACKAGES   += perl-Test-Simple
 
 PKG_EPOCH-perl-Test-Simple = 0
 PKG_VER-perl-Test-Simple = 0.94
+PKG_ARCH-perl-Test-Simple = noarch
 
 PKG_SUMMARY-perl-Test-Simple = \
 	Basic utilities for writing tests.
@@ -941,6 +970,7 @@ PKG_PACKAGES   += perl-parent
 
 PKG_EPOCH-perl-parent = 0
 PKG_VER-perl-parent = 0.223
+PKG_ARCH-perl-parent = noarch
 
 PKG_SUMMARY-perl-parent = \
 	Establish an ISA relationship with base classes at compile time.
@@ -1012,6 +1042,7 @@ PKG_PACKAGES   += perl-version
 
 PKG_EPOCH-perl-version = 0
 PKG_VER-perl-version = 0.82
+PKG_ARCH-perl-version = noarch
 
 PKG_SUMMARY-perl-version = \
 	Perl extension for Version Objects.
