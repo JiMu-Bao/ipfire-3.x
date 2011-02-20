@@ -26,7 +26,8 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = autoconf
 PKG_VER        = 2.68
-PKG_REL        = 0
+PKG_REL        = 1
+PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
 PKG_GROUP      = Development/Tools
