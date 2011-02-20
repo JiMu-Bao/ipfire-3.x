@@ -26,7 +26,8 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = xorg-x11-fonts
 PKG_VER        = 7.2
-PKG_REL        = 1
+PKG_REL        = 2
+PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUP      = X/Fonts
