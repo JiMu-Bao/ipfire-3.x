@@ -49,11 +49,21 @@ define PKG_DESCRIPTION
 	Linux system will not function.
 endef
 
-GLIBC_FLAGS += -fno-strict-aliasing -mno-tls-direct-seg-refs -DNDEBUG
+# Build glibc with custom cflags
+GLIBC_FLAGS = -O3 -g -fasynchronous-unwind-tables -DNDEBUG -DPIC
 
-CFLAGS   += $(GLIBC_FLAGS)
-CXXFLAGS += $(GLIBC_FLAGS)
+ifeq "$(DISTRO_ARCH)" "i686"
+	GLIBC_FLAGS += -march=i686 -mtune=generic
+endif
 
+ifeq "$(DISTRO_ARCH)" "x86_64"
+	GLIBC_FLAGS += -mtune=generic
+endif
+
+export CFLAGS    = $(GLIBC_FLAGS)
+export CXXFLAGS  = $(GLIBC_FLAGS)
+
+GLIBC_TARGET_PLATFORM = $(subst -gnu,,$(DISTRO_MACHINE))
 OPTIMIZED_KERNEL = 2.6.32
 
 PKG_OBJECTS   += $(THISAPP).tar.xz
@@ -209,21 +219,17 @@ define STAGE_PREPARE
 
 	cd $(DIR_APP) && sed -i signal/Makefile \
 		-e "s/tst-sigset2//g"
+
+	#cd $(DIR_APP) && sed -i configure \
+	#	-e "s/-Werror -fstack-protector/-fstack-protector/"
 endef
 
 define STAGE_BUILD
-	# --enable-stackguard-randomization could be added here, but this is primarily
-	# for attacks by local users, and we shouldn't have those in the rebooted
-	# system. Adding this will empty the /dev/random entropy pool (via
-	# /dev/urandom), unless the system is running a Random Number Gathering Daemon
-	# (rngd). This version of Glibc uses high precision timing with SSP, so the
-	# canary value changes at run-time. This is not as good as /dev/urandom, but
-	# it's better than nothing and has very good performance.
-
 	cd $(DIR_SRC)/glibc-build && \
-		CFLAGS= \
-		CXXFLAGS= \
+		CFLAGS="$(CFLAGS) -fno-asynchronous-unwind-tables" \
 		../$(THISAPP)/configure \
+			--build=$(GLIBC_TARGET_PLATFORM) \
+			--host=$(GLIBC_TARGET_PLATFORM) \
 			--prefix=/usr \
 			--libexecdir=/usr/lib/glibc \
 			--disable-profile \
@@ -232,8 +238,6 @@ define STAGE_BUILD
 			--with-selinux \
 			--disable-werror \
 			--enable-bind-now \
-			--enable-stackguard-randomization \
-			--with-stack-protector=all \
 			--enable-__thread \
 			--enable-tls \
 			--enable-experimental-malloc \

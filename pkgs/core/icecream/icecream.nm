@@ -29,7 +29,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = icecream
 PKG_VER        = 0.9.6
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = Development/Compilers
@@ -39,6 +39,8 @@ PKG_SUMMARY    = Distributed compiler.
 
 PKG_DEPS      += gcc-c++ /usr/bin/ldd
 PKG_BUILD_DEPS+= gcc-c++
+
+ICECREAM_TARGET_PLATFORM = $(subst -gnu,,$(DISTRO_MACHINE))
 
 define PKG_DESCRIPTION
 	Icecream is a distributed compile system. It allows parallel compiling by \
@@ -63,7 +65,7 @@ define STAGE_INSTALL_CMDS
 	mkdir -pv $(BUILDROOT)/usr/lib/icecc/bin
 	for i in gcc g++ cc c++; do \
 		ln -svf ../../../bin/icecc $(BUILDROOT)/usr/lib/icecc/bin/$${i}; \
-		ln -svf ../../../bin/icecc $(BUILDROOT)/usr/lib/icecc/bin/$(DISTRO_MACHINE)-$${i}; \
+		ln -svf ../../../bin/icecc $(BUILDROOT)/usr/lib/icecc/bin/$(ICECREAM_TARGET_PLATFORM)-$${i}; \
 	done
 	sed -e 's|^#!.*|#!/bin/bash|' -i $(BUILDROOT)/usr/lib/icecc/icecc-create-env
 
