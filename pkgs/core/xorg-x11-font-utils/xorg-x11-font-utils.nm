@@ -35,7 +35,7 @@ PKG_LICENSE    = MIT
 PKG_SUMMARY    = X.Org X11 font utilities.
 
 PKG_BUILD_DEPS+= autoconf freetype-devel libX11-devel libXfont-devel libfontenc-devel\
-	pkg-config zlib-devel
+	pkg-config xorg-x11-proto-devel zlib-devel
 
 PKG_PACKAGES  += $(PKG_NAME)-devel
  
