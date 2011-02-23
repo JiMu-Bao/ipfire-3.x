@@ -34,7 +34,7 @@ PKG_URL        = http://xmlsoft.org/XSLT/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = Library providing the Gnome XSLT engine.
 
-PKG_BUILD_DEPS+= libgcrypt-devel libxml2-devel pkg-config
+PKG_BUILD_DEPS+= libgcrypt-devel libxml2-devel pkg-config zlib-devel
 
 PKG_PACKAGES  += $(PKG_NAME)-devel
 
