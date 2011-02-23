@@ -50,7 +50,7 @@ PKG_OBJECTS   += nss-pem-20100809.tar.bz2
 
 PKG_PACKAGES  += $(PKG_NAME_REAL)-devel $(PKG_NAME_REAL)-libs
 
-PKG_DEPS-$(PKG_NAME_REAL)-devel += nss nss-softokn-devel nss-util-devel
+PKG_DEPS-$(PKG_NAME_REAL)-devel += nspr-devel nss nss-softokn-devel nss-util-devel
 
 # Mozilla does no versioning :(
 define PKG_FILES-$(PKG_NAME_REAL)-devel
