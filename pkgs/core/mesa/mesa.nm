@@ -35,7 +35,8 @@ PKG_LICENSE    = MIT
 PKG_SUMMARY    = Mesa graphics libraries.
 
 PKG_BUILD_DEPS+= expat-devel pkg-config libX11-devel libXdamage-devel libXext-devel\
-	libXxf86vm-devel libdrm-devel libselinux-devel libxcb-devel 
+	libXfixes-devel libXxf86vm-devel libdrm-devel libselinux-devel libxcb-devel\
+	 xorg-x11-proto-devel 
 
 PKG_PACKAGES  += $(PKG_NAME)-devel
 
