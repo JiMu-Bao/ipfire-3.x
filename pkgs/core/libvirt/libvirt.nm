@@ -34,12 +34,37 @@ PKG_URL        = http://www.libvirt.org/
 PKG_LICENSE    = LGPLv2.1+
 PKG_SUMMARY    = A library for controlling VMs.
 
-PKG_BUILD_DEPS+= avahi-devel libcurl-devel cyrus-sasl-devel gnutls-devel \
-	openssl openssl-devel libgcrypt-devel libnl-devel libselinux-devel \
-	libpciaccess-devel libssh2-devel libtool libxml2-devel lvm2-devel \
-	lvm2 parted-devel perl-core pkg-config python-devel readline-devel \
-	libudev-devel xen-devel
-PKG_DEPS      += lvm2
+PKG_BUILD_DEPS+= \
+	avahi-devel \
+	cyrus-sasl-devel \
+	gnutls-devel \
+	libcurl-devel \
+	libgcrypt-devel \
+	libnl-devel \
+	libselinux-devel \
+	libdevmapper-devel \
+	libpciaccess-devel \
+	libssh2-devel \
+	libtool \
+	libudev-devel \
+	libxml2-devel \
+	lvm2 \
+	openssl-devel \
+	parted-devel \
+	perl-core \
+	pkg-config \
+	python-devel \
+	readline-devel \
+	xen-devel \
+	\
+	/bin/mount \
+	/bin/umount
+
+PKG_DEPS      += \
+	lvm2 \
+	\
+	/bin/mount \
+	/bin/umount
 
 define PKG_DESCRIPTION
 	A toolkit to interact with the virtualization capabilities of recent \

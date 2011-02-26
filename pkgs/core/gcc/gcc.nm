@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = gcc
 PKG_VER        = 4.5.2
-PKG_REL        = 6
+PKG_REL        = 7
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = Development/Compilers
@@ -178,6 +178,9 @@ define STAGE_BUILD
 			--disable-static \
 			--with-system-zlib \
 			--with-bugurl=http://bugtracker.ipfire.org \
+			--disable-libunwind-exceptions \
+			--enable-gnu-unique-object \
+			--enable-linker-build-id \
 			$(CONFIGURE_ARGS)
 
 	cd $(DIR_SRC)/gcc-build && make $(PARALLELISMFLAGS)
