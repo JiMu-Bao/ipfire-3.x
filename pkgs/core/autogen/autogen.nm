@@ -34,7 +34,7 @@ PKG_URL        = http://www.gnu.org/software/autogen/
 PKG_LICENSE    = GPLv3
 PKG_SUMMARY    = Automated text file generator.
 
-PKG_DEPS      += guile libxml2
+PKG_BUILD_DEPS+= guile-devel libxml2-devel
 
 define PKG_DESCRIPTION
 	AutoGen is a tool designed to simplify the creation and maintenance of \
