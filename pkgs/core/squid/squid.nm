@@ -35,7 +35,7 @@ PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = The Squid proxy caching server.
 
 PKG_BUILD_DEPS+= gcc-c++ libxml2-devel openssl-devel openldap-devel samba-devel \
-	iptables-devel $(PKG_DEPS)
+	iptables-devel $(PKG_DEPS) pam-devel
 PKG_DEPS      += /usr/bin/smbclient
 
 define PKG_DESCRIPTION
