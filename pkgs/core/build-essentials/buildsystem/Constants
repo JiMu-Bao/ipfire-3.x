@@ -101,7 +101,7 @@ PKG_ARCH       = $(DISTRO_ARCH)
 
 # Shortcut to package name + version
 THISAPP        = $(PKG_NAME)-$(PKG_VER)
-THISVER        = $(PKG_EPOCH):$(PKG_VER)-$(PKG_REL)
+THISVER        = $(PKG_EPOCH):$(PKG_VER)-$(PKG_RELEASE)
 
 #  All packages depend on gcc and headers by default.
 PKG_BUILD_DEPS+= gcc glibc-devel kernel-headers

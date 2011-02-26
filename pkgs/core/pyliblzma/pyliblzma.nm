@@ -24,28 +24,34 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = libpng
-PKG_VER        = 1.4.5
-PKG_REL        = 1
+PKG_NAME       = pyliblzma
+PKG_VER        = 0.5.3
+PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
-PKG_URL        = http://www.libpng.org/pub/png/
-PKG_LICENSE    = zlib
-PKG_SUMMARY    = A library of functions for manipulating PNG image format files.
+PKG_GROUP      = Development/Debuggers
+PKG_URL        = https://launchpad.net/pyliblzma
+PKG_LICENSE    = LGPLv3+
+PKG_SUMMARY    = Python bindings for lzma
 
-PKG_BUILD_DEPS+= pkg-config zlib-devel
-
-PKG_PACKAGES  += $(PKG_NAME)-devel
+PKG_BUILD_DEPS+= pkg-config python-devel python-setuptools xz xz-devel
 
 define PKG_DESCRIPTION
-	The libpng package contains a library of functions for creating and \
-	manipulating PNG (Portable Network Graphics) image format files. \
-	PNG is a bit-mapped graphics format similar to the GIF format. PNG \
-	was created to replace the GIF format, since GIF uses a patented \
-	data compression algorithm.
+	PylibLZMA provides a python interface for the liblzma library \
+	to read and write data that has been compressed or can be decompressed \
+	by Lasse Collin's lzma utils.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.xz
+PKG_TARBALL    = $(THISAPP).tar.bz2
 
-PKG_DEPS-$(PKG_NAME)-devel = zlib-devel
+define STAGE_BUILD
+	cd $(DIR_APP) && python setup.py build
+endef
+
+define STAGE_TEST
+	cd $(DIR_APP) && python setup.py test
+endef
+
+define STAGE_INSTALL	
+	cd $(DIR_APP) && python setup.py install --root=$(BUILDROOT)
+endef

@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = grub
 PKG_VER        = 1.98
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Boot
@@ -36,7 +36,7 @@ PKG_SUMMARY    = Grand Unified Boot Loader.
 
 PKG_BUILD_DEPS+= autoconf automake bison flex freetype-devel gettext \
 	ncurses-devel xorg-x11-fonts zlib-devel
-PKG_DEPS      += os-prober
+PKG_DEPS      += gettext os-prober
 
 define PKG_DESCRIPTION
 	GRUB (Grand Unified Boot Loader) is an experimental boot loader \

@@ -42,7 +42,7 @@ PKG_DEPS      += ghostscript
 
 define PKG_DESCRIPTION
 	CUPS is the standards-based, open source printing system developed \
-	by Apple Inc. for Mac OS® X and other UNIX®-like operating systems.
+	by Apple Inc. for Mac OS(R) X and other UNIX(R)-like operating systems.
 endef
 
 PKG_TARBALL    = $(THISAPP)-source.tar.bz2

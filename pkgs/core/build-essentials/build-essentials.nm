@@ -36,8 +36,8 @@ PKG_LICENSE    = GPL
 PKG_SUMMARY    = Elementary scripts for the build system.
 
 PKG_BUILD_DEPS =
-PKG_DEPS      += bash bzip2 ccache coreutils cpio diffutils file findutils \
-	gawk grep gzip make patch sed system-release tar which xz
+PKG_DEPS      += bash bzip2 coreutils cpio diffutils file findutils gawk \
+	grep gzip make patch sed system-release tar which xz
 
 define PKG_DESCRIPTION
 	This package contains elementary scripts for the pakfire build system.

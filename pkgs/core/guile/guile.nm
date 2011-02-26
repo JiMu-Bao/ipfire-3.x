@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = guile
 PKG_VER        = 1.8.7
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Development/Tools
@@ -52,3 +52,5 @@ QUALITY_AGENT_WHITELIST_RPATH = /usr/lib
 define STAGE_TEST
 	cd $(DIR_APP) && make check
 endef
+
+PKG_DEPS-$(PKG_NAME_REAL)-devel += gmp-devel libtool-devel

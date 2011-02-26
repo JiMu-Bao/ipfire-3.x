@@ -42,11 +42,10 @@ PKG_FILES-$(PKG_NAME_REAL)-devel += \
 	/usr/lib/qt4/*.prl \
 	/usr/lib/qt4/mkspecs
 
-PKG_BUILD_DEPS+= fontconfig-devel gcc-c++ libjpeg-devel libmng-devel \
-	libpng-devel libtiff-devel libX11-devel libXext-devel libXfixes-devel \
-	libXrandr-devel libXrender-devel libXi-devel pcre-devel pkg-config \
-	xorg-x11-proto-devel zlib-devel
-
+PKG_BUILD_DEPS+= fontconfig-devel freetype-devel gcc-c++ libjpeg-devel \
+	libmng-devel libpng-devel libtiff-devel libX11-devel \
+	libXext-devel libXfixes-devel libXrandr-devel libXrender-devel \
+	libXi-devel pcre-devel pkg-config xorg-x11-proto-devel zlib-devel
 
 define PKG_DESCRIPTION
 	Qt is a software toolkit for developing applications.

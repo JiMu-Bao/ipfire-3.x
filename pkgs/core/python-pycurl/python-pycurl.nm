@@ -24,28 +24,40 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = libpng
-PKG_VER        = 1.4.5
+PKG_NAME       = pycurl
+PKG_VER        = 7.19.0
 PKG_REL        = 1
+PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
-PKG_URL        = http://www.libpng.org/pub/png/
-PKG_LICENSE    = zlib
-PKG_SUMMARY    = A library of functions for manipulating PNG image format files.
+PKG_GROUP      = Development/Languages
+PKG_URL        = http://pycurl.sourceforge.net/
+PKG_LICENSE    = LGPLv2+ or MIT
+PKG_SUMMARY    = A Python interface to libcurl.
 
-PKG_BUILD_DEPS+= pkg-config zlib-devel
+CFLAGS        += -DHAVE_CURL_OPENSSL
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+PKG_BUILD_DEPS+= curl-devel openssl-devel python-devel
 
 define PKG_DESCRIPTION
-	The libpng package contains a library of functions for creating and \
-	manipulating PNG (Portable Network Graphics) image format files. \
-	PNG is a bit-mapped graphics format similar to the GIF format. PNG \
-	was created to replace the GIF format, since GIF uses a patented \
-	data compression algorithm.
+	PycURL is a Python interface to libcurl. PycURL can be used to fetch \
+	objects identified by a URL from a Python program, similar to the \
+	urllib Python module. PycURL is mature, very fast, and supports a lot \
+	of features.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.xz
+PKG_TARBALL    = $(THISAPP).tar.gz
 
-PKG_DEPS-$(PKG_NAME)-devel = zlib-devel
+define STAGE_BUILD
+	cd $(DIR_APP) && python setup.py build
+endef
+
+define STAGE_TEST
+	cd $(DIR_APP) && PYTHONPATH=$PWD/build/lib* python tests/test_internals.py -q
+endef
+
+define STAGE_INSTALL	
+	cd $(DIR_APP) && python setup.py install --skip-build -O1 \
+		--root=$(BUILDROOT)
+	cd $(DIR_APP) && rm -rf $(BUILDROOT)/usr/share/doc/pycurl
+endef
