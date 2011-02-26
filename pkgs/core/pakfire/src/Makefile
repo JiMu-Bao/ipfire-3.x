@@ -1,7 +1,7 @@
 
 SUBSTITUDE = sed -e "s/@VERSION@/$(VERSION)/g"
 
-PYTHON_MAJ = "2.6"
+PYTHON_MAJ = "2.7"
 PYTHON_DIR = $(DESTDIR)/usr/lib/python$(PYTHON_MAJ)/site-packages/pakfire
 
 all: pakfire
