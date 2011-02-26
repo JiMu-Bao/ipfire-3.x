@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = network
 PKG_VER        = 0.99.0
-PKG_REL        = 2
+PKG_REL        = 3
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
@@ -36,7 +36,7 @@ PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = The IPFire Networking Scripts.
 
 PKG_BUILD_DEPS = # Need no gcc
-PKG_DEPS      += bash bridge-utils coreutils dhcp grep iproute2 ppp rstp \
+PKG_DEPS      += bash bridge-utils dhcp ebtables iproute2 ppp rstp \
 	sqlite upstart vlan
 
 define PKG_DESCRIPTION
