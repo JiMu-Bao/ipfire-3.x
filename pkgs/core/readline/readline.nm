@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = readline
-PKG_VER        = 6.1
-PKG_REL        = 1
+PKG_VER        = 6.2
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
