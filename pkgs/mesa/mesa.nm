@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = mesa
 PKG_VER        = 7.8.2
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUP      = Development/Tools
@@ -39,6 +39,7 @@ PKG_BUILD_DEPS+= expat-devel pkg-config libX11-devel libXdamage-devel libXext-de
 	 xorg-x11-proto-devel 
 
 PKG_PACKAGES  += $(PKG_NAME)-devel
+PKG_DEPS-$(PKG_NAME)-devel += libX11-devel
 
 define PKG_DESCRIPTION
 	Mesa libGL runtime libraries and DRI drivers.
