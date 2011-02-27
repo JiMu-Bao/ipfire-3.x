@@ -35,7 +35,7 @@ PKG_URL        = http://www.x.org/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = X Keyboard Extension configuration data.
 
-PKG_BUILD_DEPS+= gettext intltool pkg-config perl-xml-parser xorg-x11-util-macros \
+PKG_BUILD_DEPS+= gettext intltool pkg-config perl-XML-Parser xorg-x11-util-macros \
 	xorg-x11-xkb-utils
 
 define PKG_DESCRIPTION

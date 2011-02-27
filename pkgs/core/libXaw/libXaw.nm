@@ -34,8 +34,8 @@ PKG_URL        = http://www.x.org/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = X Athena Widget Set.
 
-PKG_BUILD_DEPS+= libX11-devel libXt-devel libXmu-devel libXpm-devel libXext-devel \
-	pkg-config xorg-x11-proto-devel
+PKG_BUILD_DEPS+= libICE-devel libSM-devel libX11-devel libXt-devel libXmu-devel \
+	libXpm-devel libXext-devel pkg-config xorg-x11-proto-devel
 
 PKG_PACKAGES  += $(PKG_NAME)-devel
 

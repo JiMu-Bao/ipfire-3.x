@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = readline
-PKG_VER        = 6.1
-PKG_REL        = 1
+PKG_VER        = 6.2
+PKG_REL        = 3
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
@@ -36,7 +36,7 @@ PKG_SUMMARY    = A library for editing typed command lines.
 
 PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
 
-PKG_BUILD_DEPS+= ncurses-devel
+PKG_BUILD_DEPS+= audit-devel ncurses-devel
 
 define PKG_DESCRIPTION
 	The Readline library provides a set of functions that allow users to \

@@ -34,8 +34,8 @@ PKG_URL        = http://www.x.org/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = X.Org X11 xkb utilities.
 
-PKG_BUILD_DEPS+= bison libX11-devel libXaw-devel libXt-devel libxkbfile-devel \
-	pkg-config
+PKG_BUILD_DEPS+= bison libICE-devel libSM-devel libX11-devel libXaw-devel \
+	libXmu-devel libXt-devel libxkbfile-devel pkg-config xorg-x11-proto-devel
 
 define PKG_DESCRIPTION
 	X.Org X11 xkb utilities.
