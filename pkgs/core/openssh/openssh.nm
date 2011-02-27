@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = openssh
-PKG_VER        = 5.4p1
-PKG_REL        = 2
+PKG_VER        = 5.8p1
+PKG_REL        = 3
 
 PKG_MAINTAINER =
 PKG_GROUP      = Application/Internet
@@ -34,7 +34,8 @@ PKG_URL        = http://www.openssh.com/portable.html
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = An open source implementation of SSH protocol versions 1 and 2.
 
-PKG_BUILD_DEPS+= libselinux-devel openssl-devel pam-devel zlib-devel
+PKG_BUILD_DEPS+= audit-devel libselinux-devel nss-devel openssl-devel pam-devel \
+	zlib-devel
 PKG_DEPS-openssh = openssh-clients=$(THISVER) openssh-server=$(THISVER)
 
 define PKG_DESCRIPTION
@@ -71,6 +72,24 @@ PKG_FILES-openssh-clients       = \
 	/usr/bin/ \
 	/usr/lib/ \
 	/usr/share/
+
+# Apply patches in a special order
+PKG_PATCHES   = openssh-5.6p1-redhat.patch
+PKG_PATCHES   += openssh-5.8p1-fingerprint.patch
+PKG_PATCHES   += openssh-5.8p1-authorized-keys-command.patch
+PKG_PATCHES   += openssh-5.8p1-selinux.patch
+PKG_PATCHES   += openssh-5.8p1-selinux-role.patch
+PKG_PATCHES   += openssh-5.8p1-mls.patch
+PKG_PATCHES   += openssh-5.6p1-keygen.patch
+PKG_PATCHES   += openssh-5.2p1-allow-ip-opts.patch
+PKG_PATCHES   += openssh-5.8p1-randclean.patch
+PKG_PATCHES   += openssh-5.8p1-kuserok.patch
+PKG_PATCHES   += openssh-5.5p1-x11.patch
+PKG_PATCHES   += openssh-5.6p1-exit-deadlock.patch
+PKG_PATCHES   += openssh-5.1p1-askpass-progress.patch
+PKG_PATCHES   += openssh-4.3p2-askpass-grab-info.patch
+PKG_PATCHES   += openssh-5.2p1-edns.patch
+PKG_PATCHES   += openssh-5.1p1-scp-manpage.patch
 	
 CONFIGURE_OPTIONS += \
 	--sysconfdir=/etc/ssh \
@@ -79,7 +98,9 @@ CONFIGURE_OPTIONS += \
 	--with-md5-passwords \
 	--with-privsep-path=/var/lib/sshd \
 	--with-pam \
-	--with-selinux
+	--with-selinux \
+	--with-nss \
+	--with-audit=linux
 
 define STAGE_INSTALL_CMDS
 	-mkdir -pv $(BUILDROOT)/etc/ssh
