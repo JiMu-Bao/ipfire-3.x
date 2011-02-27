@@ -1,0 +1,109 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008, 2009 Michael Tremer & Christian Schmidt           #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = linux
+PKG_VER        = 2.6.37.1
+PKG_REL        = 1
+
+PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
+PKG_GROUP      = System/Kernels
+PKG_URL        = http://www.kernel.org/
+PKG_LICENSE    = GPLv2
+PKG_SUMMARY    = The Linux kernel.
+
+PKG_BUILD_DEPS+= module-init-tools ncurses-devel perl
+PKG_DEPS-kernel= dracut
+
+define PKG_DESCRIPTION
+	The kernel package contains the Linux kernel (vmlinuz), the core of any \
+	Linux operating system. The kernel handles the basic functions \
+	of the operating system: memory allocation, process allocation, device \
+	input and output, etc.
+endef
+
+CFLAGS     =
+CXXFLAGS   =
+
+LOCALVERSION   = -$(DISTRO_SNAME)$(PKG_REL)
+FULLVER        = $(PKG_VER)$(LOCALVERSION)
+
+PKG_TARBALL    = $(THISAPP).tar.bz2
+
+PKG_PACKAGES  += kernel-headers
+
+PKG_SUMMARY-kernel-headers     = Header files if the kernel release $(FULLVER).
+PKG_DESCRIPTION-kernel-headers = $(PKG_SUMMARY-kernel-headers)
+PKG_FILES-kernel-headers       = /usr/include
+
+define STAGE_PREPARE_CMDS
+	cd $(DIR_APP) && echo "$(LOCALVERSION)" > localversion-$(DISTRO_SNAME)
+	rm -f $(DIR_APP)/localversion-grsec
+
+	cd $(DIR_APP) && sed -e "s/^HOSTCFLAGS.*=.*/& -fPIC/g" -i Makefile
+
+	#cd $(DIR_APP) && echo "source \"crypto/ocf/Kconfig\"" >> crypto/Kconfig
+	
+	cd $(DIR_APP) && cp -vf $(DIR_SOURCE)/$(DISTRO_SNAME)_logo.ppm \
+		drivers/video/logo/logo_linux_clut224.ppm
+
+	cd $(DIR_APP) && make mrproper
+
+	# Install configuration file
+	cp -f $(DIR_SOURCE)/config $(DIR_APP)/.config
+endef
+
+define STAGE_BUILD
+	cd $(DIR_APP) && yes "" | make oldconfig
+
+	# Check headers
+	cd $(DIR_APP) && make ARCH=x86 headers_check
+
+	cd $(DIR_APP) && make CC="gcc -nopie" $(PARALLELISMFLAGS)
+endef
+
+define STAGE_INSTALL
+	cd $(DIR_APP) && make modules_install INSTALL_MOD_PATH=$(BUILDROOT)
+
+	-mkdir -pv $(BUILDROOT)/boot
+	cd $(DIR_APP) && cp -v arch/x86/boot/bzImage $(BUILDROOT)/boot/vmlinuz-$(FULLVER)
+	cd $(DIR_APP) && cp -v System.map $(BUILDROOT)/boot/System.map-$(FULLVER)
+
+	-mkdir -pv $(BUILDROOT)/lib/modules/$(FULLVER)/extra
+
+	rm -vf $(BUILDROOT)/lib/modules/$(FULLVER)/{build,source}
+
+	# Install the header files
+	cd $(DIR_APP) && make ARCH=x86 INSTALL_HDR_PATH=dest headers_install
+	-mkdir -pv $(BUILDROOT)/usr/include
+	cd $(DIR_APP) && find dest/include \( -name .install -o -name ..install.cmd \) -delete
+	cd $(DIR_APP) && cp -rv dest/include/* $(BUILDROOT)/usr/include
+
+	# Glibc provides these headers
+	rm -rfv $(BUILDROOT)/usr/include/scsi \
+		$(BUILDROOT)/usr/include/asm*/atomic.h \
+		$(BUILDROOT)/usr/include/asm*/io.h \
+		$(BUILDROOT)/usr/include/asm*/irq.h
+endef
