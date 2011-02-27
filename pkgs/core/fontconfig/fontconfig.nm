@@ -34,7 +34,7 @@ PKG_URL        = http://fontconfig.org/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = Font configuration and customization library.
 
-PKG_BUILD_DEPS+= freetype-devel libxml2-devel pkg-config
+PKG_BUILD_DEPS+= freetype-devel libxml2-devel pkg-config zlib-devel
 
 define PKG_DESCRIPTION
 	Fontconfig is designed to locate fonts within the \

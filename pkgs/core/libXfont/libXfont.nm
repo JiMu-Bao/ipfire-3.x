@@ -35,7 +35,7 @@ PKG_LICENSE    = MIT
 PKG_SUMMARY    =  X.Org X11 libXfont runtime library.
 
 PKG_BUILD_DEPS+= freetype-devel libfontenc-devel pkg-config\
-	xorg-x11-xtrans-devel
+	xorg-x11-proto-devel xorg-x11-xtrans-devel zlib-devel
 
 PKG_PACKAGES  += $(PKG_NAME)-devel
 
