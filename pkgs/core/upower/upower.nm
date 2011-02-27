@@ -35,7 +35,7 @@ PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Power Management Service.
 
 PKG_BUILD_DEPS+= bison dbus-devel dbus-glib-devel glib2-devel gettext intltool \
-	perl-xml-parser pkg-config polkit-devel
+	perl-XML-Parser pkg-config polkit-devel
 PKG_DEPS      += udev util-linux-ng
 
 define PKG_DESCRIPTION
