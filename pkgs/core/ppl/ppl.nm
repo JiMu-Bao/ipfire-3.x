@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = ppl
-PKG_VER        = 0.10.2
-PKG_REL        = 0
+PKG_VER        = 0.11.2
+PKG_REL        = 1
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = Development/Libraries
@@ -50,7 +50,7 @@ define PKG_DESCRIPTION
 	applications using the PPL through its C and C++ interfaces.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+PKG_TARBALL    = $(THISAPP).tar.lzma
 
 PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
 
