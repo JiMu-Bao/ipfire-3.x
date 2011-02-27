@@ -26,7 +26,8 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = build-essentials
 PKG_VER        = $(DISTRO_VERSION)
-PKG_REL        = 6
+PKG_REL        = 1
+PKG_EPOCH      = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
