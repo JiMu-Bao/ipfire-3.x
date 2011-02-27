@@ -34,8 +34,8 @@ PKG_URL        = http://cryptsetup.googlecode.com/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = A utility for setting up encrypted filesystems.
 
-PKG_BUILD_DEPS+= e2fsprogs-devel libdevmapper-devel libgcrypt-devel \
-	libgpg-error-devel popt-devel
+PKG_BUILD_DEPS+= libdevmapper-devel libgcrypt-devel \
+	libgpg-error-devel libuuid-devel popt-devel
 
 define PKG_DESCRIPTION
 	This package contains cryptsetup, a utility for setting up \
