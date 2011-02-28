@@ -34,8 +34,8 @@ PKG_URL        = http://www.lm-sensors.org/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Hardware monitoring tools.
 
-PKG_BUILD_DEPS+= bison flex
-PKG_DEPS      += sysfsutils perl rrdtool
+PKG_BUILD_DEPS+= bison flex sysfsutils-devel
+PKG_DEPS      += perl rrdtool
 
 define PKG_DESCRIPTION
 	The lm_sensors package includes a collection of modules for general SMBus \

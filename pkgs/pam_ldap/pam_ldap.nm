@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = pam_ldap
 PKG_VER        = 184
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Base
@@ -34,7 +34,7 @@ PKG_URL        = http://www.padl.com/OSS/pam_ldap.html
 PKG_LICENSE    = GPL and LGPL
 PKG_SUMMARY    = A pam/ldap module that supports password changes.
 
-PKG_BUILD_DEPS+= openldap-devel
+PKG_BUILD_DEPS+= openldap-devel pam-devel
 
 define PKG_DESCRIPTION
 	The pam_ldap module provides the means for Solaris and Linux servers \

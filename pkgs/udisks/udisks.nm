@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = udisks
 PKG_VER        = 1.0.1
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
@@ -35,8 +35,8 @@ PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Storage Management Service.
 
 PKG_BUILD_DEPS+= dbus-devel dbus-glib-devel e2fsprogs-devel glib2-devel \
-	intltool libatasmart-devel libdevmapper-devel parted-devel polkit-devel \
-	pkg-config sg3-utils-devel
+	intltool libatasmart-devel libdevmapper-devel libudev-devel \
+	parted-devel polkit-devel pkg-config sg3-utils-devel
 PKG_DEPS      += dosfstools e2fsprogs mdadm parted udev util-linux-ng xfsprogs
 
 define PKG_DESCRIPTION

@@ -34,8 +34,9 @@ PKG_URL        = http://www.x.org/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = Xorg X11 intel video driver.
 
-PKG_BUILD_DEPS += autoconf automake libdrm-devel libudev-devel libxcb-devel \
-	libXvMC-devel libtool mesa-devel pkg-config xorg-x11-server-devel xorg-x11-util-macros
+PKG_BUILD_DEPS += autoconf automake libdrm-devel libudev-devel libXvMC-devel \
+	libxcb-devel libtool mesa-devel pkg-config xcb-util-devel \
+	xorg-x11-proto-devel xorg-x11-server-devel xorg-x11-util-macros
 
 define PKG_DESCRIPTION
 	X.Org X11 intel video driver.
