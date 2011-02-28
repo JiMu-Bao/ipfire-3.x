@@ -52,4 +52,7 @@ CONFIGURE_OPTIONS += \
 
 define STAGE_INSTALL_CMDS
 	rm -vrf $(BUILDROOT)/etc/init.d
+
+	# Remove /dev/fuse which cannot be packaged.
+	rm -rvf $(BUILDROOT)/dev
 endef
