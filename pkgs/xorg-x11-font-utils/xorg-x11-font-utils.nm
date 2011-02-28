@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = xorg-x11-font-utils
 PKG_VER        = 7.4
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUP      = X/Fonts
@@ -38,6 +38,8 @@ PKG_BUILD_DEPS+= autoconf freetype-devel libX11-devel libXfont-devel libfontenc-
 	pkg-config xorg-x11-proto-devel zlib-devel
 
 PKG_PACKAGES  += $(PKG_NAME)-devel
+
+PKG_DEPS-$(PKG_NAME_REAL)-devel += freetype-devel
  
 define PKG_DESCRIPTION
 	X.Org X11 font utilities required for font installation, conversion, \

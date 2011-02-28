@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = xorg-x11-server
 PKG_VER        = 1.8.2
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUP      = X/Server
@@ -46,6 +46,7 @@ PKG_DEPS      += mesa pixman udev xkeyboard-config xorg-x11-fonts xorg-x11-font-
 	xorg-x11-xkb-utils
 
 PKG_PACKAGES  += $(PKG_NAME)-devel
+PKG_DEPS-$(PKG_NAME)-devel += libpciaccess-devel pixman-devel
 
 define PKG_DESCRIPTION
 	X.org X11 is an open source implementation of the X Window System. \

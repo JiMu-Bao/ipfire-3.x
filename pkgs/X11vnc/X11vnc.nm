@@ -34,8 +34,9 @@ PKG_URL        = http://www.karlrunge.com/x11vnc/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = VNC server for the current X11 session.
 
-PKG_BUILD_DEPS+= libX11-devel libXdamage-devel libXext-devel libXfixes-devel \
-	libXtst-devel libjpeg-devel libVNCServer-devel zlib-devel
+PKG_BUILD_DEPS+= libX11-devel libXdamage-devel libXext-devel libXi-devel \
+	libXfixes-devel libXtst-devel libjpeg-devel libVNCServer-devel \
+	openssl-devel xorg-x11-proto-devel zlib-devel
 PKG_DEPS      += xorg-x11-server
 
 define PKG_DESCRIPTION
