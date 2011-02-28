@@ -27,6 +27,7 @@ include $(PKGROOT)/Include
 PKG_NAME       = system-release
 PKG_VER        = $(DISTRO_VERSION)
 PKG_REL        = 1
+PKG_EPOCH      = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
@@ -35,6 +36,8 @@ PKG_URL        = http://www.ipfire.org
 PKG_LICENSE    =
 PKG_SUMMARY    = $(DISTRO_NAME) release files.
 
+PKG_PROVIDES  += $(DISTRO_SNAME)-release
+
 define PKG_DESCRIPTION
 	$(DISTRO_NAME) release files such as pakfire configs and various /etc/ \
 	files that	define the release.
@@ -42,17 +45,13 @@ endef
 
 PKG_TARBALL    =
 
-###############################################################################
-# Installation Details
-###############################################################################
-
 STAGE_PREPARE = # Do nothing
 STAGE_BUILD = # Do nothing
 
 define STAGE_INSTALL
 	-mkdir -pv $(BUILDROOT)/etc
 
-	echo "$(DISTRO_NAME) v$(DISTRO_VERSION) for $(MACHINE) - $(DISTRO_SLOGAN) (\l)" \
+	echo "$(DISTRO_NAME) v$(DISTRO_VERSION) for $(DISTRO_ARCH) - $(DISTRO_SLOGAN) (\l)" \
 		> $(BUILDROOT)/etc/issue
 	echo "===============================" >> $(BUILDROOT)/etc/issue
 	echo "\n running on \s \r \m"          >> $(BUILDROOT)/etc/issue
