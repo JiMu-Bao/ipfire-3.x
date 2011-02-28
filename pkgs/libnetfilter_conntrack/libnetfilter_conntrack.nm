@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = libnetfilter_conntrack
-PKG_VER        = 0.0.100
-PKG_REL        = 0
+PKG_VER        = 0.9.1
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
