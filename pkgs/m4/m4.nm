@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = m4
-PKG_VER        = 1.4.15
-PKG_REL        = 0
+PKG_VER        = 1.4.16
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Applications/Text
@@ -43,7 +43,7 @@ define PKG_DESCRIPTION
 	configure scripts, but not for running configure scripts.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+PKG_TARBALL    = $(THISAPP).tar.xz
 
 define STAGE_TEST
 	cd $(DIR_APP) && make check
