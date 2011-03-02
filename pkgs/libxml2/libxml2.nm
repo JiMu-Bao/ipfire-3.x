@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = libxml2
 PKG_VER        = 2.7.7
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
@@ -34,7 +34,7 @@ PKG_URL        = http://xmlsoft.org/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = Library providing XML and HTML support.
 
-PKG_BUILD_DEPS+= zlib-devel
+PKG_BUILD_DEPS+= pkg-config zlib-devel
 
 define PKG_DESCRIPTION
 	This library allows to manipulate XML files. It includes support \
