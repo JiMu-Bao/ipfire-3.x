@@ -38,6 +38,7 @@ function find_requires() {
 	local others=$(find_python_requires ${dirs})
 	others="${others} $(find_weak_symbols_requires ${dirs})"
 	others="${others} $(find_perl_requires ${dirs})"
+	others="${others} $(find_pkgconfig_requires ${dirs})"
 
 	# Get provides, because packages should not depend on features they provide
 	# by themselves.
@@ -68,6 +69,7 @@ function find_provides() {
 	local others=$(find_python_provides ${dirs})
 	others="${others} $(find_weak_symbols_provides ${dirs})"
 	others="${others} $(find_perl_provides ${dirs})"
+	others="${others} $(find_pkgconfig_provides ${dirs})"
 
 	listsort ${PKG_PROVIDES} ${sonames} ${others}
 }
@@ -169,6 +171,16 @@ function find_perl_provides() {
 function find_perl_requires() {
 	[ -x "/usr/bin/perl" ] || return 0
 	${BASEDIR}/perl.req $(find_perl_files $@) | sort -u
+}
+
+function find_pkgconfig_provides() {
+	[ -x "/usr/bin/pkg-config" ] || return 0
+	find $@ | ${BASEDIR}/pkg-config.prov
+}
+
+function find_pkgconfig_requires() {
+	[ -x "/usr/bin/pkg-config" ] || return 0
+	find $@ | ${BASEDIR}/pkg-config.req
 }
 
 function find_weak_symbols_provides() {
