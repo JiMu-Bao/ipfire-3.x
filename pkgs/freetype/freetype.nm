@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = freetype
 PKG_VER        = 2.3.9
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Graphics
@@ -34,7 +34,7 @@ PKG_URL        = http://www.freetype.org/
 PKG_LICENSE    = FTL GPLv2+
 PKG_SUMMARY    = A free and portable font rendering engine.
 
-PKG_BUILD_DEPS+= zlib-devel
+PKG_BUILD_DEPS+= pkg-config zlib-devel
 
 define PKG_DESCRIPTION
 	The FreeType engine is a free and portable font rendering \
