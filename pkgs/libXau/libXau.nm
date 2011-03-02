@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = libXau
 PKG_VER        = 1.0.6
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUP      = X/Libraries
