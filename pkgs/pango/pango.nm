@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = pango
 PKG_VER        = 1.28.3
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
