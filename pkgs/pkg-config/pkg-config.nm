@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = pkg-config
 PKG_VER        = 0.25
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Development/Tools
@@ -35,6 +35,9 @@ PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = A tool for determining compilation options.
 
 PKG_BUILD_DEPS+= m4 popt-devel sed
+
+# Say we provide an alternative spelling of the package name.
+PKG_PROVIDES  += pkgconfig
 
 define PKG_DESCRIPTION
 	The pkgconfig tool determines compilation options. For each required \
