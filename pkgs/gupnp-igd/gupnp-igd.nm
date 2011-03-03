@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = gupnp-igd
 PKG_VER        = 0.1.3
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER = 
 PKG_GROUP      = System/Libraries
@@ -34,13 +34,15 @@ PKG_URL        = http://www.gupnp.org
 PKG_LICENSE    = LGPL
 PKG_SUMMARY    = gupnp - Internet Gateway device implementation (Microsoft).
 
-PKG_DEPS      += gssdp gupnp libsoup
+PKG_BUILD_DEPS+= gssdp-devel gupnp-devel libsoup-devel pkg-config
 
 define PKG_DESCRIPTION
 	This is a library to handle Internet Gateway Device port mappings.
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
+
+PKG_PACKAGES  += $(PKG_NAME)-devel
 
 CONFIGURE_OPTIONS += \
         --without-gnome
