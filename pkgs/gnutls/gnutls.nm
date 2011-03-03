@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = gnutls
 PKG_VER        = 2.8.1
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
@@ -34,7 +34,7 @@ PKG_URL        = http://www.gnu.org/software/gnutls/
 PKG_LICENSE    = LGPLv2.1+
 PKG_SUMMARY    = A general-purpose cryptography library.
 
-PKG_BUILD_DEPS+= libgcrypt-devel lzo-devel
+PKG_BUILD_DEPS+= libgcrypt-devel lzo-devel pkg-config
 
 define PKG_DESCRIPTION
 	GnuTLS is a project that aims to develop a library which provides \
