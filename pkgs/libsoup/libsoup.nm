@@ -25,16 +25,19 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = libsoup
-PKG_VER        = 2.31.2
-PKG_REL        = 0
+PKG_VER        = 2.33.6
+PKG_REL        = 1
 
 PKG_MAINTAINER = 
 PKG_GROUP      = System/Libraries
-PKG_URL        = http://ftp.gnome.org/pub/gnome/sources/libsoup/
+PKG_URL        = http://live.gnome.org/LibSoup
 PKG_LICENSE    = GPL
 PKG_SUMMARY    = HTTP client/server library for GNOME.
 
-PKG_BUILD_DEPS+= glib2-devel libxml2-devel openssl-devel pkg-config
+PKG_BUILD_DEPS+= glib2-devel gnutls-devel libgcrypt-devel libxml2-devel \
+	openssl-devel pkg-config zlib-devel
+
+PKG_DEPS-$(PKG_NAME)-devel += libxml2-devel
 
 define PKG_DESCRIPTION
 	libsoup is an HTTP client/server library for GNOME. It uses GObjects \
