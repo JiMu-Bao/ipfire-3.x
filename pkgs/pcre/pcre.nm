@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = pcre
 PKG_VER        = 8.12
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
@@ -34,7 +34,7 @@ PKG_URL        = http://www.pcre.org/
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = Perl-compatible regular expression library.
 
-PKG_BUILD_DEPS+= bzip2-devel gcc-c++ readline-devel zlib-devel
+PKG_BUILD_DEPS+= bzip2-devel gcc-c++ pkg-config readline-devel zlib-devel
 
 define PKG_DESCRIPTION
 	Perl-compatible regular expression library. PCRE has its own native \
