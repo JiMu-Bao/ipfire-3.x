@@ -26,13 +26,15 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = nspr
 PKG_VER        = 4.8.6
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
 PKG_URL        = http://www.mozilla.org/projects/nspr/
 PKG_LICENSE    = MPLv1.1 or GPLv2+ or LGPLv2+
 PKG_SUMMARY    = Netscape Portable Runtime.
+
+PKG_BUILD_DEPS+= pkg-config
 
 define PKG_DESCRIPTION
 	NSPR provides platform independence for non-GUI operating system \
