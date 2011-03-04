@@ -53,3 +53,8 @@ build: $(OBJECTS)
 	$(if $(STAGE_BUILD),$(DO_BUILD))
 	$(if $(STAGE_TEST),$(DO_TEST))
 	$(if $(STAGE_INSTALL),$(DO_INSTALL))
+
+.PHONY: clean
+clean:
+	# Remove all files from $(DIR_APP)
+	-rm -rf $(DIR_APP)
