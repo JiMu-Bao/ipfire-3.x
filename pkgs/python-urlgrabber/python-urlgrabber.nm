@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = urlgrabber
 PKG_VER        = 3.9.1
-PKG_REL        = 1
+PKG_REL        = 2
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
@@ -36,6 +36,7 @@ PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = A high-level cross-protocol url-grabber.
 
 PKG_BUILD_DEPS+= python-devel python-pycurl
+PKG_DEPS      += python-pycurl
 
 define PKG_DESCRIPTION
 	A high-level cross-protocol url-grabber for python supporting HTTP, \
