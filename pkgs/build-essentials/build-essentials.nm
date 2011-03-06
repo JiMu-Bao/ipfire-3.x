@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = build-essentials
 PKG_VER        = $(DISTRO_VERSION)
-PKG_REL        = 3
+PKG_REL        = 4
 PKG_EPOCH      = 1
 PKG_ARCH       = noarch
 
@@ -37,8 +37,8 @@ PKG_LICENSE    = GPL
 PKG_SUMMARY    = Elementary scripts for the build system.
 
 PKG_BUILD_DEPS =
-PKG_DEPS      += bash bzip2 coreutils cpio diffutils file findutils gawk \
-	grep gzip make patch sed system-release tar which xz
+PKG_DEPS      += bash bzip2 coreutils diffutils file findutils gawk \
+	grep gzip make patch pkgconfig sed system-release tar which xz
 
 define PKG_DESCRIPTION
 	This package contains elementary scripts for the pakfire build system.
