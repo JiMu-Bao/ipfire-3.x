@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = openssh
 PKG_VER        = 5.8p1
-PKG_REL        = 3
+PKG_REL        = 4
 
 PKG_MAINTAINER =
 PKG_GROUP      = Application/Internet
@@ -37,6 +37,9 @@ PKG_SUMMARY    = An open source implementation of SSH protocol versions 1 and 2.
 PKG_BUILD_DEPS+= audit-devel libselinux-devel nss-devel openssl-devel pam-devel \
 	zlib-devel
 PKG_DEPS-openssh = openssh-clients=$(THISVER) openssh-server=$(THISVER)
+
+# /usr/bin/ssh-keygen is needed to generate keys for the ssh server.
+PKG_DEPS-openssh-server += /usr/bin/ssh-keygen
 
 define PKG_DESCRIPTION
 	SH (Secure SHell) is a program for logging into and executing \
