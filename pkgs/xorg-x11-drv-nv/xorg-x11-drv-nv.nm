@@ -35,7 +35,8 @@ PKG_LICENSE    = MIT
 PKG_SUMMARY    = Xorg X11 nv video driver.
 
 PKG_BUILD_DEPS += autoconf automake libX11-devel libdrm-devel libtool \
-	pkg-config xorg-x11-server-devel xorg-x11-util-macros
+	pkg-config xorg-x11-proto-devel xorg-x11-server-devel \
+	xorg-x11-util-macros
 
 define PKG_DESCRIPTION
 	X.Org X11 nv video driver.
