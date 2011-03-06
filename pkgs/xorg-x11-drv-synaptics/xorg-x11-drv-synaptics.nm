@@ -34,8 +34,8 @@ PKG_URL        = http://www.x.org/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = Xorg X11 synaptics input driver.
 
-PKG_BUILD_DEPS += libX11-devel libXi-devel pkg-config xorg-x11-server-devel\
-	xorg-x11-util-macros
+PKG_BUILD_DEPS += libX11-devel libXi-devel pkg-config xorg-x11-proto-devel \
+	xorg-x11-server-devel xorg-x11-util-macros
 
 PKG_PACKAGES  += $(PKG_NAME)-devel
 
