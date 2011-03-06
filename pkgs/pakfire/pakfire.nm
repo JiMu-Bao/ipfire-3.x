@@ -25,8 +25,9 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = pakfire
-PKG_VER        = 0.9
-PKG_REL        = 0
+PKG_VER        = 0.9.1
+PKG_REL        = 1
+PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = System/Packaging
@@ -34,19 +35,27 @@ PKG_URL        = http://www.ipfire.org/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = Package installer/updater.
 
-PKG_DEPS      += cpio python system-release xz
+PKG_BUILD_DEPS = python-devel python-distutils-extra
+PKG_DEPS      += pyliblzma python-progressbar python-urlgrabber pyxattr \
+	system-release
 
 define PKG_DESCRIPTION
 	Pakfire optains package lists from the mirrors and can install and update \
 	packages.
 endef
 
-DIR_APP = $(DIR_SOURCE)/src
+PKG_TARBALL    = $(THISAPP).tar.gz
 
 define STAGE_BUILD
-	cd $(DIR_APP) && make VERSION="$(PKG_VER)" $(PARALLELISMFLAGS)
+	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
 endef
 
-define STAGE_INSTALL_CMDS
-	cd $(DIR_APP) && make clean
-endef
+# Build package
+
+PKG_PACKAGES  += $(PKG_NAME)-build
+
+PKG_SUMMARY-$(PKG_NAME)-build = The pakfire builder.
+PKG_DESCRIPTION-$(PKG_NAME)-build = The tools that are needed to build new \
+	pakfire packages.
+PKG_DEPS-$(PKG_NAME)-build += pakfire=$(THISVER)
+PKG_FILES-$(PKG_NAME)-build = /usr/bin/pakfire-build
