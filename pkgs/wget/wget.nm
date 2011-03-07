@@ -1,0 +1,50 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007-2011  IPFire Team  <info@ipfire.org>                     #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = wget
+PKG_VER        = 1.12
+PKG_REL        = 0
+
+PKG_MAINTAINER =
+PKG_GROUP      = Applications/Internet
+PKG_URL        = http://www.gnu.org/software/wget/
+PKG_LICENSE    = GPLv3+
+PKG_SUMMARY    = Commandline tool to download files.
+
+define PKG_DESCRIPTION
+	GNU Wget is a free software package for retrieving files using \
+	HTTP, HTTPS and FTP, the most widely-used Internet protocols. \
+	It is a non-interactive commandline tool, so it may easily be \
+	called from scripts, cron jobs, terminals without X-Windows \
+	support, etc.
+endef
+
+PKG_BUILD_DEPS+= perl-Pod-Simple perl-Pod-Escapes
+
+PKG_TARBALL    = $(THISAPP).tar.lzma
+
+CONFIGURE_OPTIONS+= \
+		--sysconfdir=/etc
