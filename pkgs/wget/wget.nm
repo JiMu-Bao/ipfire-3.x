@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = wget
 PKG_VER        = 1.12
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Applications/Internet
@@ -42,7 +42,7 @@ define PKG_DESCRIPTION
 	support, etc.
 endef
 
-PKG_BUILD_DEPS+= perl-Pod-Simple perl-Pod-Escapes
+PKG_BUILD_DEPS+= libidn-devel openssl-devel perl-Pod-Simple perl-Pod-Escapes
 
 PKG_TARBALL    = $(THISAPP).tar.lzma
 
