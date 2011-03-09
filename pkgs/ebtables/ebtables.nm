@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = ebtables
 PKG_VER        = v2.0.9-2
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = Networking/Tools
@@ -43,6 +43,8 @@ endef
 PKG_TARBALL    = $(THISAPP).tar.gz
 
 CFLAGS += -Wall
+
+PKG_REQUIRES_FILTER = libebt
 
 define QUALITY_AGENT_WHITELIST_RPATH
 	/lib/ebtables
