@@ -42,7 +42,7 @@ define PKG_DESCRIPTION
 	support, etc.
 endef
 
-PKG_BUILD_DEPS+= libidn-devel openssl-devel perl-Pod-Simple perl-Pod-Escapes
+PKG_BUILD_DEPS+= libidn-devel openssl-devel
 
 PKG_TARBALL    = $(THISAPP).tar.lzma
 
