@@ -73,7 +73,10 @@ PKG_VARIABLES = \
 	PKG_RELEASE \
 	PKG_SUMMARY \
 	PKG_URL \
-	PKG_VER
+	PKG_VER \
+	\
+	PKG_PROVIDES_FILTER \
+	PKG_REQUIRES_FILTER
 
 # Variables that exported to the packager process
 # These reflect settings from the build system
