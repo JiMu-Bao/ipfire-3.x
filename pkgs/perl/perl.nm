@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = perl
 PKG_VER        = 5.12.3
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER =
 PKG_GROUP      = Development/Languages
@@ -50,11 +50,77 @@ endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
+# Filter string for very weird dependencies.
+PKG_REQUIRES_FILTER = (DBD\:\:SQLite|DBIx\:\:Simple|perl>=[0-9]\:.*|NDBM_File|Your\:\:Module\:\:Here|FCGI|Mac\:\:.*)
+
 define QUALITY_AGENT_WHITELIST_RPATH
 	/lib
 	/usr/lib
 	/usr/lib/perl5/CORE
 endef
+
+# These provides are needed by the perl pkg itself with auto-generated perl.req
+PKG_PROVIDES-perl += \
+	perl(VMS::Filespec) \
+	perl(VMS::Stdio)
+
+# Compat provides
+PKG_PROVIDES-perl += \
+	perl(:MODULE_COMPAT_5.12.3) \
+	perl(:MODULE_COMPAT_5.12.2) \
+	perl(:MODULE_COMPAT_5.12.1) \
+	perl(:MODULE_COMPAT_5.12.0)
+
+# Threading provides
+PKG_PROVIDES-perl += \
+	perl(:WITH_ITHREADS) \
+	perl(:WITH_THREADS)
+
+# Largefile provides
+PKG_PROVIDES-perl += perl(:WITH_LARGEFILES)
+
+# PerlIO provides
+PKG_PROVIDES-perl += perl(:WITH_PERLIO)
+
+# File provides
+PKG_PROVIDES-perl += \
+	perl(abbrev.pl) \
+	perl(assert.pl) \
+	perl(bigfloat.pl) \
+	perl(bigint.pl) \
+	perl(bigrat.pl) \
+	perl(bytes_heavy.pl) \
+	perl(cacheout.pl) \
+	perl(complete.pl) \
+	perl(ctime.pl) \
+	perl(dotsh.pl) \
+	perl(dumpvar.pl) \
+	perl(exceptions.pl) \
+	perl(fastcwd.pl) \
+	perl(find.pl) \
+	perl(finddepth.pl) \
+	perl(flush.pl) \
+	perl(ftp.pl) \
+	perl(getcwd.pl) \
+	perl(getopt.pl) \
+	perl(getopts.pl) \
+	perl(hostname.pl) \
+	perl(importenv.pl) \
+	perl(look.pl) \
+	perl(newgetopt.pl) \
+	perl(open2.pl) \
+	perl(open3.pl) \
+	perl(perl5db.pl) \
+	perl(pwd.pl) \
+	perl(shellwords.pl) \
+	perl(stat.pl) \
+	perl(syslog.pl) \
+	perl(tainted.pl) \
+	perl(termcap.pl) \
+	perl(timelocal.pl) \
+	perl(utf8_heavy.pl) \
+	perl(validate.pl) \
+	perl(Carp::Heavy)
 
 define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && sed -i 's/command /command[ -]/' makedepend.SH
