@@ -42,8 +42,6 @@ endef
 PKG_DESCRIPTION-$(PKG_NAME_REAL)-libs  = Library files of $(THISAPP).
 PKG_SUMMARY-$(PKG_NAME_REAL)-libs = $(PKG_DESCRIPTION-$(PKG_NAME_REAL)-libs)
 
-PKG_DEPS-$(PKG_NAME_REAL)-libs = $(PKG_NAME_REAL)=$(THISVER)
-
 define PKG_FILES-$(PKG_NAME_REAL)-libs
 	/lib/lib*.so.*
 	/usr/lib/lib*.so.*

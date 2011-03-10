@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = libcap
 PKG_VER        = 2.19
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Libraries
@@ -41,12 +41,16 @@ define PKG_DESCRIPTION
 	draft 15 capabilities.
 endef
 
-PKG_BUILD_DEPS+= libattr-devel pam-devel perl
+PKG_BUILD_DEPS+= libattr-devel pam-devel perl /bin/ping
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
 define STAGE_BUILD
 	cd $(DIR_APP) && make DYNAMIC=yes LIBATTR=yes
+endef
+
+define STAGE_TEST
+	cd $(DIR_APP)/progs && ./quicktest.sh
 endef
 
 define STAGE_INSTALL
