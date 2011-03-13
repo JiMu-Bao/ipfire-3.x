@@ -51,7 +51,7 @@ diff -Nur shadow-4.1.4.2_orig/man/groupadd.8 shadow-4.1.4.2/man/groupadd.8
  .PP
 -Groupnames must start with a lower case letter or an underscore, followed by lower case letters, digits, underscores, or dashes\&. They can end with a dollar sign\&. In regular expression terms: [a\-z_][a\-z0\-9_\-]*[$]?
 -.PP
--Groupnames may only be up to 16 characters long\&.
+-Groupnames may only be up to characters long\&.
 +Groupnames may only be up to 32 characters long\&.
  .PP
  You may not add a NIS or LDAP group\&. This must be performed on the corresponding server\&.
