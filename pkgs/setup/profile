@@ -3,10 +3,10 @@
 # System wide environment and startup programs, for login setup
 # Functions and aliases go in /etc/bashrc
 
-# It's NOT good idea to change this file unless you know what you
-# are doing. Much better way is to create custom.sh shell script in
-# /etc/profile.d/ to make custom changes to environment. This will
-# prevent need for merging in future updates.
+# It's NOT a good idea to change this file unless you know what you
+# are doing. It's much better to create a custom.sh shell script in
+# /etc/profile.d/ to make custom changes to your environment, as this
+# will prevent the need for merging in future updates.
 
 pathmunge () {
     case ":${PATH}:" in
@@ -54,12 +54,22 @@ fi
 
 export PATH USER LOGNAME MAIL HOSTNAME HISTSIZE HISTCONTROL
 
+# By default, we want umask to get set. This sets it for login shell
+# Current threshold for system reserved uid/gids is 200
+# You could check uidgid reservation validity in
+# /usr/share/doc/setup-*/uidgid file
+if [ $UID -gt 199 ] && [ "`id -gn`" = "`id -un`" ]; then
+    umask 002
+else
+    umask 022
+fi
+
 for i in /etc/profile.d/*.sh ; do
     if [ -r "$i" ]; then
-        if [ "$PS1" ]; then
-            . $i
+        if [ "${-#*i}" != "$-" ]; then 
+            . "$i"
         else
-            . $i >/dev/null 2>&1
+            . "$i" >/dev/null 2>&1
         fi
     fi
 done

@@ -1,7 +1,7 @@
 ###############################################################################
 #                                                                             #
 # IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007-2011  IPFire Team  <info@ipfire.org>                     #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
 #                                                                             #
 # This program is free software: you can redistribute it and/or modify        #
 # it under the terms of the GNU General Public License as published by        #
@@ -24,27 +24,30 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = wget
-PKG_VER        = 1.12
+PKG_NAME       = URI
+PKG_VER        = 1.56
 PKG_REL        = 1
+PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Internet
-PKG_URL        = http://www.gnu.org/software/wget/
-PKG_LICENSE    = GPLv3+
-PKG_SUMMARY    = Commandline tool to download files.
+PKG_GROUP      = Development/Libraries
+PKG_URL        = http://search.cpan.org/dist/URI/
+PKG_LICENSE    = GPL+ or Artistic
+PKG_SUMMARY    = A Perl module implementing URI parsing and manipulation.
+
+PKG_BUILD_DEPS+= \
+	perl(ExtUtils::MakeMaker) \
+	perl(MIME::Base64)
 
 define PKG_DESCRIPTION
-	GNU Wget is a free software package for retrieving files using \
-	HTTP, HTTPS and FTP, the most widely-used Internet protocols. \
-	It is a non-interactive commandline tool, so it may easily be \
-	called from scripts, cron jobs, terminals without X-Windows \
-	support, etc.
+	This module implements the URI class. Objects of this class represent
+	Uniform Resource Identifier references as specified in RFC 2396 (and
+	updated by RFC 2732).
 endef
 
-PKG_BUILD_DEPS+= libidn-devel openssl-devel
+PKG_TARBALL    = $(THISAPP).tar.gz
 
-PKG_TARBALL    = $(THISAPP).tar.lzma
-
-CONFIGURE_OPTIONS+= \
-		--sysconfdir=/etc
+define STAGE_BUILD
+	cd $(DIR_APP) && perl Makefile.PL INSTALLDIRS=perl
+	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
+endef

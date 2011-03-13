@@ -1,7 +1,7 @@
 ###############################################################################
 #                                                                             #
 # IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007-2011  IPFire Team  <info@ipfire.org>                     #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
 #                                                                             #
 # This program is free software: you can redistribute it and/or modify        #
 # it under the terms of the GNU General Public License as published by        #
@@ -24,27 +24,43 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = wget
-PKG_VER        = 1.12
+PKG_NAME       = setup
+PKG_VER        = 3.0
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Internet
-PKG_URL        = http://www.gnu.org/software/wget/
-PKG_LICENSE    = GPLv3+
-PKG_SUMMARY    = Commandline tool to download files.
+PKG_GROUP      = System/Base
+PKG_URL        =
+PKG_LICENSE    = Public Domain
+PKG_SUMMARY    = A set of system configuration and setup files.
+
+PKG_BUILD_DEPS = # Need no compiler.
+PKG_DEPS      += iana-etc
 
 define PKG_DESCRIPTION
-	GNU Wget is a free software package for retrieving files using \
-	HTTP, HTTPS and FTP, the most widely-used Internet protocols. \
-	It is a non-interactive commandline tool, so it may easily be \
-	called from scripts, cron jobs, terminals without X-Windows \
-	support, etc.
+	The setup package contains a set of important system configuration and
+	setup files, such as passwd, group, and profile.
 endef
 
-PKG_BUILD_DEPS+= libidn-devel openssl-devel
+DIR_APP = $(DIR_SOURCE)
 
-PKG_TARBALL    = $(THISAPP).tar.lzma
+define STAGE_BUILD
+	cd $(DIR_APP) && ./shadowconvert.sh
+endef
 
-CONFIGURE_OPTIONS+= \
-		--sysconfdir=/etc
+define STAGE_TEST
+	cd $(DIR_APP) && make check
+endef
+
+define STAGE_INSTALL
+	-mkdir -pv $(BUILDROOT)/etc/profile.d $(BUILDROOT)/var/log
+
+	for i in aliases bashrc exports filesystems group gshadow host.conf \
+		hosts hosts.allow hosts.deny inputrc motd passwd printcap \
+		profile securetty shadow shells; do \
+		cp -vf $(DIR_APP)/$${i} $(BUILDROOT)/etc || exit 1; \
+	done
+
+	touch $(BUILDROOT)/etc/{environment,fstab} $(BUILDROOT)/var/log/lastlog
+	chmod -v 0400 $(BUILDROOT)/etc/{,g}shadow
+endef

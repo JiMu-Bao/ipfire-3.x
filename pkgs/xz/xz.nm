@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = xz
 PKG_VER        = 5.0.1
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUP      = Applications/Compression
@@ -34,7 +34,7 @@ PKG_URL        = http://tukaani.org/xz/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = LZMA Utils.
 
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
+PKG_PACKAGES  += $(PKG_NAME_REAL)-devel $(PKG_NAME_REAL)-libs
 
 define PKG_DESCRIPTION
 	LZMA provides very high compression ratio and fast decompression. The \

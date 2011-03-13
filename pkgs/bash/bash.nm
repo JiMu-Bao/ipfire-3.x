@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = bash
 PKG_VER        = 4.2
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Tools
@@ -42,6 +42,7 @@ define PKG_DESCRIPTION
 endef
 
 PKG_BUILD_DEPS+= autoconf automake bison ncurses-devel readline-devel
+PKG_DEPS      += /etc/bashrc /etc/profile
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
@@ -71,7 +72,6 @@ define STAGE_INSTALL_CMDS
 	-mkdir -pv $(BUILDROOT)/{bin,etc/profile.d,root}
 
 	# Bash startup files
-	cp -avf $(DIR_SOURCE)/{bashrc,profile,shells} $(BUILDROOT)/etc
 	cp -vf $(DIR_SOURCE)/dot_bash_logout $(BUILDROOT)/root/.bash_logout
 	cp -vf $(DIR_SOURCE)/dot_bash_profile $(BUILDROOT)/root/.bash_profile
 	cp -vf $(DIR_SOURCE)/dot_bashrc $(BUILDROOT)/root/.bashrc
