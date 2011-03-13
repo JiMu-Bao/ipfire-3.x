@@ -27,7 +27,7 @@ include $(PKGROOT)/Include
 PKG_NAME       = HTML-Tagset
 PKG_VER        = 3.20
 PKG_REL        = 1
-PKG_ARCH       = noarcha
+PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
 PKG_GROUP      = Development/Libratries
