@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = xorg-x11-server
 PKG_VER        = 1.8.2
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUP      = X/Server
@@ -128,7 +128,9 @@ define STAGE_INSTALL
 		$(BUILDROOT)/usr/share/xorg/
 	cd $(DIR_APP) && install -m 644 $(DIR_SOURCE)/10-quirks.conf \
 		$(BUILDROOT)/usr/share/X11/xorg.conf.d
+endef
 
+define STAGE_INSTALL_POST
 	# Capabilities
 	chmod u-s $(BUILDROOT)/usr/bin/Xorg
 	setcap cap_chown,cap_dac_override,cap_sys_rawio,cap_sys_admin+ep \

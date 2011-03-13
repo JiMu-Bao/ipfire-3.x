@@ -180,12 +180,12 @@ function find_perl_files() {
 
 function find_perl_provides() {
 	[ -x "/usr/bin/perl" ] || return 0
-	${BASEDIR}/perl.prov $(find_perl_files $@) | sort -u
+	perl ${BASEDIR}/perl.prov $(find_perl_files $@) | sort -u
 }
 
 function find_perl_requires() {
 	[ -x "/usr/bin/perl" ] || return 0
-	${BASEDIR}/perl.req $(find_perl_files $@) | sort -u
+	perl ${BASEDIR}/perl.req $(find_perl_files $@) | sort -u
 }
 
 function find_pkgconfig_provides() {
