@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = util-linux-ng
 PKG_VER        = 2.18
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUP      = System/Base
@@ -153,7 +153,9 @@ define STAGE_INSTALL_CMDS
 		$(BUILDROOT)/usr/bin/chkdupexe $(BUILDROOT)/usr/bin/vi{gr,pw} \
 		$(BUILDROOT)/sbin/{sln,shutdown} $(BUILDROOT)/bin/{line,newgrp,pg}
 	rm -fv $(BUILDROOT)/usr/share/getopt/*.tcsh
+endef
 
+define STAGE_INSTALL_POST
 	# Set capabilities
 	chmod -v -s $(BUILDROOT)/bin/mount
 	setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep $(BUILDROOT)/bin/mount
