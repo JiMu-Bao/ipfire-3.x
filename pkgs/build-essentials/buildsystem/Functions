@@ -144,11 +144,14 @@ define DO_INSTALL
 	$(DO_INSTALL_INIT)
 	$(DO_INSTALL_PAM)
 
-	$(DO_PYTHON_COMPILE)
-
 	@echo "#####################################################################"
 	@echo "# $(PKG_NAME) - Install finished"
 	@echo "#####################################################################"
+
+	$(DO_STRIP)
+	$(DO_PYTHON_COMPILE)
+
+	$(STAGE_INSTALL_POST)
 
 	$(DO_QUALITY_AGENT)
 	$(DO_FILELIST)

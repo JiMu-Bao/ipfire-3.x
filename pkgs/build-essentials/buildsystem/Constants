@@ -25,6 +25,7 @@ VPATH        = $(DIR_DL)
 # Paths to scripts
 DO_EXTRACT       = tar xaf
 DO_QUALITY_AGENT = quality-agent
+DO_STRIP         = /usr/lib/buildsystem-tools/stripper $(BUILDROOT)
 
 ###############################################################################
 #
