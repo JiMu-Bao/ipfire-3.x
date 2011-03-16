@@ -24,41 +24,31 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = libwww-perl
-PKG_VER        = 5.837
+PKG_NAME       = HTML-Parser
+PKG_VER        = 3.68
 PKG_REL        = 1
-PKG_EPOCH      = 1
-PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Libraries
-PKG_URL        = http://search.cpan.org/dist/libwww-perl/
+PKG_GROUP      = Development/Libratries
+PKG_URL        = http://search.cpan.org/dist/HTML-Parser/
 PKG_LICENSE    = GPL+ or Artistic
-PKG_SUMMARY    = A Perl interface to the World-Wide Web.
+PKG_SUMMARY    = Perl module for parsing HTML.
 
-PKG_BUILD_DEPS+= mailcap perl-core perl-devel perl-HTML-Parser perl-libwww-perl \
-	perl(Test::More) perl(Compress::Zlib) perl(MIME::Base64) perl(Net::FTP)
+PKG_BUILD_DEPS+= perl-core perl-devel perl(HTML::Tagset) perl(Test::More)
 
 define PKG_DESCRIPTION
-	The libwww-perl collection is a set of Perl modules which provides a simple and \
-	consistent application programming interface to the World-Wide Web.
+	The HTML-Parser module for perl to parse and extract information from \
+	HTML documents, including the HTML::Entities, HTML::HeadParser, \
+	HTML::LinkExtor, HTML::PullParser, and HTML::TokeParser modules.
 endef
-
-# Filter string for very weird dependencies.
-PKG_REQUIRES_FILTER = (HTTP::Headers|HTTP::GHTTP|Win32|Authen::NTLM)
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
 define STAGE_BUILD
-	cd $(DIR_APP) && perl Makefile.PL INSTALLDIRS=perl --aliases < /dev/null
+	cd $(DIR_APP) && perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="$(CFLAGS)"
 	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
 endef
 
 define STAGE_TEST
-	# Use system wide MIME types (link also to blib/... for "make test").  Doing
-	# this stuff before "make install" would not cause the symlink to be packaged
-	# but a copy of /etc/mime.types.
-	ln -svf /etc/mime.types $(DIR_APP)/blib/lib/LWP/media.types
-
 	cd $(DIR_APP) && make test
 endef

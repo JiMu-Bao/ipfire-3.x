@@ -24,41 +24,32 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = libwww-perl
-PKG_VER        = 5.837
+PKG_NAME       = mailcap
+PKG_VER        = 2.1.36
 PKG_REL        = 1
-PKG_EPOCH      = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Libraries
-PKG_URL        = http://search.cpan.org/dist/libwww-perl/
-PKG_LICENSE    = GPL+ or Artistic
-PKG_SUMMARY    = A Perl interface to the World-Wide Web.
-
-PKG_BUILD_DEPS+= mailcap perl-core perl-devel perl-HTML-Parser perl-libwww-perl \
-	perl(Test::More) perl(Compress::Zlib) perl(MIME::Base64) perl(Net::FTP)
+PKG_GROUP      = System/Base
+PKG_URL        = https://fedorahosted.org/released/mailcap/
+PKG_LICENSE    = Public Domain and MIT
+PKG_SUMMARY    = Helper application and MIME type associations for file types.
 
 define PKG_DESCRIPTION
-	The libwww-perl collection is a set of Perl modules which provides a simple and \
-	consistent application programming interface to the World-Wide Web.
+	The mailcap file is used by the metamail program.  Metamail reads the \
+	mailcap file to determine how it should display non-text or multimedia \
+	material.  Basically, mailcap associates a particular type of file \
+	with a particular program that a mail agent or other program can call \
+	in order to handle the file.  Mailcap should be installed to allow \
+	certain programs to be able to handle non-text files.
 endef
 
-# Filter string for very weird dependencies.
-PKG_REQUIRES_FILTER = (HTTP::Headers|HTTP::GHTTP|Win32|Authen::NTLM)
+PKG_TARBALL    = $(THISAPP).tar.xz
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+INSTALL_TARGETS = sysconfdir=/etc mandir=/usr/share/man
 
-define STAGE_BUILD
-	cd $(DIR_APP) && perl Makefile.PL INSTALLDIRS=perl --aliases < /dev/null
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
-endef
+STAGE_BUILD = # Nothing to do
 
 define STAGE_TEST
-	# Use system wide MIME types (link also to blib/... for "make test").  Doing
-	# this stuff before "make install" would not cause the symlink to be packaged
-	# but a copy of /etc/mime.types.
-	ln -svf /etc/mime.types $(DIR_APP)/blib/lib/LWP/media.types
-
-	cd $(DIR_APP) && make test
+	cd $(DIR_APP) && make check
 endef
