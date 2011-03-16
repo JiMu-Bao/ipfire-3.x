@@ -1,0 +1,51 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = fuse-sshfs
+PKG_VER        = 2.2
+PKG_REL        = 1
+
+PKG_MAINTAINER =
+PKG_GROUP      = System/Filesystems
+PKG_URL        = http://fuse.sourceforge.net/sshfs.html
+PKG_LICENSE    = GPLv2
+PKG_SUMMARY    = FUSE-Filesystem to access remote filesystems via SSH.
+
+PKG_PROVIDES  += sshfs=$(THISVER)
+
+PKG_BUILD_DEPS+= fuse-devel glib2-devel openssh-clients
+PKG_DEPS      += openssh-clients
+
+define PKG_DESCRIPTION
+	This is a FUSE-filesystem client based on the SSH File Transfer Protocol.
+	Since most SSH servers already support this protocol it is very easy to set
+	up: i.e. on the server side there's nothing to do.  On the client side
+	mounting the filesystem is as easy as logging into the server with ssh.
+endef
+
+PKG_TARBALL    = sshfs-fuse-$(PKG_VER).tar.gz
+
+DIR_APP        = $(DIR_SRC)/sshfs-fuse-$(PKG_VER)
