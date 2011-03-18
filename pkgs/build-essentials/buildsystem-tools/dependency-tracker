@@ -4,19 +4,21 @@ dirname=$(dirname ${0})
 
 . ${dirname}/common-functions
 
-action=${1}
-shift
+args=${1}
 
-case "${action}" in
-	requires)
-		find_requires $@
-		exit $?
-		;;
+if [ -n "${2}" ]; then
+	args=${2}
+fi
 
-	provides)
-		find_provides $@
-		exit $?
-		;;
-esac
+echo "ARGS=${args}"
 
-exit 1
+provides=$(find_provides ${args})
+requires=""
+for require in $(find_requires ${args}); do
+	listmatch ${require} ${provides} || requires="${requires} ${require}"
+done
+
+echo "provides=\"${provides}\""
+echo "requires=\"${requires}\""
+
+exit 0

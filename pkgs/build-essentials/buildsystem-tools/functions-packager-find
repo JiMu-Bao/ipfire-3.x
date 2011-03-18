@@ -40,10 +40,6 @@ function find_requires() {
 	others="${others} $(find_perl_requires ${dirs})"
 	others="${others} $(find_pkgconfig_requires ${dirs})"
 
-	# Get provides, because packages should not depend on features they provide
-	# by themselves.
-	local provides=$(find_provides ${dirs})
-
 	# Return a sorted and unique(!) list
 	local require
 	local requires
@@ -54,7 +50,7 @@ function find_requires() {
 			grep -qE "${PKG_REQUIRES_FILTER}" <<< "${require}" && continue
 		fi
 
-		listmatch ${require} ${provides} || requires="${requires} ${require}"
+		requires="${requires} ${require}"
 	done
 
 	echo ${requires}
