@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = openssl
 PKG_VER        = 1.0.0d
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUP      = System/Libraries
@@ -88,9 +88,6 @@ define STAGE_BUILD
 			no-idea \
 			no-mdc2 \
 			no-rc5 \
-			no-ec \
-			no-ecdh \
-			no-ecdsa \
 			-DSSL_FORBID_ENULL
 
 	# Build.
