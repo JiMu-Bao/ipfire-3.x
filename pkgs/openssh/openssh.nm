@@ -34,8 +34,8 @@ PKG_URL        = http://www.openssh.com/portable.html
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = An open source implementation of SSH protocol versions 1 and 2.
 
-PKG_BUILD_DEPS+= audit-devel libselinux-devel nss-devel openssl-devel pam-devel \
-	zlib-devel
+PKG_BUILD_DEPS+= audit-devel libselinux-devel nss-devel openssl-devel>=1.0.0d-2 \
+	pam-devel zlib-devel
 PKG_DEPS-openssh = openssh-clients=$(THISVER) openssh-server=$(THISVER)
 
 # /usr/bin/ssh-keygen is needed to generate keys for the ssh server.
