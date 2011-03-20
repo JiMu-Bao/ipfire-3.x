@@ -35,8 +35,7 @@ PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = The Linux kernel.
 
 PKG_BUILD_DEPS+= module-init-tools ncurses-devel perl
-PKG_DEPS      += linux-firmware
-PKG_DEPS-kernel= dracut
+PKG_DEPS-kernel= dracut linux-firmware
 
 define PKG_DESCRIPTION
 	The kernel package contains the Linux kernel (vmlinuz), the core of any \
