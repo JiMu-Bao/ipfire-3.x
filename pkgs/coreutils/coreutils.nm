@@ -1,0 +1,82 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = coreutils
+PKG_VER        = 8.9
+PKG_REL        = 1
+
+PKG_MAINTAINER =
+PKG_GROUP      = System/Base
+PKG_URL        = http://www.gnu.org/software/coreutils/
+PKG_LICENSE    = GPLv3+
+PKG_SUMMARY    = A set of basic GNU tools commonly used in shell scripts.
+
+define PKG_DESCRIPTION
+	These are the GNU core utilities. This package is the combination of \
+	the old GNU fileutils, sh-utils, and textutils packages.
+endef
+
+PKG_BUILD_DEPS+= autoconf automake e2fsprogs-devel gmp-devel libacl-devel \
+	libattr-devel libcap-devel libselinux-devel ncurses-devel pam-devel
+
+PKG_TARBALL    = $(THISAPP).tar.gz
+
+CFLAGS        += -D_GNU_SOURCE=1 -fno-strict-aliasing
+
+CONFIGURE_OPTIONS += \
+	--enable-pam \
+	--enable-selinux \
+	--enable-largefile \
+	--enable-install-program=arch,hostname,su \
+	--enable-no-install-program=kill,uptime
+
+define STAGE_PREPARE_CMDS
+	cd $(DIR_APP) && aclocal -I m4
+	cd $(DIR_APP) && autoconf --force
+endef
+
+define STAGE_TEST
+	cd $(DIR_APP) && make check
+endef
+
+define STAGE_INSTALL_CMDS
+	-mkdir -pv $(BUILDROOT)/{bin,etc/profile.d,usr/sbin}
+	mv -v $(BUILDROOT)/usr/bin/{cat,chgrp,chmod,chown,cp,date,dd,df,echo} $(BUILDROOT)/bin
+	mv -v $(BUILDROOT)/usr/bin/{false,hostname,ln,ls,mkdir,mknod,mv,pwd,readlink,rm} $(BUILDROOT)/bin
+	mv -v $(BUILDROOT)/usr/bin/{rmdir,stty,sync,touch,true,uname} $(BUILDROOT)/bin
+	mv -v $(BUILDROOT)/usr/bin/chroot $(BUILDROOT)/usr/sbin
+	mv -v $(BUILDROOT)/usr/bin/{head,sleep,nice} $(BUILDROOT)/bin
+
+	cd $(DIR_APP) && install -m 4755 src/su $(BUILDROOT)/bin
+
+	# Dump /etc/DIR_COLORS
+	dircolors -p > $(BUILDROOT)/etc/DIR_COLORS
+	cp -vf $(DIR_SOURCE)/profile.d/* $(BUILDROOT)/etc/profile.d/
+
+	# Capabilities
+	chmod u-s $(BUILDROOT)/bin/su
+	setcap cap_setgid,cap_setuid+ep $(BUILDROOT)/bin/su
+endef

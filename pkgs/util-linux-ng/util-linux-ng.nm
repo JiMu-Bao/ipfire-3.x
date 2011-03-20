@@ -1,0 +1,164 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = util-linux-ng
+PKG_VER        = 2.18
+PKG_REL        = 2
+
+PKG_MAINTAINER =
+PKG_GROUP      = System/Base
+PKG_URL        = ftp://ftp.kernel.org/pub/linux/utils/util-linux-ng
+PKG_LICENSE    = GPLv2 and GPLv2+ and BSD with advertising and Public Domain
+PKG_SUMMARY    = A collection of basic system utilities.
+
+PKG_BUILD_DEPS+= audit-devel gettext libcap-devel libselinux-devel \
+	libsepol-devel ncurses-devel pam-devel zlib-devel
+
+define PKG_DESCRIPTION
+	The util-linux-ng package contains a large variety of low-level system \
+	utilities that are necessary for a Linux system to function. Among \
+	others, Util-linux contains the fdisk configuration tool and the login \
+	program.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.gz
+
+PKG_PACKAGES  += libblkid libblkid-devel libuuid libuuid-devel \
+	libmount libmount-devel
+
+# Package information for libblkid
+PKG_SUMMARY-libblkid =  Block device ID library.
+PKG_DESCRIPTION-libblkid = This is the block device identification library, \
+	part of util-linux-ng. 
+
+define PKG_FILES-libblkid
+	/lib/libblkid.*
+endef
+
+# Package information for libblkid-devel
+PKG_SUMMARY-libblkid-devel =  Development library and header of libblkid.
+PKG_DESCRIPTION-libblkid-devel = $(PKG_SUMMARY-libblkid-devel)
+
+define PKG_FILES-libblkid-devel
+	/usr/include/blkid/ \
+	/usr/lib/libblkid.* \
+	/usr/lib/pkgconfig/blkid.pc \
+	/usr/share/man/man3/*blkid* 
+endef
+
+# Package information for libuuid
+PKG_SUMMARY-libuuid =  Universally unique ID library.
+PKG_DESCRIPTION-libuuid = This is the universally unique ID library, \
+	part of util-linux-ng.
+
+define PKG_FILES-libuuid
+	/lib/libuuid.*
+endef
+
+# Package information for libuuid-devel
+PKG_SUMMARY-libuuid-devel =  Development library and header of libuuid.
+PKG_DESCRIPTION-libuuid-devel = $(PKG_SUMMARY-libuuid-devel)
+
+define PKG_FILES-libuuid-devel
+	/usr/include/uuid/ \
+	/usr/lib/libuuid.* \
+	/usr/lib/pkgconfig/uuid.pc \
+	/usr/share/man/man3/*uuid*
+endef
+
+# Package information for libmount
+PKG_SUMMARY-libmount =  Device mounting library.
+PKG_DESCRIPTION-libmount = This is the device mounting library, \
+	part of util-linux-ng.
+
+define PKG_FILES-libmount
+	/lib/libmount.*
+endef
+
+# Package information for libmount-devel
+PKG_SUMMARY-libmount-devel =  Development library and header of libmount.
+PKG_DESCRIPTION-libmount-devel = $(PKG_SUMMARY-libmount-devel)
+
+define PKG_FILES-libmount-devel
+	/usr/include/mount/ \
+	/usr/lib/libmount.* \
+	/usr/lib/pkgconfig/mount.pc \
+	/usr/share/man/man3/*mount*
+endef
+
+
+CFLAGS        += -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+
+CONFIGURE_OPTIONS += \
+	--bindir=/bin \
+	--sbindir=/sbin \
+	--disable-wall \
+	--enable-arch \
+	--enable-kill \
+	--enable-login-utils \
+	--enable-partx \
+	--enable-write \
+	--with-selinux \
+	--with-audit \
+	--disable-makeinstall-chown \
+	--disable-static
+	
+
+define STAGE_PREPARE_CMDS
+	cd $(DIR_APP) && sed -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' \
+		-i $$(grep -rl '/etc/adjtime' .)
+endef
+
+define STAGE_BUILD_CMDS
+	# Build nologin
+	cd $(DIR_APP) && gcc $(CFLAGS) -o nologin $(DIR_SOURCE)/nologin.c
+endef
+
+define STAGE_INSTALL_CMDS
+	-mkdir -pv $(BUILDROOT)/sbin \
+		$(BUILDROOT)/var/lib/hwclock \
+		$(BUILDROOT)/usr/share/man/man8 \
+		$(BUILDROOT)/var/log
+
+	install -m 755 $(DIR_APP)/nologin $(BUILDROOT)/sbin
+	install -m 644 $(DIR_SOURCE)/nologin.8 $(BUILDROOT)/usr/share/man/man8/
+
+	touch $(BUILDROOT)/var/log/lastlog
+
+	# Remove deprecated commands
+	rm -fv $(BUILDROOT)/{sbin,usr/share/man/man*}/{fsck,mkfs}.{bfs,minix}* \
+		$(BUILDROOT)/usr/bin/chkdupexe $(BUILDROOT)/usr/bin/vi{gr,pw} \
+		$(BUILDROOT)/sbin/{sln,shutdown} $(BUILDROOT)/bin/{line,newgrp,pg}
+	rm -fv $(BUILDROOT)/usr/share/getopt/*.tcsh
+endef
+
+define STAGE_INSTALL_POST
+	# Set capabilities
+	chmod -v -s $(BUILDROOT)/bin/mount
+	setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep $(BUILDROOT)/bin/mount
+	chmod -v -s $(BUILDROOT)/bin/umount
+	setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep $(BUILDROOT)/bin/umount
+endef

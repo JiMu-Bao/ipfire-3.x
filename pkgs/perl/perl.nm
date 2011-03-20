@@ -1,0 +1,1144 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = perl
+PKG_VER        = 5.12.3
+PKG_REL        = 3
+
+PKG_MAINTAINER =
+PKG_GROUP      = Development/Languages
+PKG_URL        = http://www.perl.org/
+PKG_LICENSE    = GPL+ or Artistic and GPLv2+ or Artistic
+PKG_SUMMARY    = Practical Extraction and Report Language.
+
+PKG_BUILD_DEPS+= db4-devel gcc-c++ gdbm-devel iana-etc perl procps zlib-devel
+
+define PKG_DESCRIPTION
+	Perl is a high-level programming language with roots in C, sed, awk \
+	and shell scripting. Perl is good at handling processes and files, \
+	and is especially good at handling text. Perl's hallmarks are \
+	practicality and efficiency. While it is used to do a lot of \
+	different things, Perl's most common applications are system \
+	administration utilities and web programming. A large proportion of \
+	the CGI scripts on the web are written in Perl.  You need the perl \
+	package installed on your system so that your system can handle Perl \
+	scripts.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.gz
+
+# Filter string for very weird dependencies.
+PKG_REQUIRES_FILTER = (DBD\:\:SQLite|DBIx\:\:Simple|perl>=[0-9]\:.*|NDBM_File|Your\:\:Module\:\:Here|FCGI|Mac\:\:.*)
+
+define QUALITY_AGENT_WHITELIST_RPATH
+	/lib
+	/usr/lib
+	/usr/lib/perl5/CORE
+endef
+
+# These provides are needed by the perl pkg itself with auto-generated perl.req
+PKG_PROVIDES-perl += \
+	perl(VMS::Filespec) \
+	perl(VMS::Stdio)
+
+# Compat provides
+PKG_PROVIDES-perl += \
+	perl(:MODULE_COMPAT_5.12.3) \
+	perl(:MODULE_COMPAT_5.12.2) \
+	perl(:MODULE_COMPAT_5.12.1) \
+	perl(:MODULE_COMPAT_5.12.0)
+
+# Threading provides
+PKG_PROVIDES-perl += \
+	perl(:WITH_ITHREADS) \
+	perl(:WITH_THREADS)
+
+# Largefile provides
+PKG_PROVIDES-perl += perl(:WITH_LARGEFILES)
+
+# PerlIO provides
+PKG_PROVIDES-perl += perl(:WITH_PERLIO)
+
+# File provides
+PKG_PROVIDES-perl += \
+	perl(abbrev.pl) \
+	perl(assert.pl) \
+	perl(bigfloat.pl) \
+	perl(bigint.pl) \
+	perl(bigrat.pl) \
+	perl(bytes_heavy.pl) \
+	perl(cacheout.pl) \
+	perl(complete.pl) \
+	perl(ctime.pl) \
+	perl(dotsh.pl) \
+	perl(dumpvar.pl) \
+	perl(exceptions.pl) \
+	perl(fastcwd.pl) \
+	perl(find.pl) \
+	perl(finddepth.pl) \
+	perl(flush.pl) \
+	perl(ftp.pl) \
+	perl(getcwd.pl) \
+	perl(getopt.pl) \
+	perl(getopts.pl) \
+	perl(hostname.pl) \
+	perl(importenv.pl) \
+	perl(look.pl) \
+	perl(newgetopt.pl) \
+	perl(open2.pl) \
+	perl(open3.pl) \
+	perl(perl5db.pl) \
+	perl(pwd.pl) \
+	perl(shellwords.pl) \
+	perl(stat.pl) \
+	perl(syslog.pl) \
+	perl(tainted.pl) \
+	perl(termcap.pl) \
+	perl(timelocal.pl) \
+	perl(utf8_heavy.pl) \
+	perl(validate.pl) \
+	perl(Carp::Heavy)
+
+define STAGE_PREPARE_CMDS
+	cd $(DIR_APP) && sed -i 's/command /command[ -]/' makedepend.SH
+endef
+
+# Perl passes -fstack-protector, if no argument is passed that enables the SSP.
+# So we need to pass it explicitely.
+CFLAGS += -fstack-protector-all
+
+define STAGE_BUILD
+	cd $(DIR_APP) && sed -i -e "s|BUILD_ZLIB\s*= True|BUILD_ZLIB = False|" \
+							-e "s|INCLUDE\s*= ./zlib-src|INCLUDE = /usr/include|" \
+							-e "s|LIB\s*= ./zlib-src|LIB = /usr/lib|" \
+							cpan/Compress-Raw-Zlib/config.in
+
+	cd $(DIR_APP) && \
+		sh ./Configure -des \
+			-Doptimize="$(CFLAGS)" \
+			-Dccdlflags="-Wl,--enable-new-dtags" \
+			-Dversion=$(PKG_VER) \
+			-Dmyhostname=localhost \
+			-Dperladmin=root@localhost \
+			-Dcc="gcc" \
+			-Dcf_by="$(DISTRO_VENDOR)" \
+			-Dprefix=/usr \
+			-Dvendorprefix=/usr \
+			-Dsiteprefix="/usr/local" \
+			-Dsitelib="/usr/local/share/perl5" \
+			-Dsitearch="/usr/local/lib/perl5" \
+			-Dprivlib="/usr/share/perl5" \
+			-Dvendorlib="/usr/share/perl5/vendor_perl" \
+			-Darchlib="/usr/lib/perl5" \
+			-Dvendorarch="/usr/lib/perl5/vendor_perl" \
+			-Darchname=$(PKG_ARCH)-linux-thread-multi \
+			-Dpager="/usr/bin/less -isr" \
+			-Dman1dir=/usr/share/man/man1 \
+			-Dman3dir=/usr/share/man/man3 \
+			-Duseshrplib \
+			-Dusethreads \
+			-Duseithreads \
+			-Duselargefiles \
+			-Dd_semctl_semun \
+			-Di_db \
+			-Ui_ndbm \
+			-Di_gdbm \
+			-Di_shadow \
+			-Di_syslog \
+			-Dman3ext=3pm \
+			-Duseperlio \
+			-Dinstallusrbinperl=n \
+			-Ubincompat5005 \
+			-Uversiononly \
+			-Dd_gethostent_r_proto \
+			-Ud_endhostent_r_proto \
+			-Ud_sethostent_r_proto \
+			-Ud_endprotoent_r_proto \
+			-Ud_setprotoent_r_proto \
+			-Ud_endservent_r_proto \
+			-Ud_setservent_r_proto \
+			-Dscriptdir="/usr/bin"
+
+	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
+endef
+
+define STAGE_TEST
+	cd $(DIR_APP) && make test
+endef
+
+define STAGE_INSTALL_CMDS
+	# Remove precreated directories
+	rm -rfv $(BUILDROOT)/usr/local
+endef
+
+### Split the perl package into lots of subpackages
+
+# perl-libs
+PKG_PACKAGES   += perl-libs
+
+define PKG_FILES-perl-libs
+	/usr/lib/perl5/CORE/libperl.so
+endef
+PKG_DEPS-perl  += perl-libs=$(THISVER)
+PKG_PROVIDES-perl-libs += libperl.so
+
+
+# perl-devel
+PKG_PACKAGES   += perl-devel
+
+define PKG_FILES-perl-devel
+	/usr/bin/enc2xs
+	/usr/share/man/man1/enc2xs*
+	/usr/share/perl5/Encode/
+	/usr/bin/h2xs
+	/usr/share/man/man1/h2xs*
+	/usr/bin/libnetcfg
+	/usr/share/man/man1/libnetcfg*
+	/usr/bin/perlivp
+	/usr/share/man/man1/perlivp*
+	/usr/lib/perl5/CORE/*.h
+	/usr/bin/xsubpp
+	/usr/share/man/man1/xsubpp*
+	/usr/share/man/man1/perlxs*
+endef
+
+# perl-tests
+#PKG_PACKAGES  += perl-tests
+#define PKG_DESCRIPTION-perl-tests
+#	This package contains the test suite included with perl $(THISVER). \
+#	Install this if you want to test your Perl installation (binary and core \
+#	modules).
+#endef
+#define PKG_FILES-perl-tests
+#	/usr/lib/perl5-tests
+#endef
+
+# Archive-Extract
+PKG_PACKAGES   += perl-Archive-Extract
+
+PKG_EPOCH-perl-Archive-Extract = 0
+PKG_VER-perl-Archive-Extract = 0.38
+PKG_ARCH-perl-Archive-Extract = noarch
+
+PKG_SUMMARY-perl-Archive-Extract = Generic archive extracting mechanism.
+define PKG_DESCRIPTION-perl-Archive-Extract
+	Archive::Extract is a generic archive extraction mechanism.
+endef
+
+PKG_DEPS-perl-Archive-Extract = perl=$(THISVER)
+define PKG_FILES-perl-Archive-Extract
+	/usr/share/perl5/Archive/Extract.pm
+	/usr/share/man/man3/Archive::Extract.3*
+endef
+
+# Archive-Tar
+PKG_PACKAGES   += perl-Archive-Tar
+
+PKG_EPOCH-perl-Archive-Tar = 0
+PKG_VER-perl-Archive-Tar = 1.54
+PKG_ARCH-perl-Archive-Tar = noarch
+
+PKG_SUMMARY-perl-Archive-Tar = A module for Perl manipulation of .tar files.
+define PKG_DESCRIPTION-perl-Archive-Tar
+	Archive::Tar provides an object oriented mechanism for handling tar files. It \
+ 	provides class methods for quick and easy files handling while also allowing \
+	for the creation of tar file objects for custom manipulation. If you have the \
+	IO::Zlib module installed, Archive::Tar will also support compressed or \
+ 	gzipped tar files.
+endef
+
+PKG_DEPS-perl-Archive-Tar = perl=$(THISVER)
+
+define PKG_FILES-perl-Archive-Tar
+	/usr/bin/ptar
+	/usr/bin/ptardiff
+	/usr/share/perl5/Archive/Tar.pm
+	/usr/share/man/man1/ptar.1*
+	/usr/share/man/man1/ptardiff.1*
+	/usr/share/man/man3/Archive::Tar*
+endef
+
+# Compress-Raw-Lib
+PKG_PACKAGES   += perl-Compress-Raw-Zlib
+
+PKG_EPOCH-perl-Compress-Raw-Zlib = 0
+PKG_VER-perl-Compress-Raw-Zlib = 2.024
+
+PKG_SUMMARY-perl-Compress-Raw-Zlib = \
+	Low-Level Interface to the zlib compression library.
+define PKG_DESCRIPTION-perl-Compress-Raw-Zlib
+	This module provides a Perl interface to the zlib compression library. \
+	It is used by IO::Compress::Zlib.
+endef
+
+PKG_DEPS-perl-Compress-Raw-Zlib = perl=$(THISVER)
+
+define PKG_FILES-perl-Compress-Raw-Zlib
+	/usr/share/perl5/Compress/Raw/Zlib/
+	/usr/share/man/man3/Compress::Raw::Zlib*
+endef
+
+# CPAN
+PKG_PACKAGES   += perl-CPAN
+
+PKG_EPOCH-perl-CPAN = 0
+PKG_VER-perl-CPAN = 1.9402
+PKG_ARCH-perl-CPAN = noarch
+
+PKG_SUMMARY-perl-CPAN = \
+	Query, download and build perl modules from CPAN sites.
+define PKG_DESCRIPTION-perl-CPAN
+	Query, download and build perl modules from CPAN sites.
+endef
+
+PKG_DEPS-perl-CPAN = perl=$(THISVER) perl(Digest::SHA)
+PKG_PROVIDES-perl-CPAN += cpan cpan=$(PKG_VER-perl-CPAN)
+
+define PKG_FILES-perl-CPAN
+	/usr/bin/cpan
+	/usr/share/perl5/CPAN*
+	/usr/share/man/man1/cpan.1*
+	/usr/share/man/man3/CPAN*
+endef
+
+# CPANPLUS
+PKG_PACKAGES   += perl-CPANPLUS
+
+PKG_EPOCH-perl-CPANPLUS = 0
+PKG_VER-perl-CPANPLUS = 0.9
+PKG_ARCH-perl-CPANPLUS = noarch
+
+PKG_SUMMARY-perl-CPANPLUS = \
+	API & CLI access to the CPAN mirrors.
+define PKG_DESCRIPTION-perl-CPANPLUS
+	The CPANPLUS library is an API to the CPAN mirrors and a collection of \
+	interactive shells, commandline programs, etc, that use this API.
+endef
+
+PKG_DEPS-perl-CPANPLUS = perl=$(THISVER) perl(Digest::SHA) \
+	perl(Module::Pluggable)>=2.4 perl(Module::CoreList) perl(DBIx::Simple)
+PKG_PROVIDES-perl-CPANPLUS += perl-CPANPLUS-Dist-Build=0.06
+
+define PKG_FILES-perl-CPANPLUS
+	/usr/bin/cpan2dist
+	/usr/bin/cpanp
+	/usr/bin/cpanp-run-perl
+	/usr/share/perl5/CPANPLUS*
+	/usr/share/man/man1/cpan2dist.1*
+	/usr/share/man/man1/cpanp.1*
+	/usr/share/man/man3/CPANPLUS*
+endef
+
+# Digest-SHA
+PKG_PACKAGES   += perl-Digest-SHA
+
+PKG_EPOCH-perl-Digest-SHA = 0
+PKG_VER-perl-Digest-SHA = 5.47
+
+PKG_SUMMARY-perl-Digest-SHA = \
+	Perl extension for SHA-1/224/256/384/512.
+define PKG_DESCRIPTION-perl-Digest-SHA
+	Digest::SHA is a complete implementation of the NIST Secure Hash \
+	Standard.  It gives Perl programmers a convenient way to calculate \
+	SHA-1, SHA-224, SHA-256, SHA-384, and SHA-512 message digests. The \
+	module can handle all types of input, including partial-byte data.
+endef
+
+PKG_DEPS-perl-Digest-SHA = perl=$(THISVER)
+
+define PKG_FILES-perl-Digest-SHA
+	/usr/bin/shasum
+	/usr/share/perl5/Digest*
+	/usr/share/man/man1/shasum.1*
+	/usr/share/man/man3/Digest::SHA.3*
+endef
+
+# ExtUtils-CBuilder
+PKG_PACKAGES   += perl-ExtUtils-CBuilder
+
+PKG_EPOCH-perl-ExtUtils-CBuilder = 0
+PKG_VER-perl-ExtUtils-CBuilder = 0.27
+PKG_ARCH-perl-ExtUtils-CBuilder = noarch
+
+PKG_SUMMARY-perl-ExtUtils-CBuilder = \
+	Compile and link C code for Perl modules.
+define PKG_DESCRIPTION-perl-ExtUtils-CBuilder
+	This module can build the C portions of Perl modules by invoking the \
+	appropriate compilers and linkers in a cross-platform manner. It was \
+	motivated by the Module::Build project, but may be useful for other \
+	purposes as well.
+endef
+
+PKG_DEPS-perl-ExtUtils-CBuilder = perl=$(THISVER) perl-devel
+
+define PKG_FILES-perl-ExtUtils-CBuilder
+	/usr/share/perl5/ExtUtils/CBuilder*
+	/usr/share/man/man3/ExtUtils::CBuilder*
+endef
+
+# ExtUtils-Embed
+PKG_PACKAGES   += perl-ExtUtils-Embed
+
+PKG_EPOCH-perl-ExtUtils-Embed = 0
+PKG_VER-perl-ExtUtils-Embed = 1.28
+PKG_ARCH-perl-ExtUtils-Embed = noarch
+
+PKG_SUMMARY-perl-ExtUtils-Embed = \
+	Utilities for embedding Perl in C/C++ applications.
+define PKG_DESCRIPTION-perl-ExtUtils-Embed
+	Utilities for embedding Perl in C/C++ applications.
+endef
+
+PKG_DEPS-perl-ExtUtils-Embed = perl=$(THISVER) perl-devel
+
+define PKG_FILES-perl-ExtUtils-Embed
+	/usr/share/perl5/ExtUtils/Embed*
+	/usr/share/man/man3/ExtUtils::Embed*
+endef
+
+# ExtUtils-MakeMaker
+PKG_PACKAGES   += perl-ExtUtils-MakeMaker
+
+PKG_EPOCH-perl-ExtUtils-MakeMaker = 0
+PKG_VER-perl-ExtUtils-MakeMaker = 6.56
+PKG_ARCH-perl-ExtUtils-MakeMaker = noarch
+
+PKG_SUMMARY-perl-ExtUtils-MakeMaker = Create a module Makefile.
+define PKG_DESCRIPTION-perl-ExtUtils-MakeMaker
+	Create a module Makefile.
+endef
+
+PKG_DEPS-perl-ExtUtils-MakeMaker = perl=$(THISVER) perl-devel perl(Test::Harness)
+
+define PKG_FILES-perl-ExtUtils-MakeMaker
+	/usr/bin/instmodsh
+	/usr/share/perl5/ExtUtils/Command/
+	/usr/share/perl5/ExtUtils/Install.pm
+	/usr/share/perl5/ExtUtils/Installed.pm
+	/usr/share/perl5/ExtUtils/Liblist/
+	/usr/share/perl5/ExtUtils/Liblist.pm
+	/usr/share/perl5/ExtUtils/MakeMaker/
+	/usr/share/perl5/ExtUtils/MakeMaker.pm
+	/usr/share/perl5/ExtUtils/MANIFEST.SKIP
+	/usr/share/perl5/ExtUtils/MM*.pm
+	/usr/share/perl5/ExtUtils/MY.pm
+	/usr/share/perl5/ExtUtils/Manifest.pm
+	/usr/share/perl5/ExtUtils/Mkbootstrap.pm
+	/usr/share/perl5/ExtUtils/Mksymlists.pm
+	/usr/share/perl5/ExtUtils/Packlist.pm
+	/usr/share/perl5/ExtUtils/testlib.pm
+	/usr/share/man/man1/instmodsh.1*
+	/usr/share/man/man3/ExtUtils::Command::MM*
+	/usr/share/man/man3/ExtUtils::Install.3*
+	/usr/share/man/man3/ExtUtils::Installed.3*
+	/usr/share/man/man3/ExtUtils::Liblist.3*
+	/usr/share/man/man3/ExtUtils::MM*
+	/usr/share/man/man3/ExtUtils::MY.3*
+	/usr/share/man/man3/ExtUtils::MakeMaker*
+	/usr/share/man/man3/ExtUtils::Manifest.3*
+	/usr/share/man/man3/ExtUtils::Mkbootstrap.3*
+	/usr/share/man/man3/ExtUtils::Mksymlists.3*
+	/usr/share/man/man3/ExtUtils::Packlist.3*
+	/usr/share/man/man3/ExtUtils::testlib.3*
+endef
+
+# ExtUtils-ParseXS
+PKG_PACKAGES   += perl-ExtUtils-ParseXS
+
+PKG_EPOCH-perl-ExtUtils-ParseXS = 0
+PKG_VER-perl-ExtUtils-ParseXS = 2.21
+PKG_ARCH-perl-ExtUtils-ParseXS = noarch
+
+PKG_SUMMARY-perl-ExtUtils-ParseXS = \
+	Module and a script for converting Perl XS code into C code.
+define PKG_DESCRIPTION-perl-ExtUtils-ParseXS
+	ExtUtils::ParseXS will compile XS code into C code by embedding the \
+	constructs necessary to let C functions manipulate Perl values and creates \
+	the glue necessary to let Perl access those functions.
+endef
+
+PKG_DEPS-perl-ExtUtils-ParseXS = perl=$(THISVER) perl-devel
+
+define PKG_FILES-perl-ExtUtils-ParseXS
+	/usr/share/perl5/ExtUtils/ParseXS.pm
+	/usr/share/perl5/ExtUtils/xsubpp
+	/usr/share/man/man3/ExtUtils::ParseXS.3*
+endef
+
+# File-Fetch
+PKG_PACKAGES   += perl-File-Fetch
+
+PKG_EPOCH-perl-File-Fetch = 0
+PKG_VER-perl-File-Fetch = 6.56
+PKG_ARCH-perl-File-Fetch = noarch
+
+PKG_SUMMARY-perl-File-Fetch = Generic file fetching mechanism.
+define PKG_DESCRIPTION-perl-File-Fetch
+	File::Fetch is a generic file fetching mechanism.
+endef
+
+PKG_DEPS-perl-File-Fetch = perl=$(THISVER) perl(IPC::Cmd)>=0.36 \
+	perl(Module::Load::Conditional)>=0.04 perl(Params::Check)>=0.07
+
+define PKG_FILES-perl-File-Fetch
+	/usr/share/perl5/File/Fetch.pm
+	/usr/share/man/man3/File::Fetch.3*
+endef
+
+# IO-Compress
+PKG_PACKAGES   += perl-IO-Compress
+
+PKG_EPOCH-perl-IO-Compress = 0
+PKG_VER-perl-IO-Compress = 2.026
+
+PKG_SUMMARY-perl-IO-Compress = IO::Compress wrapper for modules.
+define PKG_DESCRIPTION-perl-IO-Compress
+	This module is the base class for all IO::Compress and IO::Uncompress \
+	modules. This module is not intended for direct use in application code. \
+	Its sole purpose is to to be sub-classed by IO::Compress modules.
+endef
+
+PKG_DEPS-perl-IO-Compress = perl=$(THISVER)
+PKG_PROVIDES-perl-IO-Compress += perl(IO::Uncompress::Bunzip2)
+
+define PKG_FILES-perl-IO-Compress
+	/usr/share/perl5/Compress/Zlib.pm
+	/usr/lib/perl5/auto/Compress/Zlib/
+	/usr/share/man/man3/Compress::Zlib*
+	/usr/share/perl5/File/GlobMapper.pm
+	/usr/share/perl5/IO/Compress/Base/
+	/usr/share/perl5/IO/Compress/Base.pm
+	/usr/share/perl5/IO/Uncompress/AnyUncompress.pm
+	/usr/share/perl5/IO/Uncompress/Base.pm
+	/usr/share/man/man3/File::GlobMapper.*
+	/usr/share/man/man3/IO::Compress::Base.*
+	/usr/share/man/man3/IO::Uncompress::AnyUncompress.*
+	/usr/share/man/man3/IO::Uncompress::Base.*
+endef
+
+# IO-Zlib
+PKG_PACKAGES   += perl-IO-Zlib
+
+PKG_EPOCH-perl-IO-Zlib = 0
+PKG_VER-perl-IO-Zlib = 1.10
+PKG_ARCH-perl-IO-Zlib = noarch
+
+PKG_SUMMARY-perl-IO-Zlib = Perl IO:: style interface to Compress::Zlib.
+define PKG_DESCRIPTION-perl-IO-Zlib
+	This modules provides an IO:: style interface to the Compress::Zlib \
+	package. The main advantage is that you can use an IO::Zlib object in much \
+	the same way as an IO::File object so you can have common code that doesn't \
+	know which sort of file it is using.
+endef
+
+PKG_DEPS-perl-IO-Zlib = perl=$(THISVER) perl(Compress::Zlib)
+
+define PKG_FILES-perl-IO-Zlib
+	/usr/share/perl5/IO/Zlib.pm
+	/usr/share/man/man3/IO::Zlib.*
+endef
+
+# IPC-Cmd
+PKG_PACKAGES   += perl-IPC-Cmd
+
+PKG_EPOCH-perl-IPC-Cmd = 0
+PKG_VER-perl-IPC-Cmd = 0.54
+PKG_ARCH-perl-IPC-Cmd = noarch
+
+PKG_SUMMARY-perl-IPC-Cmd = Finding and running system commands made easy.
+define PKG_DESCRIPTION-perl-IPC-Cmd
+	IPC::Cmd allows you to run commands, interactively if desired, in a \
+	platform independent way, but have them still work.
+endef
+
+PKG_DEPS-perl-IPC-Cmd = perl=$(THISVER)
+
+define PKG_FILES-perl-IPC-Cmd
+	/usr/share/perl5/IPC/Cmd.pm
+	/usr/share/man/man3/IPC::Cmd.3*
+endef
+
+# Locale-Maketext-Simple
+PKG_PACKAGES   += perl-Locale-Maketext-Simple
+
+PKG_EPOCH-perl-Locale-Maketext-Simple = 0
+PKG_VER-perl-Locale-Maketext-Simple = 0.21
+PKG_ARCH-perl-Locale-Maketext-Simple = noarch
+PKG_LICENSE-perl-Locale-Maketext-Simple = MIT
+
+PKG_SUMMARY-perl-Locale-Maketext-Simple = \
+	Simple interface to Locale::Maketext::Lexicon.
+define PKG_DESCRIPTION-perl-Locale-Maketext-Simple
+	This module is a simple wrapper around Locale::Maketext::Lexicon, designed \
+	to alleviate the need of creating Language Classes for module authors.
+endef
+
+PKG_DEPS-perl-Locale-Maketext-Simple = perl=$(THISVER)
+
+define PKG_FILES-perl-Locale-Maketext-Simple
+	/usr/share/perl5/Locale/Maketext/Simple.pm
+	/usr/share/man/man3/Locale::Maketext::Simple.*
+endef
+
+# Log-Message
+PKG_PACKAGES   += perl-Log-Message
+
+PKG_EPOCH-perl-Log-Message = 0
+PKG_VER-perl-Log-Message = 0.02
+PKG_ARCH-perl-Log-Message = noarch
+
+PKG_SUMMARY-perl-Log-Message = Generic message storage mechanism.
+define PKG_DESCRIPTION-perl-Log-Message
+	Log::Message is a generic message storage mechanism. It allows you to store \
+	messages on a stack -- either shared or private -- and assign meta-data to it. \
+	Some meta-data will automatically be added for you, like a timestamp and a \
+	stack trace, but some can be filled in by the user, like a tag by which to \
+	identify it or group it, and a level at which to handle the message (for \
+	example, log it, or die with it).
+endef
+
+PKG_DEPS-perl-Log-Message = perl=$(THISVER)
+PKG_PROVIDES-perl-Log-Message += perl(Log::Message::Handlers)=$(PKG_VER)
+
+define PKG_FILES-perl-Log-Message
+	/usr/share/perl5/Log/Message.pm
+	/usr/share/perl5/Log/Message/Config.pm
+	/usr/share/perl5/Log/Message/Handlers.pm
+	/usr/share/perl5/Log/Message/Item.pm
+	/usr/share/man/man3/Log::Message.3*
+	/usr/share/man/man3/Log::Message::Config.3*
+	/usr/share/man/man3/Log::Message::Handlers.3*
+	/usr/share/man/man3/Log::Message::Item.3*
+endef
+
+# Log-Message-Simple
+PKG_PACKAGES   += perl-Log-Message-Simple
+
+PKG_EPOCH-perl-Log-Message-Simple = 0
+PKG_VER-perl-Log-Message-Simple = 0.06
+PKG_ARCH-perl-LogMessage-Simple = noarch
+
+PKG_SUMMARY-perl-Log-Message-Simple = Simplified frontend to Log::Message.
+define PKG_DESCRIPTION-perl-Log-Message-Simple
+	This module provides standardized logging facilities using the \
+	Log::Message module.
+endef
+
+PKG_DEPS-perl-Log-Message-Simple = perl=$(THISVER)
+
+define PKG_FILES-perl-Log-Message-Simple
+	/usr/share/perl5/Log/Message/Simple.pm
+	/usr/share/man/man3/Log::Message::Simple.3*
+endef
+
+# Module-Build
+PKG_PACKAGES   += perl-Module-Build
+
+PKG_EPOCH-perl-Module-Build = 0
+PKG_VER-perl-Module-Build = 0.3603
+PKG_ARCH-perl-Module-Build = noarch
+
+PKG_SUMMARY-perl-Module-Build = \
+	Perl module for building and installing Perl modules.
+define PKG_DESCRIPTION-perl-Module-Build
+	Module::Build is a system for building, testing, and installing Perl modules. \
+	It is meant to be an alternative to ExtUtils::MakeMaker.  Developers may alter \
+	the behavior of the module through subclassing in a much more straightforward \
+	way than with MakeMaker. It also does not require a make on your system - most \
+	of the Module::Build code is pure-perl and written in a very cross-platform \
+	way. In fact, you don't even need a shell, so even platforms like MacOS \
+	(traditional) can use it fairly easily. Its only prerequisites are modules that \
+	are included with perl 5.6.0, and it works fine on perl 5.005 if you can \
+	install a few additional modules.
+endef
+
+PKG_DEPS-perl-Module-Build = perl=$(THISVER) perl(Archive::Tar)>=1.08 \
+	perl(ExtUtils::CBuilder)>=0.15 perl(ExtUtils::ParseXS)>=1.02
+
+define PKG_FILES-perl-Module-Build
+	/usr/bin/config_data
+	/usr/share/perl5/inc/
+	/usr/share/perl5/Module/Build*
+	/usr/share/man/man1/config_data.1*
+	/usr/share/man/man3/Module::Build*
+	/usr/share/man/man3/inc::latest.3*
+endef
+
+# Module-CoreList
+PKG_PACKAGES   += perl-Module-CoreList
+
+PKG_EPOCH-perl-Module-CoreList = 0
+PKG_VER-perl-Module-CoreList = 2.29
+PKG_ARCH-perl-Module-CoreList = noarch
+
+PKG_SUMMARY-perl-Module-CoreList = \
+	Perl core modules indexed by perl versions.
+define PKG_DESCRIPTION-perl-Module-CoreList
+	Module::CoreList contains the hash of hashes %Module::CoreList::version, this \
+	is keyed on perl version as indicated in $].  The second level hash is module \
+	=> version pairs.
+endef
+
+PKG_DEPS-perl-Module-CoreList = perl=$(THISVER)
+
+define PKG_FILES-perl-Module-CoreList
+	/usr/bin/corelist
+	/usr/share/perl5/Module/CoreList.pm
+	/usr/share/man/man1/corelist*
+	/usr/share/man/man3/Module::CoreList*
+endef
+
+# Module-Load
+PKG_PACKAGES   += perl-Module-Load
+
+PKG_EPOCH-perl-Module-Load = 0
+PKG_VER-perl-Module-Load = 0.16
+PKG_ARCH-perl-Module-Load = noarch
+
+PKG_SUMMARY-perl-Module-Load = \
+	Runtime require of both modules and files.
+define PKG_DESCRIPTION-perl-Module-Load
+	Module::Load eliminates the need to know whether you are trying to require \
+	either a file or a module.
+endef
+
+PKG_DEPS-perl-Module-Load = perl=$(THISVER)
+
+define PKG_FILES-perl-Module-Load
+	/usr/share/perl5/Module/Load.pm
+	/usr/share/man/man3/Module::Load.*
+endef
+
+# Module-Load-Conditional
+PKG_PACKAGES   += perl-Module-Load-Conditional
+
+PKG_EPOCH-perl-Module-Load-Conditional = 0
+PKG_VER-perl-Module-Load-Conditional = 0.34
+PKG_ARCH-perl-Module-Load-Conditional = noarch
+
+PKG_SUMMARY-perl-Module-Load-Conditional = \
+	Looking up module information / loading at runtime.
+define PKG_DESCRIPTION-perl-Module-Load-Conditional
+	Module::Load::Conditional provides simple ways to query and possibly load \
+	any of the modules you have installed on your system during runtime.
+endef
+
+PKG_DEPS-perl-Module-Load-Conditional = perl=$(THISVER)
+
+define PKG_FILES-perl-Module-Load-Conditional
+	/usr/share/perl5/Module/Load/
+	/usr/share/man/man3/Module::Load::Conditional*
+endef
+
+# Module-Loaded
+PKG_PACKAGES   += perl-Module-Loaded
+
+PKG_EPOCH-perl-Module-Loaded = 0
+PKG_VER-perl-Module-Loaded = 0.06
+PKG_ARCH-perl-Module-Loaded = noarch
+
+PKG_SUMMARY-perl-Module-Loaded = \
+	Mark modules as loaded or unloaded.
+define PKG_DESCRIPTION-perl-Module-Loaded
+	When testing applications, often you find yourself needing to provide \
+	functionality in your test environment that would usually be provided by \
+	external modules. Rather than munging the %INC by hand to mark these external \
+	modules as loaded, so they are not attempted to be loaded by perl, this module \
+	offers you a very simple way to mark modules as loaded and/or unloaded.
+endef
+
+PKG_DEPS-perl-Module-Loaded = perl=$(THISVER)
+
+define PKG_FILES-perl-Module-Loaded
+	/usr/share/perl5/Module/Loaded.pm
+	/usr/share/man/man3/Module::Loaded*
+endef
+
+# Module-Plugable
+PKG_PACKAGES   += perl-Module-Plugable
+
+PKG_EPOCH-perl-Module-Plugable = 0
+PKG_VER-perl-Module-Plugable = 3.90
+PKG_ARCH-perl-Module-Plugable = noarch
+
+PKG_SUMMARY-perl-Module-Plugable = \
+	Automatically give your module the ability to have plugins.
+define PKG_DESCRIPTION-perl-Module-Plugable
+	Provides a simple but, hopefully, extensible way of having 'plugins' for \
+	your module.
+endef
+
+PKG_DEPS-perl-Module-Plugable = perl=$(THISVER)
+
+define PKG_FILES-perl-Module-Plugable
+	/usr/share/perl5/Devel/InnerPackage.pm
+	/usr/share/perl5/Module/Pluggable/
+	/usr/share/perl5/Module/Pluggable.pm
+	/usr/share/man/man3/Devel::InnerPackage*
+	/usr/share/man/man3/Module::Pluggable*
+endef
+
+# Object-Accessor
+PKG_PACKAGES   += perl-Object-Accessor
+
+PKG_EPOCH-perl-Object-Accessor = 0
+PKG_VER-perl-Object-Accessor = 0.36
+PKG_ARCH-perl-Object-Accessor = noarch
+
+PKG_SUMMARY-perl-Object-Accessor = \
+	Perl module that allows per object accessors.
+define PKG_DESCRIPTION-perl-Object-Accessor
+	Object::Accessor provides an interface to create per object accessors (as \
+	opposed to per Class accessors, as, for example, Class::Accessor provides).
+endef
+
+PKG_DEPS-perl-Object-Accessor = perl=$(THISVER)
+
+define PKG_FILES-perl-Object-Accessor
+	/usr/share/perl5/Object/
+	/usr/share/man/man3/Object::Accessor*
+endef
+
+# Package-Constants
+PKG_PACKAGES   += perl-Package-Constants
+
+PKG_EPOCH-perl-Package-Constants = 0
+PKG_VER-perl-Package-Constants = 0.02
+PKG_ARCH-perl-Package-Constants = noarch
+
+PKG_SUMMARY-perl-Package-Constants = \
+	List all constants declared in a package.
+define PKG_DESCRIPTION-perl-Package-Constants
+	Package::Constants lists all the constants defined in a certain package.  This \
+	can be useful for, among others, setting up an autogenerated @EXPORT/@EXPORT_OK \
+	for a Constants.pm file.
+endef
+
+PKG_DEPS-perl-Package-Constants = perl=$(THISVER)
+
+define PKG_FILES-perl-Package-Constants
+	/usr/share/perl5/Package/
+	/usr/share/man/man3/Package::Constants*
+endef
+
+# Params-Check
+PKG_PACKAGES   += perl-Params-Check
+
+PKG_EPOCH-perl-Params-Check = 0
+PKG_VER-perl-Params-Check = 0.26
+PKG_ARCH-perl-Params-Check = noarch
+
+PKG_SUMMARY-perl-Params-Check = \
+	Generic input parsing/checking mechanism.
+define PKG_DESCRIPTION-perl-Params-Check
+	Params::Check is a generic input parsing/checking mechanism.
+endef
+
+PKG_DEPS-perl-Params-Check = perl=$(THISVER)
+
+define PKG_FILES-perl-Params-Check
+	/usr/share/perl5/Params/
+	/usr/share/man/man3/Params::Check*
+endef
+
+# Parse-CPAN-Meta
+PKG_PACKAGES   += perl-Parse-CPAN-Meta
+
+PKG_EPOCH-perl-Parse-CPAN-Meta = 0
+PKG_VER-perl-Parse-CPAN-Meta = 1.40
+PKG_ARCH-perl-Parse-CPAN-Meta = noarch
+
+PKG_SUMMARY-perl-Parse-CPAN-Meta = \
+	Parse META.yml and other similar CPAN metadata files.
+define PKG_DESCRIPTION-perl-Parse-CPAN-Meta
+	Parse::CPAN::Meta is a parser for META.yml files, based on the parser half of \
+	YAML::Tiny.
+endef
+
+PKG_DEPS-perl-Parse-CPAN-Meta = perl=$(THISVER)
+
+define PKG_FILES-perl-Parse-CPAN-Meta
+	/usr/share/perl5/Parse/CPAN/Meta.pm
+	/usr/share/man/man3/Parse::CPAN::Meta.3*
+endef
+
+# Pod-Escapes
+PKG_PACKAGES   += perl-Pod-Escapes
+
+PKG_EPOCH-perl-Pod-Escapes = 0
+PKG_VER-perl-Pod-Escapes = 1.04
+PKG_ARCH-perl-Pod-Escapes = noarch
+
+PKG_SUMMARY-perl-Pod-Escapes = \
+	Perl module for resolving POD escape sequences.
+define PKG_DESCRIPTION-perl-Pod-Escapes
+	This module provides things that are useful in decoding Pod E<...> sequences. \
+	Presumably, it should be used only by Pod parsers and/or formatters.
+endef
+
+PKG_DEPS-perl-Pod-Escapes = perl=$(THISVER)
+
+define PKG_FILES-perl-Pod-Escapes
+	/usr/share/perl5/Pod/Escapes.pm
+	/usr/share/man/man3/Pod::Escapes.*
+endef
+
+# Pod-Simple
+PKG_PACKAGES   += perl-Pod-Simple
+
+PKG_EPOCH-perl-Pod-Simple = 0
+PKG_VER-perl-Pod-Simple = 3.13
+PKG_ARCH-perl-Pod-Simple = noarch
+
+PKG_SUMMARY-perl-Pod-Simple = \
+	Framework for parsing POD documentation.
+define PKG_DESCRIPTION-perl-Pod-Simple
+	Pod::Simple is a Perl library for parsing text in the Pod (plain old \
+	documentation) markup language that is typically used for writing \
+	documentation for Perl and for Perl modules.
+endef
+
+PKG_DEPS-perl-Pod-Simple = perl=$(THISVER)
+
+define PKG_FILES-perl-Pod-Simple
+	/usr/share/perl5/Pod/Simple/ 
+	/usr/share/perl5/Pod/Simple.pm
+	/usr/share/perl5/Pod/Simple.pod
+	/usr/share/man/man3/Pod::Simple*
+endef
+
+# Term-UI
+PKG_PACKAGES   += perl-Term-UI
+
+PKG_EPOCH-perl-Term-UI = 0
+PKG_VER-perl-Term-UI = 0.20
+PKG_ARCH-perl-Term-UI = noarch
+
+PKG_SUMMARY-perl-Term-UI = \
+	Term::ReadLine UI made easy.
+define PKG_DESCRIPTION-perl-Term-UI
+	Term::UI is a transparent way of eliminating the overhead of having to format \
+	a question and then validate the reply, informing the user if the answer was not \
+	proper and re-issuing the question.
+endef
+
+PKG_DEPS-perl-Term-UI = perl=$(THISVER) perl(Log::Message::Simple)
+
+define PKG_FILES-perl-Term-UI
+	/usr/share/perl5/Term/UI/
+	/usr/share/perl5/Term/UI.pm
+	/usr/share/man/man3/Term::UI*
+endef
+
+# Test-Harness
+PKG_PACKAGES   += perl-Test-Harness
+
+PKG_EPOCH-perl-Test-Harness = 0
+PKG_VER-perl-Test-Harness = 3.17
+PKG_ARCH-perl-Test-Harness = noarch
+
+PKG_SUMMARY-perl-Test-Harness = \
+	Run Perl standard test scripts with statistics.
+define PKG_DESCRIPTION-perl-Test-Harness
+	Run Perl standard test scripts with statistics. \
+	Use TAP::Parser, Test::Harness package was whole rewritten.
+endef
+
+PKG_DEPS-perl-Test-Harness = perl=$(THISVER)
+
+define PKG_FILES-perl-Test-Harness
+	/usr/bin/prove
+	/usr/share/perl5/App*
+	/usr/share/perl5/TAP*
+	/usr/share/perl5/Test/Harness*
+	/usr/share/man/man1/prove.1*
+	/usr/share/man/man3/App*
+	/usr/share/man/man3/TAP*
+	/usr/share/man/man3/Test::Harness*
+endef
+
+# Test-Simple
+PKG_PACKAGES   += perl-Test-Simple
+
+PKG_EPOCH-perl-Test-Simple = 0
+PKG_VER-perl-Test-Simple = 0.94
+PKG_ARCH-perl-Test-Simple = noarch
+
+PKG_SUMMARY-perl-Test-Simple = \
+	Basic utilities for writing tests.
+define PKG_DESCRIPTION-perl-Test-Simple
+	Basic utilities for writing tests.
+endef
+
+PKG_DEPS-perl-Test-Simple = perl=$(THISVER)
+
+define PKG_FILES-perl-Test-Simple
+	/usr/share/perl5/Test/More*
+	/usr/share/perl5/Test/Builder*
+	/usr/share/perl5/Test/Simple*
+	/usr/share/perl5/Test/Tutorial*
+	/usr/share/man/man3/Test::More*
+	/usr/share/man/man3/Test::Builder*
+	/usr/share/man/man3/Test::Simple*
+	/usr/share/man/man3/Test::Tutorial*
+endef
+
+# Time-Piece
+PKG_PACKAGES   += perl-Time-Piece
+
+PKG_EPOCH-perl-Time-Piece = 0
+PKG_VER-perl-Time-Piece = 1.15
+
+PKG_SUMMARY-perl-Time-Piece = \
+	Time objects from localtime and gmtime.
+define PKG_DESCRIPTION-perl-Time-Piece
+	The Time::Piece module replaces the standard localtime and gmtime functions \
+	with implementations that return objects.  It does so in a backwards compatible \
+	manner, so that using localtime or gmtime as documented in perlfunc still \
+	behave as expected.
+endef
+
+PKG_DEPS-perl-Time-Piece = perl=$(THISVER)
+
+define PKG_FILES-perl-Time-Piece
+	/usr/lib/perl5/Time/Piece.pm 
+	/usr/lib/perl5/Time/Seconds.pm
+	/usr/lib/perl5/auto/Time/Piece/        
+	/usr/share/man/man3/Time::Piece.3*
+	/usr/share/man/man3/Time::Seconds.3*
+endef
+
+# parent
+PKG_PACKAGES   += perl-parent
+
+PKG_EPOCH-perl-parent = 0
+PKG_VER-perl-parent = 0.223
+PKG_ARCH-perl-parent = noarch
+
+PKG_SUMMARY-perl-parent = \
+	Establish an ISA relationship with base classes at compile time.
+define PKG_DESCRIPTION-perl-parent
+	parent allows you to both load one or more modules, while setting up
+	inheritance from those modules at the same time.
+endef
+
+PKG_DEPS-perl-parent = perl=$(THISVER)
+
+define PKG_FILES-perl-parent
+	/usr/share/perl5/parent.pm
+	/usr/share/man/man3/parent.3*
+endef
+
+# threads
+PKG_PACKAGES   += perl-threads
+
+PKG_EPOCH-perl-threads = 0
+PKG_VER-perl-threads = 1.75
+
+PKG_SUMMARY-perl-threads = \
+	Perl interpreter-based threads.
+define PKG_DESCRIPTION-perl-threads
+	Since Perl 5.8, thread programming has been available using a model called \
+	interpreter threads  which provides a new Perl interpreter for each thread, \
+	and, by default, results in no data or state information being shared between \
+	threads. (Prior to Perl 5.8, 5005threads was available through the Thread.pm \
+	API. This threading model has been deprecated, and was removed as of Perl \
+	5.10.0.) As just mentioned, all variables are, by default, thread local. To use \
+	shared variables, you need to also load threads::shared.
+endef
+
+PKG_DEPS-perl-threads = perl=$(THISVER)
+
+define PKG_FILES-perl-threads
+	/usr/lib/perl5/auto/threads/threads*
+	/usr/lib/perl5/threads.pm
+	/usr/share/man/man3/threads.3*
+endef
+
+# threads-shared
+PKG_PACKAGES   += perl-threads-shared
+
+PKG_EPOCH-perl-threads-shared = 0
+PKG_VER-perl-threads-shared = 1.32
+
+PKG_SUMMARY-perl-threads-shared = \
+	Perl extension for sharing data structures between threads.
+define PKG_DESCRIPTION-perl-threads-shared
+	By default, variables are private to each thread, and each newly created thread \
+	gets a private copy of each existing variable. This module allows you to share \
+	variables across different threads (and pseudo-forks on Win32). It is used \
+	together with the threads module.  This module supports the sharing of the \
+	following data types only: scalars and scalar refs, arrays and array refs, and \
+	hashes and hash refs.
+endef
+
+PKG_DEPS-perl-threads-shared = perl=$(THISVER)
+
+define PKG_FILES-perl-threads-shared
+	/usr/lib/perl5/auto/threads/shared*
+	/usr/lib/perl5/threads/shared*
+	/usr/share/man/man3/threads::shared*
+endef
+
+# version
+PKG_PACKAGES   += perl-version
+
+PKG_EPOCH-perl-version = 0
+PKG_VER-perl-version = 0.82
+PKG_ARCH-perl-version = noarch
+
+PKG_SUMMARY-perl-version = \
+	Perl extension for Version Objects.
+define PKG_DESCRIPTION-perl-version
+	Perl extension for Version Objects.
+endef
+
+PKG_DEPS-perl-version = perl=$(THISVER)
+
+define PKG_FILES-perl-version
+	/usr/share/perl5/version.pm
+	/usr/share/perl5/version.pod
+	/usr/share/perl5/version/
+	/usr/share/man/man3/version.3*
+	/usr/share/man/man3/version::Internals.3*
+endef
+
+# core
+PKG_PACKAGES   += perl-core
+
+PKG_EPOCH-perl-core = 0
+PKG_VER-perl-core = $(PKG_VER)
+
+PKG_SUMMARY-perl-core = \
+	Base perl metapackage.
+define PKG_DESCRIPTION-perl-core
+	A metapackage which requires all of the perl bits and modules in the upstream \
+	tarball from perl.org.
+endef
+
+PKG_DEPS-perl-core = perl=$(THISVER) $(PKG_PACKAGES)
+
+PKG_FILES-perl-core = Nothing. Nada. Zilch. Zarro. Uh uh. Nope. Sorry.

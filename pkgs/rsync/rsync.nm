@@ -1,0 +1,75 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = rsync
+PKG_VER        = 3.0.7
+PKG_REL        = 1
+
+PKG_MAINTAINER =
+PKG_GROUP      = Applications/Internet
+PKG_URL        = http://rsync.samba.org/
+PKG_LICENSE    = GPLv3+
+PKG_SUMMARY    = A program for synchronizing files over a network.
+
+PKG_BUILD_DEPS+= autoconf libacl-devel libattr-devel popt-devel
+
+define PKG_DESCRIPTION
+	Rsync uses a reliable algorithm to bring remote and host files into
+	sync very quickly. Rsync is fast because it just sends the differences
+	in the files over the network instead of sending the complete
+	files. Rsync is often used as a very powerful mirroring process or
+	just as a more capable replacement for the rcp command. A technical
+	report which describes the rsync algorithm is included in this
+	package.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.gz
+PKG_OBJECTS   += $(PKG_NAME)-patches-$(PKG_VER).tar.gz
+
+define STAGE_PREPARE_CMDS
+	cd $(DIR_SRC) && $(DO_EXTRACT) \
+		$(DIR_DL)/$(PKG_NAME)-patches-$(PKG_VER).tar.gz
+
+	cd $(DIR_APP) && chmod -x support/*
+
+	cd $(DIR_APP) && patch -Np1 -i patches/acls.diff
+	cd $(DIR_APP) && patch -Np1 -i patches/xattrs.diff
+	cd $(DIR_APP) && patch -Np1 -i patches/copy-devices.diff
+
+	cd $(DIR_APP) && rm -fr autum4te.cache
+	cd $(DIR_APP) && autoconf
+	cd $(DIR_APP) && autoheader
+endef
+
+STAGE_BUILD_TARGETS = proto all
+
+STAGE_INSTALL_TARGETS += INSTALLCMD="install -p" INSTALLMAN="install -p"
+
+define STAGE_INSTALL_CMDS
+	-mkdir -pv $(BUILDROOT)/etc/xinetd.d
+	install -p -m 644 $(DIR_SOURCE)/rsync.xinetd \
+		$(BUILDROOT)/etc/xinetd.d/rsync
+endef

@@ -1,0 +1,126 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = openssl
+PKG_VER        = 1.0.0d
+PKG_REL        = 2
+
+PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
+PKG_GROUP      = System/Libraries
+PKG_URL        = http://www.openssl.org/
+PKG_LICENSE    = OpenSSL
+PKG_SUMMARY    = A general purpose cryptography library with TLS implementation. 
+
+PKG_BUILD_DEPS+= bc gnutls-devel perl zlib-devel
+
+define PKG_DESCRIPTION
+	The OpenSSL toolkit provides support for secure communications between \
+	machines. OpenSSL includes a certificate management tool and shared \
+	libraries which provide various cryptographic algorithms and protocols.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.gz
+
+PKG_PACKAGES  += $(PKG_NAME)-devel
+
+ifneq "$(MACHINE)" "i686"
+	SSL_ARCH = no-asm 386 # 386 implies no-sse2
+endif
+
+# These arches do support sse2.
+#ifneq "$(TARGET)" "via-c7"
+#ifneq "$(TARGET)" "atom"
+#ifneq "$(TARGET)" "core2duo"
+#	SSL_ARCH += no-sse2
+#endif
+#endif
+#endif
+
+define STAGE_PREPARE_CMDS
+	cd $(DIR_APP) && find crypto/ -name Makefile -exec \
+		sed 's/^ASFLAGS=/&-Wa,--noexecstack /' -i {} \;
+
+	# # Modify the various perl scripts to reference perl in the right location.
+	cd $(DIR_APP) && perl util/perlpath.pl /usr/bin
+
+	# Generate a table with the compile settings for my perusal.
+	cd $(DIR_APP) && touch Makefile
+	cd $(DIR_APP) && make TABLE PERL=/usr/bin/perl
+endef
+
+define STAGE_BUILD
+	cd $(DIR_APP) && \
+		./Configure \
+			--prefix=/usr \
+			--openssldir=/etc/pki/tls \
+			--enginesdir=/usr/lib/openssl/engines \
+			linux-elf $(SSL_ARCH) \
+			shared \
+			zlib-dynamic \
+			enable-camellia \
+			enable-md2 \
+			enable-seed \
+			enable-tlsext \
+			enable-rfc3779 \
+			no-idea \
+			no-mdc2 \
+			no-rc5 \
+			-DSSL_FORBID_ENULL
+
+	# Build.
+	cd $(DIR_APP) && make depend all build-shared RPM_OPT_FLAGS="$(CFLAGS)" #$(PARALLELISMFLAGS)
+
+	# Generate hashes for the included certs.
+	cd $(DIR_APP) && make rehash build-shared
+endef
+
+define STAGE_TEST
+	cd $(DIR_APP) && make test
+endef
+
+define STAGE_INSTALL
+	cd $(DIR_APP) && make install build-shared INSTALL_PREFIX=$(BUILDROOT)
+
+	-mkdir -pv $(BUILDROOT)/lib
+	mv -vf $(BUILDROOT)/usr/lib/lib{crypto,ssl}.so.* $(BUILDROOT)/lib
+	ln -svf ../../lib/libcrypto.so.10 $(BUILDROOT)/usr/lib/libcrypto.so
+	ln -svf ../../lib/libssl.so.10 $(BUILDROOT)/usr/lib/libssl.so
+
+	# Install manpages do right place
+	-mkdir -pv $(BUILDROOT)/usr/share
+	mv -v $(BUILDROOT)/etc/pki/tls/man $(BUILDROOT)/usr/share/
+
+	-mkdir -pv $(BUILDROOT)/usr/lib/openssl
+	mv -v $(BUILDROOT)/usr/lib/engines $(BUILDROOT)/usr/lib/openssl
+
+	-mkdir -pv $(BUILDROOT)/etc/pki/CA/private
+	chmod -v 700 -R $(BUILDROOT)/etc/pki/CA
+
+	-mkdir -pv $(BUILDROOT)/etc/pki/tls
+	install -m 0644 $(DIR_SOURCE)/openssl.cnf $(BUILDROOT)/etc/pki/tls
+	cd $(DIR_APP) && cp -v -r certs $(BUILDROOT)/etc/pki/tls
+endef
+

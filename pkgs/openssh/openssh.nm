@@ -1,0 +1,111 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = openssh
+PKG_VER        = 5.8p1
+PKG_REL        = 5
+
+PKG_MAINTAINER =
+PKG_GROUP      = Application/Internet
+PKG_URL        = http://www.openssh.com/portable.html
+PKG_LICENSE    = MIT
+PKG_SUMMARY    = An open source implementation of SSH protocol versions 1 and 2.
+
+PKG_BUILD_DEPS+= audit-devel libselinux-devel nss-devel openssl-devel>=1.0.0d-2 \
+	pam-devel zlib-devel
+PKG_DEPS-openssh = openssh-clients=$(THISVER) openssh-server=$(THISVER)
+
+# /usr/bin/ssh-keygen is needed to generate keys for the ssh server.
+PKG_DEPS-openssh-server += /usr/bin/ssh-keygen
+
+define PKG_DESCRIPTION
+	SSH (Secure SHell) is a program for logging into and executing \
+	commands on a remote machine. SSH is intended to replace rlogin and \
+	rsh, and to provide secure encrypted communications between two \
+	untrusted hosts over an insecure network.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.gz
+
+PKG_PACKAGES  += openssh-clients openssh-server
+
+PKG_SUMMARY-openssh-server	= OpenSSH server applications.
+PKG_DESCRIPTION-openssh-server  = $(PKG_SUMMARY-openssh-server)
+PKG_FILES-openssh-server        = \
+	/etc/init/ \
+	/etc/pam.d/ \
+	/etc/ssh/moduli \
+	/etc/ssh/sshd_config \
+	/usr/lib/openssh/sftp-server \
+	/usr/sbin/ \
+	/usr/share/man/cat5/sshd_config.5* \
+	/usr/share/man/cat5/moduli.5* \
+	/usr/share/man/cat8/sshd.8* \
+	/usr/share/man/cat8/sftp-server.8* \
+	/usr/share/sshd/ \
+	/var/
+
+PKG_SUMMARY-openssh-clients     = OpenSSH client applications.
+PKG_DESCRIPTION-openssh-clients = $(PKG_SUMMARY-openssh-clients)
+PKG_FILES-openssh-clients       = \
+	/etc/ \
+	/usr/bin/ \
+	/usr/lib/ \
+	/usr/share/
+
+# Apply patches in a special order
+PKG_PATCHES   = openssh-5.6p1-redhat.patch
+PKG_PATCHES   += openssh-5.8p1-fingerprint.patch
+PKG_PATCHES   += openssh-5.8p1-authorized-keys-command.patch
+PKG_PATCHES   += openssh-5.8p1-selinux.patch
+PKG_PATCHES   += openssh-5.8p1-selinux-role.patch
+PKG_PATCHES   += openssh-5.8p1-mls.patch
+PKG_PATCHES   += openssh-5.6p1-keygen.patch
+PKG_PATCHES   += openssh-5.2p1-allow-ip-opts.patch
+PKG_PATCHES   += openssh-5.8p1-randclean.patch
+PKG_PATCHES   += openssh-5.8p1-kuserok.patch
+PKG_PATCHES   += openssh-5.5p1-x11.patch
+PKG_PATCHES   += openssh-5.6p1-exit-deadlock.patch
+PKG_PATCHES   += openssh-5.1p1-askpass-progress.patch
+PKG_PATCHES   += openssh-4.3p2-askpass-grab-info.patch
+PKG_PATCHES   += openssh-5.2p1-edns.patch
+PKG_PATCHES   += openssh-5.1p1-scp-manpage.patch
+	
+CONFIGURE_OPTIONS += \
+	--sysconfdir=/etc/ssh \
+	--datadir=/usr/share/sshd \
+	--libexecdir=/usr/lib/openssh \
+	--with-md5-passwords \
+	--with-privsep-path=/var/lib/sshd \
+	--with-pam \
+	--with-selinux \
+	--with-nss \
+	--with-audit=linux
+
+define STAGE_INSTALL_CMDS
+	-mkdir -pv $(BUILDROOT)/etc/ssh
+	cp -vf $(DIR_SOURCE)/sshd_config $(BUILDROOT)/etc/ssh/sshd_config
+endef

@@ -1,0 +1,61 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = pakfire
+PKG_VER        = 0.9.2
+PKG_REL        = 1
+PKG_ARCH       = noarch
+
+PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
+PKG_GROUP      = System/Packaging
+PKG_URL        = http://www.ipfire.org/
+PKG_LICENSE    = GPLv3+
+PKG_SUMMARY    = Package installer/updater.
+
+PKG_BUILD_DEPS = python-devel python-distutils-extra $(PKG_DEPS)
+PKG_DEPS      += pyliblzma python-progressbar python-urlgrabber pyxattr \
+	system-release
+
+define PKG_DESCRIPTION
+	Pakfire optains package lists from the mirrors and can install and update \
+	packages.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.gz
+
+define STAGE_BUILD
+	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
+endef
+
+# Build package
+
+PKG_PACKAGES  += $(PKG_NAME)-build
+
+PKG_SUMMARY-$(PKG_NAME)-build = The pakfire builder.
+PKG_DESCRIPTION-$(PKG_NAME)-build = The tools that are needed to build new \
+	pakfire packages.
+PKG_DEPS-$(PKG_NAME)-build += pakfire=$(THISVER)
+PKG_FILES-$(PKG_NAME)-build = /usr/bin/pakfire-build
