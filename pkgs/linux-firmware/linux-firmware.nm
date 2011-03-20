@@ -45,9 +45,6 @@ PKG_TARBALL    = $(THISAPP).tar.gz
 
 PKG_BUILD_DEPS =
 
-define STAGE_CONFIGURE
-endef
-
 define STAGE_BUILD
 endef
 
