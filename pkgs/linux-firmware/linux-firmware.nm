@@ -28,7 +28,7 @@ PKG_NAME       = linux-firmware
 PKG_VER        = 20110311
 PKG_REL        = 0
 
-PKG_MAINTAINER = Arne Fitzenreiter <arne.fitzemreiter@ipfire.org>
+PKG_MAINTAINER = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
 PKG_GROUP      = System/Libraries
 PKG_URL        = http://www.kernel.org/pub/linux/kernel/people/dwmw2/firmware/
 PKG_LICENSE    = Non-GPL
