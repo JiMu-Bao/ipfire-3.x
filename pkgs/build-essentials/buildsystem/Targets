@@ -23,6 +23,7 @@ buildinfo:
 	@echo "PKG_GROUP=\"$(PKG_GROUP)\""
 	@echo "PKG_LICENSE=\"$(PKG_LICENSE)\""
 	@echo "PKG_MAINTAINER=\"$(PKG_MAINTAINER)\""
+	@echo "PKG_SUMMARY=\"$(strip $(PKG_SUMMARY))\""
 	@echo "PKG_URL=\"$(PKG_URL)\""
 
 	@echo "PKG_FILES=\"$(PKG_OBJECTS)\""
