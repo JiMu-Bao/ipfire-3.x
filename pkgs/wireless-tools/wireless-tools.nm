@@ -29,7 +29,7 @@ PKG_VER        = 29
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Wireless
+PKG_GROUPS     = Networking/Wireless
 PKG_URL        = http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html
 PKG_LICENSE    = GPL+
 PKG_SUMMARY    = Wireless ethernet configuration tools.

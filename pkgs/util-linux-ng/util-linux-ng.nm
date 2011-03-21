@@ -29,7 +29,8 @@ PKG_VER        = 2.18
 PKG_REL        = 2
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
+PKG_GROUPS-$(PKG_NAME) = Base $(PKG_GROUPS)
 PKG_URL        = ftp://ftp.kernel.org/pub/linux/utils/util-linux-ng
 PKG_LICENSE    = GPLv2 and GPLv2+ and BSD with advertising and Public Domain
 PKG_SUMMARY    = A collection of basic system utilities.

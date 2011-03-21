@@ -29,7 +29,7 @@ PKG_VER        = 2.1_rc20
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/VPN
+PKG_GROUPS     = Networking/VPN
 PKG_URL        = http://openvpn.net/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = A full-featured SSL VPN solution.

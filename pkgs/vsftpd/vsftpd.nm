@@ -29,7 +29,7 @@ PKG_VER        = 2.3.4
 PKG_REL        = 2
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Daemons
+PKG_GROUPS     = Networking/Daemons
 PKG_URL        = ftp://vsftpd.beasts.org/users/cevans/
 PKG_LICENSE    = GPLv2 with exceptions
 PKG_SUMMARY    = Very Secure Ftp Daemon.

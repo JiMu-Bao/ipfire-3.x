@@ -29,7 +29,7 @@ PKG_VER        = 5.12.3
 PKG_REL        = 3
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Languages
+PKG_GROUPS     = Development/Languages
 PKG_URL        = http://www.perl.org/
 PKG_LICENSE    = GPL+ or Artistic and GPLv2+ or Artistic
 PKG_SUMMARY    = Practical Extraction and Report Language.

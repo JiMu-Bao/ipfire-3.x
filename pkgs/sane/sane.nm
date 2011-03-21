@@ -29,7 +29,7 @@ PKG_VER        = 1.0.21
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Application/Imaging
+PKG_GROUPS     = Application/Imaging
 PKG_URL        = ftp://ftp2.sane-project.org/pub/sane/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = SANE - Scanner Access Now Easy.

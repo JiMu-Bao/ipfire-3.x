@@ -29,7 +29,7 @@ PKG_VER        = 2.27.0
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://www.pygtk.org/
 PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = Python 2 bindings for GObject.

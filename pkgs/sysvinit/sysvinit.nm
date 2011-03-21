@@ -29,7 +29,7 @@ PKG_VER        = 2.86
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = https://alioth.debian.org/projects/pkg-sysvinit/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Programs which control basic system processes.

@@ -30,7 +30,7 @@ PKG_REL        = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Languages 
+PKG_GROUPS     = Development/Languages 
 PKG_URL        = http://www.phyast.pitt.edu/~micheles/python/documentation.html 
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = Module to simplify usage of decorators.

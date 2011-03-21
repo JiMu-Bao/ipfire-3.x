@@ -29,7 +29,7 @@ PKG_VER        = 0.21
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Tools
+PKG_GROUPS     = Networking/Tools
 PKG_URL        = http://git.ipfire.org/?p=thirdparty/rstp.git;a=summary
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Rapid Spanning Tree Protocol for Linux Ethernet bridge.

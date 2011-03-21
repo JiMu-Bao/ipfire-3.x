@@ -29,7 +29,7 @@ PKG_VER        = 1.3.1
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Languages 
+PKG_GROUPS     = Development/Languages 
 PKG_URL        = http://cekirdek.pardus.org.tr/~bahadir/piksemel/ 
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = A python XML parser.

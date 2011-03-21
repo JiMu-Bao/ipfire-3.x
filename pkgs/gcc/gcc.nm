@@ -29,7 +29,7 @@ PKG_VER        = 4.5.2
 PKG_REL        = 7
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUP      = Development/Compilers
+PKG_GROUPS     = Development/Compilers
 PKG_URL        = http://gcc.gnu.org/
 PKG_LICENSE    = GPLv3+ and GPLv2+ with exceptions
 PKG_SUMMARY    = Various compilers (C, C++, Objective-C, Java, ...).

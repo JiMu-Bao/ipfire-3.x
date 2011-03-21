@@ -29,7 +29,7 @@ PKG_VER        = 1.8.3
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://www.gnu.org/software/gdbm/
 PKG_LICENSE    = GPL
 PKG_SUMMARY    = The GDBM package contains the GNU Database Manager.

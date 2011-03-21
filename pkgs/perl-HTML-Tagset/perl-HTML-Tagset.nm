@@ -30,7 +30,7 @@ PKG_REL        = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Libratries
+PKG_GROUPS     = Development/Libratries
 PKG_URL        = http://search.cpan.org/dist/HTML-Tagset/
 PKG_LICENSE    = GPL+ or Artistic
 PKG_SUMMARY    = HTML::Tagset - data tables useful in parsing HTML.

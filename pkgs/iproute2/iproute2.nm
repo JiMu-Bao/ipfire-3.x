@@ -29,7 +29,7 @@ PKG_VER        = 2.6.37
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Tools
+PKG_GROUPS     = Base Networking/Tools
 PKG_URL        = http://www.linuxfoundation.org/en/Net:Iproute2
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Advanced IP routing and network device configuration tools.

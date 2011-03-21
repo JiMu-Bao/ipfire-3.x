@@ -29,7 +29,7 @@ PKG_VER        = 0.9.12
 PKG_REL        = 0
 
 PKG_MAINTAINER = 
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://www.karlrunge.com/x11vnc/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = VNC server for the current X11 session.

@@ -30,7 +30,7 @@ PKG_REL        = 0
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Tools
+PKG_GROUPS     = Base Networking/Tools
 PKG_URL        = http://www.iana.org/
 PKG_LICENSE    =
 PKG_SUMMARY    = The Internet Assigned Numbers Authority.

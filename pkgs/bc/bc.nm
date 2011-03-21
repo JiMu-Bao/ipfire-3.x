@@ -29,7 +29,7 @@ PKG_VER        = 1.06
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Tools
+PKG_GROUPS     = System/Tools
 PKG_URL        = http://www.gnu.org/software/bc/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = bc is an arbitrary precision numeric processing language.

@@ -29,7 +29,7 @@ PKG_VER        = 2.3.9
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Graphics
+PKG_GROUPS     = System/Graphics
 PKG_URL        = http://www.freetype.org/
 PKG_LICENSE    = FTL GPLv2+
 PKG_SUMMARY    = A free and portable font rendering engine.

@@ -29,7 +29,7 @@ PKG_VER        = 2.8.12
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Security/Password
+PKG_GROUPS     = Security/Password
 PKG_URL        = http://sourceforge.net/projects/cracklib/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = A password-checking library.

@@ -30,7 +30,7 @@ PKG_REL        = 2
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = Base System/Base
 PKG_URL        =
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = Basic system files.

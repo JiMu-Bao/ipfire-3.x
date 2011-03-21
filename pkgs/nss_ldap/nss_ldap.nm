@@ -29,7 +29,7 @@ PKG_VER        = 262
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = http://www.padl.com/
 PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = NSS library and PAM module for LDAP.

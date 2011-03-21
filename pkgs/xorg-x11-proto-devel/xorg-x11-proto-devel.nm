@@ -30,7 +30,7 @@ PKG_REL        = 2
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
-PKG_GROUP      = Development/System
+PKG_GROUPS     = Development/System
 PKG_URL        = http://www.x.org/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = X11 potocol headers.

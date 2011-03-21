@@ -30,7 +30,7 @@ PKG_REL        = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Languages
+PKG_GROUPS     = Development/Languages
 PKG_URL        = http://pycurl.sourceforge.net/
 PKG_LICENSE    = LGPLv2+ or MIT
 PKG_SUMMARY    = A Python interface to libcurl.

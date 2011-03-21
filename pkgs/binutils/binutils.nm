@@ -29,7 +29,7 @@ PKG_VER        = 2.20.1
 PKG_REL        = 0
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://www.gnu.org/software/binutils/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = The GNU Binutils are a collection of binary tools.

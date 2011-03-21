@@ -30,7 +30,7 @@ PKG_REL        = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Libratries
+PKG_GROUPS     = Development/Libratries
 PKG_URL        = http://search.cpan.org/dist/Test-Simple/
 PKG_LICENSE    = GPL+ or Artistic
 PKG_SUMMARY    = Basic utilities for writing tests.

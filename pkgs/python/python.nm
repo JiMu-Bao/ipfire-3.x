@@ -29,7 +29,7 @@ PKG_VER        = 2.7.1
 PKG_REL        = 3
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Languages
+PKG_GROUPS     = Development/Languages
 PKG_URL        = http://www.python.org
 PKG_LICENSE    = Python
 PKG_SUMMARY    = An interpreted, interactive, object-oriented programming language.

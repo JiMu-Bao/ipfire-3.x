@@ -29,7 +29,7 @@ PKG_VER        = 1.12
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Internet
+PKG_GROUPS     = Applications/Internet
 PKG_URL        = http://www.gnu.org/software/wget/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = Commandline tool to download files.

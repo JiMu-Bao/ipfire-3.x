@@ -29,7 +29,7 @@ PKG_VER        = 2.4
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://www.gnu.org/software/libtool/
 PKG_LICENSE    = GPLv2+ and LGPLv2+ and GFDL
 PKG_SUMMARY    = Runtime libraries for GNU Libtool Dynamic Module Loader.

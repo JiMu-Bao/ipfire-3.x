@@ -30,7 +30,7 @@ PKG_REL        = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUP      = Development/Libraries
+PKG_GROUPS     = Development/Libraries
 PKG_URL        = http://pypi.python.org/pypi/setuptools
 PKG_LICENSE    = Python or ZPLv2.0
 PKG_SUMMARY    = Easily build and distribute Python packages.

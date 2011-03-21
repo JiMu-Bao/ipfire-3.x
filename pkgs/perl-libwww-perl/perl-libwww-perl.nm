@@ -31,7 +31,7 @@ PKG_EPOCH      = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Libraries
+PKG_GROUPS     = Development/Libraries
 PKG_URL        = http://search.cpan.org/dist/libwww-perl/
 PKG_LICENSE    = GPL+ or Artistic
 PKG_SUMMARY    = A Perl interface to the World-Wide Web.

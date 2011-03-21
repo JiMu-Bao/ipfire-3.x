@@ -29,7 +29,7 @@ PKG_VER        = 0.1.3
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://pyyaml.org/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = YAML 1.1 parser and emitter written in C.

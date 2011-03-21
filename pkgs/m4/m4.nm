@@ -29,7 +29,7 @@ PKG_VER        = 1.4.16
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Text
+PKG_GROUPS     = Applications/Text
 PKG_URL        = http://www.gnu.org/software/m4/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = The GNU macro processor.

@@ -29,7 +29,7 @@ PKG_VER        = 1.4.5
 PKG_REL        = 3
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Printing
+PKG_GROUPS     = Applications/Printing
 PKG_URL        = http://cups.org/software.php
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = The common UNIX printing system.

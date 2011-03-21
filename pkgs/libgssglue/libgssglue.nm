@@ -29,7 +29,7 @@ PKG_VER        = 0.1
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://www.citi.umich.edu/projects/nfsv4/linux/libgssglue/
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = This library exports a gssapi interface.

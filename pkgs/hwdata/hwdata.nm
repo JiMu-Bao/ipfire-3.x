@@ -30,7 +30,7 @@ PKG_REL        = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = Base System/Base
 PKG_URL        = http://git.fedorahosted.org/git/hwdata.git
 PKG_LICENSE    = GPLv2+ and LGPLv2+
 PKG_SUMMARY    = Hardware identification and configuration data.

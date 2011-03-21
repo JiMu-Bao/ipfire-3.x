@@ -29,7 +29,7 @@ PKG_VER        = 0.6.7
 PKG_REL        = 0
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = http://upstart.ubuntu.com/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = An event-driven init system.

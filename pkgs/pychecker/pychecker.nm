@@ -30,7 +30,7 @@ PKG_REL        = 2
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Debuggers
+PKG_GROUPS     = Development/Debuggers
 PKG_URL        = http://pychecker.sourceforge.net
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = A python source code checking tool.

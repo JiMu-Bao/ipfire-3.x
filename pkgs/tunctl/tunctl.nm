@@ -29,7 +29,7 @@ PKG_VER        = 1.5
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Tools
+PKG_GROUPS     = Networking/Tools
 PKG_URL        = http://tunctl.sourceforge.net/
 PKG_LICENSE    = GPL+
 PKG_SUMMARY    = Create and remove virtual network interfaces.

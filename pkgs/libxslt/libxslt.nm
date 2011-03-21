@@ -29,7 +29,7 @@ PKG_VER        = 1.1.26
 PKG_REL        = 0
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
-PKG_GROUP      = Development/Libraries
+PKG_GROUPS     = Development/Libraries
 PKG_URL        = http://xmlsoft.org/XSLT/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = Library providing the Gnome XSLT engine.

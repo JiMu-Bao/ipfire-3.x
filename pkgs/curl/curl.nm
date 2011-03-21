@@ -29,7 +29,7 @@ PKG_VER        = 7.21.2
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Application/Internet
+PKG_GROUPS     = Application/Internet
 PKG_URL        = http://www.curl.haxx.se/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = A utility for getting files from remote servers (FTP, HTTP, and others).

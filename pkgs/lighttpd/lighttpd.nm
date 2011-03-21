@@ -29,7 +29,7 @@ PKG_VER        = 1.4.28
 PKG_REL        = 1
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUP      = Networking/Webservers
+PKG_GROUPS     = Networking/Webservers
 PKG_URL        = http://www.lighttpd.net/
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = Lightning fast webserver with light system requirements.

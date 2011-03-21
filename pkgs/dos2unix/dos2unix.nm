@@ -29,7 +29,7 @@ PKG_VER        = 5.1.1
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Text
+PKG_GROUPS     = Applications/Text
 PKG_URL        = http://www.xs4all.nl/~waterlan/dos2unix.html
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = Text file format converters.

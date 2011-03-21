@@ -29,7 +29,7 @@ PKG_VER        = 4.0.0beta6
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://www.libtiff.org
 PKG_LICENSE    = libtiff ( own )
 PKG_SUMMARY    = Library of functions for manipulating TIFF format image files.

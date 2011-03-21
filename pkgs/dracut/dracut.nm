@@ -30,7 +30,7 @@ PKG_REL        = 4
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Boot
+PKG_GROUPS     = System/Boot
 PKG_URL        = http://sourceforge.net/apps/trac/dracut/wiki
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Initramfs generator using udev.

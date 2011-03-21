@@ -29,7 +29,7 @@ PKG_VER        = 2.4.1
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Daemons
+PKG_GROUPS     = System/Daemons
 PKG_URL        = http://linux-atm.sourceforge.net/
 PKG_LICENSE    = BSD and GPLv2 and GPLv2+ and LGPLv2+ and MIT
 PKG_SUMMARY    = Tools to support ATM networking under Linux.

@@ -29,7 +29,7 @@ PKG_VER        = 4.7.0
 PKG_REL        = 3
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://www.qtsoftware.com/
 PKG_LICENSE    = LGPLv2 with exceptions or GPLv3 with exceptions
 PKG_SUMMARY    = Qt toolkit.

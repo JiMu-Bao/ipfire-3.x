@@ -29,7 +29,7 @@ PKG_VER        = 5.43
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Languages
+PKG_GROUPS     = Development/Languages
 PKG_URL        = http://expect.nist.gov/
 PKG_LICENSE    = Public Domain
 PKG_SUMMARY    = A program-script interaction and testing utility.

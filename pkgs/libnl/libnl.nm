@@ -29,7 +29,7 @@ PKG_VER        = 1.1
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Libraries
+PKG_GROUPS     = Development/Libraries
 PKG_URL        = http://people.suug.ch/~tgr/libnl/
 PKG_LICENSE    = LGPLv2
 PKG_SUMMARY    = Convenience library for kernel netlink sockets.

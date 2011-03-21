@@ -29,7 +29,7 @@ PKG_VER        = 1.3.2
 PKG_REL        = 0
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
-PKG_GROUP      = X/Libraries
+PKG_GROUPS     = X/Libraries
 PKG_URL        = http://xcb.freedesktop.org/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = X.Org X11 libXi runtime library.

@@ -29,7 +29,7 @@ PKG_VER        = 0.99.17
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Routing
+PKG_GROUPS     = Networking/Routing
 PKG_URL        = http://www.quagga.net/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Quagga is a rounting daemon.

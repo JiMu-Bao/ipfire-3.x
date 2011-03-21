@@ -29,7 +29,7 @@ PKG_VER        = 4.7.4
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/System
+PKG_GROUPS     = Applications/System
 PKG_URL        = http://www.ibiblio.org/mc/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = User-friendly text console file manager and visual shell.

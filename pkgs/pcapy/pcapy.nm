@@ -29,7 +29,7 @@ PKG_VER        = 0.10.5
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Languages
+PKG_GROUPS     = Development/Languages
 PKG_URL        = http://oss.coresecurity.com/projects/pcapy.html
 PKG_LICENSE    = ASL 1.1
 PKG_SUMMARY    = A Python interface to libpcap.

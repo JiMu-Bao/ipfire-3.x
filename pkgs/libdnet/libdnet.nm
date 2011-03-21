@@ -29,7 +29,7 @@ PKG_VER        = 1.12
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://code.google.com/p/libdnet/
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = Simple portable interface to lowlevel networking routines.

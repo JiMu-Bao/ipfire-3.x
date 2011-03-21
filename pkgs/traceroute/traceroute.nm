@@ -29,7 +29,7 @@ PKG_VER        = 2.0.12
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Application/Internet
+PKG_GROUPS     = Application/Internet
 PKG_URL        = http://traceroute.sourceforge.net
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Traces the route taken by packets over an IPv4/IPv6 network.

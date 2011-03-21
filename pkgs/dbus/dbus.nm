@@ -29,7 +29,7 @@ PKG_VER        = 1.3.2
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Daemons
+PKG_GROUPS     = System/Daemons
 PKG_URL        = http://www.freedesktop.org/software/dbus/
 PKG_LICENSE    = GPLv2+ AFL
 PKG_SUMMARY    = D-BUS message bus.

@@ -29,7 +29,7 @@ PKG_VER        = 1.1.0
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = http://www.us.kernel.org/pub/linux/libs/pam/index.html
 PKG_LICENSE    = BSD and GPLv2+ and BSD with advertising
 PKG_SUMMARY    = An extensible library which provides authentication for applications.

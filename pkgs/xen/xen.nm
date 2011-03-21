@@ -29,7 +29,7 @@ PKG_VER        = 4.0.1
 PKG_REL        = 1
 
 PKG_MAINTAINER = Ben Schweikert <ben.schweikert@ipfire.org>
-PKG_GROUP      = Applications/Virtualization
+PKG_GROUPS     = Applications/Virtualization
 PKG_URL        = http://www.xen.org/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = The Xen tools.

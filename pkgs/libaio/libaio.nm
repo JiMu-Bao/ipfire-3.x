@@ -29,7 +29,7 @@ PKG_VER        = 0.3.109
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = ftp://ftp.kernel.org/pub/linux/libs/aio/
 PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = Linux-native asynchronous I/O access library.

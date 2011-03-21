@@ -29,7 +29,7 @@ PKG_VER        = 1.0.3
 PKG_REL        = 0
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = https://launchpad.net/libnih
 PKG_LICENSE    = GPL2+
 PKG_SUMMARY    = Small library with advanced functions.

@@ -20,7 +20,7 @@ buildinfo:
 	@echo "PKG_BUILD_DEPENDENCIES=\"$(PKG_BUILD_DEPS)\""
 	@echo "PKG_DEPENDENCIES=\"$(PKG_DEPS)\""
 	@echo "PKG_DESCRIPTION=\"$(strip $(PKG_DESCRIPTION))\""
-	@echo "PKG_GROUP=\"$(PKG_GROUP)\""
+	@echo "PKG_GROUPS=\"$(PKG_GROUPS)\""
 	@echo "PKG_LICENSE=\"$(PKG_LICENSE)\""
 	@echo "PKG_MAINTAINER=\"$(PKG_MAINTAINER)\""
 	@echo "PKG_SUMMARY=\"$(strip $(PKG_SUMMARY))\""
@@ -57,5 +57,6 @@ build: $(OBJECTS)
 
 .PHONY: clean
 clean:
-	# Remove all files from $(DIR_APP)
-	-rm -rf $(DIR_APP)
+	# Remove all files from $(DIR_APP) and $(BUILDROOT)
+	-rm -rf $(DIR_APP) $(BUILDROOT)
+	-mkdir -pv $(BUILDROOT)

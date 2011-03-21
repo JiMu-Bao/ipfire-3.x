@@ -29,7 +29,7 @@ PKG_VER        = 1.20
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://www.gnu.org/software/libidn/
 PKG_LICENSE    = LGPLv2+ GPLv3+
 PKG_SUMMARY    = Internationalized Domain Name support library.

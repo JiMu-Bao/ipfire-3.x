@@ -29,7 +29,7 @@ PKG_VER        = 20070115
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Daemons
+PKG_GROUPS     = System/Daemons
 PKG_URL        = http://www.sixxs.net/tools/aiccu/
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = Automatic IPv6 Connectivity Client Utility for SixXS tunnels.

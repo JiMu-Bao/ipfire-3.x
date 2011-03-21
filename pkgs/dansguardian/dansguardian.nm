@@ -29,7 +29,7 @@ PKG_VER        = 2.10.1.1
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Proxy
+PKG_GROUPS     = Networking/Proxy
 PKG_URL        = http://www.dansguardian.org/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = A content filtering web proxy.

@@ -29,7 +29,7 @@ PKG_VER        = 2.1
 PKG_REL        = 2
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/System
+PKG_GROUPS     = Applications/System
 PKG_URL        = http://www.gnu.org/software/parted
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = The GNU disk partition manipulation program.

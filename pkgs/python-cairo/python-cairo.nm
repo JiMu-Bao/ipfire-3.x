@@ -29,7 +29,7 @@ PKG_VER        = 1.8.10
 PKG_REL        = 2
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://cairographics.org/pycairo
 PKG_LICENSE    = MPLv1.1 or LGPLv2
 PKG_SUMMARY    = Python bindings for the cairo library.

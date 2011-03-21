@@ -29,7 +29,7 @@ PKG_VER        = 7.3
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Editors
+PKG_GROUPS     = Base Applications/Editors
 PKG_URL        = http://www.vim.org
 PKG_LICENSE    = PublicDomain/Charityware
 PKG_SUMMARY    = Very feature- and powerful editor.

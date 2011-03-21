@@ -29,7 +29,7 @@ PKG_VER        = 2.6.1.28-d909
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://www.gnu.org/software/patch/patch.html
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Utility for modifying/upgrading files.

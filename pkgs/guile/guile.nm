@@ -29,7 +29,7 @@ PKG_VER        = 1.8.7
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://www.gnu.org/software/guile/
 PKG_LICENSE    = GPLv2+ and LGPLv2+ and GFDL and OFSFDL
 PKG_SUMMARY    = A GNU implementation of Scheme for application extensibility.
