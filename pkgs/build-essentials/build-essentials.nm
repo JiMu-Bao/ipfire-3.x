@@ -26,12 +26,12 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = build-essentials
 PKG_VER        = $(DISTRO_VERSION)
-PKG_REL        = 10
+PKG_REL        = 11
 PKG_EPOCH      = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://www.ipfire.org
 PKG_LICENSE    = GPL
 PKG_SUMMARY    = Elementary scripts for the build system.

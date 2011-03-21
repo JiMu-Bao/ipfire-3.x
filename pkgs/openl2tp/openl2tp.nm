@@ -29,7 +29,7 @@ PKG_VER        = 1.7
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/PPP
+PKG_GROUPS     = Networking/PPP
 PKG_URL        = http://www.openl2tp.org/
 PKG_LICENSE    = GPL
 PKG_SUMMARY    = A Linux L2TP solution for enterprise VPN and ISPs.

@@ -29,7 +29,7 @@ PKG_VER        = 1.26
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Packaging
+PKG_GROUPS     = Base System/Packaging
 PKG_URL        = http://www.gnu.org/software/tar/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = A GNU file archiving program.

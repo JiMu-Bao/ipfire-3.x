@@ -29,7 +29,7 @@ PKG_VER        = 3.6.21
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Filesystems
+PKG_GROUPS     = System/Filesystems
 PKG_URL        = http://www.kernel.org/pub/linux/utils/fs/reiserfs/
 PKG_LICENSE    = GPL
 PKG_SUMMARY    = Tools for ReiserFS filesystems.

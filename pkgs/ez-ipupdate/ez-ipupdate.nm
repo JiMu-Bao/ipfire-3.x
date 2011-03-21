@@ -29,7 +29,7 @@ PKG_VER        = 3.0.11b8
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Tools
+PKG_GROUPS     = Networking/Tools
 PKG_URL        = http://www.gusnet.cx/proj/ez-ipupdate/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Client for Dynamic DNS Services.

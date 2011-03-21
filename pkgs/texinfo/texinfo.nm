@@ -29,7 +29,7 @@ PKG_VER        = 4.13a
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Publishing
+PKG_GROUPS     = Applications/Publishing
 PKG_URL        = http://www.gnu.org/software/texinfo/
 PKG_LICENSE    = GPLv3
 PKG_SUMMARY    = Tools needed to create Texinfo format documentation files.

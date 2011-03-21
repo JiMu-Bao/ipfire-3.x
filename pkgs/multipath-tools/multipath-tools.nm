@@ -29,7 +29,7 @@ PKG_VER        = 0.4.9
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = http://christophe.varoqui.free.fr/
 PKG_LICENSE    = GPL+
 PKG_SUMMARY    = Tools to manage multipath devices using device-mapper.

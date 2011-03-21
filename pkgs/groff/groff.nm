@@ -29,7 +29,7 @@ PKG_VER        = 1.18.1.4
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Text
+PKG_GROUPS     = Applications/Text
 PKG_URL        = http://groff.ffii.org/
 PKG_LICENSE    = GPLv2 and GFDL
 PKG_SUMMARY    = A document formatting system.

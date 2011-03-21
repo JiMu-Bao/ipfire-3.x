@@ -29,7 +29,7 @@ PKG_VER        = 1.10.2
 PKG_REL        = 2
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Graphics
+PKG_GROUPS     = System/Graphics
 PKG_URL        = http://cairographics.org
 PKG_LICENSE    = LGPLv2 MPLv1.1
 PKG_SUMMARY    = A 2D graphics library.

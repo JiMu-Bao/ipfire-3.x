@@ -29,7 +29,7 @@ PKG_VER        = 2.1.5
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = http://www.pobox.com/~tranter
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = A program that ejects removable media using software control.

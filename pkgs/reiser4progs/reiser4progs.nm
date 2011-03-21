@@ -29,7 +29,7 @@ PKG_VER        = 1.0.7
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Filesystems
+PKG_GROUPS     = System/Filesystems
 PKG_URL        = http://www.kernel.org/pub/linux/utils/fs/reiser4/reiser4progs/
 PKG_LICENSE    = GPL
 PKG_SUMMARY    = Administration utilities for the Reiser4 filesystem.

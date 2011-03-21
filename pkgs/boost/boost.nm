@@ -29,7 +29,7 @@ PKG_VER        = 1.41.0
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://www.boost.org/
 PKG_LICENSE    = Boost
 PKG_SUMMARY    = The Boost C++ Libraries.

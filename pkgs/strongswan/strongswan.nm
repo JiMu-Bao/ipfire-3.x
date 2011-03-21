@@ -29,7 +29,7 @@ PKG_VER        = 4.5.0
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/VPN
+PKG_GROUPS     = Networking/VPN
 PKG_URL        = http://www.strongswan.org/
 PKG_LICENSE    = GPL
 PKG_SUMMARY    = IPsec and IKEv1 implementation for Linux 2.4 and 2.6 kernels.

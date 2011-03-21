@@ -32,7 +32,7 @@ PKG_VER        = 0.9.6
 PKG_REL        = 3
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUP      = Development/Compilers
+PKG_GROUPS     = Development/Compilers
 PKG_URL        = http://en.opensuse.org/Icecream
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Distributed compiler.

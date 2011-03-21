@@ -29,7 +29,7 @@ PKG_VER        = 0.11.7
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Internet
+PKG_GROUPS     = Applications/Internet
 PKG_URL        = http://elinks.or.cz/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = Full-Featured Text WWW Browser.

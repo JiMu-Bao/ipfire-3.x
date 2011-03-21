@@ -29,7 +29,7 @@ PKG_VER        = 2.4.3
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://www.gnu.org/software/bison/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = GNU Bison is a parser generator.

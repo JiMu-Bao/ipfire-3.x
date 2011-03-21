@@ -29,7 +29,7 @@ PKG_VER        = 0.6.5
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://people.redhat.com/sgrubb/libcap-ng
 PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = An alternate posix capabilities library.

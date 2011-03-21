@@ -30,7 +30,7 @@ PKG_REL        = 0
 PKG_EPOCH      = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Languages
+PKG_GROUPS     = Development/Languages
 PKG_URL        = http://www.riverbankcomputing.com/software/pyqt/
 PKG_LICENSE    = GPLv3 or GPLv2 with exceptions
 PKG_SUMMARY    = Python bindings for Qt4.

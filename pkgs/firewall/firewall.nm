@@ -29,7 +29,7 @@ PKG_VER        =
 PKG_REL        = 1
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUP      = Networking/Firewall
+PKG_GROUPS     = Networking/Firewall
 PKG_URL        = http://www.ipfire.org/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = The IPFire Firewall Engine.

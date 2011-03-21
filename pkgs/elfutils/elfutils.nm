@@ -29,7 +29,7 @@ PKG_VER        = 0.145
 PKG_REL        = 1
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUP      = Development/Libraries
+PKG_GROUPS     = Development/Libraries
 PKG_URL        = https://fedorahosted.org/elfutils/
 PKG_LICENSE    = GPLv2 with exceptions
 PKG_SUMMARY    = A collection of utilities and DSOs to handle compiled objects.

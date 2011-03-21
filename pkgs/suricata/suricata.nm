@@ -29,7 +29,7 @@ PKG_VER        = 1.0.2
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/IDS
+PKG_GROUPS     = Networking/IDS
 PKG_URL        = http://www.openinfosecfoundation.org/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = Open Source Next Generation Intrusion Detection and Prevention Engine.

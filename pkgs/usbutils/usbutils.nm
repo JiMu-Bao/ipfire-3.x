@@ -29,7 +29,7 @@ PKG_VER        = 0.86
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Tools
+PKG_GROUPS     = System/Tools
 PKG_URL        = http://www.linux-usb.org/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = Tool to provide and enhance USB support in Linux.

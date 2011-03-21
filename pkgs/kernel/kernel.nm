@@ -29,7 +29,7 @@ PKG_VER        = 2.6.37.2
 PKG_REL        = 2
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUP      = System/Kernels
+PKG_GROUPS     = System/Kernels
 PKG_URL        = http://www.kernel.org/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = The Linux kernel.

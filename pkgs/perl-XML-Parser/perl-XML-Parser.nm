@@ -29,7 +29,7 @@ PKG_VER        = 2.36
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Libraries
+PKG_GROUPS     = Development/Libraries
 PKG_URL        = http://search.cpan.org/dist/XML-Parser/
 PKG_LICENSE    = GPL+ or Artistic
 PKG_SUMMARY    = Perl module for parsing XML files.

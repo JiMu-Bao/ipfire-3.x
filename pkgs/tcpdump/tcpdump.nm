@@ -29,7 +29,7 @@ PKG_VER        = 4.1.1
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Sniffer
+PKG_GROUPS     = Networking/Sniffer
 PKG_URL        = http://www.tcpdump.org/
 PKG_LICENSE    = BSD with advertising
 PKG_SUMMARY    = A network traffic monitoring tool.

@@ -29,7 +29,7 @@ PKG_VER        = 0.5
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/System
+PKG_GROUPS     = Applications/System
 PKG_URL        = http://pax.grsecurity.net/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = Application to control PaX flags.

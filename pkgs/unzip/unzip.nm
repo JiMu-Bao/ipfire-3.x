@@ -29,7 +29,7 @@ PKG_VER        = 5.52
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Archiving
+PKG_GROUPS     = Applications/Archiving
 PKG_URL        = ftp://ftp.info-zip.org/pub/infozip/src/
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = A utility for unpacking zip files.

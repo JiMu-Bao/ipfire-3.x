@@ -29,7 +29,7 @@ PKG_VER        = 2.0.1
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://www.libexpat.org/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = An XML parser library.

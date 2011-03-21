@@ -29,7 +29,7 @@ PKG_VER        = 147.1
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://flex.sourceforge.net/
 PKG_LICENSE    = LGPLv3+
 PKG_SUMMARY    = Python (PyGObject) bindings to the GUDev library.

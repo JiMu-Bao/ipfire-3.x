@@ -29,7 +29,7 @@ PKG_VER        = 2.0.17
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Security/Tools
+PKG_GROUPS     = Security/Tools
 PKG_URL        = http://www.gnupg.org/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = Utility for secure communication and data storage.

@@ -29,7 +29,7 @@ PKG_VER        = 0.8.8
 PKG_REL        = 2
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Virtualization
+PKG_GROUPS     = Applications/Virtualization
 PKG_URL        = http://www.libvirt.org/
 PKG_LICENSE    = LGPLv2.1+
 PKG_SUMMARY    = A library for controlling VMs.

@@ -29,7 +29,7 @@ PKG_VER        = 1.5
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Daemons
+PKG_GROUPS     = System/Daemons
 PKG_URL        = http://flex.sourceforge.net/
 PKG_LICENSE    = BSD with advertising
 PKG_SUMMARY    = A Router Advertisement daemon.

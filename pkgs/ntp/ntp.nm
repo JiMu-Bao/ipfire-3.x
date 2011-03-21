@@ -29,7 +29,7 @@ PKG_VER        = 4.2.6p1
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Daemons
+PKG_GROUPS     = Base System/Daemons
 PKG_URL        = http://www.ntp.org/
 PKG_LICENSE    = MIT, BSD and GPLv2
 PKG_SUMMARY    = The NTP daemon and utilities.

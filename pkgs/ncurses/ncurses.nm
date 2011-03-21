@@ -29,7 +29,7 @@ PKG_VER        = 5.8
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = http://invisible-island.net/ncurses/ncurses.html
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = Ncurses support utilities.

@@ -29,7 +29,7 @@ PKG_VER        = 2.0.5
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Daemons
+PKG_GROUPS     = System/Daemons
 PKG_URL        = http://people.redhat.com/sgrubb/audit/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = User space tools for 2.6 kernel auditing.

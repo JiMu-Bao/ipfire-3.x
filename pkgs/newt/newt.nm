@@ -29,7 +29,7 @@ PKG_VER        = 0.52.10
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = https://fedorahosted.org/releases/n/e/newt/
 PKG_LICENSE    = LGPLv2
 PKG_SUMMARY    = A library for text mode user interfaces.

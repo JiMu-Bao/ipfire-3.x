@@ -29,7 +29,7 @@ PKG_VER        = 1.0.0
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://sourceforge.net/projects/libjpeg-turbo
 PKG_LICENSE    = wxWidgets
 PKG_SUMMARY    = A MMX/SSE2 accelerated library for manipulating JPEG image files.

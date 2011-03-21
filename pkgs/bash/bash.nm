@@ -29,7 +29,7 @@ PKG_VER        = 4.2
 PKG_REL        = 2
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Tools
+PKG_GROUPS     = Base System/Tools
 PKG_URL        = http://www.gnu.org/software/bash/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Bash is short for born again shell.

@@ -29,7 +29,7 @@ PKG_VER        = 2.4.5
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Daemons
+PKG_GROUPS     = System/Daemons
 PKG_URL        = ftp://ftp.samba.org/pub/ppp/
 PKG_LICENSE    = BSD and LGPLv2+ and GPLv2+ and Public Domain
 PKG_SUMMARY    = The PPP (Point-to-Point Protocol) daemon.

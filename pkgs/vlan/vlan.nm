@@ -29,7 +29,7 @@ PKG_VER        = 1.9
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Tools
+PKG_GROUPS     = Networking/Tools
 PKG_URL        = http://www.candelatech.com/~greear/vlan.html
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Linux 802.1q VLAN configuration utility.

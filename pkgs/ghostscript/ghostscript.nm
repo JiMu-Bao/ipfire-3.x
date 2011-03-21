@@ -29,7 +29,7 @@ PKG_VER        = 8.70
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Printing
+PKG_GROUPS     = Applications/Printing
 PKG_URL        = http://ghostscript.com
 PKG_LICENSE    = GPL
 PKG_SUMMARY    = An interpreter for the PostScript language and for PDF.

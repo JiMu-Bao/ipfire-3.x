@@ -29,7 +29,7 @@ PKG_VER        = 5.4.2.1
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Daemons
+PKG_GROUPS     = Networking/Daemons
 PKG_URL        = http://net-snmp.sourceforge.net
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = Simple Network Management Protocol Daemon.

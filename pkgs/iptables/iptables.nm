@@ -31,7 +31,8 @@ PKG_REL        = 1
 PKG_BUILD_DEPS+= libselinux-devel
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Tools
+PKG_GROUPS     = Networking/Tools
+PKG_GROUPS-iptables = Base $(PKG_GROUPS)
 PKG_URL        = http://www.netfilter.org/
 PKG_LICENSE    = GPL+
 PKG_SUMMARY    = Tools for managing Linux kernel packet filtering capabilities.

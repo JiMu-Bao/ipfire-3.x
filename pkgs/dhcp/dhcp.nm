@@ -29,7 +29,7 @@ PKG_VER        = 4.1.1
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Daemons
+PKG_GROUPS     = Networking/Daemons
 PKG_URL        = http://isc.org/products/DHCP/
 PKG_LICENSE    = ISC
 PKG_SUMMARY    = Dynamic host configuration protocol software.

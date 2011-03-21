@@ -29,7 +29,7 @@ PKG_VER        = 3.0.10
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Filesystems
+PKG_GROUPS     = System/Filesystems
 PKG_URL        = http://www.daniel-baumann.ch/software/dosfstools/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = Utilities for making and checking MS-DOS FAT filesystems on Linux.

@@ -29,7 +29,7 @@ PKG_VER        = 4.5.19
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Debuggers
+PKG_GROUPS     = Development/Debuggers
 PKG_URL        = http://sourceforge.net/projects/strace/
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = Tracks and displays system calls associated with a running process.

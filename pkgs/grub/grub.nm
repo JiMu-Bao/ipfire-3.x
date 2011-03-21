@@ -29,7 +29,7 @@ PKG_VER        = 1.98
 PKG_REL        = 6
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Boot
+PKG_GROUPS     = Base System/Boot
 PKG_URL        = http://www.gnu.org/software/grub/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Grand Unified Boot Loader.

@@ -29,7 +29,7 @@ PKG_VER        = 7.2
 PKG_REL        = 0
 
 PKG_MAINTAINER = 
-PKG_GROUP      = Development/Debuggers
+PKG_GROUPS     = Development/Debuggers
 PKG_URL        = http://gnu.org/software/gdb/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = A GNU source-level debugger for C, C++, Java and other languages.

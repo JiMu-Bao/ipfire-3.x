@@ -29,7 +29,7 @@ PKG_VER        = 0.19
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Filesystems
+PKG_GROUPS     = System/Filesystems
 PKG_URL        = http://btrfs.wiki.kernel.org/index.php/Main_Page
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = Userspace programs for btrfs.

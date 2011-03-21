@@ -29,7 +29,7 @@ PKG_VER        = 0.7.3
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Sytem/Base
+PKG_GROUPS     = Sytem/Base
 PKG_URL        = http://hostap.epitest.fi/releases/
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = WPA/WPA2/IEEE 802.1X Supplicant.

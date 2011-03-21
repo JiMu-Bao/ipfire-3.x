@@ -29,7 +29,7 @@ PKG_VER        = 6.2
 PKG_REL        = 3
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = ftp://ftp.gnu.org/gnu/readline/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = A library for editing typed command lines.

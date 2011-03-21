@@ -29,7 +29,7 @@ PKG_VER        = 5.1.4
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Languages
+PKG_GROUPS     = Development/Languages
 PKG_URL        = http://www.lua.org/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = Powerful light-weight programming language.

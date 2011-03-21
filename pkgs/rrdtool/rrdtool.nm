@@ -29,7 +29,7 @@ PKG_VER        = 1.4.5
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Databases
+PKG_GROUPS     = Applications/Databases
 PKG_URL        = http://oss.oetiker.ch/rrdtool/
 PKG_LICENSE    = GPLv2+ with exceptions
 PKG_SUMMARY    = Round Robin Database Tool to store and display time-series data.

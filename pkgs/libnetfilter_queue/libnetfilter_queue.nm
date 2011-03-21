@@ -29,7 +29,7 @@ PKG_VER        = 0.0.17
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://www.netfilter.org/projects/libnetfilter_queue/downloads.html
 PKG_LICENSE    = GPL
 PKG_SUMMARY    = The libnetfilter_queue userspace library.

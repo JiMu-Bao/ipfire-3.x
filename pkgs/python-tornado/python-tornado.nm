@@ -30,7 +30,7 @@ PKG_REL        = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUP      = Development/Libraries
+PKG_GROUPS     = Development/Libraries
 PKG_URL        = http://www.tornadoweb.org/
 PKG_LICENSE    = Apache2.0
 PKG_SUMMARY    = A python based non-blocking web server.
