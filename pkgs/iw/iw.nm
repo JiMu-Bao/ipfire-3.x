@@ -29,7 +29,7 @@ PKG_VER        = 0.9.17
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = http://www.linuxwireless.org/en/users/Documentation/iw
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = A nl80211 based wireless configuration tool.

@@ -29,7 +29,7 @@ PKG_VER        = 1.0.0d
 PKG_REL        = 2
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://www.openssl.org/
 PKG_LICENSE    = OpenSSL
 PKG_SUMMARY    = A general purpose cryptography library with TLS implementation. 

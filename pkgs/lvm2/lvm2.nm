@@ -29,7 +29,7 @@ PKG_VER        = 2.02.54
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = http://sources.redhat.com/lvm2/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = Userland logical volume management tools.

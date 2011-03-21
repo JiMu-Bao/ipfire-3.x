@@ -29,7 +29,7 @@ PKG_VER        = 0.1.19
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Security/Tools
+PKG_GROUPS     = Security/Tools
 PKG_URL        = http://www.gentoo.org/proj/en/hardened/pax-utils.xml
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Utilities for checking PaX features.

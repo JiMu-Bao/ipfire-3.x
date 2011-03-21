@@ -29,7 +29,7 @@ PKG_VER        = 4.5.9
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Tools
+PKG_GROUPS     = System/Tools
 PKG_URL        = http://www.gnu.org/software/findutils/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = The GNU versions of find utilities (find and xargs).

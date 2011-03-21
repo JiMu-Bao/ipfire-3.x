@@ -29,7 +29,7 @@ PKG_VER        = 2.5.7
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Documentation
+PKG_GROUPS     = Documentation
 PKG_URL        = http://bzr.savannah.gnu.org/r/man-db/
 PKG_LICENSE    = GPL
 PKG_SUMMARY    = man-db is an on-line manual database.

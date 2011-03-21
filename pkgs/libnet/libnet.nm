@@ -29,7 +29,7 @@ PKG_VER        = 1.1.4
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://www.sourceforge.net/projects/libnet-dev/
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = C library for portable packet creation and injection.

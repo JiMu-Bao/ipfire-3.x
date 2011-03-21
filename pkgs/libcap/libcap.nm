@@ -29,7 +29,7 @@ PKG_VER        = 2.19
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.6/
 PKG_LICENSE    = LGPL2+
 PKG_SUMMARY    = Library for getting and setting POSIX.1e capabilities.

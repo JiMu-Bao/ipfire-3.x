@@ -29,7 +29,7 @@ PKG_VER        = 5.9.4
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://www.gnu.org/software/autogen/
 PKG_LICENSE    = GPLv3
 PKG_SUMMARY    = Automated text file generator.

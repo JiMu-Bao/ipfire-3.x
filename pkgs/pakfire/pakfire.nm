@@ -30,7 +30,7 @@ PKG_REL        = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUP      = System/Packaging
+PKG_GROUPS     = System/Packaging
 PKG_URL        = http://www.ipfire.org/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = Package installer/updater.

@@ -29,7 +29,7 @@ PKG_VER        = 3.0
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://fedorahosted.org/pyparted
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Python module for GNU parted.

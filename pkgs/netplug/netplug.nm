@@ -29,7 +29,7 @@ PKG_VER        = 1.2.9.1
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Tools
+PKG_GROUPS     = Networking/Tools
 PKG_URL        = http://www.red-bean.com/~bos/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = A daemon that manages network interfaces in response to \

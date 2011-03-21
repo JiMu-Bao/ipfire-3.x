@@ -29,7 +29,7 @@ PKG_VER        = 0.76
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = http://fedorahosted.org/passwd
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = An utility for setting or changing passwords using PAM.

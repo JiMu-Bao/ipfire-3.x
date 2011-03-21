@@ -29,7 +29,7 @@ PKG_VER        = 0.6.25
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Zeroconf
+PKG_GROUPS     = Networking/Zeroconf
 PKG_URL        = http://avahi.org/
 PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = Local network service discovery

@@ -29,7 +29,7 @@ PKG_VER        = 262
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = X/Application
+PKG_GROUPS     = X/Application
 PKG_URL        = http://invisible-island.net/xterm/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = Terminal emulator for the X Window System.

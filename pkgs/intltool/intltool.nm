@@ -30,7 +30,7 @@ PKG_REL        = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = Localization/Tools
+PKG_GROUPS     = Localization/Tools
 PKG_URL        = http://www.gnome.org/
 PKG_LICENSE    = GPLv2 with exceptions
 PKG_SUMMARY    = Utility for internationalizing various kinds of data files.

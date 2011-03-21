@@ -29,7 +29,7 @@ PKG_VER        = 4.1.4.3
 PKG_REL        = 4
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = ftp://pkg-shadow.alioth.debian.org/pub/pkg-shadow/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Utilities to deal with user accounts.

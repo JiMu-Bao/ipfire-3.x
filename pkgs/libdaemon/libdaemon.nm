@@ -29,7 +29,7 @@ PKG_VER        = 0.13
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://0pointer.de/lennart/projects/libdaemon/
 PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = Library for writing UNIX daemons.

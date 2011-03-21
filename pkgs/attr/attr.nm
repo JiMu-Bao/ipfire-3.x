@@ -29,7 +29,7 @@ PKG_VER        = 2.4.43
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Filesystems
+PKG_GROUPS     = System/Filesystems
 PKG_URL        = http://oss.sgi.com/projects/xfs/
 PKG_LICENSE    = GPLv2+ LGPLv2+
 PKG_SUMMARY    = Tools for extended attribute support.

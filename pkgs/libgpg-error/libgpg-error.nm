@@ -29,7 +29,7 @@ PKG_VER        = 1.9
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://www.gnupg.org/
 PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = Library for error values used by GnuPG components.

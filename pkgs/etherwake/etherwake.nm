@@ -29,7 +29,7 @@ PKG_VER        = 1.09
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Tools
+PKG_GROUPS     = Networking/Tools
 PKG_URL        = 
 PKG_LICENSE    = 
 PKG_SUMMARY    = Can wake up sleeping PCs by WOL.

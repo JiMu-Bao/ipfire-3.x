@@ -29,7 +29,7 @@ PKG_VER        = s20071127
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Tools
+PKG_GROUPS     = Networking/Tools
 PKG_URL        = http://www.skbuff.net/iputils
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = Network monitoring tools including ping.

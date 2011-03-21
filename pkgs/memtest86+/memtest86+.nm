@@ -29,7 +29,7 @@ PKG_VER        = 4.20
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = http://www.memtest.org/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = Stand-alone memory tester for x86 and x86-64 computers.

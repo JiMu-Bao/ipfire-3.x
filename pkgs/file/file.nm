@@ -29,7 +29,7 @@ PKG_VER        = 5.05
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Tools
+PKG_GROUPS     = System/Tools
 PKG_URL        = http://www.darwinsys.com/file/
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = A utility for determining file types.

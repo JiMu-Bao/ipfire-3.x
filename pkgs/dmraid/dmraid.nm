@@ -29,7 +29,7 @@ PKG_VER        = 1.0.0.rc15
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Filesystems
+PKG_GROUPS     = System/Filesystems
 PKG_URL        = http://people.redhat.com/heinzm/sw/dmraid
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Device-mapper RAID tool and library.

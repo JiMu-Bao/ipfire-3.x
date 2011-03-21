@@ -29,7 +29,7 @@ PKG_VER        = 0.4.1
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Languages 
+PKG_GROUPS     = Development/Languages 
 PKG_URL        = http://github.com/baris/pyaspects/downloads 
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Module to provide aspect-oriented programming.

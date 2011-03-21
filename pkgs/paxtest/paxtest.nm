@@ -29,7 +29,7 @@ PKG_VER        = 0.9.9
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Security/Tools
+PKG_GROUPS     = Security/Tools
 PKG_URL        = http://pax.grsecurity.org/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Utilities for testing PaX configuration.

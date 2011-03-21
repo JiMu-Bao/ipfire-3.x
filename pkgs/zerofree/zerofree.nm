@@ -29,7 +29,7 @@ PKG_VER        = 1.0.1
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Filesystem/Tools
+PKG_GROUPS     = Filesystem/Tools
 PKG_URL        = http://intgat.tigress.co.uk/rmy/uml/
 PKG_LICENSE    = GPL+
 PKG_SUMMARY    = Utility to force unused ext2 inodes and blocks to zero.

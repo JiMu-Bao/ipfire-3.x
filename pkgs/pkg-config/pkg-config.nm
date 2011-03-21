@@ -29,7 +29,7 @@ PKG_VER        = 0.25
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://pkg-config.freedesktop.org/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = A tool for determining compilation options.

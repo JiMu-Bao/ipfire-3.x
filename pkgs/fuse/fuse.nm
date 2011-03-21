@@ -29,7 +29,7 @@ PKG_VER        = 2.8.5
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Filesystems
+PKG_GROUPS     = System/Filesystems
 PKG_URL        = http://fuse.sf.net/
 PKG_LICENSE    = GPL+
 PKG_SUMMARY    = File System in Userspace (FUSE) utilities.

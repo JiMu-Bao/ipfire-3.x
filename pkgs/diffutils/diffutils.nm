@@ -29,7 +29,7 @@ PKG_VER        = 3.0
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://www.gnu.org/software/diffutils/diffutils.html
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = A GNU collection of diff utilities.

@@ -29,7 +29,7 @@ PKG_VER        = 2.0.4
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Daemons
+PKG_GROUPS     = System/Daemons
 PKG_URL        = http://tedfelix.com/linux/acpid-netlink.html
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = ACPI Event Daemon.

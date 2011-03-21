@@ -29,7 +29,7 @@ PKG_VER        = 5.50
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Sniffer
+PKG_GROUPS     = Networking/Sniffer
 PKG_URL        = http://nmap.org/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Network exploration tool and security scanner.

@@ -29,7 +29,7 @@ PKG_VER        = 1.7.3.2
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://git-scm.com/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = Fast Version Control System.

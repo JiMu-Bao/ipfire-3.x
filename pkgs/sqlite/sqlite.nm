@@ -32,7 +32,7 @@ PKG_VER        = 3.7.3
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Databases
+PKG_GROUPS     = System/Databases
 PKG_URL        = http://www.sqlite.org/
 PKG_LICENSE    = PublicDomain
 PKG_SUMMARY    = A small an versative Database, that uses simple text files.

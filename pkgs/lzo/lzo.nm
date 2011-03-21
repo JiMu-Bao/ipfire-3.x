@@ -29,7 +29,7 @@ PKG_VER        = 2.04
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Compression
+PKG_GROUPS     = Applications/Compression
 PKG_URL        = http://www.oberhumer.com/opensource/lzo/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Data compression library with very fast (de)compression.

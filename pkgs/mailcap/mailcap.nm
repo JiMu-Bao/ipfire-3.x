@@ -30,7 +30,7 @@ PKG_REL        = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = https://fedorahosted.org/released/mailcap/
 PKG_LICENSE    = Public Domain and MIT
 PKG_SUMMARY    = Helper application and MIME type associations for file types.

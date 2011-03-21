@@ -30,7 +30,7 @@ PKG_REL        = 0
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://pypi.python.org/pypi/progressbar
 PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = Text progressbar library for python.

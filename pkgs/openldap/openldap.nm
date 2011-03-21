@@ -29,7 +29,7 @@ PKG_VER        = 2.4.21
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Daemons
+PKG_GROUPS     = System/Daemons
 PKG_URL        = http://www.openldap.org/
 PKG_LICENSE    = OpenLDAP
 PKG_SUMMARY    = LDAP support libraries.

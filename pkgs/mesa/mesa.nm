@@ -29,7 +29,7 @@ PKG_VER        = 7.8.2
 PKG_REL        = 2
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://www.mesa3d.org
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = Mesa graphics libraries.

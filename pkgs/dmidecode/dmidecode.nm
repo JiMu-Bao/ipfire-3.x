@@ -29,7 +29,7 @@ PKG_VER        = 2.10
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/System
+PKG_GROUPS     = Applications/System
 PKG_URL        = http://www.nongnu.org/dmidecode/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Tool to analyse BIOS DMI data.

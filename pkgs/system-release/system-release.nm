@@ -31,7 +31,7 @@ PKG_EPOCH      = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = http://www.ipfire.org
 PKG_LICENSE    =
 PKG_SUMMARY    = $(DISTRO_NAME) release files.

@@ -29,7 +29,7 @@ PKG_VER        = 1.0.8
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://www.gnugp.org
 PKG_LICENSE    = GPLv3
 PKG_SUMMARY    = X.509 Library.

@@ -29,7 +29,7 @@ PKG_VER        = 2.2
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Filesystems
+PKG_GROUPS     = System/Filesystems
 PKG_URL        = http://fuse.sourceforge.net/sshfs.html
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = FUSE-Filesystem to access remote filesystems via SSH.

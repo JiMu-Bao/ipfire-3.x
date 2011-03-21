@@ -29,7 +29,7 @@ PKG_VER        = 4.82
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Debuggers
+PKG_GROUPS     = Development/Debuggers
 PKG_URL        = ftp://lsof.itap.purdue.edu/pub/tools/unix/lsof
 PKG_LICENSE    = zlib
 PKG_SUMMARY    = A utility which lists open files on a Linux/UNIX system.

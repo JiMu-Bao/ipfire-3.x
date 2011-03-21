@@ -29,7 +29,7 @@ PKG_VER        = 0.5.3
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Debuggers
+PKG_GROUPS     = Development/Debuggers
 PKG_URL        = https://launchpad.net/pyliblzma
 PKG_LICENSE    = LGPLv3+
 PKG_SUMMARY    = Python bindings for lzma

@@ -29,7 +29,7 @@ PKG_VER        = 5.0.1
 PKG_REL        = 2
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Compression
+PKG_GROUPS     = Applications/Compression
 PKG_URL        = http://tukaani.org/xz/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = LZMA Utils.

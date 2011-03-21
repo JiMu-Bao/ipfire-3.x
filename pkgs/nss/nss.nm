@@ -29,7 +29,7 @@ PKG_VER        = 3.12.8
 PKG_REL        = 3
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://www.mozilla.org/projects/security/pki/nss/
 PKG_LICENSE    = MPLv1.1 or GPLv2+ or LGPLv2+
 PKG_SUMMARY    = Network Security Services.

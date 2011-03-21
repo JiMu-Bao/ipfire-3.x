@@ -29,7 +29,7 @@ PKG_VER        = 3.7.7
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = https://fedorahosted.org/releases/l/o/logrotate/
 PKG_LICENSE    = GPL+
 PKG_SUMMARY    = Rotates, compresses, removes and mails system log files.

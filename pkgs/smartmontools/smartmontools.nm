@@ -29,7 +29,7 @@ PKG_VER        = 5.40
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Statistics
+PKG_GROUPS     = System/Statistics
 PKG_URL        = http://flex.sourceforge.net/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = A set of tools that watches HDD S.M.A.R.T status.

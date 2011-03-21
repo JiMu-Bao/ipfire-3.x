@@ -29,7 +29,7 @@ PKG_VER        = 0.8.4
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Security/Tools
+PKG_GROUPS     = Security/Tools
 PKG_URL        = http://fail2ban.sourceforge.net/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Ban IPs that make too many password failures.

@@ -29,7 +29,7 @@ PKG_VER        = 7.4
 PKG_REL        = 2
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
-PKG_GROUP      = X/Fonts
+PKG_GROUPS     = X/Fonts
 PKG_URL        = http://www.x.org/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = X.Org X11 font utilities.

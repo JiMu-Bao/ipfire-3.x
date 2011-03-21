@@ -29,7 +29,7 @@ PKG_VER        = 0.11.2
 PKG_REL        = 1
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUP      = Development/Libraries
+PKG_GROUPS     = Development/Libraries
 PKG_URL        = http://www.cs.unipr.it/ppl/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = The Parma Polyhedra Library: a library of numerical abstractions.

@@ -29,7 +29,7 @@ PKG_VER        = 3.68
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Libratries
+PKG_GROUPS     = Development/Libratries
 PKG_URL        = http://search.cpan.org/dist/HTML-Parser/
 PKG_LICENSE    = GPL+ or Artistic
 PKG_SUMMARY    = Perl module for parsing HTML.

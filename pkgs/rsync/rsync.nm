@@ -29,7 +29,7 @@ PKG_VER        = 3.0.7
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Internet
+PKG_GROUPS     = Applications/Internet
 PKG_URL        = http://rsync.samba.org/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = A program for synchronizing files over a network.

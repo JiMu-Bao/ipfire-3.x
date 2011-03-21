@@ -29,7 +29,7 @@ PKG_VER        = 1.0.5
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Filesystems
+PKG_GROUPS     = System/Filesystems
 PKG_URL        = http://www.kernel.org/pub/linux/utils/fs/reiser4/libaal/
 PKG_LICENSE    = GPL
 PKG_SUMMARY    = Reiser4's application abstraction library.

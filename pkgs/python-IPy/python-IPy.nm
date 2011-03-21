@@ -30,7 +30,7 @@ PKG_REL        = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://software.inl.fr/trac/trac.cgi/wiki/IPy
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = Python module for handling IPv4 and IPv6 Addresses and Networks.

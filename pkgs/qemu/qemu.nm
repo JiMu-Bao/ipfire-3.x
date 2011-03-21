@@ -29,7 +29,7 @@ PKG_VER        = 0.14.0-rc1
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Applications/Virtualization
+PKG_GROUPS     = Applications/Virtualization
 PKG_URL        = http://www.linux-kvm.org/page/Main_Page
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = QEMU is a generic and open source machine emulator and virtualizer.

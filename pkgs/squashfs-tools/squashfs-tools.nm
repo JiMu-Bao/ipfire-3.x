@@ -29,7 +29,7 @@ PKG_VER        = 4.1
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Filesystem
+PKG_GROUPS     = System/Filesystem
 PKG_URL        = http://squashfs.sf.net/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Utility for the creation of squashfs filesystems.

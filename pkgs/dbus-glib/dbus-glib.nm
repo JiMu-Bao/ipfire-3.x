@@ -29,7 +29,7 @@ PKG_VER        = 0.82
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://www.freedesktop.org/software/dbus/
 PKG_LICENSE    = GPLv2+ AFL
 PKG_SUMMARY    = Glib bindings for D-Bus.

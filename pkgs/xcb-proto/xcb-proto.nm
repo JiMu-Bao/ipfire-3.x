@@ -30,7 +30,7 @@ PKG_REL        = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
-PKG_GROUP      = X/Headers
+PKG_GROUPS     = X/Headers
 PKG_URL        = http://xcb.freedesktop.org/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = XCB protocol descriptions.

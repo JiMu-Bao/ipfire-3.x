@@ -29,7 +29,7 @@ PKG_VER        = 2.3.19
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Graphics
+PKG_GROUPS     = System/Graphics
 PKG_URL        = http://www.gnome.org
 PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = Library of graphics routines used by libgnomecanvas.

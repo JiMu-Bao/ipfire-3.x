@@ -29,7 +29,7 @@ PKG_VER        = 5.0.1
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://gmplib.org/
 PKG_LICENSE    = LGPLv3+
 PKG_SUMMARY    = A GNU arbitrary precision library.

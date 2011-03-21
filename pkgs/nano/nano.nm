@@ -29,7 +29,7 @@ PKG_VER        = 2.2.2
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Application/Editors
+PKG_GROUPS     = Application/Editors
 PKG_URL        = http://www.nano-editor.org/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = A small text editor.

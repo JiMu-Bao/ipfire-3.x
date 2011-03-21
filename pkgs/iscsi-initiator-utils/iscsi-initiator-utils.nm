@@ -29,7 +29,7 @@ PKG_VER        = 6.2.0.872
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Networking/Tools
+PKG_GROUPS     = Networking/Tools
 PKG_URL        = http://bridge.sourceforge.net/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = iSCSI daemon and utility programs.

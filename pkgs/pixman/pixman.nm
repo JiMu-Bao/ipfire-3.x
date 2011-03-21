@@ -29,7 +29,7 @@ PKG_VER        = 0.18.4
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://xorg.freedesktop.org/archive/individual/lib/
 PKG_LICENSE    = MIT
 PKG_SUMMARY    = Pixel manipulation library.

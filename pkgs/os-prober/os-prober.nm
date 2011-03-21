@@ -29,7 +29,7 @@ PKG_VER        = 1.38
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Tools
+PKG_GROUPS     = Development/Tools
 PKG_URL        = http://joey.kitenet.net/code/os-prober/
 PKG_LICENSE    = GPL
 PKG_SUMMARY    = Utility to detect other OSes on a set of drives.

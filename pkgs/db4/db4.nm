@@ -34,7 +34,7 @@ PKG_EPOCH      = 1
 # Never update this to major version 5.
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUP      = System/Libraries
+PKG_GROUPS     = System/Libraries
 PKG_URL        = http://www.oracle.com/technology/products/berkeley-db/
 PKG_LICENSE    = Proprietary
 PKG_SUMMARY    = Berkeley DB is a library that provides an embedded database.

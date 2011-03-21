@@ -29,7 +29,7 @@ PKG_VER        = 160
 PKG_REL        = 2
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = A userspace implementation of devfs.

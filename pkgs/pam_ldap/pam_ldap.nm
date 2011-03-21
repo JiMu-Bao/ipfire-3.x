@@ -29,7 +29,7 @@ PKG_VER        = 184
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Base
+PKG_GROUPS     = System/Base
 PKG_URL        = http://www.padl.com/OSS/pam_ldap.html
 PKG_LICENSE    = GPL and LGPL
 PKG_SUMMARY    = A pam/ldap module that supports password changes.

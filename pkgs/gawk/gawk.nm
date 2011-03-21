@@ -29,7 +29,7 @@ PKG_VER        = 3.1.8
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUP      = System/Tools
+PKG_GROUPS     = System/Tools
 PKG_URL        = http://www.gnu.org/software/gawk/gawk.html
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = The GNU version of the awk text processing utility.
