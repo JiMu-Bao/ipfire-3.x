@@ -30,7 +30,7 @@ PKG_REL        = 3
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUPS     = Networking/Tools
+PKG_GROUPS     = Base Networking/Tools
 PKG_URL        = http://www.ipfire.org/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = The IPFire Networking Scripts.

@@ -29,7 +29,7 @@ PKG_VER        = 436
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUPS     = Applications/Text
+PKG_GROUPS     = Base Applications/Text
 PKG_URL        = http://www.greenwoodsoftware.com/less/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = A text file browser similar to more, but better.

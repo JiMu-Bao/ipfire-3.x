@@ -29,7 +29,7 @@ PKG_VER        = $(DISTRO_VERSION)
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUPS     = System/Boot
+PKG_GROUPS     = Base System/Boot
 PKG_URL        =
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = The set of scripts that initalize the system.

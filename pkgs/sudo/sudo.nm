@@ -29,7 +29,7 @@ PKG_VER        = 1.7.4p3
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUPS     = Applications/System
+PKG_GROUPS     = Base Applications/System
 PKG_URL        = http://www.sudo.ws/sudo/download.html
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = Allows restricted root access for specified users.

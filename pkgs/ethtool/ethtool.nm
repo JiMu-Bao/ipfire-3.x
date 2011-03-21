@@ -29,7 +29,7 @@ PKG_VER        = 2.6.34
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUPS     = Applications/System
+PKG_GROUPS     = Base Applications/System
 PKG_URL        = http://sourceforge.net/projects/gkernel/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = Ethernet settings tool for PCI ethernet cards.

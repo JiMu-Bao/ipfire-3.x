@@ -29,7 +29,7 @@ PKG_VER        = 1.4
 PKG_REL        = 0
 
 PKG_MAINTAINER =
-PKG_GROUPS     = Applications/Compression
+PKG_GROUPS     = Base Applications/Compression
 PKG_URL        = http://www.gzip.org/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = The GNU data compression program.

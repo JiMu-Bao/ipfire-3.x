@@ -29,7 +29,7 @@ PKG_VER        = 3.0
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
+PKG_GROUPS     = Base System/Base
 PKG_URL        =
 PKG_LICENSE    = Public Domain
 PKG_SUMMARY    = A set of system configuration and setup files.

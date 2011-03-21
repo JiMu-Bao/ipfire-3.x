@@ -30,6 +30,7 @@ PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Base
+PKG_GROUPS-pciutils = Base $(PKG_GROUPS)
 PKG_URL        = http://atrey.karlin.mff.cuni.cz/~mj/pciutils.shtml
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = PCI bus related utilities.
