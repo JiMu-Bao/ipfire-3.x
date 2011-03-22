@@ -34,7 +34,7 @@ PKG_URL        = http://nfs.sourceforge.net/
 PKG_LICENSE    = MIT and GPLv2 and GPLv2+
 PKG_SUMMARY    = NFS utilities and supporting clients and daemons for the NFS server.
 
-PKG_DEPS      += libevent libnfsidmap libgssglue libcap util-linux-ng
+PKG_DEPS      += libevent libnfsidmap libgssglue libcap util-linux
 
 define PKG_DESCRIPTION
 	The nfs-utils package provides a daemon for the kernel NFS server \

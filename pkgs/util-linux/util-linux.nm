@@ -24,14 +24,14 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = util-linux-ng
-PKG_VER        = 2.18
-PKG_REL        = 2
+PKG_NAME       = util-linux
+PKG_VER        = 2.19
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Base
 PKG_GROUPS-$(PKG_NAME) = Base $(PKG_GROUPS)
-PKG_URL        = ftp://ftp.kernel.org/pub/linux/utils/util-linux-ng
+PKG_URL        = http://kernel.org/~kzak/util-linux/
 PKG_LICENSE    = GPLv2 and GPLv2+ and BSD with advertising and Public Domain
 PKG_SUMMARY    = A collection of basic system utilities.
 
@@ -39,7 +39,7 @@ PKG_BUILD_DEPS+= audit-devel gettext libcap-devel libselinux-devel \
 	libsepol-devel ncurses-devel pam-devel zlib-devel
 
 define PKG_DESCRIPTION
-	The util-linux-ng package contains a large variety of low-level system \
+	The util-linux package contains a large variety of low-level system \
 	utilities that are necessary for a Linux system to function. Among \
 	others, Util-linux contains the fdisk configuration tool and the login \
 	program.
@@ -50,10 +50,14 @@ PKG_TARBALL    = $(THISAPP).tar.gz
 PKG_PACKAGES  += libblkid libblkid-devel libuuid libuuid-devel \
 	libmount libmount-devel
 
+# This symlink is allowed to be absolute.
+QUALITY_AGENT_WHITELIST_SYMLINK = /etc/mtab
+PKG_REQUIRES_FILTER = /proc/.*/mounts
+
 # Package information for libblkid
 PKG_SUMMARY-libblkid =  Block device ID library.
 PKG_DESCRIPTION-libblkid = This is the block device identification library, \
-	part of util-linux-ng. 
+	part of util-linux.
 
 define PKG_FILES-libblkid
 	/lib/libblkid.*
@@ -73,7 +77,7 @@ endef
 # Package information for libuuid
 PKG_SUMMARY-libuuid =  Universally unique ID library.
 PKG_DESCRIPTION-libuuid = This is the universally unique ID library, \
-	part of util-linux-ng.
+	part of util-linux.
 
 define PKG_FILES-libuuid
 	/lib/libuuid.*
@@ -93,7 +97,7 @@ endef
 # Package information for libmount
 PKG_SUMMARY-libmount =  Device mounting library.
 PKG_DESCRIPTION-libmount = This is the device mounting library, \
-	part of util-linux-ng.
+	part of util-linux.
 
 define PKG_FILES-libmount
 	/lib/libmount.*
@@ -122,6 +126,7 @@ CONFIGURE_OPTIONS += \
 	--enable-login-utils \
 	--enable-partx \
 	--enable-write \
+	--enable-libmount-mount \
 	--with-selinux \
 	--with-audit \
 	--disable-makeinstall-chown \
@@ -154,6 +159,10 @@ define STAGE_INSTALL_CMDS
 		$(BUILDROOT)/usr/bin/chkdupexe $(BUILDROOT)/usr/bin/vi{gr,pw} \
 		$(BUILDROOT)/sbin/{sln,shutdown} $(BUILDROOT)/bin/{line,newgrp,pg}
 	rm -fv $(BUILDROOT)/usr/share/getopt/*.tcsh
+
+	# Create /etc/mtab symlink
+	-mkdir -pv $(BUILDROOT)/etc
+	ln -svf /proc/mounts $(BUILDROOT)/etc/mtab
 endef
 
 define STAGE_INSTALL_POST

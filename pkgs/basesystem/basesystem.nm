@@ -42,7 +42,7 @@ PKG_BUILD_DEPS = # There are no build dependencies
 PKG_DEPS      += /bin/sh /sbin/init \
 	coreutils file findutils gawk grep iana-etc initscripts kbd less \
 	module-init-tools network pakfire passwd procps psmisc sed setup \
-	shadow system-release tar udev util-linux-ng vim
+	shadow system-release tar udev util-linux vim
 
 define PKG_DESCRIPTION
 	This package contains files that are needed to run basic \
