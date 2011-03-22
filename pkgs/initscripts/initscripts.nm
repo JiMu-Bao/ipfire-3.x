@@ -35,7 +35,7 @@ PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = The set of scripts that initalize the system.
 
 PKG_DEPS      += bash coreutils e2fsprogs grep iproute2 module-init-tools \
-	procps sed system-release udev util-linux-ng
+	procps sed system-release udev util-linux
 
 define PKG_DESCRIPTION
 	The initscripts package contains the basic system scripts used to boot \
