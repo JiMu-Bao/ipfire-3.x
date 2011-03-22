@@ -36,7 +36,7 @@ PKG_SUMMARY    = Power Management Service.
 
 PKG_BUILD_DEPS+= bison dbus-devel dbus-glib-devel glib2-devel gettext intltool \
 	perl-XML-Parser pkg-config polkit-devel
-PKG_DEPS      += udev util-linux-ng
+PKG_DEPS      += udev util-linux
 
 define PKG_DESCRIPTION
 	udisks provides a daemon, D-Bus API and command line tools \
