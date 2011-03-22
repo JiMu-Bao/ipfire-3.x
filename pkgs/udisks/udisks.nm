@@ -37,7 +37,7 @@ PKG_SUMMARY    = Storage Management Service.
 PKG_BUILD_DEPS+= dbus-devel dbus-glib-devel e2fsprogs-devel glib2-devel \
 	intltool libatasmart-devel libdevmapper-devel libudev-devel \
 	parted-devel polkit-devel pkg-config sg3-utils-devel
-PKG_DEPS      += dosfstools e2fsprogs mdadm parted udev util-linux-ng xfsprogs
+PKG_DEPS      += dosfstools e2fsprogs mdadm parted udev util-linux xfsprogs
 
 define PKG_DESCRIPTION
 	udisks provides a daemon, D-Bus API and command line tools \
