@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = util-linux-ng
 PKG_VER        = 2.18
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Base
@@ -49,6 +49,10 @@ PKG_TARBALL    = $(THISAPP).tar.gz
 
 PKG_PACKAGES  += libblkid libblkid-devel libuuid libuuid-devel \
 	libmount libmount-devel
+
+# This symlink is allowed to be absolute.
+QUALITY_AGENT_WHITELIST_SYMLINK = /etc/mtab
+PKG_REQUIRES_FILTER = /proc/.*/mounts
 
 # Package information for libblkid
 PKG_SUMMARY-libblkid =  Block device ID library.
@@ -122,6 +126,7 @@ CONFIGURE_OPTIONS += \
 	--enable-login-utils \
 	--enable-partx \
 	--enable-write \
+	--enable-libmount-mount \
 	--with-selinux \
 	--with-audit \
 	--disable-makeinstall-chown \
@@ -154,6 +159,10 @@ define STAGE_INSTALL_CMDS
 		$(BUILDROOT)/usr/bin/chkdupexe $(BUILDROOT)/usr/bin/vi{gr,pw} \
 		$(BUILDROOT)/sbin/{sln,shutdown} $(BUILDROOT)/bin/{line,newgrp,pg}
 	rm -fv $(BUILDROOT)/usr/share/getopt/*.tcsh
+
+	# Create /etc/mtab symlink
+	-mkdir -pv $(BUILDROOT)/etc
+	ln -svf /proc/mounts $(BUILDROOT)/etc/mtab
 endef
 
 define STAGE_INSTALL_POST
