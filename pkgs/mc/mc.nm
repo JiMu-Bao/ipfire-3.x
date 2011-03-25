@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = mc
 PKG_VER        = 4.7.4
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Applications/System
@@ -35,6 +35,9 @@ PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = User-friendly text console file manager and visual shell.
 
 PKG_BUILD_DEPS+= e2fsprogs-devel glib2-devel pkg-config samba-devel slang-devel
+
+# This awkward dependency is found and cannot be resolved.
+PKG_REQUIRES_FILTER = perl\(pieces\)
 
 define PKG_DESCRIPTION
 	Midnight Commander is a visual shell much like a file manager, only \
