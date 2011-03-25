@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = Linux-PAM
 PKG_VER        = 1.1.0
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Base
@@ -35,6 +35,7 @@ PKG_LICENSE    = BSD and GPLv2+ and BSD with advertising
 PKG_SUMMARY    = An extensible library which provides authentication for applications.
 
 PKG_BUILD_DEPS+= audit-devel bison cracklib-devel flex libselinux-devel
+PKG_DEPS-pam  += pam_ldap
 
 define PKG_DESCRIPTION
 	PAM (Pluggable Authentication Modules) is a system security tool that \
