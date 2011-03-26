@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = systemd
 PKG_VER        = 20
-PKG_REL        = 2
+PKG_REL        = 4
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUP      = System/Base
@@ -34,8 +34,8 @@ PKG_URL        = http://www.freedesktop.org/wiki/Software/systemd
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = A System and Service Manager.
 
-PKG_BUILD_DEPS+= audit-devel automake autoconf cryptsetup-luks-devel dbus-devel \
-	libcap-devel libselinux-devel libtool libudev-devel pam-devel
+PKG_BUILD_DEPS+= automake autoconf cryptsetup-luks-devel dbus-devel \
+	libcap-devel libtool libudev-devel pam-devel
 
 define PKG_DESCRIPTION
 	systemd is a system and service manager for Linux, compatible with \
@@ -66,10 +66,11 @@ CONFIGURE_OPTIONS += \
 	--sysconfdir=/etc \
 	--with-rootdir= \
 	--with-distro=other \
-	--with-syslog-service=syslog-ng.service \
+	--with-syslog-service=rsyslog.service \
 	--with-sysvinit-path= \
 	--with-sysvrcd-path= \
-	--with-udevrulesdir=/lib/udev
+	--with-udevrulesdir=/lib/udev/rules.d/ \
+	--with-pamlibdir=/etc/pam.d
 
 define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && ./autogen.sh ac
