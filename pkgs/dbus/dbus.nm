@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = dbus
-PKG_VER        = 1.3.2
+PKG_VER        = 1.4.0
 PKG_REL        = 1
 
 PKG_MAINTAINER =
@@ -42,7 +42,7 @@ define PKG_DESCRIPTION
 	per-user-login-session messaging facility.
 endef
 
-PKG_TARBALL    = $(THISAPP).885483.tar.gz
+PKG_TARBALL    = $(THISAPP).tar.gz
 
 PKG_PACKAGES  += $(PKG_NAME)-devel $(PKG_NAME)-libs
 
@@ -54,7 +54,8 @@ CONFIGURE_OPTIONS += \
 	--libdir=/lib \
 	--libexecdir=/lib \
 	--enable-libaudit \
-	--enable-selinux=yes
+	--enable-selinux=yes \
+	--with-systemdsystemunitdir=/lib/systemd/system/
 
 define STAGE_INSTALL_CMDS
 	-mkdir -pv $(BUILDROOT)/usr/lib
