@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = lldpd
-PKG_VER        = 0.5.0
+PKG_VER        = 0.5.2
 PKG_REL        = 1
 
 PKG_MAINTAINER =
@@ -44,4 +44,6 @@ endef
 PKG_TARBALL    = $(THISAPP).tar.gz
 
 CONFIGURE_OPTIONS += \
-	--with-xml
+	--with-xml \
+	--with-privsep-user=lldpd \
+	--with-privsep-group=lldpd
