@@ -34,8 +34,8 @@ PKG_URL        = http://www.freedesktop.org/wiki/Software/systemd
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = A System and Service Manager.
 
-PKG_BUILD_DEPS+= automake autoconf cryptsetup-luks-devel dbus-devel \
-	libcap-devel libtool libudev-devel pam-devel
+PKG_BUILD_DEPS+= audit-devel automake autoconf cryptsetup-luks-devel dbus-devel \
+	libcap-devel libselinux-devel libtool libudev-devel pam-devel
 
 define PKG_DESCRIPTION
 	systemd is a system and service manager for Linux, compatible with \
