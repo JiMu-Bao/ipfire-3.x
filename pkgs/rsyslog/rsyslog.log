@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<!-- git web interface version 1.7.0.2, (C) 2005-2006, Kay Sievers <kay.sievers@vrfy.org>, Christian Gierke -->
+<!-- git core binaries version 1.7.2.1 -->
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<meta name="generator" content="gitweb/1.7.0.2 git/1.7.2.1"/>
+<meta name="robots" content="index, nofollow"/>
+<title>Fedora Packages Git Repositories - rsyslog.git/blob - rsyslog.log</title>
+<link rel="stylesheet" type="text/css" href="/gitweb/gitweb.css"/>
+<link rel="alternate" title="rsyslog.git - history of rsyslog.log - RSS feed" href="/gitweb/?p=rsyslog.git;a=rss;f=rsyslog.log" type="application/rss+xml" />
+<link rel="alternate" title="rsyslog.git - history of rsyslog.log - RSS feed (no merges)" href="/gitweb/?p=rsyslog.git;a=rss;f=rsyslog.log;opt=--no-merges" type="application/rss+xml" />
+<link rel="alternate" title="rsyslog.git - history of rsyslog.log - Atom feed" href="/gitweb/?p=rsyslog.git;a=atom;f=rsyslog.log;opt=--no-merges" type="application/atom+xml" />
+<link rel="alternate" title="rsyslog.git - history of rsyslog.log - Atom feed (no merges)" href="/gitweb/?p=rsyslog.git;a=atom;f=rsyslog.log;opt=--no-merges" type="application/atom+xml" />
+<link rel="shortcut icon" href="http://fedoraproject.org/static/images/favicon.ico" type="image/png" />
+</head>
+<body>
+<div class="page_header">
+<a title="Fedora" href="http://fedoraproject.org"><img src="http://fedoraproject.org/static/images/fedora-logo-27.png" width="72" height="27" alt="git" class="logo"/></a><a href="/gitweb/">git://pkgs.fedoraproject.org</a> / <a href="/gitweb/?p=rsyslog.git;a=summary">rsyslog.git</a> / blob
+</div>
+<form method="get" action="/gitweb/" enctype="application/x-www-form-urlencoded">
+<div class="search">
+<input name="p" type="hidden" value="rsyslog.git" />
+<input name="a" type="hidden" value="search" />
+<input name="h" type="hidden" value="HEAD" />
+<select name="st" >
+<option selected="selected" value="commit">commit</option>
+<option value="grep">grep</option>
+<option value="author">author</option>
+<option value="committer">committer</option>
+<option value="pickaxe">pickaxe</option>
+</select><sup><a href="/gitweb/?p=rsyslog.git;a=search_help">?</a></sup> search:
+<input type="text" name="s"  />
+<span title="Extended regular expression"><label><input type="checkbox" name="sr" value="1" />re</label></span></div>
+</form>
+</div>
+<div class="page_nav">
+<a href="/gitweb/?p=rsyslog.git;a=summary">summary</a> | <a href="/gitweb/?p=rsyslog.git;a=shortlog">shortlog</a> | <a href="/gitweb/?p=rsyslog.git;a=log">log</a> | <a href="/gitweb/?p=rsyslog.git;a=commit;h=HEAD">commit</a> | <a href="/gitweb/?p=rsyslog.git;a=commitdiff;h=HEAD">commitdiff</a> | <a href="/gitweb/?p=rsyslog.git;a=tree;h=4d7fc435d7037ee9c5baa895bb8d4cc3da575400;hb=HEAD">tree</a><br/>
+<a href="/gitweb/?p=rsyslog.git;a=history;f=rsyslog.log;h=b2d41f1806519021802c46d7d74c3d9ccb36c031;hb=HEAD">history</a> | <a href="/gitweb/?p=rsyslog.git;a=blob_plain;f=rsyslog.log;h=b2d41f1806519021802c46d7d74c3d9ccb36c031;hb=HEAD">raw</a> | <a href="/gitweb/?p=rsyslog.git;a=blob;f=rsyslog.log;hb=HEAD">HEAD</a><br/>
+</div>
+<div class="header">
+<a class="title" href="/gitweb/?p=rsyslog.git;a=commit;h=HEAD">rebuilt for mysql 5.5.10 (soname bump in libmysqlclient)</a>
+</div>
+<div class="page_path"><a title="tree root" href="/gitweb/?p=rsyslog.git;a=tree;hb=HEAD">[rsyslog.git]</a> / <a title="rsyslog.log" href="/gitweb/?p=rsyslog.git;a=blob_plain;f=rsyslog.log;hb=HEAD">rsyslog.log</a><br/></div>
+<div class="page_body">
+<div class="pre"><a id="l1" href="/gitweb/?p=rsyslog.git;a=blob;f=rsyslog.log;h=b2d41f1806519021802c46d7d74c3d9ccb36c031;hb=HEAD#l1" class="linenr">   1</a> /var/log/messages&nbsp;/var/log/secure&nbsp;/var/log/maillog&nbsp;/var/log/spooler&nbsp;/var/log/boot.log&nbsp;/var/log/cron&nbsp;{</div>
+<div class="pre"><a id="l2" href="/gitweb/?p=rsyslog.git;a=blob;f=rsyslog.log;h=b2d41f1806519021802c46d7d74c3d9ccb36c031;hb=HEAD#l2" class="linenr">   2</a> &nbsp;&nbsp;&nbsp;&nbsp;sharedscripts</div>
+<div class="pre"><a id="l3" href="/gitweb/?p=rsyslog.git;a=blob;f=rsyslog.log;h=b2d41f1806519021802c46d7d74c3d9ccb36c031;hb=HEAD#l3" class="linenr">   3</a> &nbsp;&nbsp;&nbsp;&nbsp;postrotate</div>
+<div class="pre"><a id="l4" href="/gitweb/?p=rsyslog.git;a=blob;f=rsyslog.log;h=b2d41f1806519021802c46d7d74c3d9ccb36c031;hb=HEAD#l4" class="linenr">   4</a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/bin/kill&nbsp;-HUP&nbsp;`cat&nbsp;/var/run/syslogd.pid&nbsp;2&gt;&nbsp;/dev/null`&nbsp;2&gt;&nbsp;/dev/null&nbsp;||&nbsp;true</div>
+<div class="pre"><a id="l5" href="/gitweb/?p=rsyslog.git;a=blob;f=rsyslog.log;h=b2d41f1806519021802c46d7d74c3d9ccb36c031;hb=HEAD#l5" class="linenr">   5</a> &nbsp;&nbsp;&nbsp;&nbsp;endscript</div>
+<div class="pre"><a id="l6" href="/gitweb/?p=rsyslog.git;a=blob;f=rsyslog.log;h=b2d41f1806519021802c46d7d74c3d9ccb36c031;hb=HEAD#l6" class="linenr">   6</a> }</div>
+</div><div class="page_footer">
+<div class="cachetime">Cache Last Updated: Sat Mar 26 12:27:46 2011 GMT</div>
+<div class="page_footer_text">rsyslog</div>
+<a class="rss_logo" title="history of rsyslog.log RSS feed" href="/gitweb/?p=rsyslog.git;a=rss;f=rsyslog.log">RSS</a>
+<a class="rss_logo" title="history of rsyslog.log Atom feed" href="/gitweb/?p=rsyslog.git;a=atom;f=rsyslog.log">Atom</a>
+</div>
+<script type="text/javascript" src="/gitweb/gitweb.js"></script>
+</body>
+</html>
