@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = udev
-PKG_VER        = 160
-PKG_REL        = 2
+PKG_VER        = 166
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Base System/Base
@@ -54,7 +54,8 @@ CONFIGURE_OPTIONS += \
 	--libexecdir=/lib/udev \
 	--with-rootlibdir=/lib \
 	--with-selinux \
-	--disable-introspection
+	--disable-introspection \
+	--with-systemdsystemunitdir=/lib/systemd/system
 
 define STAGE_INSTALL_CMDS
 	# Install rules
