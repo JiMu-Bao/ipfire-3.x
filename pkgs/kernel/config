@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux/i386 2.6.37.2 Kernel Configuration
-# Fri Mar 25 19:45:23 2011
+# Sat Mar 26 14:16:55 2011
 #
 # CONFIG_64BIT is not set
 CONFIG_X86_32=y
@@ -625,7 +625,7 @@ CONFIG_INET_TCP_DIAG=m
 CONFIG_TCP_CONG_CUBIC=y
 CONFIG_DEFAULT_TCP_CONG="cubic"
 CONFIG_TCP_MD5SIG=y
-CONFIG_IPV6=m
+CONFIG_IPV6=y
 CONFIG_IPV6_PRIVACY=y
 CONFIG_IPV6_ROUTER_PREF=y
 CONFIG_IPV6_ROUTE_INFO=y
