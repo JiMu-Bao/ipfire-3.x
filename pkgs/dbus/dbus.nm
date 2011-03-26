@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = dbus
 PKG_VER        = 1.4.0
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Daemons
@@ -55,7 +55,8 @@ CONFIGURE_OPTIONS += \
 	--libexecdir=/lib \
 	--enable-libaudit \
 	--enable-selinux=yes \
-	--with-systemdsystemunitdir=/lib/systemd/system/
+	--with-systemdsystemunitdir=/lib/systemd/system/ \
+	--with-dbus-user=dbus
 
 define STAGE_INSTALL_CMDS
 	-mkdir -pv $(BUILDROOT)/usr/lib
