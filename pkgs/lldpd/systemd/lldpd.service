@@ -1,0 +1,10 @@
+[Unit]
+Description=Link Layer Discovery Protocol Daemon
+After=network.target
+
+[Service]
+RemainAfterExit=yes
+ExecStart=/usr/sbin/lldpd -c
+
+[Install]
+WantedBy=multi-user.target

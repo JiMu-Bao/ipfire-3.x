@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = lldpd
 PKG_VER        = 0.5.2
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Networking/Tools
