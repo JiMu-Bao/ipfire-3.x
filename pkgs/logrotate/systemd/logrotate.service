@@ -1,0 +1,5 @@
+[Unit]
+Description=logrotate
+
+[Service]
+ExexStart=/usr/sbin/logrotate /etc/logrotate.d/*
