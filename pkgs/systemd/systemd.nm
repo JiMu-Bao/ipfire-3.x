@@ -26,7 +26,8 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = systemd
 PKG_VER        = 20
-PKG_REL        = 7
+PKG_REL        = 8
+PKG_CONFLICTS += upstart
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUP      = System/Base
