@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = systemd
 PKG_VER        = 20
-PKG_REL        = 6
+PKG_REL        = 7
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUP      = System/Base
@@ -83,7 +83,7 @@ endef
 define STAGE_INSTALL_CMDS
 	# Create sysv compatible symlinks.
 	-mkdir -pv $(BUILDROOT)/sbin
-	#ln -svf ../bin/systemd   $(BUILDROOT)/sbin/init
+	ln -svf ../bin/systemd   $(BUILDROOT)/sbin/init
 	ln -svf ../bin/systemctl $(BUILDROOT)/sbin/reboot
 	ln -svf ../bin/systemctl $(BUILDROOT)/sbin/halt
 	ln -svf ../bin/systemctl $(BUILDROOT)/sbin/poweroff
