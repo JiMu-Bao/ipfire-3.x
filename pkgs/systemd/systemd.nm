@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = systemd
 PKG_VER        = 20
-PKG_REL        = 5
+PKG_REL        = 6
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUP      = System/Base
@@ -88,8 +88,6 @@ define STAGE_INSTALL_CMDS
 	ln -svf ../bin/systemctl $(BUILDROOT)/sbin/halt
 	ln -svf ../bin/systemctl $(BUILDROOT)/sbin/poweroff
 	ln -svf ../bin/systemctl $(BUILDROOT)/sbin/shutdown
-	#ln -svf ../bin/systemctl $(BUILDROOT)/sbin/telinit
-	#ln -svf ../bin/systemctl $(BUILDROOT)/sbin/runlevel
 
 	# Create empty machine-id file.
 	touch $(BUILDROOT)/etc/machine-id
@@ -99,6 +97,9 @@ define STAGE_INSTALL_CMDS
 	-mkdir -pv $(BUILDROOT)/lib/systemd/system/default.target.wants
         -mkdir -pv $(BUILDROOT)/lib/systemd/system/dbus.target.wants
         -mkdir -pv $(BUILDROOT)/lib/systemd/system/syslog.target.wants
+	
+	# Remove runlevel targets
+	rm -rfv $(BUILDROOT)/lib/systemd/system/runlevel*
 
 	# Set default target to multi-user
 	cd $(BUILDROOT)/lib/systemd/system && ln -svf multi-user.target default.target
