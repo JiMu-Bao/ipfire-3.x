@@ -1,8 +1,0 @@
-description		"Start system log daemon"
-author			"IPFire Team"
-
-start on stopped mountfs
-stop on kill-all-services
-
-exec /sbin/syslog-ng -F
-respawn
