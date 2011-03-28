@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = ed
 PKG_VER        = 1.5
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Application/Text
@@ -48,9 +48,10 @@ CONFIGURE_OPTIONS += \
 
 STAGE_BUILD_TARGET = CFLAGS="$(CFLAGS)"
 
-define STAGE_BUILD_CMDS
+define STAGE_INSTALL
 	# Create directory for man pages
 	mkdir -pv $(BUILDROOT)/usr/share/man/man1
-endef
 
-STAGE_INSTALL_TARGET = bindir=/bin mandir=/usr/share/man
+	cd $(DIR_APP) && make install bindir=/bin mandir=/usr/share/man \
+	DESTDIR=$(BUILDROOT) 
+endef
