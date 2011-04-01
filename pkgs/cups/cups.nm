@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = cups
 PKG_VER        = 1.4.5
-PKG_REL        = 3
+PKG_REL        = 4
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Applications/Printing
@@ -78,3 +78,8 @@ define STAGE_INSTALL
 	-mkdir -pv $(BUILDROOT)/etc/logrotate.d/
 	cp -vf $(DIR_SOURCE)/cups.logrotate $(BUILDROOT)/etc/logrotate.d/cups 
 endef
+
+# This line has to be added at the installation of cups.
+# File: /lib/udev/rules.d/99-systemd.rules
+# Line: SUBSYSTEM=="usb", ATTR{serial}=="AL01077498", TAG+="systemd", ENV{SYSTEMD_WANTS}="cups.service"
+

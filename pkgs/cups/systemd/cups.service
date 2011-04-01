@@ -1,0 +1,10 @@
+[Unit]
+Description=CUPS Printing Service
+
+[Service]
+ExecStart=/usr/sbin/cupsd -f -c /etc/cups/cupsd.conf
+ExecStartPost=/sbin/udevadm trigger --subsystem-match=usb --attr-match=serial=AL01077498
+
+[Install]
+WantedBy=multi-user.target
+
