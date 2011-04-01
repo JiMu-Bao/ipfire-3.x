@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = squid
-PKG_VER        = 3.1.8
-PKG_REL        = 0
+PKG_VER        = 3.1.11
+PKG_REL        = 1
 
 PKG_MAINTAINER = Christian Schmidt <christian.schmidt@ipfire.org>
 PKG_GROUPS     = Networking/Daemons
@@ -35,8 +35,10 @@ PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = The Squid proxy caching server.
 
 PKG_BUILD_DEPS+= gcc-c++ libxml2-devel openssl-devel openldap-devel samba-devel \
-	iptables-devel $(PKG_DEPS) pam-devel
+	iptables-devel $(PKG_DEPS) pam-devel libcap-devel
 PKG_DEPS      += /usr/bin/smbclient
+
+PKG_REQUIRES_FILTER = perl\(Authen::Smb\)
 
 define PKG_DESCRIPTION
 	Squid is a high-performance proxy caching server for Web clients, \
@@ -48,7 +50,7 @@ define PKG_DESCRIPTION
 
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+PKG_TARBALL    = $(THISAPP).tar.gz
 
 CONFIGURE_OPTIONS += \
 	--datadir=/usr/lib/squid \
