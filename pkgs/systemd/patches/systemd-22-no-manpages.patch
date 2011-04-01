@@ -1,7 +1,7 @@
-diff -Nur a/Makefile.am b/Makefile.am
---- a/Makefile.am	2011-03-08 19:47:36.000000000 +0100
-+++ b/Makefile.am	2011-03-20 20:27:24.126714001 +0100
-@@ -505,55 +505,8 @@
+diff -Nur old/Makefile.am new/Makefile.am
+--- old/Makefile.am	2011-04-01 01:35:27.000000000 +0200
++++ new/Makefile.am	2011-04-01 18:01:07.707885272 +0200
+@@ -519,71 +519,13 @@
  	src/readahead-common.h \
  	src/ask-password-api.h
  
@@ -10,6 +10,7 @@ diff -Nur a/Makefile.am b/Makefile.am
 -	man/systemctl.1 \
 -	man/systemadm.1 \
 -	man/systemd-cgls.1 \
+-	man/systemd-nspawn.1 \
 -	man/systemd-tmpfiles.8 \
 -	man/systemd-notify.1 \
 -	man/sd_notify.3 \
@@ -54,23 +55,27 @@ diff -Nur a/Makefile.am b/Makefile.am
 -	man/sd_is_socket_inet.3 \
 -	man/sd_notifyf.3 \
 -	man/init.1
-+MANPAGES =
-+MANPAGES_ALIAS =
- 
- man/reboot.8: man/halt.8
- man/poweroff.8: man/halt.8
-@@ -563,12 +516,8 @@
- man/sd_notifyf.3: man/sd_notify.3
- man/init.1: man/systemd.1
- 
+-
+-man/reboot.8: man/halt.8
+-man/poweroff.8: man/halt.8
+-man/sd_is_socket.3: man/sd_is_fifo.3
+-man/sd_is_socket_unix.3: man/sd_is_fifo.3
+-man/sd_is_socket_inet.3: man/sd_is_fifo.3
+-man/sd_notifyf.3: man/sd_notify.3
+-man/init.1: man/systemd.1
+-
 -dist_man_MANS = \
 -	$(MANPAGES) \
 -	$(MANPAGES_ALIAS)
--
++MANPAGES =
+ 
 -nodist_man_MANS = \
 -	man/systemd.special.7
-+dist_man_MANS =
-+nodist_man_MANS = 
++MANPAGES_ALIAS =
++
++dist_man_MANS = 
++
++nodist_man_MANS =
  
  XML_FILES = \
  	${patsubst %.1,%.xml,${patsubst %.3,%.xml,${patsubst %.5,%.xml,${patsubst %.7,%.xml,${patsubst %.8,%.xml,$(MANPAGES)}}}}}

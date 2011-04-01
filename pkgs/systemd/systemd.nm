@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = systemd
-PKG_VER        = 20
-PKG_REL        = 8
+PKG_VER        = 22
+PKG_REL        = 1
 PKG_CONFLICTS += upstart
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -65,6 +65,7 @@ endef
 
 CONFIGURE_OPTIONS += \
 	--sysconfdir=/etc \
+	--libexecdir=/usr/lib \
 	--with-rootdir= \
 	--with-distro=other \
 	--with-syslog-service=rsyslog.service \
