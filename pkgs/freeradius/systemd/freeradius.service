@@ -1,0 +1,12 @@
+[Unit]
+Description=Freeradius Server
+After=network.target
+
+[Service]
+ExecStart=/usr/sbin/radiusd -f -d /etc/radvd/freeradius.conf
+ExecReload=/bin/kill -HUP $MAINPID
+ExecPostStop=/bin/rm -vf /var/run/radiusd/radiusd.sock
+
+[Install]
+WantedBy=multi-user.target
+
