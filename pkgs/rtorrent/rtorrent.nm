@@ -1,0 +1,49 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = rtorrent
+PKG_VER        = 0.8.7
+PKG_REL        = 1
+
+PKG_MAINTAINER =
+PKG_GROUPS     = Internet/P2P
+PKG_URL        = http://libtorrent.rakshasa.no/
+PKG_LICENSE    = GPLv3
+PKG_SUMMARY    = BitTorrent client based on libtorrent.
+
+PKG_BUILD_DEPS+= gcc-c++ libcurl-devel libsigc++-devel libtorrent-devel ncurses-devel
+
+define PKG_DESCRIPTION
+	A BitTorrent client using libtorrent, which on high-bandwidth connections is
+	able to seed at 3 times the speed of the official client. Using
+	ncurses its ideal for use with screen or dtach. It supports
+	saving of sessions and allows the user to add and remove torrents and scanning
+	of directories for torrent files to seed and/or download.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.gz
+
+STAGE_BUILD_TARGETS += LDFLAGS=-lpthread
