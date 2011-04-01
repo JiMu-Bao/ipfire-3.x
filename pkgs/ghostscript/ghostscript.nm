@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = ghostscript
-PKG_VER        = 8.70
-PKG_REL        = 0
+PKG_VER        = 9.02
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Applications/Printing
@@ -51,13 +51,9 @@ define PKG_DESCRIPTION
 	  the PostScript language and in PDF.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+PKG_TARBALL    = $(THISAPP).tar.gz
 
 CONFIGURE_OPTIONS += \
 		--without-omni
 
 PARALLELISMFLAGS = # Disable this
-
-define STAGE_INSTALL_CMDS
-	chown -v root:root $(BUILDROOT)/usr/share/ghostscript/8.70/Resource/Font/*
-endef
