@@ -48,6 +48,8 @@ CONFIGURE_OPTIONS = \
 	--build=$(DISTRO_MACHINE) \
 	--prefix=/usr
 
+SYSTEMD_UNIT_DIR = /lib/systemd/system
+
 ###############################################################################
 #
 # Packager variables
@@ -140,10 +142,9 @@ DO_PATCHES = cd $(DIR_APP) && $(BUILD_TOOLS)/patch \
 # Get a list of files that are installed automatically
 PKG_DEFAULT_FILES  = $(wildcard $(DIR_SOURCE)/*.default)
 PKG_DEFAULT_FILES += $(wildcard $(DIR_SOURCE)/default/*)
-PKG_INIT_FILES     = $(wildcard $(DIR_SOURCE)/*.init)
-PKG_INIT_FILES    += $(wildcard $(DIR_SOURCE)/init/*.conf)
 PKG_PAM_FILES      = $(wildcard $(DIR_SOURCE)/*.pam)
 PKG_PAM_FILES     += $(wildcard $(DIR_SOURCE)/pam.d/*)
+PKG_SYSTEMD_FILES += $(wildcard $(DIR_SOURCE)/systemd/*)
 
 ###############################################################################
 #
