@@ -1,0 +1,88 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = netkit-telnet
+PKG_VER        = 0.17
+PKG_REL        = 1
+
+PKG_MAINTAINER =
+PKG_GROUPS     = Applications/Internet
+PKG_URL        = http://www.ibiblio.org/pub/Linux/system/network/netkit/ 
+PKG_LICENSE    = BSD
+PKG_SUMMARY    = Telnet is a popular protocol for logging into remote systems over the Internet.
+
+PKG_BUILD_DEPS+= gcc-c++ ncurses-devel 
+
+define PKG_DESCRIPTION
+	Telnet is a popular protocol for logging into remote systems over the
+	Internet. The package includes a daemon that supports Telnet remote
+	logins into the host machine.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.gz
+PKG_OBJECTS   += telnet-client.tar.gz
+
+CONFIGURE_OPTIONS =
+
+PKG_PATCHES    = telnet-client-cvs.patch0 \
+	telnetd-0.17.patch0 \
+	telnet-0.17-env.patch \
+	telnet-0.17-pek.patch0 \
+	telnet-0.17-issue.patch \
+	telnet-0.17-sa-01-49.patch \
+	telnet-0.17-8bit.patch \
+	telnet-0.17-argv.patch \
+	telnet-0.17-conf.patch \
+	telnet-0.17-cleanup_race.patch \
+	telnetd-0.17-pty_read.patch0 \
+	telnet-0.17-CAN-2005-468_469.patch \
+	telnet-gethostbyname.patch \
+	netkit-telnet-0.17-ipv6.diff \
+	netkit-telnet-0.17-nodns.patch \
+	telnet-0.17-errno_test_sys_bsd.patch \
+	netkit-telnet-0.17-reallynodns.patch
+
+define STAGE_PREPARE 
+	cd $(DIR_SRC) && $(DO_EXTRACT) $(DIR_DL)/$(PKG_TARBALL)
+	cd $(DIR_APP) && mv telnet telnet-netkit
+	cd $(DIR_APP) && $(DO_EXTRACT) $(DIR_DL)/telnet-client.tar.gz
+
+	$(DO_PATCHES)
+endef
+
+define STAGE_INSTALL
+	-mkdir -pv $(BUILDROOT)/usr/man/man{1,5,8}
+	-mkdir -pv $(BUILDROOT)/usr/{,s}bin 
+
+	cd $(DIR_APP) && make install INSTALLROOT=$(BUILDROOT)
+
+	-mkdir -pv $(BUILDROOT)/usr/share
+	mv $(BUILDROOT)/usr/man $(BUILDROOT)/usr/share/man
+	rm -rf $(BUILDROOT)/usr/sbin
+	rm -rf $(BUILDROOT)/usr/share/man/man8
+	rm -rf $(BUILDROOT)/usr/share/man/man5
+
+endef
