@@ -1,0 +1,9 @@
+[Unit]
+Description=Simple Network Management Protocol Daemon
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/snmpd -c /etc/snmpd.conf
+
+[Install]
+WantedBy=multi-user.target

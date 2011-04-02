@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = net-snmp
 PKG_VER        = 5.4.2.1
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Networking/Daemons
