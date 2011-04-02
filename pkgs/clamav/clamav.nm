@@ -1,0 +1,81 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = clamav
+PKG_VER        = 0.97
+PKG_REL        = 1
+
+PKG_MAINTAINER =
+PKG_GROUPS     = System Environment/Daemons 
+PKG_URL        = http://www.clamav.net
+PKG_LICENSE    = GPLv2
+PKG_SUMMARY    = A GPL virus scanner
+
+PKG_BUILD_DEPS+= zlib-devel bzip2-devel gmp-devel curl-devel ncurses-devel shadow
+
+define PKG_DESCRIPTION
+		ClamAV is an open source (GPL) antivirus engine designed for \
+		detecting Trojans, viruses, malware and other malicious threats. \
+		It is the de facto standard for mail gateway scanning. It \
+		provides a high performance mutli-threaded scanning daemon, \
+		command line utilities for on demand file scanning, and an \
+		intelligent tool for automatic signature updates. The core ClamAV \
+		library provides numerous file format detection mechanisms, file \
+		unpacking support, archive support, and multiple signature \
+		languages for detecting threats.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.gz
+
+PKG_PACKAGES  += $(PKG_NAME)-devel $(PKG_NAME)-libs
+
+CFLAGS    += -D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE -DLDAP_DEPRECATED
+
+CONFIGURE_ENVIRONMENT	+= have_cv_ipv6=yes
+
+CONFIGURE_OPTIONS	+= \
+	--sysconfdir=/etc \
+	--disable-static \
+	--disable-rpath \
+        --disable-silent-rules \
+        --with-dbdir=/var/lib/clamav \
+ 	--enable-clamdtop \
+	--with-user=clamupdate \
+        --with-group=clamupdate
+
+define STAGE_PREPARE_CMDS
+	groupadd -g 497 -r clamupdate
+	useradd	-u 497 -r -s /sbin/nologin -d /var/lib/clamav -M \
+		-c 'Clamav database update user' -g clamupdate clamupdate
+
+        groupadd -g 496 -r clamscan
+	useradd -u 496 -r -s /sbin/nologin -d / -M \
+		-g clamscan clamscan 
+endef
+
+define STAGE_INSTALL
+	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT)
+endef
