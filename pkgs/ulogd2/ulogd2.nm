@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = ulogd
 PKG_VER        = 2.0.0beta3
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Networking/Statistics

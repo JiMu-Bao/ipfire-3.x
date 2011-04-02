@@ -1,0 +1,9 @@
+[Unit]
+Description=Userspace Logging Daemon
+After=firewall.service
+
+[Service]
+ExecStart=/usr/sbin/ulogd -c /etc/ulogd.conf
+
+[Install]
+WantedBy=multi-user.target
