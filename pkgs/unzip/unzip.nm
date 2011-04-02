@@ -25,12 +25,12 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = unzip
-PKG_VER        = 5.52
-PKG_REL        = 0
+PKG_VER        = 6.0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Applications/Archiving
-PKG_URL        = ftp://ftp.info-zip.org/pub/infozip/src/
+PKG_URL        = ftp://ftp.info-zip.org/pub/infozip/src
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = A utility for unpacking zip files.
 
@@ -43,16 +43,25 @@ define PKG_DESCRIPTION
 	in some respects.
 endef
 
-PKG_TARBALL    = $(PKG_NAME)552.tgz 
+
+THISAPP    = $(PKG_NAME)60
+PKG_TARBALL= $(THISAPP).tgz
 
 CFLAGS   += -D_LARGEFILE64_SOURCE
 
+
+define STAGE_PREPARE
+	cd $(DIR_SRC) && $(DO_EXTRACT) $(DIR_DL)/$(PKG_TARBALL)
+
+	$(DO_PATCHES)
+endef
+
 define STAGE_BUILD
-	cd $(DIR_APP) && ln -svf unix/Makefile Makefile
-	cd $(DIR_APP) && make generic CC="gcc $(CFLAGS)" LD=gcc $(PARALLELISMFLAGS)
+	cd $(DIR_SRC)/$(THISAPP) && ln -svf unix/Makefile Makefile
+	cd $(DIR_SRC)/$(THISAPP) && make generic CC="gcc $(CFLAGS)" LD=gcc $(PARALLELISMFLAGS)
 endef
 
 define STAGE_INSTALL
-	cd $(DIR_APP) && make install prefix=$(BUILDROOT)/usr \
+	cd $(DIR_SRC)/$(THISAPP) && make install prefix=$(BUILDROOT)/usr \
 		MANDIR=/usr/share/man/man1 INSTALL="cp -p"
 endef
