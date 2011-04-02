@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = glib
-PKG_VER        = 2.28.1
+PKG_VER        = 2.28.5
 PKG_REL        = 1
 
 PKG_MAINTAINER =
