@@ -1,0 +1,64 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = squidGuard
+PKG_VER        = 1.4.1
+PKG_REL        = 1
+
+PKG_MAINTAINER = Christian Schmidt <christian.schmidt@ipfire.org>
+PKG_GROUPS     = Networking/Daemons
+PKG_URL        = http://www.squidguard.org
+PKG_LICENSE    = GPLv2
+PKG_SUMMARY    = Filter, redirector and access controller plugin for squid.
+
+PKG_BUILD_DEPS+= bison openldap-devel flex db4-devel shadow
+
+define PKG_DESCRIPTION
+	SquidGuard is a URL redirector used to use blacklists with the \
+	proxysoftware Squid.
+endef
+
+PKG_TARBALL    = $(THISAPP).tar.gz
+
+CONFIGURE_OPTIONS += \
+	--datadir=/usr/share \
+	--sysconfdir=/etc \
+	--localstatedir=/var \
+	--infodir=/usr/share/info \
+	--mandir=/usr/share/man  \
+	--with-sg-config=/etc/squidGuard/squidGuard.conf \
+	--with-sg-logdir=/var/log/squidGuard \
+	--with-sg-dbhome=/var/lib/squidguard \
+	--with-db=/usr \
+	--with-db-inc=/usr/include \
+	--with-db-lib=/usr/lib \
+	--with-ldap
+
+define STAGE_PREPARE_CMDS
+	groupadd -g 23 -r squid
+	useradd	-u 23 -r -s /sbin/nologin -d /var/spool/squid -M \
+		-c 'Squid proxy user' -g squid squid
+endef
