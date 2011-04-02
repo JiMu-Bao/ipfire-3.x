@@ -1,0 +1,13 @@
+
+[Unit]
+Description=Firewall
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/firewall start
+ExecStop=/usr/bin/firewall stop
+ExecReload=/usr/bin/firewall restart
+
+[Install]
+WantedBy=multi-user.target
+
