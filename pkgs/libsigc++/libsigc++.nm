@@ -24,44 +24,26 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = mdadm
-PKG_VER        = 3.2.1
+PKG_NAME       = libsigc++
+PKG_VER        = 2.2.9
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = http://www.kernel.org/pub/linux/utils/raid/mdadm/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = The mdadm program controls Linux md devices (software RAID arrays).
+PKG_GROUPS     = Development/Libraries
+PKG_URL        = http://libsigc.sourceforge.net 
+PKG_LICENSE    = GPLv2
+PKG_SUMMARY    = Callback Framework for C++.
 
-PKG_BUILD_DEPS+= groff
+PKG_BUILD_DEPS+= gcc-c++ m4
 
 define PKG_DESCRIPTION
-	The mdadm program is used to create, manage, and monitor Linux MD (software \
-	RAID) devices.  As such, it provides similar functionality to the raidtools \
-	package.  However, mdadm is a single program, and it can perform \
-	almost all functions without a configuration file, though a configuration \
-	file can be used to help with some common tasks.
+        libsigc++ implements a typesafe callback system for standard C++.
+	It allows you to define signals and to connect those signals to any callback 
+	function, either global or a member function, regardless of whether it is 
+	static or virtual. It also contains adaptor classes for connection of 
+	dissimilar callbacks and has an ease of use unmatched by other C++ callback libraries.
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
 PKG_PACKAGES  += $(PKG_NAME)-devel
-
-CFLAGS        += -fno-strict-aliasing
-
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -e "s/^INSTALL = .*/INSTALL = install/" -i Makefile
-endef
-
-define STAGE_BUILD
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS) CXFLAGS="$(CFLAGS)" \
-		SYSCONFDIR="/etc" MDASSEMBLE_AUTO=1
-endef
-
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install BINDIR=/sbin DESTDIR=$(BUILDROOT)
-
-	-mkdir -pv $(BUILDROOT)/var/run/mdadm
-	chmod 700 $(BUILDROOT)/var/run/mdadm
-endef

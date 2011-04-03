@@ -24,44 +24,26 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = mdadm
-PKG_VER        = 3.2.1
+PKG_NAME       = iftop
+PKG_VER        = 0.17
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = http://www.kernel.org/pub/linux/utils/raid/mdadm/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = The mdadm program controls Linux md devices (software RAID arrays).
+PKG_GROUPS     = Base Applications/System
+PKG_URL        = http://www.ex-parrot.com/pdw/iftop/
+PKG_LICENSE    = GPL+
+PKG_SUMMARY    = Interactive traffic listings
 
-PKG_BUILD_DEPS+= groff
+PKG_BUILD_DEPS+= libpcap-devel ncurses-devel
 
 define PKG_DESCRIPTION
-	The mdadm program is used to create, manage, and monitor Linux MD (software \
-	RAID) devices.  As such, it provides similar functionality to the raidtools \
-	package.  However, mdadm is a single program, and it can perform \
-	almost all functions without a configuration file, though a configuration \
-	file can be used to help with some common tasks.
+	iftop is an interactive text-mode traffic viewer for Linux.
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+CONFIGURE_OPTIONS += \
+	--sysconfdir=/etc \
+	--mandir=/usr/share/man
 
-CFLAGS        += -fno-strict-aliasing
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -e "s/^INSTALL = .*/INSTALL = install/" -i Makefile
-endef
-
-define STAGE_BUILD
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS) CXFLAGS="$(CFLAGS)" \
-		SYSCONFDIR="/etc" MDASSEMBLE_AUTO=1
-endef
-
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install BINDIR=/sbin DESTDIR=$(BUILDROOT)
-
-	-mkdir -pv $(BUILDROOT)/var/run/mdadm
-	chmod 700 $(BUILDROOT)/var/run/mdadm
-endef

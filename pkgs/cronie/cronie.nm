@@ -24,44 +24,25 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = mdadm
-PKG_VER        = 3.2.1
+PKG_NAME       = cronie
+PKG_VER        = 1.4.7
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = http://www.kernel.org/pub/linux/utils/raid/mdadm/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = The mdadm program controls Linux md devices (software RAID arrays).
+PKG_GROUPS     = System/Environment/Base
+PKG_URL        = https://fedorahosted.org/releases/c/r/cronie/
+PKG_LICENSE    = MIT and BSD and ISC and GPLv2
+PKG_SUMMARY    = Cron daemon for executing programs at set times
 
-PKG_BUILD_DEPS+= groff
+PKG_BUILD_DEPS+= audit-devel libselinux-devel
 
 define PKG_DESCRIPTION
-	The mdadm program is used to create, manage, and monitor Linux MD (software \
-	RAID) devices.  As such, it provides similar functionality to the raidtools \
-	package.  However, mdadm is a single program, and it can perform \
-	almost all functions without a configuration file, though a configuration \
-	file can be used to help with some common tasks.
+	Cronie contains the standard UNIX daemon crond that runs specified programs at \
+	scheduled times and related tools. It is a fork of the \
+	original vixie-cron and has security and configuration enhancements like \
+	the ability to use pam and SELinux.
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
 
-CFLAGS        += -fno-strict-aliasing
-
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -e "s/^INSTALL = .*/INSTALL = install/" -i Makefile
-endef
-
-define STAGE_BUILD
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS) CXFLAGS="$(CFLAGS)" \
-		SYSCONFDIR="/etc" MDASSEMBLE_AUTO=1
-endef
-
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install BINDIR=/sbin DESTDIR=$(BUILDROOT)
-
-	-mkdir -pv $(BUILDROOT)/var/run/mdadm
-	chmod 700 $(BUILDROOT)/var/run/mdadm
-endef

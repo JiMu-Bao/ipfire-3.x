@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = nano
-PKG_VER        = 2.2.2
-PKG_REL        = 0
+PKG_VER        = 2.3.0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Application/Editors

@@ -24,44 +24,22 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = mdadm
-PKG_VER        = 3.2.1
+PKG_NAME       = libtorrent
+PKG_VER        = 0.12.7
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = http://www.kernel.org/pub/linux/utils/raid/mdadm/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = The mdadm program controls Linux md devices (software RAID arrays).
+PKG_GROUPS     = Internet/P2P
+PKG_URL        = http://libtorrent.rakshasa.no/
+PKG_LICENSE    = GPLv3
+PKG_SUMMARY    = A BitTorrent libary.
 
-PKG_BUILD_DEPS+= groff
+PKG_BUILD_DEPS+= gcc-c++ libsigc++-devel openssl-devel
 
 define PKG_DESCRIPTION
-	The mdadm program is used to create, manage, and monitor Linux MD (software \
-	RAID) devices.  As such, it provides similar functionality to the raidtools \
-	package.  However, mdadm is a single program, and it can perform \
-	almost all functions without a configuration file, though a configuration \
-	file can be used to help with some common tasks.
+	LibTorrent is a BitTorrent library written in C++ for *nix, with a focus on high performance and good code.
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
 PKG_PACKAGES  += $(PKG_NAME)-devel
-
-CFLAGS        += -fno-strict-aliasing
-
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -e "s/^INSTALL = .*/INSTALL = install/" -i Makefile
-endef
-
-define STAGE_BUILD
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS) CXFLAGS="$(CFLAGS)" \
-		SYSCONFDIR="/etc" MDASSEMBLE_AUTO=1
-endef
-
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install BINDIR=/sbin DESTDIR=$(BUILDROOT)
-
-	-mkdir -pv $(BUILDROOT)/var/run/mdadm
-	chmod 700 $(BUILDROOT)/var/run/mdadm
-endef
