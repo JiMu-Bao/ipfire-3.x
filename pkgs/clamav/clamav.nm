@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = clamav
 PKG_VER        = 0.97
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System Environment/Daemons 
@@ -47,6 +47,8 @@ define PKG_DESCRIPTION
 		unpacking support, archive support, and multiple signature \
 		languages for detecting threats.
 endef
+
+PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
