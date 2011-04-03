@@ -25,12 +25,12 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = libevent
-PKG_VER        = 1.4.10
+PKG_VER        = 2.0.10
 PKG_REL        = 0
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Development/Tools
-PKG_URL        = http://monkey.org/~provos/libevent/
+PKG_URL        = http://sourceforge.net/projects/levent/files/libevent/libevent-2.0
 PKG_LICENSE    = BSD
 PKG_SUMMARY    = Abstract asynchronous event notification library.
 
