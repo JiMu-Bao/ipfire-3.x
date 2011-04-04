@@ -1,0 +1,10 @@
+[Unit]
+Description=Very Secure FTP Daemon
+After=basic.target
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/slapd
+
+[Install]
+WantedBy=multi-user.target

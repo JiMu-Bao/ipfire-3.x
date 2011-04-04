@@ -1,4 +1,0 @@
-description	"Launches logrotate"
-author		"IPFire Team"
-
-exec logrotate /etc/logrotate.d/*

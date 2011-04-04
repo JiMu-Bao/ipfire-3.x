@@ -1,0 +1,8 @@
+[Unit]
+Description=netplug Daemon
+
+[Service]
+ExecStart=/sbin/netplugd -F
+
+[Install]
+WantedBy=multi-user.target

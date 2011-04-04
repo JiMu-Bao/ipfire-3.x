@@ -1,9 +1,0 @@
-description             "Common Unix Printing System"
-author                  "IPFire Team"
-
-start on started network
-stop on kill-all-network-services or stopping network
-
-exec /usr/sbin/cupsd -c /etc/cups/cupsd.conf
-expect daemon
-respawn

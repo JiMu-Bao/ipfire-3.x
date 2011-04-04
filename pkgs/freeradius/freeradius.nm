@@ -37,6 +37,9 @@ PKG_SUMMARY    = High-performance and highly configurable free RADIUS server.
 PKG_BUILD_DEPS+= gdbm-devel libpcap-devel libtool libtool-devel openssl-devel \
 	perl
 
+# Freeradius requires make to generate it's certificates
+PKG_DEPS      += make
+
 define PKG_DESCRIPTION
 	The FreeRADIUS Server Project is a high performance and highly \
 	configurable GPL'd free RADIUS server. \
@@ -81,3 +84,6 @@ define STAGE_INSTALL_CMDS
 	-mkdir -pv $(BUILDROOT)/etc/logrotate.d/
 	cp -vf $(DIR_SOURCE)/logrotate/freeradius $(BUILDROOT)/etc/logrotate.d/	
 endef
+
+# Generate certificates after installation
+# Command: cd /etc/raddb/certs/ && make Makefile

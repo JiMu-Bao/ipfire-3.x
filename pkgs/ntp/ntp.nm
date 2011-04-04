@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = ntp
 PKG_VER        = 4.2.6p1
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Base System/Daemons

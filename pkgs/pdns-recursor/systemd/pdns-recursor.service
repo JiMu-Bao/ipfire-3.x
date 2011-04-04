@@ -1,0 +1,9 @@
+[Unit]
+Description=Power DNS Recursor
+After=network.target
+
+[Service]
+ExecStart=/usr/sbin/pdns_recursor --daemon=no
+
+[Install]
+WantedBy=multi-user.target

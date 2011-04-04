@@ -59,14 +59,14 @@ define DO_INSTALL_DEFAULT
 	$(foreach file,$(PKG_DEFAULT_FILES),$(call __INSTALL_DEFAULT,$(file)))
 endef
 
-define __INSTALL_INIT
-	-mkdir -pv $(BUILDROOT)/etc/init
-	cd $(DIR_APP) && cp -vf $(1) $(BUILDROOT)/etc/init/$(subst .init,.conf,$(notdir $(1)))
+define __INSTALL_SYSTEMD
+	-mkdir -pv $(BUILDROOT)$(SYSTEMD_UNIT_DIR)
+	cd $(DIR_APP) && cp -vf $(1) $(BUILDROOT)$(SYSTEMD_UNIT_DIR)/$(notdir $(1))
 
 endef
 
-define DO_INSTALL_INIT
-	$(foreach file,$(PKG_INIT_FILES),$(call __INSTALL_INIT,$(file)))
+define DO_INSTALL_SYSTEMD
+	$(foreach file,$(PKG_SYSTEMD_FILES),$(call __INSTALL_SYSTEMD,$(file)))
 endef
 
 define __INSTALL_PAM
@@ -141,7 +141,7 @@ define DO_INSTALL
 	$(STAGE_INSTALL)
 
 	$(DO_INSTALL_DEFAULT)
-	$(DO_INSTALL_INIT)
+	$(DO_INSTALL_SYSTEMD)
 	$(DO_INSTALL_PAM)
 
 	@echo "#####################################################################"

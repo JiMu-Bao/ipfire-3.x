@@ -1,8 +1,0 @@
-description		"Start lighttpd"
-author			"IPFire Team"
-
-start on started network
-stop on kill-all-network-services or stopping network
-
-exec /usr/sbin/lighttpd -f /etc/lighttpd.conf
-expect daemon

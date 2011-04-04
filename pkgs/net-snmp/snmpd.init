@@ -1,9 +1,0 @@
-description             "Starts the snmp Daemon"
-author                  "IPFire Team"
-
-start on started network
-stop on kill-all-network-services or stopping network
-
-exec /usr/sbin/snmpd -c /etc/snmpd.conf
-expect daemon
-respawn
