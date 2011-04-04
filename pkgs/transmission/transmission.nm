@@ -24,30 +24,22 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = libevent
-PKG_VER        = 2.0.10
-PKG_REL        = 0
+PKG_NAME       = transmission
+PKG_VER        = 2.22
+PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUPS     = Development/Tools
-PKG_URL        = http://sourceforge.net/projects/levent/files/libevent/libevent-2.0
-PKG_LICENSE    = BSD
-PKG_SUMMARY    = Abstract asynchronous event notification library.
+PKG_GROUPS     = Internet/P2P
+PKG_URL        = https://trac.transmissionbt.com
+PKG_LICENSE    = GPLv3
+PKG_SUMMARY    = A BitTorrent client.
+
+PKG_BUILD_DEPS+= intltool libcurl-devel libevent-devel openssl-devel
 
 define PKG_DESCRIPTION
-	The libevent API provides a mechanism to execute a callback \
-	function when a specific event occurs on a file descriptor or \
-	after a timeout has been reached. libevent is meant to replace \
-	the asynchronous event loop found in event driven network \
-	servers. An application just needs to call event_dispatch() and \
-	can then add or remove events dynamically without having to \
-	change the event loop.
+	Transmission is a BitTorrent client which features a simple
+	interface on top of a cross-platform back-end.
 endef
 
-PKG_TARBALL    = $(THISAPP)-stable.tar.gz
+PKG_TARBALL    = $(THISAPP).tar.bz2
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
-
-DIR_APP = $(DIR_SRC)/$(THISAPP)-stable
-
-CONFIGURE_OPTIONS += --mandir=/usr/share/man
