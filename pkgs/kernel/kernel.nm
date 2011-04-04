@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = linux
 PKG_VER        = 2.6.38.2
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUPS     = System/Kernels
@@ -106,4 +106,9 @@ define STAGE_INSTALL
 		$(BUILDROOT)/usr/include/asm*/atomic.h \
 		$(BUILDROOT)/usr/include/asm*/io.h \
 		$(BUILDROOT)/usr/include/asm*/irq.h
+
+        # Create an empty settings file for dracut
+        mkdir -vp $(BUILDROOT)/etc/ld.so.conf.d/
+        echo "# Placeholder file, no vDSO hwcap entries used in this kernel." \
+        > $(BUILDROOT)/etc/ld.so.conf.d/kernel-$(FULLVER).conf
 endef
