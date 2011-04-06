@@ -74,9 +74,9 @@ CONFIGURE_OPTIONS += \
 	--with-udevrulesdir=/lib/udev/rules.d/ \
 	--with-pamlibdir=/etc/pam.d
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && ./autogen.sh ac
-endef
+#define STAGE_PREPARE_CMDS
+#	cd $(DIR_APP) && ./autogen.sh ac
+#endef
 
 define STAGE_TEST
 	cd $(DIR_APP) && make check
