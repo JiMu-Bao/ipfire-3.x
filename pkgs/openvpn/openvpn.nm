@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = openvpn
-PKG_VER        = 2.1_rc20
-PKG_REL        = 0
+PKG_VER        = 2.2-RC2
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Networking/VPN
