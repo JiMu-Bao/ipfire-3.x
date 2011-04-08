@@ -68,7 +68,6 @@ CONFIGURE_OPTIONS += \
 	--libexecdir=/usr/lib \
 	--with-rootdir= \
 	--with-distro=other \
-	--with-syslog-service=rsyslog.service \
 	--with-sysvinit-path= \
 	--with-sysvrcd-path= \
 	--with-udevrulesdir=/lib/udev/rules.d/ \
