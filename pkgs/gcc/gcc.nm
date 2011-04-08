@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = gcc
-PKG_VER        = 4.5.2
-PKG_REL        = 7
+PKG_VER        = 4.6.0
+PKG_REL        = 1
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUPS     = Development/Compilers
@@ -40,8 +40,8 @@ define PKG_DESCRIPTION
 endef
 
 PKG_BUILD_DEPS+= autogen cloog-devel dejagnu elfutils-devel expect gmp-devel \
-	libffi-devel mpc-devel mpfr-devel pkg-config ppl-devel texinfo zlib-devel
-PKG_DEPS-gcc  += binutils libgcc-devel
+	libffi-devel mpc-devel mpfr-devel ppl-devel=0.10.2-0.ip3 texinfo zlib-devel
+PKG_DEPS-gcc  += binutils libgcc-devel cloog>=0.15
 
 # Make the GCC target platform
 GCC_TARGET_PLATFORM = $(subst -gnu,,$(DISTRO_MACHINE))
@@ -65,6 +65,21 @@ export CFLAGS
 export CXXFLAGS = $(subst -Wall,,$(CFLAGS))
 
 PKG_TARBALL   += $(THISAPP).tar.gz
+
+PKG_PATCHES    = \
+	gcc46-hack.patch0 \
+	gcc46-c++-builtin-redecl.patch0 \
+	gcc46-pr33763.patch0 \
+	gcc46-libgomp-omp_h-multilib.patch0 \
+	gcc46-libtool-no-rpath.patch0 \
+	gcc46-cloog-dl.patch0 \
+	gcc46-pr38757.patch0 \
+	gcc46-no-add-needed.patch0 \
+	gcc46-unwind-debughook-sdt.patch0 \
+	gcc46-ppl-0.10.patch \
+	gcc46-Woverlength-string.patch0 \
+	gcc46-Woverlength-string-asm.patch0 \
+	gcc-4.6.0-piepatches-20110407.patch
 
 # A package for C++
 PKG_PACKAGES += $(PKG_NAME)-c++
@@ -133,16 +148,11 @@ define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && sed -i 's/install_to_$$(INSTALL_DEST) //' libiberty/Makefile.in
 
 	# Branding gcc
-	cd $(DIR_APP) && sed -e "s:PKGVERSION:\"(GCC for $(DISTRO_NAME)-$(DISTRO_VERSION)) \":" \
-		-i gcc/version.c
+	echo "$(DISTRO_NAME) $(PKG_VER)-$(PKG_RELEASE)" > $(DIR_APP)/gcc/DEV-PHASE
 
 	# Libgomp uses -Werror regardless of --disable-werror, and this will cause a
 	# build failure when -D_FORTIFY_SOURCE=2 causes build time warnings:
 	cd $(DIR_APP) && sed -e "s/-Werror//" -i libgomp/configure
-	
-	# Apply the following sed to force the build to use the -fomit-frame-pointer
-	# compiler flag in order to ensure consistent compiler builds:
-	cd $(DIR_APP) && sed -i 's/^T_CFLAGS =$$/& -fomit-frame-pointer/' gcc/Makefile.in
 	
 	# The fixincludes script is known to occasionally erroneously attempt to
 	# "fix" the system headers installed so far. As the headers up to this point
@@ -178,6 +188,8 @@ define STAGE_BUILD
 			--disable-static \
 			--with-system-zlib \
 			--with-bugurl=http://bugtracker.ipfire.org \
+			--with-ppl \
+			--with-cloog \
 			--disable-libunwind-exceptions \
 			--enable-gnu-unique-object \
 			--enable-linker-build-id \

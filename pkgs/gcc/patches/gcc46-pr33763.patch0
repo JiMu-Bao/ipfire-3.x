@@ -10,8 +10,8 @@
 	* tree-inline.c (expand_call_inline): Silently ignore always_inline
 	attribute for redefined extern inline functions.
 
---- a/gcc/tree-inline.c.jj	2007-11-06 09:29:04.000000000 +0100
-+++ b/gcc/tree-inline.c	2007-11-06 16:19:12.000000000 +0100
+--- gcc/tree-inline.c.jj	2007-11-06 09:29:04.000000000 +0100
++++ gcc/tree-inline.c	2007-11-06 16:19:12.000000000 +0100
 @@ -3157,6 +3157,12 @@ expand_call_inline (basic_block bb, gimp
  	goto egress;
  
@@ -25,8 +25,8 @@
  	  /* Avoid warnings during early inline pass. */
  	  && cgraph_global_info_ready)
  	{
---- a/gcc/testsuite/gcc.dg/pr33763.c.jj	2007-11-06 16:19:12.000000000 +0100
-+++ b/gcc/testsuite/gcc.dg/pr33763.c	2007-11-06 16:19:12.000000000 +0100
+--- gcc/testsuite/gcc.dg/pr33763.c.jj	2007-11-06 16:19:12.000000000 +0100
++++ gcc/testsuite/gcc.dg/pr33763.c	2007-11-06 16:19:12.000000000 +0100
 @@ -0,0 +1,60 @@
 +/* PR tree-optimization/33763 */
 +/* { dg-do compile } */
@@ -88,8 +88,8 @@
 +{
 +  return inl (x, y);
 +}
---- a/gcc/testsuite/g++.dg/opt/inline13.C.jj	2007-11-06 16:20:20.000000000 +0100
-+++ b/gcc/testsuite/g++.dg/opt/inline13.C	2007-11-06 16:21:30.000000000 +0100
+--- gcc/testsuite/g++.dg/opt/inline13.C.jj	2007-11-06 16:20:20.000000000 +0100
++++ gcc/testsuite/g++.dg/opt/inline13.C	2007-11-06 16:21:30.000000000 +0100
 @@ -0,0 +1,60 @@
 +// PR tree-optimization/33763
 +// { dg-do compile }
