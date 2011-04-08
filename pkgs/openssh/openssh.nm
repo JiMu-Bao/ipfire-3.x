@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = openssh
 PKG_VER        = 5.8p1
-PKG_REL        = 5
+PKG_REL        = 6
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Application/Internet
@@ -107,5 +107,9 @@ CONFIGURE_OPTIONS += \
 
 define STAGE_INSTALL_CMDS
 	-mkdir -pv $(BUILDROOT)/etc/ssh
-	cp -vf $(DIR_SOURCE)/sshd_config $(BUILDROOT)/etc/ssh/sshd_config
+	cp -vf $(DIR5_SOURCE)/sshd_config $(BUILDROOT)/etc/ssh/sshd_config
+
+	# Install scriptfile for key generation
+	install -m 754 $(DIR_SOURCE)/ssh-keygen $(BUILDROOT)/usr/lib/openssh/
 endef
+
