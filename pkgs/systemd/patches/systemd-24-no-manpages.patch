@@ -1,7 +1,7 @@
 diff -Nur old/Makefile.am new/Makefile.am
---- old/Makefile.am	2011-04-01 01:35:27.000000000 +0200
-+++ new/Makefile.am	2011-04-01 18:01:07.707885272 +0200
-@@ -519,71 +519,13 @@
+--- old/Makefile.am	2011-04-06 21:28:41.000000000 +0200
++++ new/Makefile.am	2011-04-08 19:45:31.779256001 +0200
+@@ -530,73 +530,13 @@
  	src/readahead-common.h \
  	src/ask-password-api.h
  
@@ -45,7 +45,9 @@ diff -Nur old/Makefile.am new/Makefile.am
 -	man/vconsole.conf.5 \
 -	man/locale.conf.5 \
 -	man/os-release.5 \
--	man/modules-load.d.5
+-	man/modules-load.d.5 \
+-	man/binfmt.d.5 \
+-	man/sysctl.d.5
 -
 -MANPAGES_ALIAS = \
 -	man/reboot.8 \
@@ -73,7 +75,7 @@ diff -Nur old/Makefile.am new/Makefile.am
 -	man/systemd.special.7
 +MANPAGES_ALIAS =
 +
-+dist_man_MANS = 
++dist_man_MANS =
 +
 +nodist_man_MANS =
  
