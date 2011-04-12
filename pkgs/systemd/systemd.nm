@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = systemd
-PKG_VER        = 22
+PKG_VER        = 24
 PKG_REL        = 1
 PKG_CONFLICTS += upstart
 
@@ -68,15 +68,14 @@ CONFIGURE_OPTIONS += \
 	--libexecdir=/usr/lib \
 	--with-rootdir= \
 	--with-distro=other \
-	--with-syslog-service=rsyslog.service \
 	--with-sysvinit-path= \
 	--with-sysvrcd-path= \
 	--with-udevrulesdir=/lib/udev/rules.d/ \
 	--with-pamlibdir=/etc/pam.d
 
-#define STAGE_PREPARE_CMDS
-#	cd $(DIR_APP) && ./autogen.sh ac
-#endef
+define STAGE_PREPARE_CMDS
+	cd $(DIR_APP) && ./autogen.sh ac
+endef
 
 define STAGE_TEST
 	cd $(DIR_APP) && make check
@@ -107,13 +106,13 @@ define STAGE_INSTALL_CMDS
 	cd $(BUILDROOT)/lib/systemd/system && ln -svf multi-user.target default.target
 
 	# Replace absolute symlinks by relative ones.
-	cd $(BUILDROOT)/usr/share/systemd/user/ && ln -svf ../../../../lib/systemd/system/bluetooth.target bluetooth.target
-	cd $(BUILDROOT)/usr/share/systemd/user/ && ln -svf ../../../../lib/systemd/system/local-fs.target local-fs.target
-	cd $(BUILDROOT)/usr/share/systemd/user/ && ln -svf ../../../../lib/systemd/system/printer.target printer.target
-	cd $(BUILDROOT)/usr/share/systemd/user/ && ln -svf ../../../../lib/systemd/system/shutdown.target shutdown.target
-	cd $(BUILDROOT)/usr/share/systemd/user/ && ln -svf ../../../../lib/systemd/system/sockets.target sockets.target
-	cd $(BUILDROOT)/usr/share/systemd/user/ && ln -svf ../../../../lib/systemd/system/sound.target sound.target
-	cd $(BUILDROOT)/usr/share/systemd/user/ && ln -svf ../../../../lib/systemd/system/swap.target swap.target
+	cd $(BUILDROOT)/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/bluetooth.target bluetooth.target
+	cd $(BUILDROOT)/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/local-fs.target local-fs.target
+	cd $(BUILDROOT)/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/printer.target printer.target
+	cd $(BUILDROOT)/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/shutdown.target shutdown.target
+	cd $(BUILDROOT)/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/sockets.target sockets.target
+	cd $(BUILDROOT)/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/sound.target sound.target
+	cd $(BUILDROOT)/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/swap.target swap.target
 
 	ln -svf ../../systemd/user $(BUILDROOT)/etc/xdg/systemd/user
 endef
