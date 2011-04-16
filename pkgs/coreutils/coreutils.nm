@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = coreutils
-PKG_VER        = 8.9
+PKG_VER        = 8.11
 PKG_REL        = 1
 
 PKG_MAINTAINER =
@@ -42,7 +42,7 @@ endef
 PKG_BUILD_DEPS+= autoconf automake e2fsprogs-devel gmp-devel libacl-devel \
 	libattr-devel libcap-devel libselinux-devel ncurses-devel pam-devel
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+PKG_TARBALL    = $(THISAPP).tar.xz
 
 CFLAGS        += -D_GNU_SOURCE=1 -fno-strict-aliasing
 
