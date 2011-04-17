@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = libtiff
-PKG_VER        = 4.0.0beta6
-PKG_REL        = 0
+PKG_VER        = 4.0.0beta7
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Libraries
@@ -48,3 +48,7 @@ PKG_TARBALL    = tiff-$(PKG_VER).tar.gz
 PKG_PACKAGES  += $(PKG_NAME)-devel
 
 DIR_APP = /usr/src/tiff-$(PKG_VER)
+
+CONFIGURE_OPTIONS += \
+	--enable-defer-strile-load \
+	--enable-chunky-strip-read
