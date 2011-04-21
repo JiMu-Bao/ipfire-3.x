@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = gcc
 PKG_VER        = 4.6.0
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUPS     = Development/Compilers
@@ -39,9 +39,12 @@ define PKG_DESCRIPTION
 	You'll need this package in order to compile C code.
 endef
 
-PKG_BUILD_DEPS+= autogen cloog-devel dejagnu elfutils-devel expect gmp-devel \
-	libffi-devel mpc-devel mpfr-devel ppl-devel=0.10.2-0.ip3 texinfo zlib-devel
-PKG_DEPS-gcc  += binutils libgcc-devel cloog>=0.15
+BINUTILS_VER = 2.21.51.0.8-1
+
+PKG_BUILD_DEPS+= autogen binutils>=$(BINUTILS_VER) cloog-devel dejagnu \
+	elfutils-devel expect flex gmp-devel libffi-devel mpc-devel mpfr-devel \
+	ppl-devel=0.10.2-0.ip3 texinfo zlib-devel
+PKG_DEPS-gcc  += binutils>=$(BINUTILS_VER) libgcc-devel cloog>=0.15
 
 # Make the GCC target platform
 GCC_TARGET_PLATFORM = $(subst -gnu,,$(DISTRO_MACHINE))
@@ -60,6 +63,8 @@ CFLAGS := $(subst -m32,,$(CFLAGS))
 CFLAGS := $(subst -m64,,$(CFLAGS))
 #  Remove -march=i686
 CFLAGS := $(subst -march=i686,,$(CFLAGS))
+
+HARD_CFLAGS = -DEFAULT_PIE_SSP -DEFAULT_RELRO -DEFAULT_BIND_NOW
 
 export CFLAGS
 export CXXFLAGS = $(subst -Wall,,$(CFLAGS))
@@ -162,6 +167,20 @@ define STAGE_PREPARE_CMDS
 
 	cd $(DIR_APP) && sed -i gcc/Makefile.in \
 		-e "s/-fno-exceptions/& -fno-asynchronous-unwind-tables/"
+
+	# we want to be able to control the pie patch logic via something other
+	# than ALL_CFLAGS...
+	cd $(DIR_APP) && sed -i gcc/Makefile.in \
+		-e '/^ALL_CFLAGS/iHARD_CFLAGS = ' \
+		-e 's|^ALL_CFLAGS = |ALL_CFLAGS = $$(HARD_CFLAGS) |'
+
+	# Enable the GCC hardening by default.
+	cd $(DIR_APP) && sed -i gcc/Makefile.in \
+		-e "s|^HARD_CFLAGS = |HARD_CFLAGS = $(HARD_CFLAGS) |"
+
+	# Compile the compile with -fPIC as well.
+	cd $(DIR_APP) && sed -i gcc/Makefile.in \
+		-e "s|^ESP_NOPIE_CFLAGS = .*|ESP_NOPIE_CFLAGS =|"
 endef
 
 define STAGE_BUILD
@@ -195,7 +214,7 @@ define STAGE_BUILD
 			--enable-linker-build-id \
 			$(CONFIGURE_ARGS)
 
-	cd $(DIR_SRC)/gcc-build && make $(PARALLELISMFLAGS)
+	cd $(DIR_SRC)/gcc-build && make profiledbootstrap #$(PARALLELISMFLAGS)
 endef
 
 #define STAGE_TEST
