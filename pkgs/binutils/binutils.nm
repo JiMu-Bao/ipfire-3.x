@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = binutils
-PKG_VER        = 2.20.1
-PKG_REL        = 0
+PKG_VER        = 2.21.51.0.8
+PKG_REL        = 1
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUPS     = Development/Tools
@@ -39,9 +39,9 @@ define PKG_DESCRIPTION
 	tools for the manipulation of object code in various object file formats.
 endef
 
-PKG_BUILD_DEPS+= dejagnu texinfo zlib-devel
+PKG_BUILD_DEPS+= bison dejagnu flex gcc-c++ texinfo zlib-devel
 
-PKG_TARBALL   += $(THISAPP).tar.bz2
+PKG_TARBALL   += $(THISAPP).tar.gz
 
 define STAGE_PREPARE_CMDS
 	-mkdir -pv $(DIR_SRC)/binutils-build
@@ -50,6 +50,8 @@ define STAGE_PREPARE_CMDS
 	# one is installed later on in the Autoconf instructions:
 	cd $(DIR_APP) && rm -fv etc/standards.info
 	cd $(DIR_APP) && sed -e '/^INFO/s/standards.info //' -i etc/Makefile.in
+
+	cd $(DIR_APP) && sed -i -e 's/%''{release}/$(PKG_RELEASE)/g' bfd/Makefile{.am,.in}
 endef
 
 BINUTILS_TARGET_PLATFORM = $(subst -gnu,,$(DISTRO_MACHINE))
