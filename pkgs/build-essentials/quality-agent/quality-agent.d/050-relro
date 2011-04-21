@@ -16,6 +16,9 @@ function check() {
 			continue
 		fi
 
+		# Skip all files that are not a shared object.
+		file_is_shared_object ${file} || continue
+
 		if ! file_is_relro_full ${file}; then
 			if [ "${QUALITY_AGENT_PERMIT_NOT_FULL_RELRO}" = "yes" ]; then
 				log_warning "  Is not full relro: ${file}"
