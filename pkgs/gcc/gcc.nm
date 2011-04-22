@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = gcc
 PKG_VER        = 4.6.0
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUPS     = Development/Compilers
@@ -127,6 +127,7 @@ endef
 PKG_PACKAGES += libgomp-devel
 define PKG_FILES-libgomp-devel
 	/usr/lib/libgomp*.so
+	/usr/lib/libgomp.spec
 endef
 
 # libmudflap
@@ -138,6 +139,17 @@ endef
 PKG_PACKAGES += libmudflap-devel
 define PKG_FILES-libmudflap-devel
 	/usr/lib/libmudflap*.so
+endef
+
+# libquadmath
+PKG_PACKAGES += libquadmath
+define PKG_FILES-libquadmath
+	/usr/lib/libquadmath*.so.*
+endef
+
+PKG_PACKAGES += libquadmath-devel
+define PKG_FILES-libquadmath-devel
+	/usr/lib/libquadmath*.so
 endef
 
 define STAGE_PREPARE_CMDS
