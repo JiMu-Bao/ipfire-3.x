@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = lzo
-PKG_VER        = 2.04
-PKG_REL        = 0
+PKG_VER        = 2.05
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Applications/Compression
