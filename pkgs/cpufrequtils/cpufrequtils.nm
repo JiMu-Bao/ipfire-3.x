@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = cpufrequtils
 PKG_VER        = 008
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Base Applications/System
@@ -42,12 +42,10 @@ endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
+# Package doesn't provide a configure script
 define STAGE_BUILD
-	cd $(DIR_APP) && make 
+	cd $(DIR_APP) && make $(PARALELLISMFLAGS)
 endef
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT) mandir=/usr/share/man
-endef
-
+STAGE_INSTALL_TARGETS = mandir=/usr/share/man
 
