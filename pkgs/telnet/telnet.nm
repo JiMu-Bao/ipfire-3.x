@@ -24,9 +24,9 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = netkit-telnet
+PKG_NAME       = telnet
 PKG_VER        = 0.17
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Applications/Internet
@@ -42,11 +42,17 @@ define PKG_DESCRIPTION
 	logins into the host machine.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+PKG_TARBALL    = netkit-$(THISAPP).tar.gz
 PKG_OBJECTS   += telnet-client.tar.gz
 
-CONFIGURE_OPTIONS =
+DIR_APP = $(DIR_SRC)/netkit-$(THISAPP)
 
+# Overwite configure options, because configure script 
+# doesn't accept flags for used compiler or host definition
+CONFIGURE_OPTIONS = \
+	--prefix=/usr
+
+# Apply patches in a special order
 PKG_PATCHES    = telnet-client-cvs.patch0 \
 	telnetd-0.17.patch0 \
 	telnet-0.17-env.patch \
@@ -74,15 +80,18 @@ define STAGE_PREPARE
 endef
 
 define STAGE_INSTALL
+	# We have to create the directories on our own
 	-mkdir -pv $(BUILDROOT)/usr/man/man{1,5,8}
 	-mkdir -pv $(BUILDROOT)/usr/{,s}bin 
 
 	cd $(DIR_APP) && make install INSTALLROOT=$(BUILDROOT)
 
+	# Move manpages to correct place
 	-mkdir -pv $(BUILDROOT)/usr/share
 	mv $(BUILDROOT)/usr/man $(BUILDROOT)/usr/share/man
+
+	# Remove telnetd, we don't want it
 	rm -rf $(BUILDROOT)/usr/sbin
 	rm -rf $(BUILDROOT)/usr/share/man/man8
 	rm -rf $(BUILDROOT)/usr/share/man/man5
-
 endef
