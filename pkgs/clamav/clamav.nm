@@ -54,9 +54,9 @@ PKG_PACKAGES  += $(PKG_NAME)-devel $(PKG_NAME)-libs
 
 CFLAGS    += -D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE -DLDAP_DEPRECATED
 
-CONFIGURE_ENVIRONMENT	+= have_cv_ipv6=yes
+CONFIGURE_ENVIRONMENT += have_cv_ipv6=yes
 
-CONFIGURE_OPTIONS	+= \
+CONFIGURE_OPTIONS += \
 	--sysconfdir=/etc \
 	--disable-static \
 	--disable-rpath \
@@ -66,6 +66,8 @@ CONFIGURE_OPTIONS	+= \
 	--with-user=clamupdate \
         --with-group=clamupdate
 
+# User and group have to exist to compile the source code, 
+# so we have to create them
 define STAGE_PREPARE_CMDS
 	groupadd -g 497 -r clamupdate
 	useradd	-u 497 -r -s /sbin/nologin -d /var/lib/clamav -M \
@@ -74,8 +76,4 @@ define STAGE_PREPARE_CMDS
         groupadd -g 496 -r clamscan
 	useradd -u 496 -r -s /sbin/nologin -d / -M \
 		-g clamscan clamscan 
-endef
-
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT)
 endef
