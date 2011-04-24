@@ -43,7 +43,7 @@ BINUTILS_VER = 2.21.51.0.8-1
 
 PKG_BUILD_DEPS+= autogen binutils>=$(BINUTILS_VER) cloog-devel dejagnu \
 	elfutils-devel expect flex gmp-devel libffi-devel mpc-devel mpfr-devel \
-	ppl-devel=0.10.2-0.ip3 texinfo zlib-devel
+	ppl-devel texinfo zlib-devel
 PKG_DEPS-gcc  += binutils>=$(BINUTILS_VER) libgcc-devel cloog>=0.15
 
 # Make the GCC target platform
