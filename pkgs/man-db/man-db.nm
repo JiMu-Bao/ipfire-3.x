@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = man-db
 PKG_VER        = 2.5.7
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Base Documentation
@@ -34,7 +34,7 @@ PKG_URL        = http://bzr.savannah.gnu.org/r/man-db/
 PKG_LICENSE    = GPL
 PKG_SUMMARY    = man-db is an on-line manual database.
 
-PKG_BUILD_DEPS+= db4-devel groff
+PKG_BUILD_DEPS+= db4-devel gdbm-devel groff less libpipeline-devel
 PKG_DEPS      += groff less
 
 define PKG_DESCRIPTION
