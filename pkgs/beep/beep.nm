@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = beep
 PKG_VER        = 1.2.2
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Applications/System
@@ -47,7 +47,7 @@ PKG_TARBALL    = $(THISAPP).tar.gz
 
 define STAGE_BUILD
 	$(DO_FIX_LIBTOOL)
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
+	cd $(DIR_APP) && make FLAGS="$(CFLAGS)" $(PARALLELISMFLAGS)
 endef
 
 define STAGE_INSTALL
