@@ -26,9 +26,9 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = libsatsolver
 PKG_VER        = 0.16.4
-PKG_REL        = 3
+PKG_REL        = 4
 
-PKG_MAINTAINER =
+PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUPS     = System/Libraries
 PKG_URL        = http://gitorious.org/opensuse/sat-solver
 PKG_LICENSE    = BSD
@@ -52,12 +52,16 @@ define STAGE_PREPARE_CMDS
 	# libraries.
         cd $(DIR_APP) && echo "TARGET_LINK_LIBRARIES(satsolverext satsolver \$${EXPAT_LIBRARY} \$${ZLIB_LIBRARY})" \
                 >> ext/CMakeLists.txt
+
+	# Remove the RPM stuff when we build with -DFEDORA=1 because we
+	# do not support RPM.
+	cd $(DIR_APP) && sed -e "s/DEBIAN/FEDORA/g" -i ext/CMakeLists.txt
 endef
 
 # Define debian as distro to get weak of rpm header files.
 define STAGE_BUILD
 	cd $(DIR_APP) && mkdir build
-	cd $(DIR_APP)/build && cmake .. -DDEBIAN=1 \
+	cd $(DIR_APP)/build && cmake .. -DFEDORA=1 \
 		-DCMAKE_INSTALL_PREFIX=/usr \
 		-DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_SKIP_RPATH=1
