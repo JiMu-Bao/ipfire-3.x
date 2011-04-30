@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = libsemanage
 PKG_VER        = 2.0.45
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Libraries
@@ -34,7 +34,7 @@ PKG_URL        = http://www.selinuxproject.org
 PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = SELinux binary policy manipulation library.
 
-PKG_BUILD_DEPS+= bison flex libselinux-devel libsepol-devel \
+PKG_BUILD_DEPS+= bison bzip2-devel flex libselinux-devel libsepol-devel \
 	python-devel swig ustr-devel
 
 define PKG_DESCRIPTION
