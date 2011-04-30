@@ -46,6 +46,7 @@ PKG_SUMMARY    = $(DISTRO_NAME) release files.
 
 # In general to this package is referred as "system-release".
 PKG_PROVIDES  += system-release
+PKG_OBSOLETES  = system-release
 
 define PKG_DESCRIPTION
 	$(DISTRO_NAME) release files such as pakfire configs and various /etc/ \
@@ -53,6 +54,8 @@ define PKG_DESCRIPTION
 endef
 
 PKG_TARBALL    =
+
+PKG_PACKAGES   = $(PKG_NAME)
 
 STAGE_PREPARE = # Do nothing
 STAGE_BUILD = # Do nothing
