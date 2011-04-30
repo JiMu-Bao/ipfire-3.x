@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = guile
-PKG_VER        = 1.8.7
+PKG_VER        = 1.8.8
 PKG_REL        = 1
 
 PKG_MAINTAINER =
@@ -46,6 +46,10 @@ endef
 PKG_TARBALL    = $(THISAPP).tar.gz
 
 PKG_PACKAGES  += $(PKG_NAME)-devel
+
+CONFIGURE_OPTIONS += \
+	--disable-static \
+	--disable-error-on-warning
 
 QUALITY_AGENT_WHITELIST_RPATH = /usr/lib
 
