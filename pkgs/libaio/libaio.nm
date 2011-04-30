@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = libaio
 PKG_VER        = 0.3.109
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Libraries
@@ -50,13 +50,8 @@ PKG_BUILD_DEPS+= e2fsprogs-devel
 PKG_TARBALL    = $(THISAPP).tar.bz2
 
 define STAGE_BUILD
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
-endef
-
-define STAGE_TEST
-	# Only do a partcheck, because a full check requires a 
-	# loop device, which isn't avialable.
-	cd $(DIR_APP) && make partcheck
+	cd $(DIR_APP) && make $(PARALLELISMFLAGS) \
+		CFLAGS="$(CFLAGS) -I." CC="gcc"
 endef
 
 define STAGE_INSTALL_CMDS
