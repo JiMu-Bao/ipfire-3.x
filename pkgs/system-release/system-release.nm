@@ -24,10 +24,18 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = system-release
+# Make the configuration of your distribution right here.
+DISTRO_NAME    = IPFire
+DISTRO_SNAME   = ipfire
+DISTRO_VERSION = 3.0-alpha2
+DISTRO_RELEASE = 3
+DISTRO_SLOGAN  = Gluttony
+DISTRO_COLOR   = 0;31
+
+PKG_NAME       = $(DISTRO_SNAME)-release
 PKG_VER        = $(DISTRO_VERSION)
-PKG_REL        = 2
-PKG_EPOCH      = 1
+PKG_REL        = 1
+PKG_EPOCH      = 3
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
@@ -36,11 +44,12 @@ PKG_URL        = http://www.ipfire.org
 PKG_LICENSE    =
 PKG_SUMMARY    = $(DISTRO_NAME) release files.
 
-PKG_PROVIDES  += $(DISTRO_SNAME)-release
+# In general to this package is referred as "system-release".
+PKG_PROVIDES  += system-release
 
 define PKG_DESCRIPTION
 	$(DISTRO_NAME) release files such as pakfire configs and various /etc/ \
-	files that	define the release.
+	files that define the release.
 endef
 
 PKG_TARBALL    =
@@ -59,4 +68,16 @@ define STAGE_INSTALL
 	echo "$(DISTRO_NAME) release $(DISTRO_VERSION) ($(DISTRO_SLOGAN))" \
 		> $(BUILDROOT)/etc/$(DISTRO_SNAME)-release
 	ln -svf $(DISTRO_SNAME)-release $(BUILDROOT)/etc/system-release
+
+	# Set a default hostname that is set until the user customizes that.
+	echo "$(DISTRO_SNAME).localdomain" > $(BUILDROOT)/etc/hostname
+
+	# Create /etc/os-release.
+	echo "NAME=\"$(DISTRO_NAME)\"" >> $(BUILDROOT)/etc/os-release
+	echo "VERSION=\"$(DISTRO_VERSION)\"" >> $(BUILDROOT)/etc/os-release
+	echo "ID=$(DISTRO_SNAME)" >> $(BUILDROOT)/etc/os-release
+	echo "VERSION_ID=$(DISTRO_RELEASE)" >> $(BUILDROOT)/etc/os-release
+	echo "PRETTY_NAME=\"$(DISTRO_NAME) $(DISTRO_VERSION) ($(DISTRO_SLOGAN))\"" \
+		>> $(BUILDROOT)/etc/os-release
+	echo "ANSI_COLOR=$(DISTRO_COLOR)" >> $(BUILDROOT)/etc/os-release
 endef
