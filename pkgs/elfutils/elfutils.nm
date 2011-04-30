@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = elfutils
-PKG_VER        = 0.145
+PKG_VER        = 0.152
 PKG_REL        = 1
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
@@ -55,6 +55,15 @@ CONFIGURE_OPTIONS += \
 
 define QUALITY_AGENT_WHITELIST_RPATH
 	/usr/lib/elfutils
+endef
+
+# Remove -Wall from CFLAGS because -Werror is used at some places.
+CFLAGS        := $(filter-out -Wall,$(CFLAGS))
+
+define STAGE_PREPARE_CMDS
+	# Fix a compiler warning.
+	cd $(DIR_APP) && sed -i.scanf-m -e 's/%m/%a/g' \
+		src/addr2line.c tests/line2addr.c
 endef
 
 # fails
