@@ -26,10 +26,10 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = libcgroup
 PKG_VER        = 0.35.1
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Libraries
+PKG_GROUPS     = Development/Libraries
 PKG_URL        = http://libcg.sourceforge.net/
 PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = Tools and libraries to control and monitor control groups.
