@@ -26,10 +26,10 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = vala
 PKG_VER        = 0.11.2
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUP      = Development/Languages
+PKG_GROUPS     = Development/Languages
 PKG_URL        = http://live.gnome.org/Vala 
 PKG_LICENSE    = LGPLv2+ and BSD 
 PKG_SUMMARY    = A modern programming language.
@@ -48,7 +48,8 @@ endef
 
 PKG_TARBALL    = $(THISAPP).tar.bz2
 
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
+# Disabled as it does total rubbish.
+#define STAGE_TEST
+#	cd $(DIR_APP) && make check
+#endef
 
