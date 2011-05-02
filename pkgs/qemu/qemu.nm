@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = qemu-kvm
-PKG_VER        = 0.14.0-rc1
+PKG_VER        = 0.14.0
 PKG_REL        = 0
 
 PKG_MAINTAINER =
@@ -35,7 +35,7 @@ PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = QEMU is a generic and open source machine emulator and virtualizer.
 
 PKG_BUILD_DEPS+= libcurl-devel libuuid-devel gnutls-devel ncurses-devel \
-	pciutils-devel sdl-devel
+	pciutils-devel sdl-devel zlib-devel
 
 define PKG_DESCRIPTION
 	QEMU is a processor emulator that relies on dynamic binary translation \
