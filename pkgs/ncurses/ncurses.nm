@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = ncurses
 PKG_VER        = 5.9
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Base
@@ -44,8 +44,6 @@ define PKG_DESCRIPTION
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
-
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
 
 CONFIGURE_OPTIONS += \
 	--mandir=/usr/share/man \
@@ -68,4 +66,68 @@ define STAGE_INSTALL_CMDS
 	rm -vf $(BUILDROOT)/usr/lib/libcursesw.so
 	echo "INPUT(-lncursesw)" >$(BUILDROOT)/usr/lib/libcursesw.so
 	ln -sfv libncurses.so $(BUILDROOT)/usr/lib/libcurses.so
+endef
+
+PKG_PACKAGES  += $(PKG_NAME_REAL)-devel $(PKG_NAME_REAL)-libs
+
+
+# ncurses-term
+PKG_PACKAGES  += $(PKG_NAME_REAL)-term
+
+PKG_SUMMARY-$(PKG_NAME)-term = Terminal descriptions for ncurses.
+
+define PKG_DESCRIPTION-$(PKG_NAME)-term
+	This package contains additional terminal descriptions not found in
+	the ncurses-base package.
+endef
+
+PKG_FILES-$(PKG_NAME)-term = /usr/share/terminfo
+
+
+# ncurses-base
+PKG_PACKAGES  += $(PKG_NAME)-base
+
+# The -libs packages does depend on this.
+PKG_DEPS-$(PKG_NAME)-libs += $(PKG_NAME)-base
+
+PKG_SUMMARY-$(PKG_NAME)-base = Terminal descriptions.
+
+define PKG_DESCRIPTION-$(PKG_NAME)-base
+	This package contains descriptions of common terminals. Other terminal
+	descriptions are included in the ncurses-term package.
+endef
+
+define PKG_FILES-$(PKG_NAME)-base
+	/usr/share/terminfo/*/Eterm*
+	/usr/share/terminfo/*/aterm
+	/usr/share/terminfo/*/bterm
+	/usr/share/terminfo/*/cons25
+	/usr/share/terminfo/*/cygwin
+	/usr/share/terminfo/*/eterm*
+	/usr/share/terminfo/*/gnome
+	/usr/share/terminfo/*/gnome-256color
+	/usr/share/terminfo/*/hurd
+	/usr/share/terminfo/*/jfbterm
+	/usr/share/terminfo/*/konsole
+	/usr/share/terminfo/*/konsole-256color
+	/usr/share/terminfo/*/mach*
+	/usr/share/terminfo/*/mlterm
+	/usr/share/terminfo/*/mrxvt
+	/usr/share/terminfo/*/nsterm
+	/usr/share/terminfo/*/putty*
+	/usr/share/terminfo/*/pcansi
+	/usr/share/terminfo/*/rxvt
+	/usr/share/terminfo/*/rxvt-*
+	/usr/share/terminfo/*/screen
+	/usr/share/terminfo/*/screen-*color
+	/usr/share/terminfo/*/screen.*
+	/usr/share/terminfo/*/sun
+	/usr/share/terminfo/*/teraterm
+	/usr/share/terminfo/*/teraterm2.3
+	/usr/share/terminfo/*/vte
+	/usr/share/terminfo/*/vte-256color
+	/usr/share/terminfo/*/vwmterm
+	/usr/share/terminfo/*/wsvt25*
+	/usr/share/terminfo/*/xfce
+	/usr/share/terminfo/*/xterm xterm-*
 endef
