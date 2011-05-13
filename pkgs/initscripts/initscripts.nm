@@ -25,7 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = initscripts
-PKG_VER        = $(DISTRO_VERSION)
+PKG_EPOCH      = 1
+PKG_VER        = 2.99
 PKG_REL        = 1
 
 PKG_MAINTAINER =
@@ -34,6 +35,7 @@ PKG_URL        =
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = The set of scripts that initalize the system.
 
+PKG_BUILD_DEPS+= glib2-devel
 PKG_DEPS      += bash coreutils e2fsprogs grep iproute2 module-init-tools \
 	procps sed system-release udev util-linux
 
@@ -65,4 +67,8 @@ define STAGE_INSTALL
 	chmod -v 755 $(BUILDROOT)/etc/sysconfig/rc.local
 
 	cp -vf $(DIR_SOURCE)/sysctl.conf $(BUILDROOT)/etc
+
+	# Install udev rules
+	-mkdir -pv $(BUILDROOT)/lib/udev/rules.d/
+	cp -vf $(DIR_SOURCE)/udev/* $(BUILDROOT)/lib/udev/rules.d/
 endef
