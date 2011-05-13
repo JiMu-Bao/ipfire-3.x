@@ -27,7 +27,7 @@ include $(PKGROOT)/Include
 PKG_NAME       = initscripts
 PKG_EPOCH      = 1
 PKG_VER        = 2.99
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Base System/Boot
