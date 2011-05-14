@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = qemu-kvm
 PKG_VER        = 0.14.0
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Applications/Virtualization
@@ -59,8 +59,11 @@ CONFIGURE_OPTIONS = \
 	--extra-cflags="$(CFLAGS)" \
 	--disable-strip \
 	--disable-xen \
-	--sysconfdir=/etc
+	--sysconfdir=/etc \
+	--target-list="i386-softmmu"
 
+# target-list is not working with i386 because of some PIE or PIC errors
+#	--target-list="i386-linux-user i386-softmmu"
 
 define STAGE_CONFIGURE_CMDS
 	cd $(DIR_APP) && sed -e "s@-Wl,-rpath,/usr/lib@@g" -i */config-target.mak
