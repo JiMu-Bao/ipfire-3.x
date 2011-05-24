@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = perl
 PKG_VER        = 5.12.3
-PKG_REL        = 3
+PKG_REL        = 4
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Development/Languages
@@ -120,7 +120,13 @@ PKG_PROVIDES-perl += \
 	perl(timelocal.pl) \
 	perl(utf8_heavy.pl) \
 	perl(validate.pl) \
-	perl(Carp::Heavy)
+	perl(Carp) \
+	perl(Carp::Heavy) \
+	perl(Exporter) \
+	perl(File::Basename) \
+	perl(constant) \
+	perl(strict) \
+	perl(vars)
 
 define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && sed -i 's/command /command[ -]/' makedepend.SH
@@ -858,6 +864,7 @@ define PKG_DESCRIPTION-perl-Params-Check
 endef
 
 PKG_DEPS-perl-Params-Check = perl=$(THISVER)
+PKG_PROVIDES-perl-Params-Check += perl(Params::Check)
 
 define PKG_FILES-perl-Params-Check
 	/usr/share/perl5/Params/
@@ -883,6 +890,27 @@ PKG_DEPS-perl-Parse-CPAN-Meta = perl=$(THISVER)
 define PKG_FILES-perl-Parse-CPAN-Meta
 	/usr/share/perl5/Parse/CPAN/Meta.pm
 	/usr/share/man/man3/Parse::CPAN::Meta.3*
+endef
+
+# PathTools
+PKG_PACKAGES   += perl-PathTools
+
+PKG_EPOCH-perl-PathTools = 0
+PKG_VER-perl-PathTools = 3.31
+PKG_LICENSE-perl-PathTools = (GPL+ or Artistic) and BSD
+
+PKG_SUMMARY-perl-PathTools = PathTools Perl module (Cwd, File::Spec).
+define PKG_DESCRIPTION-perl-PathTools
+	PathTools Perl module (Cwd, File::Spec).
+endef
+
+PKG_DEPS-perl-PathTools = perl=$(THISVER)
+
+define PKG_FILES-perl-PathTools
+	/usr/lib/perl5/Cwd.pm
+	/usr/lib/perl5/File/Spec*
+	/usr/share/man/man3/Cwd*
+	/usr/share/man/man3/File::Spec*
 endef
 
 # Pod-Escapes
