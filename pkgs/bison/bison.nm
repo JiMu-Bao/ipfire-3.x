@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = bison
-PKG_VER        = 2.4.3
-PKG_REL        = 0
+PKG_VER        = 2.5
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Development/Tools
@@ -42,7 +42,7 @@ define PKG_DESCRIPTION
 	context-free grammar into an LALR(1) or GLR parser for that grammar.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+PKG_TARBALL    = $(THISAPP).tar.gz
 
 define STAGE_CONFIGURE_CMDS
 	cd $(DIR_APP) && echo '#define YYENABLE_NLS 1' >> lib/config.h
