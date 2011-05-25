@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = rstp
 PKG_VER        = 0.21
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Networking/Tools
@@ -40,12 +40,10 @@ endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
-CFLAGS    += -fno-strict-aliasing
-
 define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && sed -i Makefile \
 		-e "s/-Werror//" \
-		-e "s/^CFLAGS = .*/& $(CFLAGS)/g"
+		-e "s/^CFLAGS =/CFLAGS = $(CFLAGS)/g"
 endef
 
 define STAGE_BUILD
