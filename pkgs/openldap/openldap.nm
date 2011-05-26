@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = openldap
 PKG_VER        = 2.4.25
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Daemons
@@ -55,7 +55,6 @@ CONFIGURE_OPTIONS += \
 	--sysconfdir=/etc \
 	--localstatedir=/var \
 	--with-threads=posix \
-	--disable-debug \
 	--disable-perl \
 	--enable-dynamic \
 	--enable-crypt \
