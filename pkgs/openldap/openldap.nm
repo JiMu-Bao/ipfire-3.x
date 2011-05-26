@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = openldap
-PKG_VER        = 2.4.21
-PKG_REL        = 2
+PKG_VER        = 2.4.25
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Daemons
