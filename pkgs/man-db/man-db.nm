@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = man-db
 PKG_VER        = 2.6.0.2
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Base Documentation
@@ -36,6 +36,9 @@ PKG_SUMMARY    = man-db is an on-line manual database.
 
 PKG_BUILD_DEPS+= db4-devel gdbm-devel groff less libpipeline-devel
 PKG_DEPS      += groff less
+
+# This package should also be known by "man".
+PKG_PROVIDES  += man
 
 define PKG_DESCRIPTION
 	man-db is an implementation of the standard Unix documentation \
