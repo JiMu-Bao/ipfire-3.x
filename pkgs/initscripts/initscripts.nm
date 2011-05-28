@@ -27,7 +27,7 @@ include $(PKGROOT)/Include
 PKG_NAME       = initscripts
 PKG_EPOCH      = 1
 PKG_VER        = 2.99
-PKG_REL        = 3
+PKG_REL        = 4
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Base System/Boot
@@ -35,7 +35,7 @@ PKG_URL        =
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = The set of scripts that initalize the system.
 
-PKG_BUILD_DEPS+= glib2-devel
+PKG_BUILD_DEPS+= glib2-devel popt-devel
 PKG_DEPS      += bash coreutils e2fsprogs grep iproute2 module-init-tools \
 	procps sed system-release udev util-linux
 
@@ -52,6 +52,10 @@ endef
 
 define STAGE_BUILD
 	cd $(DIR_APP)/src && make $(PARALLELISMFLAGS)
+endef
+
+define STAGE_TEST
+	cd $(DIR_APP)/src && make test
 endef
 
 define STAGE_INSTALL
