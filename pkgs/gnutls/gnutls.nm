@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = gnutls
-PKG_VER        = 2.8.1
+PKG_VER        = 2.12.5
 PKG_REL        = 1
 
 PKG_MAINTAINER =
@@ -49,4 +49,5 @@ PKG_PACKAGES  += $(PKG_NAME)-devel
 
 CONFIGURE_OPTIONS += \
 	--with-included-libcfg \
-	--disable-srp-authentication
+	--disable-srp-authentication \
+	--with-libgcrypt
