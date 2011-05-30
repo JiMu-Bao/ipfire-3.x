@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = ccache
-PKG_VER        = 3.1.4
-PKG_REL        = 2
+PKG_VER        = 3.1.5
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Development/Compilers
@@ -45,7 +45,7 @@ define PKG_DESCRIPTION
 	a 5 to 10 times speedup in common compilations.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.xz
+PKG_TARBALL    = $(THISAPP).tar.bz2
 
 # Sets ccache max size up to 2 GB
 CFLAGS += -DDEFAULT_MAXSIZE=2097152
