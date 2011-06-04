@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 RemainAfterExit=yes
-ExecPreStart=/sbin/modprobe 8021q
+ExecStartPre=/sbin/modprobe 8021q
 ExecStart=/usr/sbin/lldpd -c
 
 [Install]
