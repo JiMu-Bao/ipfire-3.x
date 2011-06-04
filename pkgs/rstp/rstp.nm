@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = rstp
 PKG_VER        = 0.21
-PKG_REL        = 3
+PKG_REL        = 4
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Networking/Tools
