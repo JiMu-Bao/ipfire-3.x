@@ -5,7 +5,7 @@ Before=network.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecPreStart=/sbin/network init
+ExecStartPre=/sbin/network init
 ExecStart=/sbin/network start
 ExecStop=/sbin/network stop
 
