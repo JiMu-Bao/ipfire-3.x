@@ -49,6 +49,7 @@ CONFIGURE_OPTIONS = \
 	--prefix=/usr
 
 SYSTEMD_UNIT_DIR = /lib/systemd/system
+SYSTEMD_TMPFILES_DIR = /usr/lib/tmpfiles.d
 
 ###############################################################################
 #
@@ -149,6 +150,7 @@ PKG_DEFAULT_FILES += $(wildcard $(DIR_SOURCE)/default/*)
 PKG_PAM_FILES      = $(wildcard $(DIR_SOURCE)/*.pam)
 PKG_PAM_FILES     += $(wildcard $(DIR_SOURCE)/pam.d/*)
 PKG_SYSTEMD_FILES += $(wildcard $(DIR_SOURCE)/systemd/*)
+PKG_SYSTEMD_TMPFILES += $(wildcard $(DIR_SOURCE)/*.tmpfiles)
 
 ###############################################################################
 #

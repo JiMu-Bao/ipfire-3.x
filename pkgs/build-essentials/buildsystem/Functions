@@ -69,6 +69,16 @@ define DO_INSTALL_SYSTEMD
 	$(foreach file,$(PKG_SYSTEMD_FILES),$(call __INSTALL_SYSTEMD,$(file)))
 endef
 
+define __INSTALL_SYSTEMD_TMPFILES
+	-mkdir -pv $(BUILDROOT)$(SYSTEMD_TMPFILES_DIR)
+	cd $(DIR_APP) && cp -vf $(1) $(BUILDROOT)$(SYSTEMD_TMPFILES_DIR)/$(subst .tmpfiles,.conf,$(notdir $(1)))
+
+endef
+
+define DO_INSTALL_SYSTEMD_TMPFILES
+	$(foreach file,$(PKG_SYSTEMD_TMPFILES),$(call __INSTALL_SYSTEMD_TMPFILES,$(file)))
+endef
+
 define __INSTALL_PAM
 	-mkdir -pv $(BUILDROOT)/etc/pam.d
 	cd $(DIR_APP) && cp -vf $(1) $(BUILDROOT)/etc/pam.d/$(subst .pam,,$(notdir $(1)))
@@ -142,6 +152,7 @@ define DO_INSTALL
 
 	$(DO_INSTALL_DEFAULT)
 	$(DO_INSTALL_SYSTEMD)
+	$(DO_INSTALL_SYSTEMD_TMPFILES)
 	$(DO_INSTALL_PAM)
 
 	@echo "#####################################################################"
