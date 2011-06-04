@@ -1,7 +1,7 @@
-diff -Nur old/Makefile.am new/Makefile.am
---- old/Makefile.am	2011-04-06 21:28:41.000000000 +0200
-+++ new/Makefile.am	2011-04-08 19:45:31.779256001 +0200
-@@ -530,73 +530,13 @@
+diff -Nur a/Makefile.am b/Makefile.am
+--- a/Makefile.am	2011-05-26 19:18:54.000000000 +0200
++++ b/Makefile.am	2011-06-04 20:56:50.863488131 +0200
+@@ -567,79 +567,13 @@
  	src/readahead-common.h \
  	src/ask-password-api.h
  
@@ -45,10 +45,18 @@ diff -Nur old/Makefile.am new/Makefile.am
 -	man/vconsole.conf.5 \
 -	man/locale.conf.5 \
 -	man/os-release.5 \
+-        man/machine-info.5 \
 -	man/modules-load.d.5 \
--	man/binfmt.d.5 \
--	man/sysctl.d.5
--
+-	man/sysctl.d.5 \
+-        man/systemd-ask-password.1
++MANPAGES = #
+ 
+-if ENABLE_BINFMT
+-MANPAGES += \
+-	man/binfmt.d.5
+-endif
++MANPAGES_ALIAS = #
+ 
 -MANPAGES_ALIAS = \
 -	man/reboot.8 \
 -	man/poweroff.8 \
@@ -69,15 +77,11 @@ diff -Nur old/Makefile.am new/Makefile.am
 -dist_man_MANS = \
 -	$(MANPAGES) \
 -	$(MANPAGES_ALIAS)
-+MANPAGES =
++dist_man_MANS = #
  
 -nodist_man_MANS = \
 -	man/systemd.special.7
-+MANPAGES_ALIAS =
-+
-+dist_man_MANS =
-+
-+nodist_man_MANS =
++nodist_man_MANS = #
  
  XML_FILES = \
  	${patsubst %.1,%.xml,${patsubst %.3,%.xml,${patsubst %.5,%.xml,${patsubst %.7,%.xml,${patsubst %.8,%.xml,$(MANPAGES)}}}}}
