@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = ppp
 PKG_VER        = 2.4.5
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Daemons
@@ -34,7 +34,7 @@ PKG_URL        = ftp://ftp.samba.org/pub/ppp/
 PKG_LICENSE    = BSD and LGPLv2+ and GPLv2+ and Public Domain
 PKG_SUMMARY    = The PPP (Point-to-Point Protocol) daemon.
 
-PKG_BUILD_DEPS+= libpcap-devel linux-atm-devel pam-devel
+PKG_BUILD_DEPS+= libpcap-devel linux-atm-devel openssl-devel pam-devel
 
 define PKG_DESCRIPTION
 	The ppp package contains the PPP (Point-to-Point Protocol) daemon and \
@@ -49,8 +49,6 @@ PKG_TARBALL    = $(THISAPP).tar.gz
 PKG_PACKAGES  += $(PKG_NAME)-devel
 
 define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -e "s/^LIBS =/LIBS=-lutil/" -i pppd/Makefile.linux
-
 	cd $(DIR_APP) && sed -e "s@^RUNDIR .*@RUNDIR = /var/run/ppp@" \
 		-e "s@^LOGDIR .*@LOGDIR = /var/log/ppp@" \
 		-i linux/Makefile.top
@@ -67,8 +65,7 @@ define STAGE_BUILD
 		./configure \
 			--prefix=/usr
 
-	cd $(DIR_APP) && make CC="gcc $(CFLAGS)" $(PARALLELISMFLAGS) \
-		HAVE_INET6=yes USE_PAM=y
+	cd $(DIR_APP) && make CC="gcc $(CFLAGS)" $(PARALLELISMFLAGS)
 endef
 
 define STAGE_INSTALL
