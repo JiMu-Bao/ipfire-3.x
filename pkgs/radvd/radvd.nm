@@ -26,11 +26,11 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = radvd
 PKG_VER        = 1.8
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Daemons
-PKG_URL        = http://flex.sourceforge.net/
+PKG_URL        = http://www.litech.org/radvd/
 PKG_LICENSE    = BSD with advertising
 PKG_SUMMARY    = A Router Advertisement daemon.
 
