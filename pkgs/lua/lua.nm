@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = lua
 PKG_VER        = 5.1.4
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Development/Languages
@@ -57,18 +57,15 @@ define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && sh autogen.sh
 endef
 
-define STAGE_BUILD
-	cd $(DIR_APP) && \
-		./configure \
-			--prefix=/usr \
-			--mandir=/usr/share/man \
-			--with-readline
+CONFIGURE_OPTIONS += \
+	--mandir=/usr/share/man \
+	--with-readline
 
-	$(DO_FIX_LIBTOOL)
+# hack so that only /usr/bin/lua gets linked with readline as it is the
+# only one which needs this and otherwise we get License troubles
+STAGE_BUILD_TARGETS =  LIBS="-ldl" luac_LDADD="liblua.la -lm -ldl"
 
-	# hack so that only /usr/bin/lua gets linked with readline as it is the
-	# only one which needs this and otherwise we get License troubles
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS) LIBS="-ldl" luac_LDADD="liblua.la -lm -ldl"
-	# also remove readline from lua.pc
+# Remove readline from lua.pc
+define STAGE_BUILD_CMDS
 	cd $(DIR_APP) && sed -i 's/-lreadline -lncurses //g' etc/lua.pc
 endef
