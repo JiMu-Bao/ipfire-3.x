@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = git
 PKG_VER        = 1.7.3.2
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Development/Tools
@@ -34,7 +34,8 @@ PKG_URL        = http://git-scm.com/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = Fast Version Control System.
 
-PKG_BUILD_DEPS+= expat-devel gettext libcurl-devel openssl-devel zlib-devel
+PKG_BUILD_DEPS+= expat-devel gettext libcurl-devel openssl-devel perl-devel \
+	zlib-devel
 PKG_DEPS      += less openssh-clients rsync /usr/bin/vi
 
 define PKG_DESCRIPTION
@@ -49,7 +50,6 @@ define STAGE_PREPARE_CMDS
 	echo "CFLAGS = $(CFLAGS)" > $(DIR_APP)/config.mak
 	echo "BLK_SHA1 = 1" >> $(DIR_APP)/config.mak
 	echo "NEEDS_CRYPTO_WITH_SSL = 1" >> $(DIR_APP)/config.mak
-	echo "NO_PERL = 1" >> $(DIR_APP)/config.mak
 	echo "NO_PYTHON = 1" >> $(DIR_APP)/config.mak
 	echo "NO_TCLTK = 1" >> $(DIR_APP)/config.mak
 	echo "ETC_GITCONFIG = /etc/gitconfig" >> $(DIR_APP)/config.mak
