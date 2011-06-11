@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = lua
 PKG_VER        = 5.1.4
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Development/Languages
@@ -50,6 +50,9 @@ endef
 PKG_TARBALL    = $(THISAPP).tar.gz
 
 PKG_PACKAGES  += $(PKG_NAME)-devel $(PKG_NAME)-libs
+
+PKG_FILES-$(PKG_NAME)-libs = \
+	/usr/lib/liblua-5.1.so
 
 define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && chmod u+x autogen.sh config.guess config.sub configure \
