@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = qtermwidget
 PKG_VER        = 0.1
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = /Tools
@@ -49,12 +49,11 @@ PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
 
 DIR_APP        = $(DIR_SRC)/$(PKG_NAME)
 
+# XXX Why do we have to set this flag here ?
+export QMAKESPEC=linux-g++
+
 define STAGE_BUILD
-	# XXX Do we have to set this flag here ?
-	cd $(DIR_APP) && export QMAKESPEC=linux-g++
-
 	cd $(DIR_APP) && qmake
-
 	cd $(DIR_APP) && make #$(PARALLELISMFLAGS)
 endef
 
