@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = iptables
-PKG_VER        = 1.4.10
+PKG_VER        = 1.4.11.1
 PKG_REL        = 1
 
 PKG_BUILD_DEPS+= libselinux-devel
@@ -65,7 +65,7 @@ CONFIGURE_OPTIONS += \
 
 define STAGE_PREPARE_CMDS
 	# Make more space for target name on output.
-	cd $(DIR_APP) && sed -e "s/%-9s/%-18s/g" -i ip{,6}tables.c
+	cd $(DIR_APP)/iptables && sed -e "s/%-9s/%-18s/g" -i ip{,6}tables.c
 endef
 
 define STAGE_INSTALL_CMDS
@@ -84,8 +84,8 @@ define STAGE_INSTALL_CMDS
 	ln -svf ../../lib/libip4tc.so.0 $(BUILDROOT)/usr/lib/libip4tc.so
 	ln -svf ../../lib/libip6tc.so.0 $(BUILDROOT)/usr/lib/libip6tc.so
 	ln -svf ../../lib/libipq.so.0 $(BUILDROOT)/usr/lib/libipq.so
-	ln -svf ../../lib/libxtables.so.5 $(BUILDROOT)/usr/lib/libxtables.so
+	ln -svf ../../lib/libxtables.so.6 $(BUILDROOT)/usr/lib/libxtables.so
 
 	# Replace absolute symlink
-	ln -svf ../sbin/iptables-multi $(BUILDROOT)/bin/iptables-xml
+	ln -svf ../sbin/xtables-multi $(BUILDROOT)/bin/iptables-xml
 endef
