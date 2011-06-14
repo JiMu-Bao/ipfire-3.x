@@ -5,8 +5,10 @@ After=network.target
 
 [Service]
 ExecStart=/usr/sbin/radvd -C /etc/radvd.conf -u radvd
+ExecReload=/bin/kill -HUP $MAINPID
 Type=forking
-PIDFile=/var/run/radvd/radvd.pid
+PIDFile=/run/radvd/radvd.pid
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
