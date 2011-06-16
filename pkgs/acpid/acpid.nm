@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = acpid
 PKG_VER        = 2.0.9
-PKG_REL        = 3
+PKG_REL        = 4
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Base System/Daemons
