@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = nss_ldap
 PKG_VER        = 262
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Base
@@ -45,8 +45,6 @@ define PKG_DESCRIPTION
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
-
-PKG_PACKAGES  += $(PKG_NAME)-devel
 
 CONFIGURE_OPTIONS = \
 	--prefix=/ \
