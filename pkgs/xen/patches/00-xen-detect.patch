@@ -33,7 +33,7 @@ diff -r 23c068b10923 tools/misc/xen-detect.c
  static int check_for_xen(int pv_context)
  {
 -    uint32_t eax, ebx, ecx, edx;
-+    uint32_t regs[3];
++    uint32_t regs[4];
      char signature[13];
      uint32_t base;
  

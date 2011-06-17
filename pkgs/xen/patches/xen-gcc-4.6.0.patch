@@ -14,7 +14,7 @@
  LDFLAGS += $(foreach i, $(EXTRA_LIB), -L$(i)) 
  CFLAGS += $(foreach i, $(EXTRA_INCLUDES), -I$(i))
 +# temporary compile fix for rawhide
-+CFLAGS += -Wunused-but-set-variable -Wno-error=unused-but-set-variable -Wuninitialized -Wno-error=uninitialized -Wno-array-bounds
++CFLAGS += -Wunused-but-set-variable -Wno-error=unused-but-set-variable -Wuninitialized -Wno-error=uninitialized
 
  EMBEDDED_EXTRA_CFLAGS := -nopie -fno-stack-protector -fno-stack-protector-all
  EMBEDDED_EXTRA_CFLAGS += -fno-exceptions
