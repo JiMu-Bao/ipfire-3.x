@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = xen
 PKG_VER        = 4.1.1
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER = Ben Schweikert <ben.schweikert@ipfire.org>
 PKG_GROUPS     = Applications/Virtualization
