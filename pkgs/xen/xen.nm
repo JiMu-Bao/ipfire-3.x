@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = xen
-PKG_VER        = 4.1.0
+PKG_VER        = 4.1.1
 PKG_REL        = 1
 
 PKG_MAINTAINER = Ben Schweikert <ben.schweikert@ipfire.org>
@@ -74,15 +74,17 @@ endef
 
 define STAGE_BUILD
 	# Following two lines are disabling HVM. HVM does not work because \
-	# of soem PIE errors we get when we try to build the firmware part \
+	# of some PIE errors we get when we try to build the firmware part \
 	# needed for different architektures.
 	cd $(DIR_APP) && sed -i -e '/^CONFIG_IOEMU := y$$/d' config/*.mk
 	cd $(DIR_APP) && sed -i -e '/SUBDIRS-$$(CONFIG_X86) += firmware/d' tools/Makefile
 
-	cd $(DIR_APP) && make tools xen $(PARALLELISMFLAGS)
+	cd $(DIR_APP) && rm -f Config.mk~
+
+	cd $(DIR_APP) && make xen tools $(PARALLELISMFLAGS)
 endef
 
 define STAGE_INSTALL
-	cd $(DIR_APP) && make install-tools install-xen DESTDIR=$(BUILDROOT)
+	cd $(DIR_APP) && make xen install-tools DESTDIR=$(BUILDROOT)
 	rm -R $(BUILDROOT)/etc/init.d
 endef
