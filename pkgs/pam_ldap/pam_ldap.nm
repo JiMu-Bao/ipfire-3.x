@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = pam_ldap
-PKG_VER        = 184
+PKG_VER        = 186
 PKG_REL        = 1
 
 PKG_MAINTAINER =
@@ -34,7 +34,7 @@ PKG_URL        = http://www.padl.com/OSS/pam_ldap.html
 PKG_LICENSE    = GPL and LGPL
 PKG_SUMMARY    = A pam/ldap module that supports password changes.
 
-PKG_BUILD_DEPS+= openldap-devel pam-devel
+PKG_BUILD_DEPS+= autoconf automake openldap-devel pam-devel
 
 define PKG_DESCRIPTION
 	The pam_ldap module provides the means for Solaris and Linux servers \
@@ -42,9 +42,54 @@ define PKG_DESCRIPTION
 	change their passwords in the directory.
 endef
 
+# Always change this if the nss_ldap package has been updated!
+NSS_LDAP_VER = 265
+
 PKG_TARBALL    = $(THISAPP).tar.gz
+PKG_OBJECTS += nss_ldap-$(NSS_LDAP_VER).tar.gz
 
 CONFIGURE_OPTIONS += \
 	--sysconfdir=/etc \
 	--libdir=/lib \
-	--mandir=/usr/share/man
+	--mandir=/usr/share/man \
+	--with-ldap-conf-file=/etc/pam_ldap.conf \
+	--with-ldap-secret-file=/etc/pam_ldap.secret
+
+define STAGE_PREPARE_CMDS
+	# Extract source tarball of nss_ldap
+	cd $(DIR_SRC) && $(DO_EXTRACT) $(DIR_DL)/nss_ldap-$(NSS_LDAP_VER).tar.gz
+	
+	# Copy needed files from nss_ldap
+	cd $(DIR_APP) && cp -av $(DIR_SRC)/nss_ldap-$(NSS_LDAP_VER)/resolve.c .
+	cd $(DIR_APP) && cp -av $(DIR_SRC)/nss_ldap-$(NSS_LDAP_VER)/resolve.h .
+	cd $(DIR_APP) && cp -av $(DIR_SRC)/nss_ldap-$(NSS_LDAP_VER)/snprintf.c .
+	cd $(DIR_APP) && cp -av $(DIR_SRC)/nss_ldap-$(NSS_LDAP_VER)/snprintf.h .
+	
+	cd $(DIR_APP) && sed -i -e 's,^ldap.conf$$,pam_ldap.conf,g' *.5
+	cd $(DIR_APP) && sed -i -e 's,^/etc/ldap\.,/etc/pam_ldap.,g' *.5
+	cd $(DIR_APP) && sed -i -e 's,in ldap.co$nf,in pam_ldap.conf,g' *.5
+	cd $(DIR_APP) && sed -i -e 's,of ldap.conf,of pam_ldap.conf,g' *.5
+	cd $(DIR_APP) && sed -i -e 's,ldap.secret,pam_ldap.secret,g' *.5
+	cd $(DIR_APP) && sed -i -e 's,(ldap.conf),(pam_ldap.conf),g' *.5
+
+	cd $(DIR_APP) && autoreconf -f -i
+endef
+
+STAGE_BUILD_TARGETS += LDFLAGS="-Wl,-z,nodelete"
+
+define STAGE_INSTALL
+	# Create directory layout 
+	mkdir -pv $(BUILDROOT)/{etc,/lib/security,/usr/lib}
+
+	# Prevent to install an ldap.conf
+	touch $(BUILDROOT)/etc/ldap.conf
+	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT)
+	rm -rvf $(BUILDROOT)/etc/ldap.conf
+	
+	# Install the default configuration file and change padl to example
+	cd $(DIR_APP) && sed 's|dc=padl|dc=example|g' ldap.conf > $(BUILDROOT)/etc/pam_ldap.conf
+	chmod 644 $(BUILDROOT)/etc/pam_ldap.conf
+
+	# Create an empty ldap.secret file
+	touch $(BUILDROOT)/etc/pam_ldap.secret
+endef
