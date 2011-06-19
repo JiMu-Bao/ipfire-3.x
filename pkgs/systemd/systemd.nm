@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = systemd
 PKG_VER        = 28
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUPS     = System/Base
@@ -72,7 +72,7 @@ CONFIGURE_OPTIONS += \
 	--with-sysvinit-path= \
 	--with-sysvrcd-path= \
 	--with-udevrulesdir=/lib/udev/rules.d/ \
-	--with-pamlibdir=/etc/pam.d
+	--with-pamlibdir=/lib/security
 
 define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && ./autogen.sh ac
