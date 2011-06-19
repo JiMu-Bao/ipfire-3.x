@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = mdadm
-PKG_VER        = 3.2.1
+PKG_VER        = 3.2.2
 PKG_REL        = 1
 
 PKG_MAINTAINER =
@@ -56,7 +56,7 @@ endef
 
 define STAGE_BUILD
 	cd $(DIR_APP) && make $(PARALLELISMFLAGS) CXFLAGS="$(CFLAGS)" \
-		SYSCONFDIR="/etc" MDASSEMBLE_AUTO=1
+		CWFLAGS= SYSCONFDIR="/etc" MDASSEMBLE_AUTO=1
 endef
 
 define STAGE_INSTALL
