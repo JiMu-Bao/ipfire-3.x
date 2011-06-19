@@ -1,0 +1,11 @@
+--- nss_ldap/ldap-netgrp.c
++++ nss_ldap/ldap-netgrp.c
+@@ -372,7 +372,7 @@ _nss_ldap_setnetgrent (char *group, stru
+ 			 _nss_ldap_filt_getnetgrent, LM_NETGROUP,
+ 			 _nss_ldap_load_netgr);
+ 
+-  if (stat == NSS_NOTFOUND)
++  if (stat != NSS_SUCCESS)
+     return stat;
+ 
+   LOOKUP_SETENT (_ngbe);

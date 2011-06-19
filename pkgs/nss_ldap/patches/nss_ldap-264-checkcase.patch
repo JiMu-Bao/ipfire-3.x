@@ -1,0 +1,192 @@
+Search attribute which are not case-sensitive in a directory, but which
+are in local files on a glibc-based system:
+
+	posixAccount.uid: struct passwd.pw_name
+	shadowAccount.uid: struct shadow.sp_namp
+	posixGroup.cn: struct group.gr_name
+	ipService.cn,ipServiceProtocol: struct servent.s_name,s_proto
+	ipProtocol.cn: struct protoent.p_name
+	ipHost.cn: OK, actually not case-sensitive in local files
+	ipNetwork.cn: OK, actually not case-sensitive in local files
+	rfc822MailAlias.cn: OK, actually not case-sensitive in local files
+	oncRpc.cn: struct rpcent.r_name
+	nisNetgroup.cn: N/A
+	nisMap.nisMapName: N/A
+	nisObject.nisMapName: N/A
+	nisObject.cn: N/A
+	ieee802Device: N/A
+	bootableDevice: N/A
+	automount.automountKey: no defined structure
+
+This patch adds additional logic to reject the result of a search if the
+field in the result which corresponds to the original request differs
+by case from the actual request (for example, when a search for a group
+named "bob" turns up a group named "Bob"), but currently only covers
+glibc-style systems.  Upstream #399.
+
+diff -ur nss_ldap-264/ldap-grp.c nss_ldap-264/ldap-grp.c
+--- nss_ldap-264/ldap-grp.c	2009-07-02 11:01:03.000000000 -0400
++++ nss_ldap-264/ldap-grp.c	2009-07-02 10:57:37.000000000 -0400
+@@ -1201,7 +1201,8 @@
+ 		      char *buffer, size_t buflen, int *errnop)
+ {
+   LOOKUP_NAME (name, result, buffer, buflen, errnop, _nss_ldap_filt_getgrnam,
+-	       LM_GROUP, _nss_ldap_parse_gr, LDAP_NSS_BUFLEN_GROUP);
++	       LM_GROUP, _nss_ldap_parse_gr, LDAP_NSS_BUFLEN_GROUP)
++  AND_REQUIRE_MATCH(name, result->gr_name);
+ }
+ #elif defined(HAVE_NSSWITCH_H)
+ static NSS_STATUS
+diff -ur nss_ldap-264/ldap-nss.c nss_ldap-264/ldap-nss.c
+--- nss_ldap-264/ldap-nss.c	2009-07-02 11:01:03.000000000 -0400
++++ nss_ldap-264/ldap-nss.c	2009-07-02 10:46:39.000000000 -0400
+@@ -4300,4 +4300,17 @@
+   return lderrno;
+ }
+ 
++NSS_STATUS _nss_ldap_expect_name(NSS_STATUS result,
++				 const char *requested_name,
++				 const char *actual_name)
++{
++	if ((result == NSS_SUCCESS) &&
++	    (requested_name != NULL) &&
++	    (actual_name != NULL) &&
++	    (strcasecmp(requested_name, actual_name) == 0) &&
++	    (strcmp(requested_name, actual_name) != 0)) {
++		return NSS_NOTFOUND;
++	}
++	return result;
++}
+ 
+diff -ur nss_ldap-264/ldap-nss.h nss_ldap-264/ldap-nss.h
+--- nss_ldap-264/ldap-nss.h	2009-07-02 11:01:03.000000000 -0400
++++ nss_ldap-264/ldap-nss.h	2009-07-02 10:28:59.000000000 -0400
+@@ -911,4 +911,8 @@
+ #ifdef CONFIGURE_KRB5_KEYTAB
+ int do_init_krb5_cache(ldap_config_t *config);
+ #endif /* CONFIGURE_KRB5_KEYTAB */
++NSS_STATUS _nss_ldap_expect_name(NSS_STATUS result,
++				 const char *requested_name,
++				 const char *actual_name);
++
+ #endif /* _LDAP_NSS_LDAP_LDAP_NSS_H */
+diff -ur nss_ldap-264/ldap-parse.h nss_ldap-264/ldap-parse.h
+--- nss_ldap-264/ldap-parse.h	2006-09-13 02:42:08.000000000 -0400
++++ nss_ldap-264/ldap-parse.h	2009-07-02 10:56:54.000000000 -0400
+@@ -94,6 +94,7 @@
+ 
+ #define LOOKUP_NAME(name, result, buffer, buflen, errnop, filter, selector, parser, req_buflen) \
+ 	ldap_args_t a; \
++	NSS_STATUS s; \
+ 	if (buflen < req_buflen) { \
+ 		*errnop = ERANGE; \
+ 		return NSS_TRYAGAIN; \
+@@ -101,7 +102,8 @@
+ 	LA_INIT(a); \
+ 	LA_STRING(a) = name; \
+ 	LA_TYPE(a) = LA_TYPE_STRING; \
+-	return _nss_ldap_getbyname(&a, result, buffer, buflen, errnop, filter, selector, parser);
++	s = _nss_ldap_getbyname(&a, result, buffer, buflen, errnop, filter, selector, parser); \
++	return s
+ #define LOOKUP_NUMBER(number, result, buffer, buflen, errnop, filter, selector, parser, req_buflen) \
+ 	ldap_args_t a; \
+ 	if (buflen < req_buflen) { \
+@@ -199,4 +201,7 @@
+ 
+ #endif /* HAVE_NSSWITCH_H */
+ 
++#define AND_REQUIRE_MATCH(name,field) \
++	== NSS_SUCCESS ? _nss_ldap_expect_name(s,name,field) : s
++
+ #endif /* _LDAP_NSS_LDAP_LDAP_PARSE_H */
+diff -ur nss_ldap-264/ldap-proto.c nss_ldap-264/ldap-proto.c
+--- nss_ldap-264/ldap-proto.c	2006-09-13 02:42:08.000000000 -0400
++++ nss_ldap-264/ldap-proto.c	2009-07-02 10:58:25.000000000 -0400
+@@ -113,7 +113,8 @@
+ {
+   LOOKUP_NAME (name, result, buffer, buflen, errnop,
+ 	       _nss_ldap_filt_getprotobyname, LM_PROTOCOLS,
+-	       _nss_ldap_parse_proto, LDAP_NSS_BUFLEN_DEFAULT);
++	       _nss_ldap_parse_proto, LDAP_NSS_BUFLEN_DEFAULT)
++  AND_REQUIRE_MATCH(name, result->p_name);
+ }
+ #endif
+ 
+diff -ur nss_ldap-264/ldap-pwd.c nss_ldap-264/ldap-pwd.c
+--- nss_ldap-264/ldap-pwd.c	2009-07-02 11:01:03.000000000 -0400
++++ nss_ldap-264/ldap-pwd.c	2009-07-02 10:57:15.000000000 -0400
+@@ -243,7 +243,8 @@
+ 		      char *buffer, size_t buflen, int *errnop)
+ {
+   LOOKUP_NAME (name, result, buffer, buflen, errnop, _nss_ldap_filt_getpwnam,
+-	       LM_PASSWD, _nss_ldap_parse_pw, LDAP_NSS_BUFLEN_DEFAULT);
++	       LM_PASSWD, _nss_ldap_parse_pw, LDAP_NSS_BUFLEN_DEFAULT)
++  AND_REQUIRE_MATCH(name, result->pw_name);
+ }
+ #elif defined(HAVE_NSSWITCH_H)
+ static NSS_STATUS
+diff -ur nss_ldap-264/ldap-rpc.c nss_ldap-264/ldap-rpc.c
+--- nss_ldap-264/ldap-rpc.c	2009-07-02 11:01:03.000000000 -0400
++++ nss_ldap-264/ldap-rpc.c	2009-07-02 10:58:01.000000000 -0400
+@@ -123,7 +123,8 @@
+ {
+   LOOKUP_NAME (name, result, buffer, buflen, errnop,
+ 	       _nss_ldap_filt_getrpcbyname, LM_RPC, _nss_ldap_parse_rpc,
+-	       LDAP_NSS_BUFLEN_DEFAULT);
++	       LDAP_NSS_BUFLEN_DEFAULT)
++  AND_REQUIRE_MATCH(name, result->r_name);
+ }
+ #endif
+ 
+diff -ur nss_ldap-264/ldap-service.c nss_ldap-264/ldap-service.c
+--- nss_ldap-264/ldap-service.c	2009-07-02 15:44:14.000000000 -0400
++++ nss_ldap-264/ldap-service.c	2009-07-02 15:45:07.000000000 -0400
+@@ -230,16 +230,20 @@
+ 			   char *buffer, size_t buflen, int *errnop)
+ {
+   ldap_args_t a;
++  NSS_STATUS s;
+ 
+   LA_INIT (a);
+   LA_STRING (a) = name;
+   LA_TYPE (a) = (proto == NULL) ? LA_TYPE_STRING : LA_TYPE_STRING_AND_STRING;
+   LA_STRING2 (a) = proto;
+ 
+-  return _nss_ldap_getbyname (&a, result, buffer, buflen, errnop,
+-			      ((proto == NULL) ? _nss_ldap_filt_getservbyname
+-			       : _nss_ldap_filt_getservbynameproto),
+-			      LM_SERVICES, _nss_ldap_parse_serv);
++  s = _nss_ldap_getbyname (&a, result, buffer, buflen, errnop,
++			   ((proto == NULL) ? _nss_ldap_filt_getservbyname
++			   : _nss_ldap_filt_getservbynameproto),
++			   LM_SERVICES, _nss_ldap_parse_serv);
++  s = _nss_ldap_expect_name(s, name, result->s_name);
++  s = _nss_ldap_expect_name(s, proto, result->s_proto);
++  return s;
+ }
+ #endif
+ 
+diff -ur nss_ldap-264/ldap-spwd.c nss_ldap-264/ldap-spwd.c
+--- nss_ldap-264/ldap-spwd.c	2009-07-02 11:01:03.000000000 -0400
++++ nss_ldap-264/ldap-spwd.c	2009-07-02 10:58:50.000000000 -0400
+@@ -149,7 +149,8 @@
+ 		      char *buffer, size_t buflen, int *errnop)
+ {
+   LOOKUP_NAME (name, result, buffer, buflen, errnop, _nss_ldap_filt_getspnam,
+-	       LM_SHADOW, _nss_ldap_parse_sp, LDAP_NSS_BUFLEN_DEFAULT);
++	       LM_SHADOW, _nss_ldap_parse_sp, LDAP_NSS_BUFLEN_DEFAULT)
++  AND_REQUIRE_MATCH (name, result->sp_namp);
+ }
+ #elif defined(HAVE_NSSWITCH_H)
+ static NSS_STATUS
+--- nss_ldap-264/ldap-automount.c	2009-07-02 16:03:30.000000000 -0400
++++ nss_ldap-264/ldap-automount.c	2009-07-02 16:03:48.000000000 -0400
+@@ -384,7 +384,7 @@
+ 				  _nss_ldap_filt_getautomntbyname,
+ 				  LM_AUTOMOUNT,
+ 				  _nss_ldap_parse_automount);
+-
++      stat = _nss_ldap_expect_name(stat, key, canon_key ? *canon_key : NULL);
+       if (stat != NSS_NOTFOUND)
+ 	{
+ 	  break; /* on success or error other than not found */
