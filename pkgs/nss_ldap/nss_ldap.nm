@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = nss_ldap
 PKG_VER        = 265
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Base
@@ -35,6 +35,7 @@ PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = NSS library and PAM module for LDAP.
 
 PKG_BUILD_DEPS+= autoconf automake cyrus-sasl-devel openldap-devel
+PKG_DEPS      += /lib/security/pam_ldap.so
 
 define PKG_DESCRIPTION
 	This package includes two LDAP access clients: nss_ldap and \
