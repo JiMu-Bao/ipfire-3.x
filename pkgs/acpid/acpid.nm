@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = acpid
 PKG_VER        = 2.0.9
-PKG_REL        = 1
+PKG_REL        = 4
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Base System/Daemons
@@ -49,4 +49,7 @@ define STAGE_INSTALL_CMDS
 	-mkdir -pv $(BUILDROOT)/etc/acpi/{actions,events}
 	cp -vf $(DIR_SOURCE)/power $(BUILDROOT)/etc/acpi/events/
 	cp -vf $(DIR_SOURCE)/power.sh $(BUILDROOT)/etc/acpi/actions/
+
+	-mkdir -pv $(BUILDROOT)/etc/sysconfig
+	cp -vf $(DIR_SOURCE)/acpid.sysconfig $(BUILDROOT)/etc/sysconfig/acpid
 endef

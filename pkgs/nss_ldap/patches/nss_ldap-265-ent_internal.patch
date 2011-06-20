@@ -1,0 +1,102 @@
+Distinguish between contexts that are somewhat persistent and one-offs
+which are used to fulfill part of a larger request.  Proposed for #322.
+
+diff -up nss_ldap-265/ldap-grp.c nss_ldap-265/ldap-grp.c
+--- nss_ldap-265/ldap-grp.c	2010-01-08 17:38:38.000000000 -0500
++++ nss_ldap-265/ldap-grp.c	2010-01-08 17:38:38.000000000 -0500
+@@ -859,7 +859,7 @@ ng_chase (const char *dn, ldap_initgroup
+   LA_STRING (a) = dn;
+   LA_TYPE (a) = LA_TYPE_STRING;
+ 
+-  if (_nss_ldap_ent_context_init_locked (&ctx) == NULL)
++  if (_nss_ldap_ent_context_init_internal_locked (&ctx) == NULL)
+     {
+       return NSS_UNAVAIL;
+     }
+@@ -931,7 +931,7 @@ ng_chase_backlink (const char ** members
+   LA_STRING_LIST (a) = filteredMembersOf;
+   LA_TYPE (a) = LA_TYPE_STRING_LIST_OR;
+ 
+-  if (_nss_ldap_ent_context_init_locked (&ctx) == NULL)
++  if (_nss_ldap_ent_context_init_internal_locked (&ctx) == NULL)
+     {
+       free (filteredMembersOf);
+       return NSS_UNAVAIL;
+diff -up nss_ldap-265/ldap-netgrp.c nss_ldap-265/ldap-netgrp.c
+--- nss_ldap-265/ldap-netgrp.c	2009-11-06 05:28:08.000000000 -0500
++++ nss_ldap-265/ldap-netgrp.c	2010-01-08 17:38:38.000000000 -0500
+@@ -691,7 +691,7 @@ do_innetgr_nested (ldap_innetgr_args_t *
+   LA_TYPE (a) = LA_TYPE_STRING;
+   LA_STRING (a) = nested;	/* memberNisNetgroup */
+ 
+-  if (_nss_ldap_ent_context_init_locked (&ctx) == NULL)
++  if (_nss_ldap_ent_context_init_internal_locked (&ctx) == NULL)
+     {
+       debug ("<== do_innetgr_nested: failed to initialize context");
+       return NSS_UNAVAIL;
+diff -up nss_ldap-265/ldap-nss.c nss_ldap-265/ldap-nss.c
+--- nss_ldap-265/ldap-nss.c	2010-01-08 17:38:38.000000000 -0500
++++ nss_ldap-265/ldap-nss.c	2010-01-08 17:40:37.000000000 -0500
+@@ -2043,6 +2043,7 @@ _nss_ldap_ent_context_init_locked (ent_c
+ 	  debug ("<== _nss_ldap_ent_context_init_locked");
+ 	  return NULL;
+ 	}
++      ctx->ec_internal = 0;
+       *pctx = ctx;
+     }
+   else
+@@ -2104,7 +2105,8 @@ do_context_release (ent_context_t * ctx,
+ 
+   LS_INIT (ctx->ec_state);
+ 
+-  if (_nss_ldap_test_config_flag (NSS_LDAP_FLAGS_CONNECT_POLICY_ONESHOT))
++  if (!ctx->ec_internal &&
++      _nss_ldap_test_config_flag (NSS_LDAP_FLAGS_CONNECT_POLICY_ONESHOT))
+     {
+       do_close ();
+     }
+@@ -2113,6 +2115,16 @@ do_context_release (ent_context_t * ctx,
+     free (ctx);
+ }
+ 
++ent_context_t *
++_nss_ldap_ent_context_init_internal_locked (ent_context_t ** pctx)
++{
++  ent_context_t *ctx;
++  ctx = _nss_ldap_ent_context_init_locked (pctx);
++  if (ctx != NULL)
++    ctx->ec_internal = 1;
++  return ctx;
++}
++
+ /*
+  * Clears a given context; we require the caller
+  * to acquire the lock.
+diff -up nss_ldap-265/ldap-nss.h nss_ldap-265/ldap-nss.h
+--- nss_ldap-265/ldap-nss.h	2010-01-08 17:38:38.000000000 -0500
++++ nss_ldap-265/ldap-nss.h	2010-01-08 17:42:34.000000000 -0500
+@@ -574,6 +574,8 @@ struct ent_context
+   ldap_state_t ec_state;	/* eg. for services */
+   int ec_msgid;			/* message ID */
+   LDAPMessage *ec_res;		/* result chain */
++  int ec_internal;		/* this context is just a part of a larger
++				 * query for information */
+   ldap_service_search_descriptor_t *ec_sd;	/* current sd */
+   struct berval *ec_cookie;     /* cookie for paged searches */
+   int ec_eof;			/* reached notional end of file */
+@@ -769,6 +771,15 @@ ent_context_t *_nss_ldap_ent_context_ini
+ ent_context_t *_nss_ldap_ent_context_init_locked (ent_context_t **);
+ 
+ /*
++ * _nss_ldap_ent_context_init_internal_locked() has the same
++ * behaviour, except it marks the context as one that's being
++ * used to fetch additional data used in answering a request, i.e.
++ * that this isn't the "main" context
++ */
++
++ent_context_t *_nss_ldap_ent_context_init_internal_locked (ent_context_t **);
++
++/*
+  * _nss_ldap_ent_context_release() is used to manually free a context 
+  */
+ void _nss_ldap_ent_context_release (ent_context_t **);

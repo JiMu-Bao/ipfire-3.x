@@ -1,9 +1,14 @@
 [Unit]
 Description=Router Advertisement Daemon
+Requires=network.target
 After=network.target
 
 [Service]
-ExecStart=/usr/sbin/radvd -C /etc/radvd.conf -m stderr_syslog
+ExecStart=/usr/sbin/radvd -C /etc/radvd.conf -u radvd
+ExecReload=/bin/kill -HUP $MAINPID
+Type=forking
+PIDFile=/run/radvd/radvd.pid
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

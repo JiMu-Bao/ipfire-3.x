@@ -22,7 +22,9 @@ install: $(PROGS)
 
 	# Install man pages
 	-mkdir -pv $(DESTDIR)/usr/share/man/man1
+	-mkdir -pv $(DESTDIR)/usr/share/man/man8
 	install -v -m 644 ipcalc.1 $(DESTDIR)/usr/share/man/man1
+	install -v -m 644 securetty.8 $(DESTDIR)/usr/share/man/man8
 
 console_check: console_check.o
 	$(CC) $(LDFLAGS) -o $@ $<

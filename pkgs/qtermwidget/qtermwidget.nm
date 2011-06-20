@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = qtermwidget
 PKG_VER        = 0.1
-PKG_REL        = 0
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = /Tools
@@ -34,8 +34,7 @@ PKG_URL        = http://qtermwidget.sourceforge.net/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = A QT4 terminal emulation widget.
 
-PKG_BUILD_DEPS+= gcc-c++ python-devel qt
-PKG_DEPS      +=
+PKG_BUILD_DEPS+= gcc-c++ python-devel qt-devel
 
 define PKG_DESCRIPTION
 	QTermWidget is an opensource project based on KDE4 Konsole \
@@ -50,9 +49,11 @@ PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
 
 DIR_APP        = $(DIR_SRC)/$(PKG_NAME)
 
+# XXX Why do we have to set this flag here ?
+export QMAKESPEC=linux-g++
+
 define STAGE_BUILD
 	cd $(DIR_APP) && qmake
-
 	cd $(DIR_APP) && make #$(PARALLELISMFLAGS)
 endef
 

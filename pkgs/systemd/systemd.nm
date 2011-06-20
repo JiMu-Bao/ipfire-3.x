@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = systemd
 PKG_VER        = 28
-PKG_REL        = 1
+PKG_REL        = 3
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUPS     = System/Base
@@ -72,7 +72,7 @@ CONFIGURE_OPTIONS += \
 	--with-sysvinit-path= \
 	--with-sysvrcd-path= \
 	--with-udevrulesdir=/lib/udev/rules.d/ \
-	--with-pamlibdir=/etc/pam.d
+	--with-pamlibdir=/lib/security
 
 define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && ./autogen.sh ac
@@ -94,14 +94,21 @@ define STAGE_INSTALL_CMDS
 	# Create empty machine-id file.
 	touch $(BUILDROOT)/etc/machine-id
 
+	# Copy locale and console settings
+	-mkdir -pv $(BUILDROOT)/etc
+	cp -vf $(DIR_SOURCE)/locale.conf $(BUILDROOT)/etc/
+	cp -vf $(DIR_SOURCE)/vconsole.conf $(BUILDROOT)/etc/
+
+	# Recreate all targets
 	rm -rfv $(BUILDROOT)/etc/systemd/system/*.target.wants
 	-mkdir -pv $(BUILDROOT)/lib/systemd/system/basic.target.wants
 	-mkdir -pv $(BUILDROOT)/lib/systemd/system/default.target.wants
         -mkdir -pv $(BUILDROOT)/lib/systemd/system/dbus.target.wants
         -mkdir -pv $(BUILDROOT)/lib/systemd/system/syslog.target.wants
 	
-	# Remove runlevel targets
+	# Remove runlevel targets and graphical.target
 	rm -rfv $(BUILDROOT)/lib/systemd/system/runlevel*
+	rm -rfv $(BUILDROOT)/lib/systemd/system/graphical.target
 
 	# Set default target to multi-user
 	cd $(BUILDROOT)/lib/systemd/system && ln -svf multi-user.target default.target
@@ -114,6 +121,11 @@ define STAGE_INSTALL_CMDS
 	cd $(BUILDROOT)/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/sockets.target sockets.target
 	cd $(BUILDROOT)/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/sound.target sound.target
 	cd $(BUILDROOT)/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/swap.target swap.target
+	
+	# Remove tmpfile for X11
+	rm -rfv $(BUILDROOT)/usr/lib/tmpfiles.d/x11.conf
 
-	ln -svf ../../systemd/user $(BUILDROOT)/etc/xdg/systemd/user
+	# Remove unneeded symlink for xdg
+	rm -rfv $(BUILDROOT)/etc/xdg/systemd
 endef
+

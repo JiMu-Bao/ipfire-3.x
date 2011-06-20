@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = nss_ldap
-PKG_VER        = 262
-PKG_REL        = 0
+PKG_VER        = 265
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Base
@@ -34,7 +34,7 @@ PKG_URL        = http://www.padl.com/
 PKG_LICENSE    = LGPLv2+
 PKG_SUMMARY    = NSS library and PAM module for LDAP.
 
-PKG_BUILD_DEPS+= cyrus-sasl-devel openldap-devel
+PKG_BUILD_DEPS+= autoconf automake cyrus-sasl-devel openldap-devel
 
 define PKG_DESCRIPTION
 	This package includes two LDAP access clients: nss_ldap and \
@@ -46,19 +46,58 @@ endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+PKG_PATCHES = \
+	nss_ldap-265-depth.patch \
+	nss_ldap-254-soname.patch \
+	nss_ldap-257-mozldap.patch \
+	nss_ldap-259-res_init.patch \
+	nss_ldap-264-checkcase.patch \
+	nss_ldap-265-ent_internal.patch \
+	nss_ldap-264-cloexec.patch \
+	nss_ldap-265-local_users.patch \
+	nss_ldap-265-erange.patch \
+	nss_ldap-265-initgroups-minimum_uid.patch \
+	nss_ldap-265-fix-uninit.patch \
+	nss_ldap-265-padl-bug-418.patch \
+	nss_ldap-265-setnetgrent.patch
 
-CONFIGURE_OPTIONS = \
-	--prefix=/ \
-	--libdir=/usr/lib \
+CONFIGURE_OPTIONS += \
 	--sysconfdir=/etc \
-	--mandir=/usr/share/man \
-	--with-ldap=openldap \
-	--enable-schema-mapping
+	--libdir=/lib \
+	--with-ldap-lib=openldap \
+	--enable-rfc2307bis \
+	--with-ldap-conf-file=/etc/nss_ldap.conf \
+	--with-ldap-secret-file=/etc/nss_ldap.secret
+
+define STAGE_PREPARE_CMDS
+	cd $(DIR_APP) && sed -i -e 's,^ldap.conf$$,nss_ldap.conf,g' *.5
+	cd $(DIR_APP) && sed -i -e 's,^/etc/ldap\.,/etc/nss_ldap.,g' *.5
+	cd $(DIR_APP) && sed -i -e 's,ldap.secret,nss_ldap.secret,g' *.5
+	cd $(DIR_APP) && sed -i -e 's,(ldap.conf),(nss_ldap.conf),g' *.5
+
+	# Fix call for vers_string.
+	cd $(DIR_APP) && sed -e "s/vers_string/.\/&/g" -i Makefile*
+
+	cd $(DIR_APP) && autoreconf -vfi
+endef
+
+STAGE_BUILD_TARGETS += LDFLAGS="-Wl,-z,nodelete"
+
+STAGE_INSTALL_TARGETS += LIBC_VERS=$(PKG_VER)
 
 define STAGE_INSTALL_CMDS
 	# Remove awkward directory
 	rm -rvf $(BUILDROOT)/usr/usr
+
+	mv -v $(BUILDROOT)/lib/* $(BUILDROOT)/usr/lib
+	rm -rvf $(BUILDROOT)/lib
+	ln -svf libnss_ldap-$(PKG_VER).so $(BUILDROOT)/usr/lib/libnss_ldap.so
+
+	rm -vf $(BUILDROOT)/etc/nsswitch.ldap
+
+	cd $(DIR_APP) && sed 's|dc=padl|dc=example|g' ldap.conf > \
+		$(BUILDROOT)/etc/nss_ldap.conf
+	touch $(BUILDROOT)/etc/nss_ldap.secret
 
 	ln -svf libnss_ldap.so.2 $(BUILDROOT)/usr/lib/libnss_ldap.so
 endef
