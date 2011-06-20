@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = pixman
 PKG_VER        = 0.18.4
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Libraries
@@ -43,14 +43,3 @@ endef
 PKG_TARBALL    = $(THISAPP).tar.gz
 
 PKG_PACKAGES  += $(PKG_NAME)-devel
-
-# XXX double check this later on
-ifeq "$(TARGET)" "via-c7"
-	CONFIGURE_OPTIONS += --enable-mmx #--enable-sse2
-else
-ifeq "$(TARGET)" "atom"
-	CONFIGURE_OPTIONS += --enable-mmx --enable-sse2
-else
-	CONFIGURE_OPTIONS += --disable-mmx --disable-sse2
-endif
-endif
