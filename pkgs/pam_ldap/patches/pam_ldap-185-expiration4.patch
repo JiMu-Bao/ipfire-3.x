@@ -1,0 +1,61 @@
+Heavily based on a patch from Masahiro Matsuya.
+
+diff -up pam_ldap-185/pam_ldap.c pam_ldap-185/pam_ldap.c
+--- pam_ldap-185/pam_ldap.c	2010-09-22 18:35:55.377828002 -0400
++++ pam_ldap-185/pam_ldap.c	2010-09-22 19:08:34.938828001 -0400
+@@ -4014,6 +4014,8 @@ pam_sm_acct_mgmt (pam_handle_t * pamh, i
+   time_t currenttime;
+   long int currentday;
+   long int expirein = 0;	/* seconds until password expires */
++  long int expireh = 0;
++  long int expires = 0;
+   const char *configFile = NULL;
+ 
+   for (i = 0; i < argc; i++)
+@@ -4190,14 +4191,29 @@ pam_sm_acct_mgmt (pam_handle_t * pamh, i
+ 	}
+       else
+ 	{
+-	  expirein = session->info->password_expiration_time / SECSPERDAY;
++          if ( session->info->password_expiration_time != 0 )
++            {
++             expires = session->info->password_expiration_time;
++	      expirein = session->info->password_expiration_time / SECSPERDAY;
++              if ( expirein == 0 )
++                {
++                  expireh = session->info->password_expiration_time / SECSPERHOUR;
++                }
++            }
++          else
++            {
++              expirein = 0;
++            }
+ 	}
+ 
+-      if (expirein > 0)
++      if ((expirein > 0) || (expireh > 0) || (expires > 0))
+ 	{
+ 	  snprintf (buf, sizeof buf,
+-		    "Your LDAP password will expire in %ld day%s.",
+-		    expirein, (expirein == 1) ? "" : "s");
++		    "Your LDAP password will expire in %ld %s.",
++		    (expirein == 0) ? expireh : expirein,
++		    (expirein == 0) ?
++		    ((expireh == 1) ? "hour" : "hours") :
++		    ((expirein == 1) ? "day" : "days"));
+ 	  _conv_sendmsg (appconv, buf, PAM_ERROR_MSG, no_warn);
+ 
+ 	  /* we set this to make sure that user can't abort a password change */
+diff -up pam_ldap-185/pam_ldap.h pam_ldap-185/pam_ldap.h
+--- pam_ldap-185/pam_ldap.h	2010-09-22 18:35:55.359828002 -0400
++++ pam_ldap-185/pam_ldap.h	2010-09-22 19:00:56.787828000 -0400
+@@ -226,6 +226,9 @@ pam_ldap_shadow_t;
+ /* Seconds in a day */
+ #define SECSPERDAY 86400
+ 
++/* Seconds in an hour */
++#define SECSPERHOUR 3600
++
+ /* Netscape per-use password attributes. Unused except for DN. */
+ typedef struct pam_ldap_user_info
+   {

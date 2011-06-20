@@ -1,0 +1,11 @@
+--- pam_ldap-176/pam_ldap.c	2011-01-06 07:37:12.000000000 -0800
++++ pam_ldap-176/pam_ldap.c	2011-01-06 07:38:59.000000000 -0800
+@@ -3415,7 +3415,7 @@
+       if (rc != PAM_SUCCESS)
+ 	return rc;
+ 
+-      if (!(session->conf->rootbinddn && getuid () == 0))
++      if (!(session->conf->rootbinddn && getuid () == 0 && !(flags & PAM_CHANGE_EXPIRED_AUTHTOK)))
+ 	{
+ 	  /* we are not root, authenticate old password */
+ 	  if (try_first_pass || use_first_pass)
