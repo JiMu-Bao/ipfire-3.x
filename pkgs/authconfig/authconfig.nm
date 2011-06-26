@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = authconfig
 PKG_VER        = 6.1.14
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Base
@@ -35,7 +35,7 @@ PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Command line tool for setting up authentication from network services.
 
 PKG_BUILD_DEPS+= intltool python-devel
-PKG_DESP      += newt-python
+PKG_DEPS      += newt-python
 
 define PKG_DESCRIPTION
 	Authconfig is a command line utility which can configure a workstation\
