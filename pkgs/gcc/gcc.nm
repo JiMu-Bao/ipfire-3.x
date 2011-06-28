@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = gcc
-PKG_VER        = 4.6.0
-PKG_REL        = 3
+PKG_VER        = 4.6.1
+PKG_REL        = 1
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUPS     = Development/Compilers
