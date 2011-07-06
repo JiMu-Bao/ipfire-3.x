@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = grep
-PKG_VER        = 2.7
-PKG_REL        = 0
+PKG_VER        = 2.9
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Base Applications/Text
@@ -42,12 +42,11 @@ define PKG_DESCRIPTION
 	prints the matching lines. GNU's grep utilities include grep, egrep and fgrep.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+PKG_TARBALL    = $(THISAPP).tar.xz
 
 CONFIGURE_OPTIONS += \
 	--bindir=/bin
 
 define STAGE_TEST
-	# TODO - This testsuite id known to fail.
-	cd $(DIR_APP) && make check || :
+	cd $(DIR_APP) && make check
 endef

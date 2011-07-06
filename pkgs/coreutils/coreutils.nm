@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = coreutils
 PKG_VER        = 8.12
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Base System/Base
@@ -70,6 +70,8 @@ define STAGE_INSTALL_CMDS
 	mv -v $(BUILDROOT)/usr/bin/chroot $(BUILDROOT)/usr/sbin
 	mv -v $(BUILDROOT)/usr/bin/{head,sleep,nice} $(BUILDROOT)/bin
 
+	# Reinstall su in /bin
+	-rm -rfv $(BUILDROOT)/usr/bin/su
 	cd $(DIR_APP) && install -m 4755 src/su $(BUILDROOT)/bin
 
 	# Dump /etc/DIR_COLORS

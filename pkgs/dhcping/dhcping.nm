@@ -24,43 +24,22 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = gawk
-PKG_VER        = 4.0.0
+PKG_NAME       = dhcping
+PKG_VER        = 1.2
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUPS     = Base System/Tools
-PKG_URL        = http://www.gnu.org/software/gawk/gawk.html
-PKG_LICENSE    = GPLv3+
-PKG_SUMMARY    = The GNU version of the awk text processing utility.
-
-# Needed for testsuite.
-PKG_BUILD_DEPS+= util-linux
+PKG_GROUPS     = Applications/Internet
+PKG_URL        = http://www.mavetju.org/unix/general.php
+PKG_LICENSE    = MIT
+PKG_SUMMARY    = DHCP daemon ping program.
 
 define PKG_DESCRIPTION
-	The gawk package contains the GNU version of awk, a text processing \
-	utility. Awk interprets a special-purpose programming language to do \
-	quick and easy text pattern matching and reformatting jobs.
+	Dhcping allows the system administrator to check if a remote DHCP
+	server is still functioning.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.xz
+PKG_TARBALL    = $(THISAPP).tar.gz
 
 CONFIGURE_OPTIONS += \
-	--bindir=/bin \
-	--libexecdir=/usr/lib \
-	--with-libsigsegv-prefix=no
-
-define STAGE_TEST
-        cd $(DIR_APP) && make check diffout
-endef
-
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/usr/bin
-	ln -svf ../../bin/awk $(BUILDROOT)/usr/bin/awk
-	ln -svf ../../bin/gawk $(BUILDROOT)/usr/bin/gawk
-
-	mv -v $(BUILDROOT)/bin/{p,i}gawk $(BUILDROOT)/usr/bin/
-
-	# Remove versioned binary.
-	rm -rfv $(BUILDROOT)/bin/{,p}gawk-*
-endef
+	--mandir=/usr/share/man
