@@ -17,4 +17,5 @@ for i in $(seq 0 9); do
 	ORPHAN_CANDIDATES="${ORPHAN_CANDIDATES} /usr/share/man/man${i}"
 done
 ORPHAN_CANDIDATES="${ORPHAN_CANDIDATES} /usr/lib/pkgconfig"
+ORPHAN_CANDIDATES="${ORPHAN_CANDIDATES} /usr/lib/python*"
 

@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = build-essentials
 PKG_VER        = $(DISTRO_VERSION)
-PKG_REL        = 18
+PKG_REL        = 19
 PKG_EPOCH      = 1
 PKG_ARCH       = noarch
 

@@ -10,15 +10,19 @@ function directory_remove_orphans() {
 	log DEBUG "Removing orphans in ${basedir}"
 
 	local dir
-	for dir in ${ORPHAN_CANDIDATES}; do
-		dir="${basedir}/${dir}"
+	local dir_pattern
+	for dir_pattern in ${ORPHAN_CANDIDATES}; do
+		dir=$(echo ${basedir}/${dir_pattern})
 
-		[ -d "${dir}" ] || continue
+		for dir in ${dir}; do
+			echo "DIR ${dir}" >&2
+			[ -d "${dir}" ] || continue
 
-		if dir_is_empty ${dir}; then
-			log DEBUG "  Found orphaned directory: ${dir}"
-			rm -rf ${dir}
-		fi
+			if dir_is_empty ${dir}; then
+				log DEBUG "  Found orphaned directory: ${dir}"
+				rm -rf ${dir}
+			fi
+		done
 	done
 }
 
