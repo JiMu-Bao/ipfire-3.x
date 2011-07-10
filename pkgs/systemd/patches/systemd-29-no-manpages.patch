@@ -1,7 +1,7 @@
 diff -Nur a/Makefile.am b/Makefile.am
---- a/Makefile.am	2011-05-26 19:18:54.000000000 +0200
-+++ b/Makefile.am	2011-06-04 20:56:50.863488131 +0200
-@@ -567,79 +567,13 @@
+--- a/Makefile.am	2011-06-16 13:17:51.000000000 +0200
++++ b/Makefile.am	2011-07-10 19:09:54.169403422 +0200
+@@ -565,79 +565,13 @@
  	src/readahead-common.h \
  	src/ask-password-api.h
  
@@ -49,13 +49,13 @@ diff -Nur a/Makefile.am b/Makefile.am
 -	man/modules-load.d.5 \
 -	man/sysctl.d.5 \
 -        man/systemd-ask-password.1
-+MANPAGES = #
++MANPAGES =
  
 -if ENABLE_BINFMT
 -MANPAGES += \
 -	man/binfmt.d.5
 -endif
-+MANPAGES_ALIAS = #
++MANPAGES_ALIAS =
  
 -MANPAGES_ALIAS = \
 -	man/reboot.8 \
@@ -77,11 +77,11 @@ diff -Nur a/Makefile.am b/Makefile.am
 -dist_man_MANS = \
 -	$(MANPAGES) \
 -	$(MANPAGES_ALIAS)
-+dist_man_MANS = #
++dist_man_MANS =
  
 -nodist_man_MANS = \
 -	man/systemd.special.7
-+nodist_man_MANS = #
++nodist_man_MANS =
  
  XML_FILES = \
  	${patsubst %.1,%.xml,${patsubst %.3,%.xml,${patsubst %.5,%.xml,${patsubst %.7,%.xml,${patsubst %.8,%.xml,$(MANPAGES)}}}}}
