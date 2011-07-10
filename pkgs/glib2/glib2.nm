@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = glib
-PKG_VER        = 2.28.5
+PKG_VER        = 2.28.8
 PKG_REL        = 1
 
 PKG_MAINTAINER =
@@ -44,7 +44,7 @@ define PKG_DESCRIPTION
 	object system.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+PKG_TARBALL    = $(THISAPP).tar.xz
 
 PKG_PACKAGES  += $(PKG_NAME)2-devel
 
