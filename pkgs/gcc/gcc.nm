@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = gcc
 PKG_VER        = 4.6.1
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUPS     = Development/Compilers
@@ -41,10 +41,10 @@ endef
 
 BINUTILS_VER = 2.21.51.0.8-1
 
-PKG_BUILD_DEPS+= autogen binutils>=$(BINUTILS_VER) cloog-devel dejagnu \
-	elfutils-devel expect flex gmp-devel libffi-devel mpc-devel mpfr-devel \
+PKG_BUILD_DEPS+= autogen binutils>=$(BINUTILS_VER) cloog-ppl-devel dejagnu \
+	elfutils-devel expect flex gmp-devel libffi-devel libmpc-devel mpfr-devel \
 	ppl-devel texinfo zlib-devel
-PKG_DEPS-gcc  += binutils>=$(BINUTILS_VER) libgcc-devel cloog>=0.15
+PKG_DEPS-gcc  += binutils>=$(BINUTILS_VER) libgcc-devel cloog-ppl>=0.15
 
 # Make the GCC target platform
 GCC_TARGET_PLATFORM = $(subst -gnu,,$(DISTRO_MACHINE))
