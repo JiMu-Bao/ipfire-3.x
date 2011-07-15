@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = cloog
 PKG_VER        = 0.15.9
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUPS     = System/Libraries
@@ -45,7 +45,7 @@ endef
 
 PKG_TARBALL    = $(PKG_NAME)-ppl-$(PKG_VER).tar.gz
 
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
+PKG_PACKAGES   = $(PKG_NAME_REAL)-ppl $(PKG_NAME_REAL)-ppl-devel
 
 DIR_APP        = $(DIR_SRC)/$(PKG_NAME)-ppl-$(PKG_VER)
 
