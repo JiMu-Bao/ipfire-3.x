@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = mpc
 PKG_VER        = 0.9
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Libraries
@@ -45,6 +45,9 @@ endef
 PKG_TARBALL    = $(THISAPP).tar.gz
 
 PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
+
+# http://lists.gforge.inria.fr/pipermail/mpc-discuss/2011-February/000805.html
+export EGREP=egrep
 
 define STAGE_TEST
 	cd $(DIR_APP) && make check
