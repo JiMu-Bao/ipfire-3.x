@@ -24,9 +24,11 @@
 
 include $(PKGROOT)/Include
 
+BUILD_CLOOG_PPL= 1
+
 PKG_NAME       = gcc
 PKG_VER        = 4.6.1
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUPS     = Development/Compilers
@@ -41,10 +43,27 @@ endef
 
 BINUTILS_VER = 2.21.51.0.8-1
 
-PKG_BUILD_DEPS+= autogen binutils>=$(BINUTILS_VER) cloog-ppl-devel dejagnu \
-	elfutils-devel expect flex gmp-devel libffi-devel libmpc-devel mpfr-devel \
-	ppl-devel texinfo zlib-devel
-PKG_DEPS-gcc  += binutils>=$(BINUTILS_VER) libgcc-devel cloog-ppl>=0.15
+PKG_BUILD_DEPS+= \
+	autogen \
+	binutils>=$(BINUTILS_VER) \
+	dejagnu \
+	elfutils-devel \
+	expect \
+	flex \
+	gmp-devel \
+	libffi-devel \
+	mpc-devel \
+	mpfr-devel \
+	texinfo \
+	zlib-devel
+
+PKG_DEPS-gcc  += binutils>=$(BINUTILS_VER) libgcc-devel
+
+ifeq "$(BUILD_CLOOG_PPL)" "1"
+	PKG_BUILD_DEPS += cloog-ppl-devel ppl-devel
+	PKG_DEPS-gcc   += cloog-ppl>=0.15
+	CONFIGURE_ARGS += --with-cloog --with-ppl
+endif
 
 # Make the GCC target platform
 GCC_TARGET_PLATFORM = $(subst -gnu,,$(DISTRO_MACHINE))
@@ -219,8 +238,6 @@ define STAGE_BUILD
 			--disable-static \
 			--with-system-zlib \
 			--with-bugurl=http://bugtracker.ipfire.org \
-			--with-ppl \
-			--with-cloog \
 			--disable-libunwind-exceptions \
 			--enable-gnu-unique-object \
 			--enable-linker-build-id \
