@@ -24,15 +24,17 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = mpc
+PKG_NAME       = libmpc
 PKG_VER        = 0.9
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Libraries
 PKG_URL        = http://www.multiprecision.org/
 PKG_LICENSE    = LGPLv2.1+
 PKG_SUMMARY    = Mpc is a C library for the arithmetic of complex numbers.
+
+THISAPP        = mpc-$(PKG_VER)
 
 PKG_BUILD_DEPS+= gmp-devel>=4.3.2 mpfr-devel>=2.4.2
 
