@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = cloog
 PKG_VER        = 0.15.9
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUPS     = System/Libraries
@@ -34,7 +34,7 @@ PKG_URL        = http://www.cloog.org
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = The Chunky Loop Generator.
 
-PKG_BUILD_DEPS+= autoconf automake gmp-devel m4 ppl-devel
+PKG_BUILD_DEPS+= autoconf automake gmp-devel m4 ppl-devel>=0.11.2
 
 define PKG_DESCRIPTION
 	CLooG is a software which generates loops for scanning Z-polyhedra. That is, \
@@ -51,6 +51,11 @@ DIR_APP        = $(DIR_SRC)/$(PKG_NAME)-ppl-$(PKG_VER)
 
 CONFIGURE_OPTIONS += \
 	--with-ppl
+
+define STAGE_PREPARE_CMDS
+	cd $(DIR_APP) && sed -i configure \
+		-e "s/ppl_minor_version=10/ppl_minor_version=11/"
+endef
 
 define STAGE_TEST
 	cd $(DIR_APP) && make check
