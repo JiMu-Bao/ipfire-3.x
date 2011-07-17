@@ -26,7 +26,8 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = libsatsolver
 PKG_VER        = 0.16.4
-PKG_REL        = 4
+GIT_VER        = c57e9df
+PKG_REL        = 5
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUPS     = System/Libraries
@@ -40,7 +41,8 @@ define PKG_DESCRIPTION
 	This package contains a very fast SAT resolver written in C++.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+THISAPP        = $(PKG_NAME)-$(PKG_VER)-$(GIT_VER)
+PKG_TARBALL    = $(THISAPP).tar.xz
 
 PKG_PACKAGES  += $(PKG_NAME)-devel
 
