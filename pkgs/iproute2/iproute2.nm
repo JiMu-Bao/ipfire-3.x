@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = iproute2
-PKG_VER        = 2.6.38
+PKG_VER        = 2.6.39
 PKG_REL        = 1
 
 PKG_MAINTAINER =
@@ -42,7 +42,7 @@ define PKG_DESCRIPTION
 	capabilities of the Linux 2.4.x and 2.6.x kernel.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+PKG_TARBALL    = $(THISAPP).tar.gz
 
 define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && sed -i -e "s@DESTDIR=.*@DESTDIR=@" \
