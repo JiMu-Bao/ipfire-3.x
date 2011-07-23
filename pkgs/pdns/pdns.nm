@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = pdns
-PKG_VER        = 2.9.22
-PKG_REL        = 0
+PKG_VER        = 3.0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Networking/DNS
@@ -34,7 +34,8 @@ PKG_URL        = http://powerdns.com/
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = A modern, advanced and high performance authoritative-only nameserver.
 
-PKG_BUILD_DEPS+= boost-devel gcc-c++ openldap-devel sqlite-devel zlib-devel
+PKG_BUILD_DEPS+= boost-devel chrpath gcc-c++ lua-devel openldap-devel \
+	sqlite-devel zlib-devel
 
 define PKG_DESCRIPTION
 	The PowerDNS Nameserver is a modern, advanced and high performance \
@@ -53,4 +54,16 @@ CONFIGURE_OPTIONS += \
 	--sysconfdir=/etc/pdns \
 	--libdir=/usr/lib/powerdns \
 	--with-modules="" \
-	--with-dynmodules="pipe geo ldap gsqlite3"
+	--with-dynmodules="pipe geo ldap gsqlite3" \
+	--with-lua \
+	--disable-static
+
+define STAGE_INSTALL_CMDS
+	chrpath --delete $(BUILDROOT)/usr/bin/pdns_control
+	chrpath --delete $(BUILDROOT)/usr/bin/zone2ldap
+	chrpath --delete $(BUILDROOT)/usr/bin/zone2sql
+	chrpath --delete $(BUILDROOT)/usr/sbin/pdns_server
+	chrpath --delete $(BUILDROOT)/usr/lib/powerdns/*.so
+	chrpath --delete $(BUILDROOT)/usr/bin/dnsreplay
+	chrpath --delete $(BUILDROOT)//usr/bin/pdnssec
+endef
