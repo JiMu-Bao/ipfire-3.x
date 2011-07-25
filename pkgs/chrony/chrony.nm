@@ -26,10 +26,10 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = chrony
 PKG_VER        = 1.26
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
-PKG_GROUPS     = System/Daemons
+PKG_GROUPS     = Base System/Daemons
 PKG_URL        = http://chrony.tuxfamily.org
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = An NTP client/server.
