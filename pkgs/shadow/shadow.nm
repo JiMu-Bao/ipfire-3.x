@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = shadow
 PKG_VER        = 4.1.4.3
-PKG_REL        = 4
+PKG_REL        = 5
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Base
@@ -83,4 +83,7 @@ define STAGE_INSTALL_POST
 
 	chmod u-s $(BUILDROOT)/usr/bin/newgrp
 	setcap cap_dac_override,cap_setgid+ep $(BUILDROOT)/usr/bin/newgrp
+
+	# Configuration
+	install -p -c -m 0644 $(DIR_SOURCE)/login.defs $(BUILDROOT)/etc/login.defs
 endef
