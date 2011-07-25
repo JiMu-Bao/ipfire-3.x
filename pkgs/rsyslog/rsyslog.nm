@@ -26,10 +26,10 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = rsyslog
 PKG_VER        = 5.8.0
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
-PKG_GROUPS     = System/Daemons
+PKG_GROUPS     = Base System/Daemons
 PKG_URL        = http://www.rsyslog.com/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = Enhanced system logging and kernel message trapping daemon.
