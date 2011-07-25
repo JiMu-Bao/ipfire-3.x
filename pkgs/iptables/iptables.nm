@@ -25,10 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = iptables
-PKG_VER        = 1.4.11.1
+PKG_VER        = 1.4.12
 PKG_REL        = 1
-
-PKG_BUILD_DEPS+= libselinux-devel
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Networking/Tools
@@ -36,6 +34,8 @@ PKG_GROUPS-iptables = Base $(PKG_GROUPS)
 PKG_URL        = http://www.netfilter.org/
 PKG_LICENSE    = GPL+
 PKG_SUMMARY    = Tools for managing Linux kernel packet filtering capabilities.
+
+PKG_BUILD_DEPS+= libnfnetlink-devel libselinux-devel
 
 define PKG_DESCRIPTION
 	The iptables utility controls the network packet filtering code in the \
@@ -84,8 +84,12 @@ define STAGE_INSTALL_CMDS
 	ln -svf ../../lib/libip4tc.so.0 $(BUILDROOT)/usr/lib/libip4tc.so
 	ln -svf ../../lib/libip6tc.so.0 $(BUILDROOT)/usr/lib/libip6tc.so
 	ln -svf ../../lib/libipq.so.0 $(BUILDROOT)/usr/lib/libipq.so
-	ln -svf ../../lib/libxtables.so.6 $(BUILDROOT)/usr/lib/libxtables.so
+	ln -svf ../../lib/libxtables.so.7 $(BUILDROOT)/usr/lib/libxtables.so
 
 	# Replace absolute symlink
 	ln -svf ../sbin/xtables-multi $(BUILDROOT)/bin/iptables-xml
+
+	# Move binary which links to /usr/lib to /usr.
+	-mkdir -pv $(BUILDROOT)/usr/sbin
+	mv -v $(BUILDROOT)/{,usr/}sbin/nfnl_osf
 endef

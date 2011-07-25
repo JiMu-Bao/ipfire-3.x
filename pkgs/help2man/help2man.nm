@@ -24,46 +24,29 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = pdns
-PKG_VER        = 3.0
+PKG_NAME       = help2man
+PKG_VER        = 1.40.4
 PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUPS     = Networking/DNS
-PKG_URL        = http://powerdns.com/
-PKG_LICENSE    = GPLv2
-PKG_SUMMARY    = A modern, advanced and high performance authoritative-only nameserver.
-
-PKG_BUILD_DEPS+= boost-devel chrpath gcc-c++ lua-devel openldap-devel \
-	sqlite-devel zlib-devel
+PKG_GROUPS     = Development/Tools
+PKG_URL        = http://www.gnu.org/software/help2man
+PKG_LICENSE    = GPLv3+
+PKG_SUMMARY    = Create simple man pages from --help output.
 
 define PKG_DESCRIPTION
-	The PowerDNS Nameserver is a modern, advanced and high performance \
-	authoritative-only nameserver. It is written from scratch and conforms \
-	to all relevant DNS standards documents. \
-	Furthermore, PowerDNS interfaces with almost any database.
+	help2man is a script to create simple man pages from the --help and
+	--version output of programs.
+
+	Since most GNU documentation is now in info format, this provides a
+	way to generate a placeholder man page pointing to that resource while
+	still providing some useful information.
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
-export CPPFLAGS = -DLDAP_DEPRECATED
-
-PARALLELISMFLAGS =
-
 CONFIGURE_OPTIONS += \
-	--sysconfdir=/etc/pdns \
-	--libdir=/usr/lib/powerdns \
-	--with-modules="" \
-	--with-dynmodules="pipe geo ldap gsqlite3" \
-	--with-lua \
-	--disable-static
+	--disable-nls \
+	--libdir=/usr/lib/help2man
 
-define STAGE_INSTALL_CMDS
-	chrpath --delete $(BUILDROOT)/usr/bin/pdns_control
-	chrpath --delete $(BUILDROOT)/usr/bin/zone2ldap
-	chrpath --delete $(BUILDROOT)/usr/bin/zone2sql
-	chrpath --delete $(BUILDROOT)/usr/sbin/pdns_server
-	chrpath --delete $(BUILDROOT)/usr/lib/powerdns/*.so
-	chrpath --delete $(BUILDROOT)/usr/bin/dnsreplay
-	chrpath --delete $(BUILDROOT)//usr/bin/pdnssec
-endef
+STAGE_INSTALL_TARGETS += install_l10n

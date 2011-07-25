@@ -24,34 +24,27 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = ntp
-PKG_VER        = 4.2.6p1
-PKG_REL        = 2
+PKG_NAME       = chrpath
+PKG_VER        = 0.13
+PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUPS     = Base System/Daemons
-PKG_URL        = http://www.ntp.org/
-PKG_LICENSE    = MIT, BSD and GPLv2
-PKG_SUMMARY    = The NTP daemon and utilities.
-
-PKG_BUILD_DEPS+= openssl-devel readline-devel
+PKG_GROUPS     = Development/Tools
+PKG_URL        = ftp://ftp.hungry.com/pub/hungry/chrpath/
+PKG_LICENSE    = GPL+
+PKG_SUMMARY    = Modify rpath of compiled programs.
 
 define PKG_DESCRIPTION
-	The Network Time Protocol (NTP) is used to synchronize a computer's \
-	time with another reference time source. This package includes ntpd \
-	and utilities used to query and configure the ntpd daemon.
+	chrpath allows you to modify the dynamic library load path (rpath) of
+	compiled programs.  Currently, only removing and modifying the rpath
+	is supported.
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
-CFLAGS        += -DMOD_NANO
-
 CONFIGURE_OPTIONS += \
-	--sysconfdir=/etc \
-	--mandir=/usr/share/man \
-	--with-binsubdir=sbin
+	--mandir=/usr/share/man
 
 define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/etc
-	cp -vf $(DIR_SOURCE)/ntp.conf $(BUILDROOT)/etc/ntp.conf
+	rm -rfv $(BUILDROOT)/usr/doc
 endef

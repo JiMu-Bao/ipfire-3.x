@@ -24,66 +24,41 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = shadow
-PKG_VER        = 4.1.4.3
-PKG_REL        = 5
+PKG_NAME       = nss-myhostname
+PKG_VER        = 0.3
+PKG_REL        = 1
 
 PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = ftp://pkg-shadow.alioth.debian.org/pub/pkg-shadow/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = Utilities to deal with user accounts.
-
-PKG_BUILD_DEPS+= audit-devel libcap-devel libselinux-devel
+PKG_GROUPS     = System/Libraries
+PKG_URL        = http://0pointer.de/lennart/projects/nss-myhostname/
+PKG_LICENSE    = LGPLv2+
+PKG_SUMMARY    = glibc plugin for local system host name resolution.
 
 define PKG_DESCRIPTION
-	The shadow-utils package includes the necessary programs \
-	for converting UNIX password files to the shadow password \
-	format, plus programs for managing user and group accounts.
+	nss-myhostname is a plugin for the GNU Name Service Switch (NSS)
+	functionality of the GNU C Library (glibc) providing host name
+	resolution for the locally configured system hostname as returned by
+	gethostname(2). Various software relies on an always resolvable local
+	host name. When using dynamic hostnames this is usually achieved by
+	patching /etc/hosts at the same time as changing the host name. This
+	however is not ideal since it requires a writable /etc file system and
+	is fragile because the file might be edited by the administrator at
+	the same time. nss-myhostname simply returns all locally configure
+	public IP addresses, or -- if none are configured -- the IPv4 address
+	127.0.0.2 (wich is on the local loopback) and the IPv6 address ::1
+	(which is the local host) for whatever system hostname is configured
+	locally. Patching /etc/hosts is thus no longer necessary.
 endef
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+PKG_TARBALL    = $(THISAPP).tar.gz
 
 CONFIGURE_OPTIONS += \
-	--sysconfdir=/etc \
-	--enable-shadowgrp \
-	--with-sha-crypt \
-	--with-selinux \
-	--without-libcrack \
-	--without-libpam \
-	--disable-static
-
-define STAGE_PREPARE_CMDS
-	# Do not build these files:
-	cd $(DIR_APP) && \
-		for i in nologin chfn chgpasswd chpasswd chsh expiry gpasswd groups login \
-				logoutd passwd su; do \
-			sed -i "s/$$i\$$(EXEEXT)//" src/Makefile.in; \
-			find man -name Makefile.in -exec sed -i "s/$$i\.1/ /" {} \;; \
-		done
-	cd $(DIR_APP) && sed -i src/Makefile.in \
-		-e "s/^suidbins.*/# &/" -e "s/^suidubins.*/# &/"
-
-	# Do not install korean and zh man pages
-	cd $(DIR_APP) && sed -i -e 's/ ko//' -e 's/ zh_CN zh_TW//' man/Makefile.in
-
-	# Do not install russion man pages - was broken in 4.1.4.3
-	cd $(DIR_APP) && sed -i -e 's/ ru//' man/Makefile.in
-endef
+	--libdir=/lib
 
 define STAGE_INSTALL_CMDS
-	# Remove man pages in other languages
-	rm -rfv $(BUILDROOT)/usr/share/man/{cs,de,fi,fr,hu,id,it,ja,pl,pt_BR,ru,sv,tr}
-endef
+	-mkdir -pv $(BUILDROOT)/usr/lib
+	ln -svf ../../lib/libnss_myhostname.so.2 \
+		$(BUILDROOT)/usr/lib/libnss_myhostname.so
 
-define STAGE_INSTALL_POST
-	# Capabilities
-	chmod u-s $(BUILDROOT)/usr/bin/chage
-	setcap cap_dac_read_search+ep $(BUILDROOT)/usr/bin/chage
-
-	chmod u-s $(BUILDROOT)/usr/bin/newgrp
-	setcap cap_dac_override,cap_setgid+ep $(BUILDROOT)/usr/bin/newgrp
-
-	# Configuration
-	install -p -c -m 0644 $(DIR_SOURCE)/login.defs $(BUILDROOT)/etc/login.defs
+	rm -rf $(BUILDROOT)/usr/share/doc/nss-myhostname
 endef
