@@ -26,8 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = pycurl
 PKG_VER        = 7.19.0
-PKG_REL        = 1
-PKG_ARCH       = noarch
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Development/Languages
@@ -37,7 +36,7 @@ PKG_SUMMARY    = A Python interface to libcurl.
 
 CFLAGS        += -DHAVE_CURL_OPENSSL
 
-PKG_BUILD_DEPS+= curl-devel openssl-devel python-devel
+PKG_BUILD_DEPS+= libcurl-devel openssl-devel python-devel
 
 define PKG_DESCRIPTION
 	PycURL is a Python interface to libcurl. PycURL can be used to fetch \
