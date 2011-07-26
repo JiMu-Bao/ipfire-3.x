@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = tcl
 PKG_VER        = 8.5.8
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Development/Languages
@@ -47,9 +47,16 @@ PKG_TARBALL    = tcl$(PKG_VER)-src.tar.gz
 CONFIGURE_OPTIONS += \
 	--enable-shared
 
+CFLAGS        += -DTCL_NO_STACK_CHECK=1
+
 DIR_APP = $(DIR_SRC)/tcl$(PKG_VER)/unix
 
-define STAGE_PREPARE_CMDS
+define STAGE_PREPARE
+	cd $(DIR_SRC) && $(DO_EXTRACT) $(DIR_DL)/$(PKG_TARBALL)
+
+	cd $(DIR_APP) && cd .. && $(BUILD_TOOLS)/patch \
+		$(foreach patch,$(PKG_PATCHES),$(DIR_PATCHES)/$(patch))
+
 	cd $(DIR_APP) && autoconf
 endef
 
