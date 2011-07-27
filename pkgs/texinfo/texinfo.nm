@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = texinfo
 PKG_VER        = 4.13a
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Applications/Publishing
@@ -46,7 +46,6 @@ PKG_TARBALL    = $(THISAPP).tar.gz
 
 DIR_APP        = $(DIR_SRC)/$(PKG_NAME)-4.13
 
-# XXX testsuite fails and needs to be fixed.
-#define STAGE_TEST
-#        cd $(DIR_APP) && make check
-#endef
+define STAGE_TEST
+        cd $(DIR_APP) && make check
+endef
