@@ -25,8 +25,9 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = network
-PKG_VER        = 0.99.0
-PKG_REL        = 6
+PKG_EPOCH      = 1
+PKG_VER        = 001
+PKG_REL        = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
@@ -35,12 +36,34 @@ PKG_URL        = http://www.ipfire.org/
 PKG_LICENSE    = GPLv3+
 PKG_SUMMARY    = The IPFire Networking Scripts.
 
-PKG_BUILD_DEPS = # Need no gcc
-PKG_DEPS      += bash bridge-utils dhcp ebtables iproute2 ppp rstp \
-	sqlite systemd vlan
+# XXX maybe we can split this package into smaller ones like -wireless,
+# -dialup etc.
+
+PKG_BUILD_DEPS = $(PKG_DEPS)
+PKG_DEPS      += \
+	aiccu \
+	bash>=4.0 \
+	bridge-utils \
+	dhcp \
+	ebtables \
+	hostapd \
+	iproute2 \
+	ppp \
+	radvd \
+	rstp \
+	sqlite \
+	systemd-units \
+	tunctl \
+	vlan \
+	wpa_supplicant \
+	/bin/ipcalc \
+	/usr/bin/logger
 
 define PKG_DESCRIPTION
-	This script installs the IPFire Networking Scripts.
+	The scripts that are contained in this package are the heart of the
+	IPFire networking. They control the configuration of the network
+	zones, physical and virtual devices, handle hotplug events and
+	everything.
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.gz
