@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = dracut
 PKG_VER        = 010
-PKG_REL        = 1
+PKG_REL        = 2
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
@@ -35,9 +35,25 @@ PKG_URL        = http://sourceforge.net/apps/trac/dracut/wiki
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Initramfs generator using udev.
 
-PKG_DEPS      += bash bzip2 cpio coreutils dmraid e2fsprogs eject gzip \
-	iproute2 iputils kbd less libselinux lvm2 mdadm multipath-tools \
-	sysvinit udev util-linux which
+PKG_DEPS-dracut += \
+	bash \
+	bzip2 \
+	cpio \
+	coreutils \
+	dmraid \
+	e2fsprogs \
+	eject \
+	gzip \
+	iputils \
+	kbd \
+	less \
+	libselinux \
+	lvm2 \
+	mdadm \
+	sysvinit \
+	udev \
+	util-linux \
+	which
 
 define PKG_DESCRIPTION
 	dracut is a new, event-driven initramfs infrastructure based around udev.
@@ -60,4 +76,46 @@ endef
 define STAGE_INSTALL
 	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT) \
 		sbindir=/sbin sysconfdir=/etc mandir=/usr/share/man
+
+	# Install local configuration.
+	-mkdir -pv $(BUILDROOT)/etc/dracut.conf.d
+	cp -vf $(DIR_SOURCE)/ipfire.conf $(BUILDROOT)/etc/dracut.conf.d/ipfire.conf
+endef
+
+# Network package
+PKG_PACKAGES += dracut-network
+
+PKG_SUMMARY-dracut-network = Network support for the initramdisk.
+define PKG_DESCRIPTION-dracut-network
+	This package requires everything which is needed to build a generic
+	all purpose initramfs with network support with dracut.
+endef
+
+PKG_DEPS-dracut-network = \
+	bridge-utils \
+	dhclient \
+	iproute \
+	nfs-utils
+
+define PKG_FILES-dracut-network
+	/usr/share/dracut/modules.d/40network
+	/usr/share/dracut/modules.d/95fcoe
+	/usr/share/dracut/modules.d/95iscsi
+	/usr/share/dracut/modules.d/95nbd
+	/usr/share/dracut/modules.d/95nfs
+	/usr/share/dracut/modules.d/45ifcfg
+	/usr/share/dracut/modules.d/95znet
+endef
+
+# Utils package
+PKG_PACKAGES += dracut-utils
+
+PKG_SUMMARY-dracut-utils = Command line utils for dracut.
+define PKG_DESCRIPTION-dracut-utils
+	Command line utils for dracut.
+endef
+
+define PKG_FILES-dracut-utils
+	/sbin/dracut-*
+	/sbin/*initrd
 endef
