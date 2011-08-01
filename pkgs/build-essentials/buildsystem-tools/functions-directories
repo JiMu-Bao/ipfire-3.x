@@ -5,6 +5,10 @@ function dir_is_empty() {
 }
 
 function directory_remove_orphans() {
+	if [ "${QUALITY_AGENT_NO_DIRECTORY_PRUNE}" = "yes" ]; then
+		return
+	fi
+
 	local basedir=${1}
 
 	log DEBUG "Removing orphans in ${basedir}"
