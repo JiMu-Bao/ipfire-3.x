@@ -1,0 +1,110 @@
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+###############################################################################
+# Definitions
+###############################################################################
+
+include $(PKGROOT)/Include
+
+PKG_NAME       = filesystem
+PKG_VER        = 001
+PKG_REL        = 1
+
+PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
+PKG_GROUPS     = Base System/Base
+PKG_URL        = 
+PKG_LICENSE    = Public Domain
+PKG_SUMMARY    = The basic directory layout for a Linux system.
+
+PKG_BUILD_DEPS = build-essentials>=2:1.1-1
+PKG_PREREQUIRES += setup
+
+define PKG_DESCRIPTION
+	The filesystem package is one of the basic packages that is installed
+	on a Linux system. Filesystem contains the basic directory layout
+	for a Linux operating system, including the correct permissions for
+	the directories.
+endef
+
+DIR_APP = $(DIR_SRC)
+
+QUALITY_AGENT_NO_DIRECTORY_CHECK = yes
+QUALITY_AGENT_NO_DIRECTORY_PRUNE = yes
+
+STAGE_BUILD = # Nothing to do
+
+define STAGE_INSTALL
+	cd $(BUILDROOT) && mkdir -pv \
+		bin \
+		boot \
+		dev \
+		etc/pki \
+		etc/skel \
+		etc/sysconfig \
+		home \
+		lib/modules \
+		media \
+		mnt \
+		opt \
+		proc \
+		root \
+		run/lock \
+		sbin \
+		srv \
+		sys \
+		tmp \
+		usr/bin \
+		usr/include \
+		usr/lib \
+		usr/lib/locale \
+		usr/sbin \
+		usr/share/{aclocal,dict,doc,empty,info,mime-info,misc} \
+		usr/share/man/man{1,2,3,4,5,6,7,8,9,n,1x,2x,3x,4x,5x,6x,7x,8x,9x,0p,1p,3p} \
+		usr/src \
+		usr/local/bin \
+		usr/local/etc \
+		usr/local/lib \
+		usr/local/sbin \
+		usr/local/share \
+		usr/local/share/man/man{1,2,3,4,5,6,7,8,9,n,1x,2x,3x,4x,5x,6x,7x,8x,9x} \
+		usr/local/share/info \
+		usr/local/include \
+		var/empty \
+		var/lib \
+		var/local \
+		var/lock/subsys \
+		var/log \
+		var/nis \
+		var/preserve \
+		var/run \
+		var/spool/{mail,lpd} \
+		var/tmp \
+		var/db \
+		var/cache
+
+	cd $(BUILDROOT) && ln -snf ../var/tmp usr/tmp
+	cd $(BUILDROOT) && ln -snf spool/mail var/mail
+
+	# Setting correct permissions.
+	chmod 1777 $(BUILDROOT)/{,var/}tmp
+	chown root:mail $(BUILDROOT)/var/spool/mail
+	chmod 775 $(BUILDROOT)/var/spool/mail
+endef
