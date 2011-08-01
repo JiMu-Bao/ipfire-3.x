@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = basesystem
 PKG_VER        = 2.99
-PKG_REL        = 1
+PKG_REL        = 2
 PKG_EPOCH      = 1
 PKG_ARCH       = noarch
 
@@ -41,8 +41,8 @@ PKG_BUILD_DEPS = # There are no build dependencies
 # This is a package that pulls lots of other dependencies to always have a
 # useable system.
 PKG_DEPS      += /bin/sh /sbin/init \
-	coreutils file findutils gawk grep iana-etc initscripts kbd less \
-	module-init-tools network pakfire passwd procps psmisc sed setup \
+	coreutils file filesystem findutils gawk grep iana-etc initscripts kbd \
+	less module-init-tools network pakfire passwd procps psmisc sed setup \
 	shadow syslog system-release tar udev util-linux vim
 
 define PKG_DESCRIPTION
