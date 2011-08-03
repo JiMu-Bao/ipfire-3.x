@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = pycurl
 PKG_VER        = 7.19.0
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Development/Languages
@@ -37,6 +37,14 @@ PKG_SUMMARY    = A Python interface to libcurl.
 CFLAGS        += -DHAVE_CURL_OPENSSL
 
 PKG_BUILD_DEPS+= libcurl-devel openssl-devel python-devel
+
+# During its initialization, PycURL checks that the actual libcurl version
+# is not lower than the one used when PycURL was built.
+# Yes, that should be handled by library versioning (which would then get
+# automatically reflected).
+# For now, we have to reflect that dependency.
+LIBCURL_VERSION = $(shell curl-config --version | awk '{ print $$NF }')
+PKG_DEPS += libcurl>=$(LIBCURL_VERSION)
 
 define PKG_DESCRIPTION
 	PycURL is a Python interface to libcurl. PycURL can be used to fetch \
