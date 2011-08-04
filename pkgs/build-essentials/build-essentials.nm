@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = build-essentials
-PKG_VER        = 1.1
-PKG_REL        = 2
+PKG_VER        = 1.2
+PKG_REL        = 1
 PKG_EPOCH      = 2
 PKG_ARCH       = noarch
 
@@ -37,7 +37,7 @@ PKG_LICENSE    = GPL
 PKG_SUMMARY    = Elementary scripts for the build system.
 
 PKG_BUILD_DEPS =
-PKG_DEPS      += bash bzip2 coreutils diffutils file findutils gawk \
+PKG_DEPS      += bash bzip2 coreutils diffutils file filesystem findutils gawk \
 	grep gzip make patch pkgconfig sed setup system-release tar which xz
 
 define PKG_DESCRIPTION
