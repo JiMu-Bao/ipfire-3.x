@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = filesystem
 PKG_VER        = 001
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
 PKG_GROUPS     = Base System/Base
@@ -34,7 +34,7 @@ PKG_URL        =
 PKG_LICENSE    = Public Domain
 PKG_SUMMARY    = The basic directory layout for a Linux system.
 
-PKG_BUILD_DEPS = build-essentials>=2:1.1-1
+PKG_BUILD_DEPS = # No compiler needed.
 PKG_PREREQUIRES += setup
 
 define PKG_DESCRIPTION
