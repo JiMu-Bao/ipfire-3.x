@@ -21,7 +21,7 @@ if [ -n "${PKG_PREREQUIRES}" ]; then
 fi
 echo "requires=\"${requires}\""
 echo "provides=\"${provides}\""
-echo "provides=\"${PKG_CONFLICTS}\""
+echo "conflicts=\"${PKG_CONFLICTS}\""
 echo "obsoletes=\"${PKG_OBSOLETES}\""
 
 exit 0
