@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = dbus-glib
-PKG_VER        = 0.82
+PKG_VER        = 0.94
 PKG_REL        = 1
 
 PKG_MAINTAINER =
@@ -34,7 +34,7 @@ PKG_URL        = http://www.freedesktop.org/software/dbus/
 PKG_LICENSE    = GPLv2+ AFL
 PKG_SUMMARY    = Glib bindings for D-Bus.
 
-PKG_BUILD_DEPS+= dbus dbus-devel expat-devel gettext glib2-devel pkg-config
+PKG_BUILD_DEPS+= dbus dbus-devel expat-devel gettext glib2-devel
 PKG_DEPS-$(PKG_NAME)-devel = glib2-devel
 
 define PKG_DESCRIPTION
