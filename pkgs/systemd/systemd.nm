@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = systemd
 PKG_VER        = 29
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
 PKG_GROUPS     = System/Base
@@ -37,8 +37,8 @@ PKG_SUMMARY    = A System and Service Manager.
 PKG_BUILD_DEPS+= audit-devel automake autoconf cryptsetup-luks-devel dbus-devel \
 	libcap-devel libselinux-devel libtool libudev-devel pam-devel
 
-# systemd-analyze requires python-dbus
-PKG_DEPS-systemd = dbus python-dbus
+# systemd-analyze requires python-cairo + python-dbus
+PKG_DEPS-systemd = dbus python-cairo python-dbus
 
 define PKG_DESCRIPTION
 	systemd is a system and service manager for Linux, compatible with \
@@ -66,6 +66,12 @@ define PKG_FILES-systemd-units
 	/usr/share/man/man1/systemctl.*
 endef
 
+PKG_PREREQUIRES-systemd += systemd-units
+
+define CONTROL_POSTIN
+	/bin/systemd-machine-id-setup > /dev/null 2>&1
+	/bin/systemctl daemon-reexec > /dev/null 2>&1
+endef
 
 CONFIGURE_OPTIONS += \
 	--sysconfdir=/etc \
