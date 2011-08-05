@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = cups
 PKG_VER        = 1.4.5
-PKG_REL        = 4
+PKG_REL        = 5
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Applications/Printing
@@ -36,8 +36,8 @@ PKG_SUMMARY    = The common UNIX printing system.
 
 PKG_BUILD_DEPS+= audit-devel autoconf automake avahi-devel cyrus-sasl-devel \
 	gcc-c++ ghostscript gnutls-devel libgcrypt-devel libjpeg-devel libpng-devel \
-	libselinux-devel libtiff-devel openldap-devel pam-devel perl pkg-config \
-	python zlib-devel
+	libselinux-devel libtasn1-devel libtiff-devel openldap-devel pam-devel \
+	perl python zlib-devel
 PKG_DEPS      += ghostscript
 
 define PKG_DESCRIPTION
