@@ -183,7 +183,7 @@ endef
 STAGE_BUILD_TARGETS =
 
 define STAGE_BUILD
-	cd $(DIR_APP) && \
+	cd $(DIR_APP) && [ ! -e "configure" ] || \
 		$(CONFIGURE_ENVIRONMENT) \
 		./configure \
 			$(CONFIGURE_OPTIONS)
