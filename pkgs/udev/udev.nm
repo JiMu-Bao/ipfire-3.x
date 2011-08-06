@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = udev
 PKG_VER        = 172
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Base System/Base
@@ -73,4 +73,7 @@ define STAGE_INSTALL_CMDS
 		$(BUILDROOT)/usr/lib/ConsoleKit/run-seat.d/udev-acl.ck
 
 	install -m 755 $(DIR_SOURCE)/console_init $(BUILDROOT)/lib/udev/
+
+	# Remove network rules. We have our own in the network package.
+	rm -v $(BUILDROOT)/lib/udev/{write_net_rules,rules.d/75-persistent-net-generator.rules}
 endef
