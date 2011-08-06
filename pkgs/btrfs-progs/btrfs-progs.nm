@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = btrfs-progs
 PKG_VER        = 0.19
-PKG_REL        = 1
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Filesystems
@@ -34,7 +34,7 @@ PKG_URL        = http://btrfs.wiki.kernel.org/index.php/Main_Page
 PKG_LICENSE    = GPLv2
 PKG_SUMMARY    = Userspace programs for btrfs.
 
-PKG_BUILD_DEPS+= libuuid-devel
+PKG_BUILD_DEPS+= e2fsprogs-devel libacl-devel libuuid-devel zlib-devel
 
 define PKG_DESCRIPTION
 	The btrfs-progs package provides all the userpsace programs needed to create, \
@@ -42,6 +42,16 @@ define PKG_DESCRIPTION
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.bz2
+
+PKG_PATCHES    = btrfs-progs-upstream.patch
+PKG_PATCHES   += btrfs-progs-fix-labels.patch
+PKG_PATCHES   += btrfs-progs-build-everything.patch
+PKG_PATCHES   += btrfs-progs-valgrind.patch
+PKG_PATCHES   += btrfs-progs-build-fixes.patch
+
+define STAGE_BUILD
+	cd $(DIR_APP) && make CFLAGS="$(CFLAGS)" LDFLAGS="-lcom_err" all convert
+endef
 
 define STAGE_INSTALL
 	cd $(DIR_APP) && make bindir=$(BUILDROOT)/sbin mandir=$(BUILDROOT)/usr/share install
