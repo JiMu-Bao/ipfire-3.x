@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = multipath-tools
 PKG_VER        = 0.4.9
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Base
@@ -46,10 +46,6 @@ PKG_TARBALL    = $(PKG_NAME)-091027.tar.gz
 PKG_PACKAGES  += $(PKG_NAME)-devel
 
 DIR_APP = $(DIR_SRC)/$(PKG_NAME)
-
-define STAGE_BUILD
-	cd $(DIR_APP) && make
-endef
 
 define STAGE_INSTALL_CMDS
 	rm -rf $(BUILDROOT)/etc/rc.d

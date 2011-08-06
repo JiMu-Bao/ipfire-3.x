@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = etherwake
 PKG_VER        = 1.09
-PKG_REL        = 0
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Networking/Tools
@@ -44,10 +44,6 @@ PKG_TARBALL    = $(THISAPP).tar.gz
 
 define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && sed -e "s/^CFLAGS.*/CFLAGS = $(CFLAGS)/" -i Makefile
-endef
-
-define STAGE_BUILD
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
 endef
 
 define STAGE_INSTALL

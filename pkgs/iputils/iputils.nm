@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = iputils
 PKG_VER        = s20071127
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Base Networking/Tools
@@ -57,10 +57,6 @@ PKG_PATCHES   += $(THISAPP)-rh.patch
 PKG_PATCHES   += $(THISAPP)-traffic_class.patch
 PKG_PATCHES   += $(THISAPP)-warnings.patch
 PKG_PATCHES   += $(THISAPP)-output.patch
-
-define STAGE_BUILD
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
-endef
 
 define STAGE_INSTALL
 	-mkdir -pv $(BUILDROOT)/{bin,sbin} $(BUILDROOT)/usr/sbin

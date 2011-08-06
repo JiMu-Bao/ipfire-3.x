@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = pptp
 PKG_VER        = 1.7.2
-PKG_REL        = 0
+PKG_REL        = 2
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Networking/Dialin
@@ -50,10 +50,6 @@ define STAGE_PREPARE_CMDS
 		-e "s/install -o root -m 555 pptp/install -m 755 pptp/" \
 		-e "s/^OPTIMIZE=.*/OPTIMIZE=$(CFLAGS)/" \
 		-e "s/^IP.*/IP=\/sbin\/ip/"
-endef
-
-define STAGE_BUILD
-	cd $(DIR_APP) && make
 endef
 
 define STAGE_INSTALL_CMDS

@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = iana-etc
 PKG_VER        = 2.30
-PKG_REL        = 0
+PKG_REL        = 1
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
@@ -45,7 +45,3 @@ define PKG_DESCRIPTION
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.bz2
-
-define STAGE_BUILD
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
-endef

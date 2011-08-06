@@ -49,9 +49,9 @@ define STAGE_PREPARE_CMDS
 		-e "s@/share/@/usr/share/@g" Makefile
 endef
 
-define STAGE_BUILD
-	cd $(DIR_APP) && make OPT_FLAGS="$(CFLAGS)" #$(PARALLELISMFLAGS)
-endef
+#define STAGE_BUILD
+#	cd $(DIR_APP) && make OPT_FLAGS="$(CFLAGS)" #$(PARALLELISMFLAGS)
+#endef
 
 define STAGE_INSTALL
 	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT)

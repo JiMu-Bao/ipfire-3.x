@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = linux-firmware
 PKG_VER        = 20110311
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
 PKG_GROUPS     = System/Libraries
@@ -45,8 +45,7 @@ PKG_TARBALL    = $(THISAPP).tar.gz
 
 PKG_BUILD_DEPS =
 
-define STAGE_BUILD
-endef
+STAGE_BUILD    = # Nothing to do.
 
 define STAGE_INSTALL
 	-mkdir -pv $(BUILDROOT)/lib/firmware

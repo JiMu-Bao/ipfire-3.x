@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = dracut
 PKG_VER        = 010
-PKG_REL        = 2
+PKG_REL        = 3
 PKG_ARCH       = noarch
 
 PKG_MAINTAINER =
@@ -67,10 +67,6 @@ define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && sed -i Makefile \
 		-e "s/^all:.*/all: \$$(targets)/" \
 		-e "/.*man.*/d"
-endef
-
-define STAGE_BUILD
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
 endef
 
 define STAGE_INSTALL

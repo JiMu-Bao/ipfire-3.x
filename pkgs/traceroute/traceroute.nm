@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = traceroute
 PKG_VER        = 2.0.12
-PKG_REL        = 0
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Application/Internet
@@ -48,10 +48,6 @@ PKG_TARBALL    = $(THISAPP).tar.gz
 
 define STAGE_PREPARE_CMDS
 	cd $(DIR_APP) && echo "CFLAGS += $(CFLAGS)" >> Make.defines
-endef
-
-define STAGE_BUILD
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
 endef
 
 define STAGE_INSTALL
