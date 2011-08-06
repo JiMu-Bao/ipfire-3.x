@@ -1,9 +1,9 @@
 diff -Nur a/Makefile.am b/Makefile.am
---- a/Makefile.am	2011-06-16 13:17:51.000000000 +0200
-+++ b/Makefile.am	2011-07-10 19:09:54.169403422 +0200
-@@ -565,79 +565,13 @@
- 	src/readahead-common.h \
- 	src/ask-password-api.h
+--- a/Makefile.am	2011-08-03 04:19:53.000000000 +0200
++++ b/Makefile.am	2011-08-05 19:41:33.923993685 +0200
+@@ -692,81 +692,18 @@
+         src/dbus-loop.h \
+         src/spawn-agent.h
  
 -MANPAGES = \
 -	man/systemd.1 \
@@ -39,6 +39,7 @@ diff -Nur a/Makefile.am b/Makefile.am
 -	man/shutdown.8 \
 -	man/pam_systemd.8 \
 -	man/systemd.conf.5 \
+-	man/systemd-logind.conf.5 \
 -	man/tmpfiles.d.5 \
 -	man/hostname.5 \
 -	man/machine-id.5 \
@@ -48,14 +49,16 @@ diff -Nur a/Makefile.am b/Makefile.am
 -        man/machine-info.5 \
 -	man/modules-load.d.5 \
 -	man/sysctl.d.5 \
--        man/systemd-ask-password.1
+-        man/systemd-ask-password.1 \
+-        man/systemd-loginctl.1
 +MANPAGES =
  
--if ENABLE_BINFMT
+ if ENABLE_BINFMT
 -MANPAGES += \
 -	man/binfmt.d.5
--endif
-+MANPAGES_ALIAS =
++MANPAGES +=
++
+ endif
  
 -MANPAGES_ALIAS = \
 -	man/reboot.8 \
@@ -77,6 +80,8 @@ diff -Nur a/Makefile.am b/Makefile.am
 -dist_man_MANS = \
 -	$(MANPAGES) \
 -	$(MANPAGES_ALIAS)
++MANPAGES_ALIAS =
++
 +dist_man_MANS =
  
 -nodist_man_MANS = \
