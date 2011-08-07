@@ -26,10 +26,10 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = wireless-regdb
 PKG_VER        = 2011.04.28
-PKG_REL        = 1
+PKG_REL        = 2
 PKG_ARCH       = noarch
 
-PKG_MAINTA= Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
+PKG_MAINTAINER = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
 PKG_GROUPS     = Network/Wireless
 PKG_URL        = http://wireless.kernel.org/en/developers/Regulatory/
 PKG_LICENSE    = ISC
