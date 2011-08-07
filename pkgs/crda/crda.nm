@@ -46,6 +46,6 @@ endef
 
 PKG_TARBALL    = $(THISAPP).tar.bz2
 
-define STAGE_PREPARE_CMDS                                                       
+define STAGE_PREPARE_CMDS
         cp -vf /usr/lib/crda/pubkeys/root.key.pub.pem $(DIR_APP)/pubkeys/
 endef

@@ -48,7 +48,7 @@ define STAGE_BUILD
 	cd $(DIR_APP) && CFLAGS="$(CFLAGS)" python setup.py build
 endef
 
-define STAGE_INSTALL	
+define STAGE_INSTALL
 	cd $(DIR_APP) && python setup.py install --skip-build --root=$(BUILDROOT)
 endef
 
