@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = pdns-recursor
 PKG_VER        = 3.3
-PKG_REL        = 2
+PKG_REL        = 3
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Networking/DNS
@@ -56,7 +56,18 @@ define STAGE_INSTALL
 	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT) \
 		CONFIGDIR=/etc/$(PKG_NAME)
 
+	# Remove sysvinit file
 	rm -rf $(BUILDROOT)/etc/init.d
 
-	mv -v $(BUILDROOT)/etc/$(PKG_NAME)/recursor.conf{-dist,}
+	# Remove shipped config file
+	rm -rf $(BUILDROOT)/etc/$(PKG_NAME)/recursor.conf-dist
+
+	# Install our default config file
+	cp -vf $(DIR_SOURCE)/recursor.conf $(BUILDROOT)/etc/$(PKG_NAME)/recursor.conf
+
+	# Create folder for chroot
+	-mkdir -pv $(BUILDROOT)/var/lib/pdns-recursor
 endef
+
+# XXX Need to create user and group "pdns-recursor" at installation
+# useradd -r -g pdns-recursor pdns-recursor -d /var/lib/pdns-recursor -s /sbin/nologin
