@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = radvd
 PKG_VER        = 1.8
-PKG_REL        = 3
+PKG_REL        = 4
 
 PKG_MAINTAINER =
 PKG_GROUPS     = System/Daemons
@@ -35,6 +35,7 @@ PKG_LICENSE    = BSD with advertising
 PKG_SUMMARY    = A Router Advertisement daemon.
 
 PKG_BUILD_DEPS+= flex flex-devel bison
+PKG_DEPS      += /lib/network/network-radvd-config
 
 define PKG_DESCRIPTION
 	radvd is the router advertisement daemon for IPv6. It listens to \
