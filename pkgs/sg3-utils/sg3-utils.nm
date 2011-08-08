@@ -25,7 +25,7 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = sg3_utils
-PKG_VER        = 1.29
+PKG_VER        = 1.32
 PKG_REL        = 0
 
 PKG_MAINTAINER =
