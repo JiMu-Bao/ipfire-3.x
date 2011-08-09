@@ -24,17 +24,18 @@
 
 include $(PKGROOT)/Include
 
-PKG_NAME       = shadow
+PKG_NAME       = shadow-utils
 PKG_VER        = 4.1.4.3
-PKG_REL        = 5
+PKG_REL        = 1
 
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
+PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
+PKG_GROUPS     = Base System/Base
 PKG_URL        = ftp://pkg-shadow.alioth.debian.org/pub/pkg-shadow/
 PKG_LICENSE    = GPLv2+
 PKG_SUMMARY    = Utilities to deal with user accounts.
 
 PKG_BUILD_DEPS+= audit-devel libcap-devel libselinux-devel
+PKG_OBSOLETES += shadow
 
 define PKG_DESCRIPTION
 	The shadow-utils package includes the necessary programs \
@@ -42,6 +43,7 @@ define PKG_DESCRIPTION
 	format, plus programs for managing user and group accounts.
 endef
 
+THISAPP        = shadow-$(PKG_VER)
 PKG_TARBALL    = $(THISAPP).tar.bz2
 
 CONFIGURE_OPTIONS += \
