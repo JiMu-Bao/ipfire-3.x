@@ -25,8 +25,8 @@
 include $(PKGROOT)/Include
 
 PKG_NAME       = avahi
-PKG_VER        = 0.6.25
-PKG_REL        = 0
+PKG_VER        = 0.6.30
+PKG_REL        = 1
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Networking/Zeroconf
@@ -41,12 +41,13 @@ define PKG_DESCRIPTION
 	you can chat with, find printers to print to or find files being \
 	shared. This kind of technology is already found in MacOS X (branded \
 	'Rendezvous', 'Bonjour' and sometimes 'ZeroConf') and is very \
-	convenient
+	convenient.
 endef
 
 PKG_BUILD_DEPS+= dbus-devel dbus-glib-devel expat-devel gcc-c++ gettext \
-	libdaemon-devel intltool perl perl-XML-Parser pkg-config python-devel \
+	libdaemon-devel>=0.14 intltool perl perl-XML-Parser pkg-config python-devel \
 	python-dbus
+PKG_DEPS-avahi+= libdaemon>=0.14
 
 PKG_TARBALL    = $(THISAPP).tar.gz
 
@@ -62,5 +63,6 @@ CONFIGURE_OPTIONS += \
 	--disable-qt3 \
 	--disable-qt4 \
 	--disable-gtk \
+	--disable-gtk3 \
 	--disable-pygtk \
 	--disable-mono
