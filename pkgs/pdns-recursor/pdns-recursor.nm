@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = pdns-recursor
 PKG_VER        = 3.3
-PKG_REL        = 3
+PKG_REL        = 4
 
 PKG_MAINTAINER =
 PKG_GROUPS     = Networking/DNS
@@ -42,10 +42,6 @@ define PKG_DESCRIPTION
 endef
 
 PKG_TARBALL    = $(THISAPP).tar.bz2
-
-# XXX pdns-recursors likes to segfault when compiled with normal
-# CFLAGS. So we do it with -O0
-CFLAGS := $(subst -O2,-O0,$(CFLAGS))
 
 define STAGE_BUILD
 	cd $(DIR_APP) && LUA=1 LUA_CPPFLAGS_CONFIG= LUA_LIBS_CONFIG=-llua \
