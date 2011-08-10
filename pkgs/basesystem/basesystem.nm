@@ -26,7 +26,7 @@ include $(PKGROOT)/Include
 
 PKG_NAME       = basesystem
 PKG_VER        = 2.99
-PKG_REL        = 3
+PKG_REL        = 4
 PKG_EPOCH      = 1
 PKG_ARCH       = noarch
 
@@ -43,7 +43,7 @@ PKG_BUILD_DEPS = # There are no build dependencies
 PKG_DEPS      += /bin/sh /sbin/init \
 	coreutils file filesystem findutils gawk grep iana-etc initscripts kbd \
 	less module-init-tools network pakfire passwd procps psmisc sed setup \
-	shadow syslog system-release tar udev util-linux
+	syslog system-release tar udev util-linux
 
 define PKG_DESCRIPTION
 	This package contains files that are needed to run basic \
