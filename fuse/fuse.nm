@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = fuse
-version    = 2.8.5
+version    = 2.8.6
 release    = 1
 
 groups     = System/Filesystems
@@ -13,23 +13,26 @@ license    = GPL+
 summary    = File System in Userspace (FUSE) utilities.
 
 description
-	With FUSE it is possible to implement a fully functional \
-	filesystem in a userspace program. This package contains the \
+	With FUSE it is possible to implement a fully functional
+	filesystem in a userspace program. This package contains the
 	FUSE userspace tools to mount a FUSE filesystem.
 end
 
-source_dl  =
+source_dl  = http://downloads.sourceforge.net/project/%{name}/%{name}/%{thisapp}
 
 build
 	requires
 		libselinux-devel
 	end
 
+	CFLAGS += -D_GNU_SOURCE
+
 	configure_options += \
 		--disable-static \
 		--disable-rpath
 
 	install_cmds
+		# Remove old sysvinit directory.
 		rm -vrf %{BUILDROOT}/etc/init.d
 
 		# Remove /dev/fuse which cannot be packaged.
