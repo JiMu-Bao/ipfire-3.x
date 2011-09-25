@@ -1,70 +1,60 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = tcl
+version    = 8.5.8
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Development/Languages
+url        = http://tcl.sourceforge.net/
+license    = TCL
+summary    = Tool Command Language, pronounced tickle.
 
-PKG_NAME       = tcl
-PKG_VER        = 8.5.8
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Languages
-PKG_URL        = http://tcl.sourceforge.net/
-PKG_LICENSE    = TCL
-PKG_SUMMARY    = Tool Command Language, pronounced tickle.
-
-PKG_BUILD_DEPS+= autoconf automake 
-
-define PKG_DESCRIPTION
+description
 	The Tcl (Tool Command Language) provides a powerful platform for\
 	creating integration applications that tie together diverse \
 	applications, protocols, devices, and frameworks.
-endef
+end
 
-PKG_TARBALL    = tcl$(PKG_VER)-src.tar.gz
-
-CONFIGURE_OPTIONS += \
-	--enable-shared
+source_dl  = http://downloads.sourceforge.net/project/%{name}/%{name}/%{thisapp}
+sources    = tcl%{version}-src.tar.gz
 
 CFLAGS        += -DTCL_NO_STACK_CHECK=1
 
-DIR_APP = $(DIR_SRC)/tcl$(PKG_VER)/unix
+build
+	requires
+		autoconf
+		automake
+	end
 
-define STAGE_PREPARE
-	cd $(DIR_SRC) && $(DO_EXTRACT) $(DIR_DL)/$(PKG_TARBALL)
 
-	cd $(DIR_APP) && cd .. && $(BUILD_TOOLS)/patch \
-		$(foreach patch,$(PKG_PATCHES),$(DIR_PATCHES)/$(patch))
+	DIR_APP = %{DIR_SRC}/tcl%{version}/unix
 
-	cd $(DIR_APP) && autoconf
-endef
+	configure_options +=\
+		--enable-shared
 
-define STAGE_TEST
-	cd $(DIR_APP) && make test
-endef
+	prepare
+		cd %{DIR_SRC} && %{MACRO_EXTRACT} %{DIR_DL}/${source}/%{sources}
+		cd %{DIR_APP} && cd ..
 
-define STAGE_INSTALL_CMDS
-	cd $(DIR_APP) && make install-private-headers DESTDIR=$(BUILDROOT)
-	ln -sf tclsh8.5 $(BUILDROOT)/usr/bin/tclsh	
-endef
+		%{MACRO_PATCHES}
+
+		cd %{DIR_APP} && autoconf
+	end
+
+	test
+		make test
+	end
+
+	install_cmds
+		cd %{DIR_APP} && make install-private-headers DESTDIR=%{BUILDROOT}
+		ln -sf tclsh8.5 %{BUILDROOT}/usr/bin/tclsh
+	end
+end
+
+packages
+	package %{name}
+	end
+end

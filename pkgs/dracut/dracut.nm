@@ -1,117 +1,101 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = dracut
+version    = 010
+release    = 3
+arch       = noarch
 
-include $(PKGROOT)/Include
+groups     = System/Boot
+url        = http://sourceforge.net/apps/trac/dracut/wiki
+license    = GPLv2+
+summary    = Initramfs generator using udev.
 
-PKG_NAME       = dracut
-PKG_VER        = 010
-PKG_REL        = 3
-PKG_ARCH       = noarch
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Boot
-PKG_URL        = http://sourceforge.net/apps/trac/dracut/wiki
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = Initramfs generator using udev.
-
-PKG_DEPS-dracut += \
-	bash \
-	bzip2 \
-	cpio \
-	coreutils \
-	dmraid \
-	e2fsprogs \
-	eject \
-	gzip \
-	iputils \
-	kbd \
-	less \
-	libselinux \
-	lvm2 \
-	mdadm \
-	sysvinit \
-	udev \
-	util-linux \
-	which
-
-define PKG_DESCRIPTION
+description
 	dracut is a new, event-driven initramfs infrastructure based around udev.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-define STAGE_PREPARE_CMDS
-	# Remove all man pages.
-	# XXX requires docbook
-	cd $(DIR_APP) && sed -i Makefile \
-		-e "s/^all:.*/all: \$$(targets)/" \
-		-e "/.*man.*/d"
-endef
+build
+	prepare_cmds
+		# Remove all man pages.
+		# XXX requires docbook
+		cd %{DIR_APP} && sed -i Makefile \
+			-e "s/^all:.*/all: \$%{targets}/" \
+			-e "/.*man.*/d"
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT) \
-		sbindir=/sbin sysconfdir=/etc mandir=/usr/share/man
+	install
+		make install DESTDIR=%{BUILDROOT} \
+			sbindir=/sbin sysconfdir=/etc mandir=/usr/share/man
 
-	# Install local configuration.
-	-mkdir -pv $(BUILDROOT)/etc/dracut.conf.d
-	cp -vf $(DIR_SOURCE)/ipfire.conf $(BUILDROOT)/etc/dracut.conf.d/ipfire.conf
-endef
+		# Install local configuration.
+		mkdir -pv %{BUILDROOT}/etc/dracut.conf.d
+		cp -vf %{DIR_SOURCE}/ipfire.conf %{BUILDROOT}/etc/dracut.conf.d/ipfire.conf
+	end
+end
 
-# Network package
-PKG_PACKAGES += dracut-network
-
-PKG_SUMMARY-dracut-network = Network support for the initramdisk.
-define PKG_DESCRIPTION-dracut-network
-	This package requires everything which is needed to build a generic
-	all purpose initramfs with network support with dracut.
-endef
-
-PKG_DEPS-dracut-network = \
-	bridge-utils \
-	dhclient \
-	iproute \
-	nfs-utils
-
-define PKG_FILES-dracut-network
-	/usr/share/dracut/modules.d/40network
-	/usr/share/dracut/modules.d/95fcoe
-	/usr/share/dracut/modules.d/95iscsi
-	/usr/share/dracut/modules.d/95nbd
-	/usr/share/dracut/modules.d/95nfs
-	/usr/share/dracut/modules.d/45ifcfg
-	/usr/share/dracut/modules.d/95znet
-endef
-
-# Utils package
-PKG_PACKAGES += dracut-utils
-
-PKG_SUMMARY-dracut-utils = Command line utils for dracut.
-define PKG_DESCRIPTION-dracut-utils
-	Command line utils for dracut.
-endef
-
-define PKG_FILES-dracut-utils
-	/sbin/dracut-*
-	/sbin/*initrd
-endef
+packages
+	package %{name}
+		requires
+			bash
+			bzip2
+			cpio
+			coreutils
+			dmraid
+			e2fsprogs
+			eject
+			gzip
+			iputils
+			kbd
+			less
+			libselinux
+			lvm2
+			mdadm
+			sysvinit
+			udev
+			util-linux
+			which
+		end
+	end
+	
+	package %{name}-network
+		summary = Network support for the initramdisk.
+		description
+			This package requires everything which is needed to build a generic
+			all purpose initramfs with network support with dracut.
+		end
+	
+		requires
+			bridge-utils
+			dhclient
+			iproute
+			nfs-utils
+		end
+	
+		files
+			/usr/share/dracut/modules.d/40network
+			/usr/share/dracut/modules.d/95fcoe
+			/usr/share/dracut/modules.d/95iscsi
+			/usr/share/dracut/modules.d/95nbd
+			/usr/share/dracut/modules.d/95nfs
+			/usr/share/dracut/modules.d/45ifcfg
+			/usr/share/dracut/modules.d/95znet
+		end
+	end
+	
+	
+	package %{name}-utils
+		summary = Command line utils for dracut.
+		description = %{summary}
+	
+		files
+			/sbin/dracut-*
+			/sbin/*initrd
+		end
+	end
+end

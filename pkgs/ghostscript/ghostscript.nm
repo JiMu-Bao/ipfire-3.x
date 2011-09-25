@@ -1,40 +1,18 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = ghostscript
+version    = 9.02
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Applications/Printing
+url        = http://ghostscript.com
+license    = GPL
+summary    = An interpreter for the PostScript language and for PDF.
 
-PKG_NAME       = ghostscript
-PKG_VER        = 9.02
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Applications/Printing
-PKG_URL        = http://ghostscript.com
-PKG_LICENSE    = GPL
-PKG_SUMMARY    = An interpreter for the PostScript language and for PDF.
-
-define PKG_DESCRIPTION
+description
 	Ghostscript is a package of software that provides:\
 	\
 	* An interpreter for the PostScript (TM) language, with the ability to \
@@ -49,11 +27,18 @@ define PKG_DESCRIPTION
 	  graphics and filtering (data compression / decompression \
 	  / conversion) capabilities that appear as primitive operations in \
 	  the PostScript language and in PDF.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-CONFIGURE_OPTIONS += \
+build
+	configure_options += \
 		--without-omni
 
-PARALLELISMFLAGS = # Disable this
+	PARALLELISMFLAGS = # Disable this
+end
+
+packages
+	package %{name}
+	end
+end

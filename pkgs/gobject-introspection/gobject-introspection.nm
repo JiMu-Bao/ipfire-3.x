@@ -1,57 +1,57 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = gobject-introspection
+version    = 0.9.12
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Development/Libraries
+url        = http://live.gnome.org/GObjectIntrospection
+license    = GPLv2+, LGPLv2+, MIT
+summary    = Introspection system for GObject-based libraries.
 
-PKG_NAME       = gobject-introspection
-PKG_VER        = 0.9.12
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Libraries 
-PKG_URL        = http://live.gnome.org/GObjectIntrospection
-PKG_LICENSE    = GPLv2+, LGPLv2+, MIT
-PKG_SUMMARY    = Introspection system for GObject-based libraries.
-
-PKG_BUILD_DEPS+= bison cairo-devel flex glib2-devel libffi-devel libtool \
-	pkg-config python-devel
-
-PKG_DEPS-$(PKG_NAME_REAL)-devel += $(PKG_NAME_REAL)
-
-define PKG_DESCRIPTION
+description
 	GObject Introspection can scan C header and source files in order \
 	to generate introspection "typelib" files. It also provides an API to \
 	examine typelib files, useful for creating language bindings among \
 	other things.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel $(PKG_NAME)-libs
+build
+	requires
+		bison
+		cairo-devel
+		flex
+		glib2-devel
+		libffi-devel
+		libtool
+		python-devel
+	end
 
-CONFIGURE_OPTIONS += --sbindir=/sbin --disable-static
+	configure_options += \
+		--sbindir=/sbin \
+		--disable-static
 
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
+	test
+		make check
+	end
+end
+
+packages
+	package %{name}
+	end
+
+	package %{name}-libs
+		template LIBS
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	
+		requires = %{name}=%{thisver}
+	end
+end

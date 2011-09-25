@@ -1,57 +1,48 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = pptp
+version    = 1.7.2
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = Networking/Dialin
+url        = http://pptpclient.sourceforge.net/
+license    = GPLv2+
+summary    = Point-to-Point Tunneling Protocol (PPTP) Client.
 
-PKG_NAME       = pptp
-PKG_VER        = 1.7.2
-PKG_REL        = 2
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Networking/Dialin
-PKG_URL        = http://pptpclient.sourceforge.net/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = Point-to-Point Tunneling Protocol (PPTP) Client.
-
-PKG_BUILD_DEPS+= perl ppp-devel
-PKG_DEPS      += iproute2
-
-define PKG_DESCRIPTION
-	Client for the proprietary Microsoft Point-to-Point Tunneling \
-	Protocol, PPTP. Allows connection to a PPTP based VPN as used \
+description
+	Client for the proprietary Microsoft Point-to-Point Tunneling
+	Protocol, PPTP. Allows connection to a PPTP based VPN as used
 	by employers and some cable and ADSL service providers.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
+sources    = %{thisapp}.tar.gz
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -i Makefile \
-		-e "s/install -o root -m 555 pptp/install -m 755 pptp/" \
-		-e "s/^OPTIMIZE=.*/OPTIMIZE=$(CFLAGS)/" \
-		-e "s/^IP.*/IP=\/sbin\/ip/"
-endef
+build
+	requires
+		perl
+		ppp-devel
+	end
 
-define STAGE_INSTALL_CMDS
-	rm -rvf $(BUILDROOT)/etc
-endef
+	prepare_cmds
+		sed -i Makefile \
+			-e "s/install -o root -m 555 pptp/install -m 755 pptp/" \
+			-e "s/^OPTIMIZE=.*/OPTIMIZE=%{CFLAGS}/" \
+			-e "s/^IP.*/IP=\/sbin\/ip/"
+	end
+
+	install_cmds
+		rm -rvf %{BUILDROOT}/etc
+	end
+end
+
+packages
+	package %{name}
+		requires
+			iproute2
+		end
+	end
+end

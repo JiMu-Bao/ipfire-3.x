@@ -1,43 +1,18 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = cracklib
+version    = 2.8.12
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Security/Password
+url        = http://sourceforge.net/projects/cracklib/
+license    = GPLv2
+summary    = A password-checking library.
 
-PKG_NAME       = cracklib
-PKG_VER        = 2.8.12
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Security/Password
-PKG_URL        = http://sourceforge.net/projects/cracklib/
-PKG_LICENSE    = GPLv2
-PKG_SUMMARY    = A password-checking library.
-
-PKG_BUILD_DEPS+= python-devel
-PKG_DEPS      += cracklib-dicts
-
-define PKG_DESCRIPTION
+description
 	CrackLib tests passwords to determine whether they match certain \
 	security-oriented characteristics, with the purpose of stopping users \
 	from choosing passwords that are easy to guess. CrackLib performs \
@@ -45,46 +20,77 @@ define PKG_DESCRIPTION
 	and gecos entry and checks those words against the password; it checks \
 	for simplistic patterns in passwords; and it checks for the password \
 	in a dictionary.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
-PKG_OBJECTS   += cracklib-words-20080507.gz
+source_dl  =
+sources   += cracklib-words-20080507.gz
 
-PKG_PACKAGES  += $(PKG_NAME)-dicts $(PKG_NAME)-devel python-$(PKG_NAME)
+build
+	requires
+		python-devel
+	end
 
-### We build an extra python package with the bindings for it.
-PKG_DESCRIPTION-python-cracklib = Python bindings for $(THISAPP).
-PKG_SUMMARY-python-cracklib     = Python bindings for $(THISAPP).
-PKG_FILES-python-cracklib       = /usr/lib/python*
+	configure_options += \
+		--with-default-dict=/lib/cracklib/pw_dict \
+		--with-python \
+		--disable-static
 
-### We build an extra package with the dictionaries.
-PKG_DESCRIPTION-cracklib-dicts = Dictionaries for $(THISAPP).
-PKG_SUMMARY-cracklib-dicts     = Dictionaries for $(THISAPP).
-PKG_FILES-cracklib-dicts       = /lib/cracklib /usr/share/dict*
+	# Only extract the source tarball.
+	prepare
+		cd %{DIR_SRC} && %{MACRO_EXTRACT} %{DIR_DL}/%{thisapp}.tar.gz
 
-CONFIGURE_OPTIONS += \
-	--with-default-dict=/lib/cracklib/pw_dict \
-	--with-python \
-	--disable-static
+		# Apply all patches.
+		%{MACRO_PATCHES}
+	end
 
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/{,usr/}lib
-	mv -v $(BUILDROOT)/usr/lib/libcrack.so.2* $(BUILDROOT)/lib
-	ln -vsf ../../lib/libcrack.so.2.8.0 $(BUILDROOT)/usr/lib/libcrack.so
+	install_cmds
+		mkdir -pv %{BUILDROOT}/{,usr/}lib
+		mv -v %{BUILDROOT}/usr/lib/libcrack.so.2* %{BUILDROOT}/lib
+		ln -vsf ../../lib/libcrack.so.2.8.0 %{BUILDROOT}/usr/lib/libcrack.so
 
-	-mkdir -pv $(BUILDROOT)/usr/share/dict
-	install -v -m644 -D $(DIR_DL)/cracklib-words-20080507.gz \
-		$(BUILDROOT)/usr/share/dict/cracklib-words.gz
-	gunzip -v $(BUILDROOT)/usr/share/dict/cracklib-words.gz
-	ln -v -s cracklib-words $(BUILDROOT)/usr/share/dict/words
-	echo -ne "$(DISTRO_NAME)\n$(DISTRO_SNAME)\n" >> \
-		$(BUILDROOT)/usr/share/dict/cracklib-extra-words
+		mkdir -pv %{BUILDROOT}/usr/share/dict
+		install -v -m644 -D %{DIR_DL}/cracklib-words-20080507.gz \
+			%{BUILDROOT}/usr/share/dict/cracklib-words.gz
+		gunzip -v %{BUILDROOT}/usr/share/dict/cracklib-words.gz
+		ln -v -s cracklib-words %{BUILDROOT}/usr/share/dict/words
+		echo -ne "%{DISTRO_NAME}\n%{DISTRO_SNAME}\n" >> \
+			%{BUILDROOT}/usr/share/dict/cracklib-extra-words
 
-	-mkdir -pv $(BUILDROOT)/lib/cracklib
-	cd $(DIR_APP) && chmod a+x util/cracklib-{format,packer}
-	cd $(DIR_APP) && util/cracklib-format \
-			$(BUILDROOT)/usr/share/dict/cracklib-words \
-			$(BUILDROOT)/usr/share/dict/cracklib-extra-words | \
-		util/cracklib-packer \
-			$(BUILDROOT)/lib/cracklib/pw_dict
-endef
+		mkdir -pv %{BUILDROOT}/lib/cracklib
+		chmod a+x util/cracklib-{format,packer}
+		util/cracklib-format \
+			%{BUILDROOT}/usr/share/dict/cracklib-words \
+			%{BUILDROOT}/usr/share/dict/cracklib-extra-words | \
+			util/cracklib-packer \
+				%{BUILDROOT}/lib/cracklib/pw_dict
+	end
+end
+
+packages
+	package %{name}
+		requires = %{name}-dicts
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+	
+	# We build an extra package with the dictionaries.
+	package %{name}-dicts
+		summary = Dictionaries for %{thisapp}.
+		description = %{summary}
+	
+		files
+			/lib/cracklib
+			/usr/share/dict*
+		end
+	end
+	
+	# We build an extra python package with the bindings for it.
+	package python-cracklib
+		summary = Python bindings for ${thisapp}.
+		description = %{summary}
+	
+		files = /usr/lib*/python*
+	end
+end

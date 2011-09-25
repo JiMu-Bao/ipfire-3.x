@@ -1,49 +1,39 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libsigc++
+version    = 2.2.9
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Development/Libraries
+url        = http://libsigc.sourceforge.net
+license    = GPLv2
+summary    = Callback Framework for C++.
 
-PKG_NAME       = libsigc++
-PKG_VER        = 2.2.9
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Libraries
-PKG_URL        = http://libsigc.sourceforge.net 
-PKG_LICENSE    = GPLv2
-PKG_SUMMARY    = Callback Framework for C++.
-
-PKG_BUILD_DEPS+= gcc-c++ m4
-
-define PKG_DESCRIPTION
-        libsigc++ implements a typesafe callback system for standard C++.
-	It allows you to define signals and to connect those signals to any callback 
-	function, either global or a member function, regardless of whether it is 
-	static or virtual. It also contains adaptor classes for connection of 
+description
+	libsigc++ implements a typesafe callback system for standard C++.
+	It allows you to define signals and to connect those signals to any callback
+	function, either global or a member function, regardless of whether it is
+	static or virtual. It also contains adaptor classes for connection of
 	dissimilar callbacks and has an ease of use unmatched by other C++ callback libraries.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		gcc-c++
+		m4
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

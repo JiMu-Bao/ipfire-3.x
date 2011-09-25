@@ -1,79 +1,80 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = udev
+version    = 172
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = Base System/Base
+url        = ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug/
+license    = GPLv2+
+summary    = A userspace implementation of devfs.
 
-PKG_NAME       = udev
-PKG_VER        = 172
-PKG_REL        = 2
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Base System/Base
-PKG_URL        = ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = A userspace implementation of devfs.
-
-PKG_BUILD_DEPS+= glib2-devel gperf kbd libacl-devel libselinux-devel \
-	libsepol-devel libuuid-devel libusb-compat-devel pciutils pkg-config \
-	usbutils
-
-define PKG_DESCRIPTION
+description
 	The udev package contains an implementation of devfs in userspace using \
 	sysfs and netlink.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug/
 
-PKG_PACKAGES  += libudev libudev-devel
+build
+	requires
+		glib2-devel
+		gperf
+		kbd
+		libacl-devel
+		libselinux-devel
+		libsepol-devel
+		libuuid-devel
+		libusb-compat-devel
+		pciutils
+		pkg-config
+		usbutils
+	end
 
-CONFIGURE_OPTIONS += \
-	--exec-prefix="" \
-	--sbindir=/sbin \
-	--sysconfdir=/etc \
-	--libexecdir=/lib/udev \
-	--with-rootlibdir=/lib \
-	--with-selinux \
-	--disable-introspection \
-	--with-systemdsystemunitdir=/lib/systemd/system
+	configure_options += \
+		--exec-prefix="" \
+		--sbindir=/sbin \
+		--sysconfdir=/etc \
+		--libexecdir=/lib/udev \
+		--with-rootlibdir=/lib \
+		--with-selinux \
+		--disable-introspection \
+		--with-systemdsystemunitdir=/lib/systemd/system
 
-define STAGE_INSTALL_CMDS
-	# Install rules
-	-mkdir -pv $(BUILDROOT)/lib/udev/rules.d/
-	install -m644 -v $(DIR_SOURCE)/rules/*.rules $(BUILDROOT)/lib/udev/rules.d/
+	install_cmds
+		# Install rules
+		mkdir -pv %{BUILDROOT}/lib/udev/rules.d/
+		install -m644 -v %{DIR_SOURCE}/rules/*.rules %{BUILDROOT}/lib/udev/rules.d/
 
-	# Install pkg-config files correctly
-	mv -v $(BUILDROOT)/lib/pkgconfig $(BUILDROOT)/usr/lib
+		# Install pkg-config files correctly
+		mv -v %{BUILDROOT}/lib/pkgconfig %{BUILDROOT}/usr/lib
 
-	rm -vf $(BUILDROOT)/lib/lib{udev,gudev-1.0}.so
-	ln -svf ../../lib/libudev.so.0 $(BUILDROOT)/usr/lib/libudev.so
-	ln -svf ../../lib/libgudev-1.0.so.0 $(BUILDROOT)/usr/lib/libgudev-1.0.so
+		rm -vf %{BUILDROOT}/lib/lib{udev,gudev-1.0}.so
+		ln -svf ../../lib/libudev.so.0 %{BUILDROOT}/usr/lib/libudev.so
+		ln -svf ../../lib/libgudev-1.0.so.0 %{BUILDROOT}/usr/lib/libgudev-1.0.so
 
-	ln -svf ../../../../lib/udev/udev-acl \
-		$(BUILDROOT)/usr/lib/ConsoleKit/run-seat.d/udev-acl.ck
+		ln -svf ../../../../lib/udev/udev-acl \
+			%{BUILDROOT}/usr/lib/ConsoleKit/run-seat.d/udev-acl.ck
 
-	install -m 755 $(DIR_SOURCE)/console_init $(BUILDROOT)/lib/udev/
+		install -m 755 %{DIR_SOURCE}/console_init %{BUILDROOT}/lib/udev/
 
-	# Remove network rules. We have our own in the network package.
-	rm -v $(BUILDROOT)/lib/udev/{write_net_rules,rules.d/75-persistent-net-generator.rules}
-endef
+		# Remove network rules. We have our own in the network package.
+		rm -v %{BUILDROOT}/lib/udev/{write_net_rules,rules.d/75-persistent-net-generator.rules}
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package lib%{name}
+		template LIBS
+	end
+	
+	package lib%{name}-devel
+		template DEVEL
+	end
+end

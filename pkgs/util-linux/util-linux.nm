@@ -1,175 +1,182 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = util-linux
+version    = 2.19
+major_ver  = 2.19
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = System/Base
+#groups-%{name} = Base %{groups}
+url        = http://kernel.org/~kzak/util-linux/
+license    = GPLv2 and GPLv2+ and BSD with advertising and Public Domain
+summary    = A collection of basic system utilities.
 
-PKG_NAME       = util-linux
-PKG_VER        = 2.19
-PKG_REL        = 2
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_GROUPS-$(PKG_NAME) = Base $(PKG_GROUPS)
-PKG_URL        = http://kernel.org/~kzak/util-linux/
-PKG_LICENSE    = GPLv2 and GPLv2+ and BSD with advertising and Public Domain
-PKG_SUMMARY    = A collection of basic system utilities.
-
-PKG_BUILD_DEPS+= audit-devel gettext libcap-devel libselinux-devel \
-	libsepol-devel ncurses-devel pam-devel zlib-devel
-PKG_DEPS      += /etc/pam.d/system-auth
-
-define PKG_DESCRIPTION
-	The util-linux package contains a large variety of low-level system \
-	utilities that are necessary for a Linux system to function. Among \
-	others, Util-linux contains the fdisk configuration tool and the login \
+description
+	The util-linux package contains a large variety of low-level system
+	utilities that are necessary for a Linux system to function. Among
+	others, Util-linux contains the fdisk configuration tool and the login
 	program.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = ftp://ftp.kernel.org/pub/linux/utils/util-linux/v%{major_ver}/
 
-PKG_PACKAGES  += libblkid libblkid-devel libuuid libuuid-devel \
-	libmount libmount-devel
+build
+	requires
+		audit-devel
+		gettext
+		libcap-devel
+		libselinux-devel
+		libsepol-devel
+		ncurses-devel
+		pam-devel
+		zlib-devel
+	end
+
+	CFLAGS += \
+		-D_LARGEFILE_SOURCE \
+		-D_LARGEFILE64_SOURCE \
+		-D_FILE_OFFSET_BITS=64
+
+	configure_options += \
+		--bindir=/bin \
+		--sbindir=/sbin \
+		--disable-wall \
+		--enable-arch \
+		--enable-kill \
+		--enable-login-utils \
+		--enable-partx \
+		--enable-write \
+		--enable-libmount-mount \
+		--with-selinux \
+		--with-audit \
+		--disable-makeinstall-chown \
+		--disable-static
+
+	prepare_cmds
+		sed -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' \
+			-i $(grep -rl '/etc/adjtime' .)
+	end
+
+	# Build nolodin
+	build_cmds
+		gcc %{CFLAGS} -o nologin %{DIR_SOURCE}/nologin.c
+	end
+
+	install_cmds
+		mkdir -pv %{BUILDROOT}/sbin \
+			%{BUILDROOT}/var/lib/hwclock \
+			%{BUILDROOT}/usr/share/man/man8 \
+			%{BUILDROOT}/var/log
+
+		install -m 755 %{DIR_APP}/nologin %{BUILDROOT}/sbin
+		install -m 644 %{DIR_SOURCE}/nologin.8 %{BUILDROOT}/usr/share/man/man8/
+
+		touch %{BUILDROOT}/var/log/lastlog
+
+		# Remove deprecated commands
+		rm -fv %{BUILDROOT}/{sbin,usr/share/man/man*}/{fsck,mkfs}.{bfs,minix}* \
+			%{BUILDROOT}/usr/bin/chkdupexe %{BUILDROOT}/usr/bin/vi{gr,pw} \
+			%{BUILDROOT}/sbin/{sln,shutdown} %{BUILDROOT}/bin/{line,newgrp,pg}
+		rm -fv %{BUILDROOT}/usr/share/getopt/*.tcsh
+
+		# Create /etc/mtab symlink
+		mkdir -pv %{BUILDROOT}/etc
+		ln -svf /proc/mounts %{BUILDROOT}/etc/mtab
+	end
+
+	export PKG_REQUIRES_FILTER = /proc/.*/mounts
+end
 
 # This symlink is allowed to be absolute.
-QUALITY_AGENT_WHITELIST_SYMLINK = /etc/mtab
-PKG_REQUIRES_FILTER = /proc/.*/mounts
+quality-agent
+	whitelist_symlink
+		/etc/mtab
+	end
+end
 
-# Package information for libblkid
-PKG_SUMMARY-libblkid =  Block device ID library.
-PKG_DESCRIPTION-libblkid = This is the block device identification library, \
-	part of util-linux.
-
-define PKG_FILES-libblkid
-	/lib/libblkid.*
-endef
-
-# Package information for libblkid-devel
-PKG_SUMMARY-libblkid-devel =  Development library and header of libblkid.
-PKG_DESCRIPTION-libblkid-devel = $(PKG_SUMMARY-libblkid-devel)
-
-define PKG_FILES-libblkid-devel
-	/usr/include/blkid/ \
-	/usr/lib/libblkid.* \
-	/usr/lib/pkgconfig/blkid.pc \
-	/usr/share/man/man3/*blkid* 
-endef
-
-# Package information for libuuid
-PKG_SUMMARY-libuuid =  Universally unique ID library.
-PKG_DESCRIPTION-libuuid = This is the universally unique ID library, \
-	part of util-linux.
-
-define PKG_FILES-libuuid
-	/lib/libuuid.*
-endef
-
-# Package information for libuuid-devel
-PKG_SUMMARY-libuuid-devel =  Development library and header of libuuid.
-PKG_DESCRIPTION-libuuid-devel = $(PKG_SUMMARY-libuuid-devel)
-
-define PKG_FILES-libuuid-devel
-	/usr/include/uuid/ \
-	/usr/lib/libuuid.* \
-	/usr/lib/pkgconfig/uuid.pc \
-	/usr/share/man/man3/*uuid*
-endef
-
-# Package information for libmount
-PKG_SUMMARY-libmount =  Device mounting library.
-PKG_DESCRIPTION-libmount = This is the device mounting library, \
-	part of util-linux.
-
-define PKG_FILES-libmount
-	/lib/libmount.*
-endef
-
-# Package information for libmount-devel
-PKG_SUMMARY-libmount-devel =  Development library and header of libmount.
-PKG_DESCRIPTION-libmount-devel = $(PKG_SUMMARY-libmount-devel)
-
-define PKG_FILES-libmount-devel
-	/usr/include/mount/ \
-	/usr/lib/libmount.* \
-	/usr/lib/pkgconfig/mount.pc \
-	/usr/share/man/man3/*mount*
-endef
-
-
-CFLAGS        += -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
-
-CONFIGURE_OPTIONS += \
-	--bindir=/bin \
-	--sbindir=/sbin \
-	--disable-wall \
-	--enable-arch \
-	--enable-kill \
-	--enable-login-utils \
-	--enable-partx \
-	--enable-write \
-	--enable-libmount-mount \
-	--with-selinux \
-	--with-audit \
-	--disable-makeinstall-chown \
-	--disable-static
+packages
+	package %{name}
+		requires = /etc/pam.d/system-auth
+	end
 	
-
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' \
-		-i $$(grep -rl '/etc/adjtime' .)
-endef
-
-define STAGE_BUILD_CMDS
-	# Build nologin
-	cd $(DIR_APP) && gcc $(CFLAGS) -o nologin $(DIR_SOURCE)/nologin.c
-endef
-
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/sbin \
-		$(BUILDROOT)/var/lib/hwclock \
-		$(BUILDROOT)/usr/share/man/man8 \
-		$(BUILDROOT)/var/log
-
-	install -m 755 $(DIR_APP)/nologin $(BUILDROOT)/sbin
-	install -m 644 $(DIR_SOURCE)/nologin.8 $(BUILDROOT)/usr/share/man/man8/
-
-	touch $(BUILDROOT)/var/log/lastlog
-
-	# Remove deprecated commands
-	rm -fv $(BUILDROOT)/{sbin,usr/share/man/man*}/{fsck,mkfs}.{bfs,minix}* \
-		$(BUILDROOT)/usr/bin/chkdupexe $(BUILDROOT)/usr/bin/vi{gr,pw} \
-		$(BUILDROOT)/sbin/{sln,shutdown} $(BUILDROOT)/bin/{line,newgrp,pg}
-	rm -fv $(BUILDROOT)/usr/share/getopt/*.tcsh
-
-	# Create /etc/mtab symlink
-	-mkdir -pv $(BUILDROOT)/etc
-	ln -svf /proc/mounts $(BUILDROOT)/etc/mtab
-endef
-
-define STAGE_INSTALL_POST
-	# Set capabilities
-	chmod -v -s $(BUILDROOT)/bin/mount
-	setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep $(BUILDROOT)/bin/mount
-	chmod -v -s $(BUILDROOT)/bin/umount
-	setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep $(BUILDROOT)/bin/umount
-endef
+	# Package information for libblkid
+	package libblkid
+		summary =  Block device ID library.
+		description
+			This is the block device identification library,
+			part of util-linux.
+		end
+	
+		files
+			/lib/libblkid.*
+		end
+	end
+	
+	# Package information for libblkid-devel
+	package libblikid-devel
+		summary =  Development library and header of libblkid.
+		description = %{summary}
+	
+		files
+			/usr/include/blkid/
+			/usr/lib/libblkid.*
+			/usr/lib/pkgconfig/blkid.pc
+			/usr/share/man/man3/*blkid*
+		end
+	end
+	
+	# Package information for libuuid
+	package libuuid
+		summary =  Universally unique ID library.
+		description
+			This is the universally unique ID library,
+			part of util-linux.
+		end
+	
+		files
+			/lib/libuuid.*
+		end
+	end
+	
+	# Package information for libuuid-devel
+	package libuuid-devel
+		summary =  Development library and header of libuuid.
+		description = %{summary}
+	
+		files
+			/usr/include/uuid/
+			/usr/lib/libuuid.*
+			/usr/lib/pkgconfig/uuid.pc
+			/usr/share/man/man3/*uuid*
+		end
+	end
+	
+	# Package information for libmount
+	package libmount
+		summary =  Device mounting library.
+		description
+			This is the device mounting library,
+			part of util-linux.
+		end
+	
+		files
+			/lib/libmount.*
+		end
+	end
+	
+	# Package information for libmount-devel
+	package libmount-devel
+		summary =  Development library and header of libmount.
+		description = %{summary}
+	
+		files
+			/usr/include/mount/
+			/usr/lib/libmount.*
+			/usr/lib/pkgconfig/mount.pc
+			/usr/share/man/man3/*mount*
+		end
+	end
+end

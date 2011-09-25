@@ -1,58 +1,44 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = firewall
+version    = 0.1
+release    = 2
 
-include $(PKGROOT)/Include
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = Networking/Firewall
+url        = http://www.ipfire.org/
+license    = GPLv3+
+summary    = The IPFire Firewall Engine.
 
-PKG_NAME       = firewall
-PKG_VER        =
-PKG_REL        = 2
-
-PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUPS     = Networking/Firewall
-PKG_URL        = http://www.ipfire.org/
-PKG_LICENSE    = GPLv3+
-PKG_SUMMARY    = The IPFire Firewall Engine.
-
-PKG_BUILD_DEPS = # Empty
-PKG_DEPS      += iproute2 iptables
-
-define PKG_DESCRIPTION
+description
 	This script installs IPFire's firewall.
-endef
+end
 
-DIR_APP = $(DIR_SOURCE)/src
+# No tarball.
+sources    =
 
-PKG_TARBALL    =
+build
+	DIR_APP = %{DIR_SOURCE}/src
 
-STAGE_PREPARE = # Do nothing
-STAGE_BUILD = # Do nothing
+	build
+		: # Do nothing.
+	end
 
-define STAGE_INSTALL
-	-mkdir -pv $(BUILDROOT)/usr/{lib,share}/firewall $(BUILDROOT)/usr/bin
-	for i in $(DIR_APP)/{functions,zones}*; do \
-		install -m 644 -v $$i $(BUILDROOT)/usr/lib/firewall; \
-	done
-	cp -avf $(DIR_APP)/macros $(BUILDROOT)/usr/share/firewall/
-	install -m 755 -v $(DIR_APP)/firewall $(BUILDROOT)/usr/bin
-endef
+	install
+		mkdir -pv %{BUILDROOT}/usr/{lib,share}/firewall %{BUILDROOT}/usr/bin
+		for i in %{DIR_APP}/{functions,zones}*; do \
+			install -m 644 -v $i %{BUILDROOT}/usr/lib/firewall; \
+		done
+		cp -avf %{DIR_APP}/macros %{BUILDROOT}/usr/share/firewall/
+		install -m 755 -v %{DIR_APP}/firewall %{BUILDROOT}/usr/bin
+	end
+end
+
+packages
+	package %{name}
+		requires = iproute2 iptables
+	end
+end

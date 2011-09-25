@@ -1,56 +1,47 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = nettle
+version    = 2.2
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://www.lysator.liu.se/~nisse/nettle/
+license    = LGPL
+summary    = A low-level cryptographic library.
 
-PKG_NAME       = nettle
-PKG_VER        = 2.2
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.lysator.liu.se/~nisse/nettle/
-PKG_LICENSE    = LGPL
-PKG_SUMMARY    = A low-level cryptographic library. 
-
-PKG_BUILD_DEPS+= gmp-devel m4 openssl-devel
-PKG_DEPS-nettle-devel += gmp-devel
-
-define PKG_DESCRIPTION
+description
 	Nettle is a cryptographic library that is designed to fit easily in
 	more or less any context: In crypto toolkits for object-oriented
 	languages (C++, Python, Pike, ...), in applications like LSH or GNUPG,
 	or even in kernel space.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		gmp-devel
+		m4
+		openssl-devel
+	end
 
-CONFIGURE_OPTIONS += \
-	--enable-shared
+	configure_options += \
+		--enable-shared
 
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
+	test
+		make check
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		requires
+			gmp-devel
+		end
+	end
+end

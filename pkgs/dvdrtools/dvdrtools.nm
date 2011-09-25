@@ -1,51 +1,37 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = dvdrtools
+version    = 0.2.1
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Filesystems
+url        = http://savannah.nongnu.org/projects/dvdrtools/
+license    = GPLv2+
+summary    = A set of command line programs that allows to record media.
 
-PKG_NAME       = dvdrtools
-PKG_VER        = 0.2.1
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Filesystems
-PKG_URL        = http://savannah.nongnu.org/projects/dvdrtools/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = A set of command line programs that allows to record media.
-
-define PKG_DESCRIPTION
+description
 	dvdrtools is a fork of cdrtools/cdrecord with support for writing to DVDs. \
 	While its primary purpose is writing data DVDs, it includes basic support \
 	for mastering video DVDs.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-CONFIGURE_OPTIONS += \
-	--disable-static \
-	--mandir=/usr/share/man
+build
+	configure_options += \
+		--disable-static \
+		--mandir=/usr/share/man
 
-define STAGE_TEST
-        cd $(DIR_APP) && make check
-endef
+	test
+		make check
+	end
+end
+
+packages
+	package %{name}
+	end
+end

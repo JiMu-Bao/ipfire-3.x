@@ -1,62 +1,51 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = os-prober
+version    = 1.38
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Development/Tools
+url        = http://joey.kitenet.net/code/os-prober/
+license    = GPL
+summary    = Utility to detect other OSes on a set of drives.
 
-PKG_NAME       = os-prober
-PKG_VER        = 1.38
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Tools
-PKG_URL        = http://joey.kitenet.net/code/os-prober/
-PKG_LICENSE    = GPL
-PKG_SUMMARY    = Utility to detect other OSes on a set of drives.
-
-PKG_BUILD_DEPS+= dmraid-devel libdevmapper-devel libudev-devel \
-	libuuid-devel
-
-define PKG_DESCRIPTION
+description
 	os-prober is a spinoff of debian-installer. One of the installer's features \
 	is that it can probe disks on the system for other operating systems, and \
 	add them to the boot loader, so that installing Debian doesn't make your \
 	other installed OS hard to boot.
-endef
+end
 
-THISAPP        = $(PKG_NAME)_$(PKG_VER)
-PKG_TARBALL    = $(THISAPP).tar.gz
-DIR_APP        = $(DIR_SRC)/$(PKG_NAME)
+thisapp    = %{name}_%{version}
+source_dl  =
 
-define STAGE_BUILD
-	cd $(DIR_APP) && make CFLAGS="$(CFLAGS)" CC=gcc $(PARALLELISMFLAGS)
-endef
+build
+	requires
+		dmraid-devel
+		libdevmapper-devel
+		libudev-devel
+		libuuid-devel
+	end
 
-define STAGE_INSTALL
-	-mkdir -pv $(BUILDROOT)/usr/{bin,lib/os-prober,share/os-prober}
-	cd $(DIR_APP) && cp -vf common.sh $(BUILDROOT)/usr/share/os-prober/common.sh
-	cd $(DIR_APP) && cp -vf newns $(BUILDROOT)/usr/lib/os-prober/
-	cd $(DIR_APP) && cp -vrf {linux-boot,os}-probes $(BUILDROOT)/usr/lib/
-	cd $(DIR_APP) && cp -vf {linux-boot,os}-prober $(BUILDROOT)/usr/bin/
-	chmod -v 755 $(BUILDROOT)/usr/bin/{linux-boot,os}-prober
-endef
+	DIR_APP = %{DIR_SRC}/%{name}
+
+	build
+		make CFLAGS="%{CFLAGS}" CC=gcc %{PARALLELISMFLAGS}
+	end
+
+	install
+		mkdir -pv %{BUILDROOT}/usr/{bin,lib/os-prober,share/os-prober}
+		cp -vf common.sh %{BUILDROOT}/usr/share/os-prober/common.sh
+		cp -vf newns %{BUILDROOT}/usr/lib/os-prober/
+		cp -vrf {linux-boot,os}-probes %{BUILDROOT}/usr/lib/
+		cp -vf {linux-boot,os}-prober %{BUILDROOT}/usr/bin/
+		chmod -v 755 %{BUILDROOT}/usr/bin/{linux-boot,os}-prober
+	end
+end
+
+packages
+	package %{name}
+end

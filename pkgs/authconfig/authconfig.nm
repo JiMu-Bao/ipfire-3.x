@@ -1,84 +1,75 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = authconfig
+version    = 6.1.14
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = System/Base
+url        = https://fedorahosted.org/authconfig
+license    = GPLv2+
+summary    = Command line tool for setting up authentication from network services.
 
-PKG_NAME       = authconfig
-PKG_VER        = 6.1.14
-PKG_REL        = 2
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = https://fedorahosted.org/authconfig
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = Command line tool for setting up authentication from network services.
-
-PKG_BUILD_DEPS+= intltool python-devel
-PKG_DEPS      += newt-python
-
-define PKG_DESCRIPTION
+description
 	Authconfig is a command line utility which can configure a workstation\
 	to use shadow (more secure) passwords.  Authconfig can also configure a \
 	system to be a client for certain networked user information and \
-	authentication schemes.	
-endef
+	authentication schemes.
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  = https://fedorahosted.org/releases/a/u/authconfig/
+sources    = %{thisapp}.tar.bz2
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		intltool
+		python-devel
+	end
 
-CONFIGURE_OPTIONS += \
-	--sysconfdir=/etc \
-	--localstatedir=/var \
-	--disable-static
+	configure_options += \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--disable-static
 
-# Hack to allow installation of the desktop file
-define STAGE_PREPARE_CMDS
-	ln -s /bin/true /usr/bin/desktop-file-install
-endef
+	# Hack to allow installation of the desktop file
+	prepare_cmds
+		ln -s /bin/true /usr/bin/desktop-file-install
+	end
 
-define STAGE_INSTALL_CMDS
-	# Remove useless symlinks in /usr/bin
-	rm -rf $(BUILDROOT)/usr/bin
+	install_cmds
+		# Remove useless symlinks in /usr/bin
+		rm -rf %{BUILDROOT}/usr/bin
 
-	# Replace absolute symlinks by relative ones
-	cd $(BUILDROOT)/usr/sbin && ln -sf ../share/authconfig/authconfig.py authconfig
-	cd $(BUILDROOT)/usr/sbin && ln -sf ../share/authconfig/authconfig-tui.py authconfig-tui
+		# Replace absolute symlinks by relative ones
+		cd %{BUILDROOT}/usr/sbin && ln -sf ../share/authconfig/authconfig.py authconfig
+		cd %{BUILDROOT}/usr/sbin && ln -sf ../share/authconfig/authconfig-tui.py authconfig-tui
 
-	# Remove symlinks for gtk
-	rm -rf $(BUILDROOT)/usr/sbin/authconfig-gtk
-	rm -rf $(BUILDROOT)/usr/sbin/system-config-authentication
+		# Remove symlinks for gtk
+		rm -rf %{BUILDROOT}/usr/sbin/authconfig-gtk
+		rm -rf %{BUILDROOT}/usr/sbin/system-config-authentication
 
-	# Remove files for authconfig-gtk and system-config-authentication
-	rm -rf $(BUILDROOT)/etc/pam.d/authconfig-gtk
-	rm -rf $(BUILDROOT)/etc/pam.d/system-config-authentication
-	rm -rf $(BUILDROOT)/etc/security/console.apps/authconfig-gtk
-	rm -rf $(BUILDROOT)/etc/security/console.apps/system-config-authentication
-	rm -rf $(BUILDROOT)/usr/share/authconfig/authconfig-gtk.*
-	rm -rf $(BUILDROOT)/usr/share/man/man8/authconfig-gtk.8
-	rm -rf $(BUILDROOT)/usr/share/man/man8/system-config-authentication.8
+		# Remove files for authconfig-gtk and system-config-authentication
+		rm -rf %{BUILDROOT}/etc/pam.d/authconfig-gtk
+		rm -rf %{BUILDROOT}/etc/pam.d/system-config-authentication
+		rm -rf %{BUILDROOT}/etc/security/console.apps/authconfig-gtk
+		rm -rf %{BUILDROOT}/etc/security/console.apps/system-config-authentication
+		rm -rf %{BUILDROOT}/usr/share/authconfig/authconfig-gtk.*
+		rm -rf %{BUILDROOT}/usr/share/man/man8/authconfig-gtk.8
+		rm -rf %{BUILDROOT}/usr/share/man/man8/system-config-authentication.8
 
-	# Remove app icons for authconfig
-	rm -rf $(BUILDROOT)/usr/share/icons
-endef
+		# Remove app icons for authconfig
+		rm -rf %{BUILDROOT}/usr/share/icons
+	end
+end
+
+packages
+	package %{name}
+		requires += newt-python
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

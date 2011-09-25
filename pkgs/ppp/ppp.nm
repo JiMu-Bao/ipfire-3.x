@@ -1,81 +1,68 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = ppp
+version    = 2.4.5
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = System/Daemons
+url        = ftp://ftp.samba.org/pub/ppp/
+license    = BSD and LGPLv2+ and GPLv2+ and Public Domain
+summary    = The PPP (Point-to-Point Protocol) daemon.
 
-PKG_NAME       = ppp
-PKG_VER        = 2.4.5
-PKG_REL        = 2
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Daemons
-PKG_URL        = ftp://ftp.samba.org/pub/ppp/
-PKG_LICENSE    = BSD and LGPLv2+ and GPLv2+ and Public Domain
-PKG_SUMMARY    = The PPP (Point-to-Point Protocol) daemon.
-
-PKG_BUILD_DEPS+= libpcap-devel linux-atm-devel openssl-devel pam-devel
-
-define PKG_DESCRIPTION
+description
 	The ppp package contains the PPP (Point-to-Point Protocol) daemon and \
 	documentation for PPP support. The PPP protocol provides a method for \
 	transmitting datagrams over serial point-to-point links. PPP is \
 	usually used to dial in to an ISP or other organization over a modem \
 	and phone line.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		libpcap-devel
+		linux-atm-devel
+		openssl-devel
+		pam-devel
+	end
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -e "s@^RUNDIR .*@RUNDIR = /var/run/ppp@" \
-		-e "s@^LOGDIR .*@LOGDIR = /var/log/ppp@" \
-		-i linux/Makefile.top
+	prepare_cmds
+		sed -e "s@^RUNDIR .*@RUNDIR = /var/run/ppp@" \
+			-e "s@^LOGDIR .*@LOGDIR = /var/log/ppp@" \
+			-i linux/Makefile.top
 
-	cd $(DIR_APP) && sed -e "s@^DESTDIR.*@DESTDIR=\$$(INSTROOT)/usr@" \
-		-i pppd/plugins/pppol2tp/Makefile.linux
+		sed -e "s@^DESTDIR.*@DESTDIR=\$%{INSTROOT}/usr@" \
+			-i pppd/plugins/pppol2tp/Makefile.linux
 
-	# Remove broken header file that crashed the build.
-	cd $(DIR_APP) && rm -f include/linux/if_pppol2tp.h
-endef
+		# Remove broken header file that crashed the build.
+		rm -f include/linux/if_pppol2tp.h
+	end
 
-define STAGE_BUILD
-	cd $(DIR_APP) && \
-		./configure \
-			--prefix=/usr
+	make_build_targets += \
+		CC="gcc %{CFLAGS}"
 
-	cd $(DIR_APP) && make CC="gcc $(CFLAGS)" $(PARALLELISMFLAGS)
-endef
+	install
+		make install INSTROOT=%{BUILDROOT}
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install INSTROOT=$(BUILDROOT)
+		rm -rfv %{BUILDROOT}/etc/ppp/plugins
 
-	rm -rfv $(BUILDROOT)/etc/ppp/plugins
+		mkdir -pv %{BUILDROOT}/etc/ppp
+		touch %{BUILDROOT}/etc/ppp/secrets
+		chmod -v 600 %{BUILDROOT}/etc/ppp/secrets
+		ln -svf secrets %{BUILDROOT}/etc/ppp/pap-secrets
+		ln -svf secrets %{BUILDROOT}/etc/ppp/chap-secrets
+	end
+end
 
-	-mkdir -pv $(BUILDROOT)/etc/ppp
-	touch $(BUILDROOT)/etc/ppp/secrets
-	chmod -v 600 $(BUILDROOT)/etc/ppp/secrets
-	ln -svf secrets $(BUILDROOT)/etc/ppp/pap-secrets
-	ln -svf secrets $(BUILDROOT)/etc/ppp/chap-secrets
-endef
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

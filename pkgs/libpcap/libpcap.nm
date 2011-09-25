@@ -1,42 +1,18 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libpcap
+version    = 1.1.1
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://www.tcpdump.org/
+license    = BSD with advertising
+summary    = A system-independent interface for user-level packet capture.
 
-PKG_NAME       = libpcap
-PKG_VER        = 1.1.1
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.tcpdump.org/
-PKG_LICENSE    = BSD with advertising
-PKG_SUMMARY    = A system-independent interface for user-level packet capture.
-
-PKG_BUILD_DEPS+= bison flex libnl-devel
-
-define PKG_DESCRIPTION
+description
 	Libpcap provides a portable framework for low-level network \
 	monitoring.  Libpcap can provide network statistics collection, \
 	security monitoring and network debugging.  Since almost every \
@@ -44,13 +20,28 @@ define PKG_DESCRIPTION
 	the libpcap authors created this system-independent API to ease in \
 	porting and to alleviate the need for several system-dependent \
 	packet capture modules in each application.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		bison
+		flex
+		libnl-devel
+	end
 
-define STAGE_INSTALL
-	-mkdir -pv $(BUILDROOT)/usr/bin
-	cd $(DIR_APP) && make install install-shared-so DESTDIR=$(BUILDROOT)
-endef
+	install
+		mkdir -pv %{BUILDROOT}/usr/bin
+		make install install-shared-so DESTDIR=%{BUILDROOT}
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

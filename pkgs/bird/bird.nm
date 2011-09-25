@@ -1,70 +1,61 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = bird
+version    = 1.3.1
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Networking/Routing
+url        = http://bird.network.cz/
+license    = GPLv2+
+summary    = BIRD Internet Routing Daemon.
 
-PKG_NAME       = bird
-PKG_VER        = 1.3.1
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Networking/Routing
-PKG_URL        = http://bird.network.cz/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = BIRD Internet Routing Daemon.
-
-PKG_BUILD_DEPS+= bison flex ncurses-devel readline-devel
-
-define PKG_DESCRIPTION
+description
 	BIRD is dynamic routing daemon supporting IPv4 and IPv6 versions of routing
 	protocols BGP, RIP and OSPF.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = ftp://bird.network.cz/pub/bird/
 
-CONFIGURE_OPTIONS += \
-	--sysconfdir=/etc \
-	--localstatedir=/var
+build
+	requires
+		bison
+		flex
+		ncurses-devel
+		readline-devel
+	end
 
-define STAGE_PREPARE_CMDS
-	-mkdir -pv $(DIR_APP)/ipv6
-	cd $(DIR_APP) && tar c --exclude ipv6 . | tar x -C ipv6
-endef
+	configure_options += \
+		--sysconfdir=/etc \
+		--localstatedir=/var
 
-define STAGE_BUILD
-	cd $(DIR_APP) && \
-		./configure $(CONFIGURE_OPTIONS)
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
+	prepare_cmds
+		mkdir -pv %{DIR_APP}/ipv6
+		tar c --exclude ipv6 . | tar x -C ipv6
+	end
 
-	cd $(DIR_APP)/ipv6 && \
-		./configure $(CONFIGURE_OPTIONS) --enable-ipv6
-	cd $(DIR_APP)/ipv6 && make $(PARALLELISMFLAGS)
-endef
+	build
+		./configure %{configure_options}
+		make %{PARALLELISMFLAGS}
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT)
-	cd $(DIR_APP)/ipv6 && make install DESTDIR=$(BUILDROOT)
+		cd ipv6
+		./configure %{configure_options} --enable-ipv6
+		make %{PARALLELISMFLAGS}
+	end
 
-	rm -rfv $(BUILDROOT)/var
-endef
+	install
+		make install DESTDIR=%{BUILDROOT}
+
+		cd ipv6
+		make install DESTDIR=%{BUILDROOT}
+
+		rm -rfv %{BUILDROOT}/var
+	end
+end
+
+packages
+	package %{name}
+	end
+end

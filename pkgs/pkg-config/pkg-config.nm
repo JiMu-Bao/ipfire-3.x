@@ -1,55 +1,43 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = pkg-config
+version    = 0.25
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Build Development/Tools
+url        = http://pkg-config.freedesktop.org/
+license    = GPLv2
+summary    = A tool for determining compilation options.
 
-PKG_NAME       = pkg-config
-PKG_VER        = 0.25
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Tools
-PKG_URL        = http://pkg-config.freedesktop.org/
-PKG_LICENSE    = GPLv2
-PKG_SUMMARY    = A tool for determining compilation options.
-
-PKG_BUILD_DEPS+= m4 popt-devel sed
-
-# Say we provide an alternative spelling of the package name.
-PKG_PROVIDES  += pkgconfig
-
-define PKG_DESCRIPTION
-	The pkgconfig tool determines compilation options. For each required \
-	library, it reads the configuration file and outputs the necessary \
+description
+	The pkgconfig tool determines compilation options. For each required
+	library, it reads the configuration file and outputs the necessary
 	compiler and linker flags.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-CONFIGURE_OPTIONS += \
-	--with-installed-popt
+build
+	requires
+		m4
+		popt-devel
+		sed
+	end
 
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
+	configure_options += \
+		--with-installed-popt
+
+	test
+		make check
+	end
+end
+
+packages
+	package %{name}
+		# Say we provide an alternative spelling of the package name.
+		provides = pkgconfig
+	end
+end

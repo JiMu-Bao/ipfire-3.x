@@ -1,42 +1,18 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = gettext
+version    = 0.18.1.1
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Base
+url        = http://www.gnu.org/software/gettext/
+license    = GPLv3 LGPL2+
+summary    = GNU libraries and utilities for producing multi-lingual messages.
 
-PKG_NAME       = gettext
-PKG_VER        = 0.18.1.1
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = http://www.gnu.org/software/gettext/
-PKG_LICENSE    = GPLv3 LGPL2+
-PKG_SUMMARY    = GNU libraries and utilities for producing multi-lingual messages.
-
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
-
-define PKG_DESCRIPTION
+description
 	The GNU gettext package provides a set of tools and documentation for \
 	producing multi-lingual messages in programs. Tools include a set of \
 	conventions about how programs should be written to support message \
@@ -47,17 +23,32 @@ define PKG_DESCRIPTION
 	library and tools for creating, using, and modifying natural language \
 	catalogs and is a powerful and simple method for internationalizing \
 	programs.
-endef
+end
 
-PKG_BUILD_DEPS+= bison libxml2-devel
+source_dl  =
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+build
+	requires
+		bison
+		libxml2-devel
+	end
 
-CONFIGURE_OPTIONS += \
-	--disable-static \
-	--enable-shared \
-	--disable-rpath
+	configure_options += \
+		--disable-static \
+		--enable-shared \
+		--disable-rpath
 
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
+# Disable testsuite - it's broken ( readlink test )
+#	test
+#		make check
+#	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

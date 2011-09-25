@@ -1,58 +1,47 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = pth
+version    = 2.0.7
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://www.gnu.org/software/pth
+license    = GPLv3+
+summary    = GNU Pth - The GNU Portable Threads.
 
-PKG_NAME       = pth
-PKG_VER        = 2.0.7
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.gnu.org/software/pth
-PKG_LICENSE    = GPLv3+
-PKG_SUMMARY    = GNU Pth - The GNU Portable Threads.
-
-PKG_BUILD_DEPS+= libtool
-
-define PKG_DESCRIPTION
+description
 	The Pth package contains a very portable POSIX/ANSI-C based library for \
 	Unix platforms which provides non-preemptive priority-based scheduling for \
 	multiple threads of execution (multithreading) inside event-driven \
 	applications.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		libtool
+	end
 
-PARALLELISMFLAGS = # No parallel build
+	PARALLELISMFLAGS = # No parallel build
 
-CONFIGURE_OPTIONS += \
-	--disable-static \
-	--mandir=/usr/share/man
+	configure_options += \
+		--disable-static \
+		--mandir=/usr/share/man
 
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
+	test
+		make check
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

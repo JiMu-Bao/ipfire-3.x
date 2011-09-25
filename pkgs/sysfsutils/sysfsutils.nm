@@ -1,46 +1,34 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = sysfsutils
+version    = 2.1.0
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://sourceforge.net/projects/linux-diag/
+license    = GPLv2
+summary    = Utilities for interfacing with sysfs.
 
-PKG_NAME       = sysfsutils
-PKG_VER        = 2.1.0
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://sourceforge.net/projects/linux-diag/
-PKG_LICENSE    = GPLv2
-PKG_SUMMARY    = Utilities for interfacing with sysfs.
-
-define PKG_DESCRIPTION
-	This package's purpose is to provide a set of utilities for interfacing \
+description
+	This package's purpose is to provide a set of utilities for interfacing
 	with sysfs.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = http://downloads.sourceforge.net/project/%{name}/%{name}/%{thisapp}
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	configure_options += \
+		--mandir=/usr/share/man
+end
 
-CONFIGURE_OPTIONS += --mandir=/usr/share/man
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

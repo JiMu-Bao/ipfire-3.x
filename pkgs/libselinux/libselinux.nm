@@ -1,97 +1,94 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libselinux
+version    = 2.0.96
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://www.selinuxproject.org
+license    = Public Domain
+summary    = SELinux library and simple utilities.
 
-PKG_NAME       = libselinux
-PKG_VER        = 2.0.96
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.selinuxproject.org
-PKG_LICENSE    = Public Domain
-PKG_SUMMARY    = SELinux library and simple utilities.
-
-PKG_BUILD_DEPS+= libsepol-devel python-devel swig
-
-define PKG_DESCRIPTION
+description
 	libselinux provides an API for SELinux applications to get and set \
 	process and file security contexts and to obtain security policy \
 	decisions.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tgz
+source_dl  =
+sources    = %{thisapp}.tgz
 
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel $(PKG_NAME_REAL)-utils #python-selinux
+build
+	requires
+		libsepol-devel
+		python-devel
+		swig
+	end
 
-# Package information for libselinux-utils
-PKG_SUMMARY-$(PKG_NAME_REAL)-utils =  SELinux libselinux utilies.
-PKG_DESCRIPTION-$(PKG_NAME_REAL)-utils = The libselinux-utils package contains the utilities.
+	build
+		make clean
+		make CC=gcc LIBDIR="/usr/lib" CFLAGS="-g %{CFLAGS}" swigify
+		make CC=gcc LIBDIR="/usr/lib" CFLAGS="-g %{CFLAGS}" all
+		make CC=gcc LIBDIR="/usr/lib" CFLAGS="-g %{CFLAGS}" pywrap
+	end
 
-define PKG_FILES-$(PKG_NAME_REAL)-utils
-        /usr/sbin/*
-	/usr/share/man/man5/*
-	/usr/share/man/man8/*
-endef
+	install_cmds
+		make install-pywrap DESTDIR=%{BUILDROOT}
 
-# Package information for python-selinux
-PKG_SUMMARY-python-selinux =  SELinux python bindings.
-PKG_DESCRIPTION-selinux = SELinux python bindings for libselinux.
+		# Remove unwanted binaries
+		rm -f %{BUILDROOT}/usr/sbin/compute_*
+		rm -f %{BUILDROOT}/usr/sbin/deftype
+		rm -f %{BUILDROOT}/usr/sbin/execcon
+		rm -f %{BUILDROOT}/usr/sbin/getenforcemode
+		rm -f %{BUILDROOT}/usr/sbin/getfilecon
+		rm -f %{BUILDROOT}/usr/sbin/getpidcon
+		rm -f %{BUILDROOT}/usr/sbin/mkdircon
+		rm -f %{BUILDROOT}/usr/sbin/policyvers
+		rm -f %{BUILDROOT}/usr/sbin/setfilecon
+		rm -f %{BUILDROOT}/usr/sbin/selinuxconfig
+		rm -f %{BUILDROOT}/usr/sbin/selinuxdisable
+		rm -f %{BUILDROOT}/usr/sbin/getseuser
+		rm -f %{BUILDROOT}/usr/sbin/selinux_check_securetty_context
 
-define PKG_FILES-python-selinux
-	/usr/lib/python*
-endef
+		# Move binaries from /sbin to /usr/sbin
+		mv %{BUILDROOT}/sbin/* %{BUILDROOT}/usr/sbin
 
-define STAGE_BUILD
-	cd $(DIR_APP) && make clean
-	cd $(DIR_APP) && make CC=gcc LIBDIR="/usr/lib" CFLAGS="-g $(CFLAGS)" swigify
-	cd $(DIR_APP) && make CC=gcc LIBDIR="/usr/lib" CFLAGS="-g $(CFLAGS)" all
-	cd $(DIR_APP) && make CC=gcc LIBDIR="/usr/lib" CFLAGS="-g $(CFLAGS)" pywrap
-endef
+		# Remove python module
+		rm -rvf %{BUILDROOT}/usr/lib/python*
+	end
+end
 
-define STAGE_INSTALL_CMDS
-	cd $(DIR_APP) && make install-pywrap DESTDIR=$(BUILDROOT)
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+	
+	package %{name}-utils
+		summary = SELinux libselinux utitlities.
+		description
+			The libselinux-utils package contains the utilities.
+		end
 
-	# Remove unwanted binaries
-	rm -f $(BUILDROOT)/usr/sbin/compute_*
-	rm -f $(BUILDROOT)/usr/sbin/deftype
-	rm -f $(BUILDROOT)/usr/sbin/execcon
-	rm -f $(BUILDROOT)/usr/sbin/getenforcemode
-	rm -f $(BUILDROOT)/usr/sbin/getfilecon
-	rm -f $(BUILDROOT)/usr/sbin/getpidcon
-	rm -f $(BUILDROOT)/usr/sbin/mkdircon
-	rm -f $(BUILDROOT)/usr/sbin/policyvers
-	rm -f $(BUILDROOT)/usr/sbin/setfilecon
-	rm -f $(BUILDROOT)/usr/sbin/selinuxconfig
-	rm -f $(BUILDROOT)/usr/sbin/selinuxdisable
-	rm -f $(BUILDROOT)/usr/sbin/getseuser
-	rm -f $(BUILDROOT)/usr/sbin/selinux_check_securetty_context
-
-	# Move binaries from /sbin to /usr/sbin
-	mv $(BUILDROOT)/sbin/* $(BUILDROOT)/usr/sbin
-
-	# Remove python module
-	rm -rvf $(BUILDROOT)/usr/lib/python*
-endef
+		files
+			/usr/sbin/*
+			/usr/share/man/man{5,8}/*
+		end
+	end
+	
+	#package python-selinux
+	#	summary =  SELinux python bindings.
+	#	description = SELinux python bindings for libselinux.
+	#
+	#	def files
+	#		/usr/lib/python*
+	#	end
+	#end
+	
+	
+end

@@ -1,55 +1,41 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = mailcap
+version    = 2.1.36
+release    = 1
+arch       = noarch
 
-include $(PKGROOT)/Include
+groups     = System/Base
+url        = https://fedorahosted.org/released/mailcap/
+license    = Public Domain and MIT
+summary    = Helper application and MIME type associations for file types.
 
-PKG_NAME       = mailcap
-PKG_VER        = 2.1.36
-PKG_REL        = 1
-PKG_ARCH       = noarch
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = https://fedorahosted.org/released/mailcap/
-PKG_LICENSE    = Public Domain and MIT
-PKG_SUMMARY    = Helper application and MIME type associations for file types.
-
-define PKG_DESCRIPTION
-	The mailcap file is used by the metamail program.  Metamail reads the \
-	mailcap file to determine how it should display non-text or multimedia \
-	material.  Basically, mailcap associates a particular type of file \
-	with a particular program that a mail agent or other program can call \
-	in order to handle the file.  Mailcap should be installed to allow \
+description
+	The mailcap file is used by the metamail program.  Metamail reads the
+	mailcap file to determine how it should display non-text or multimedia
+	material.  Basically, mailcap associates a particular type of file
+	with a particular program that a mail agent or other program can call
+	in order to handle the file.  Mailcap should be installed to allow
 	certain programs to be able to handle non-text files.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.xz
+source_dl  =
+sources    = %{thisapp}.tar.xz
 
-INSTALL_TARGETS = sysconfdir=/etc mandir=/usr/share/man
+build
+	build = # Nothing to do.
 
-STAGE_BUILD = # Nothing to do
+	test
+		make check
+	end
 
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
+	make_install_targets += \
+		sysconfdir=/etc mandir=/usr/share/man
+end
+
+packages
+	package %{name}
+end

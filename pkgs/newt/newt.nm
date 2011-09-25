@@ -1,68 +1,64 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = newt
+version    = 0.52.10
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = https://fedorahosted.org/releases/n/e/newt/
+license    = LGPLv2
+summary    = A library for text mode user interfaces.
 
-PKG_NAME       = newt
-PKG_VER        = 0.52.10
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = https://fedorahosted.org/releases/n/e/newt/
-PKG_LICENSE    = LGPLv2
-PKG_SUMMARY    = A library for text mode user interfaces.
-
-PKG_PACKAGES  += newt-devel newt-python
-PKG_BUILD_DEPS+= popt-devel python-devel slang-devel
-
-PKG_SUMMARY-newt-python     = Python bindings for newt.
-PKG_DESCRIPTION-newt-python = $(PKG_SUMMARY-newt-python)
-PKG_PROVIDES-newt-python   += python-newt python-snack
-PKG_FILES-newt-python       = /usr/lib/python*/site-packages/*snack*
-
-define PKG_DESCRIPTION
-	Newt is a programming library for color text mode, widget based user \
-	interfaces.  Newt can be used to add stacked windows, entry widgets, \
-	checkboxes, radio buttons, labels, plain text fields, scrollbars, \
-	etc., to text mode user interfaces.  This package also contains the \
-	shared library needed by programs built with newt, as well as a \
-	/usr/bin/dialog replacement called whiptail.  Newt is based on the \
+description
+	Newt is a programming library for color text mode, widget based user
+	interfaces.  Newt can be used to add stacked windows, entry widgets,
+	checkboxes, radio buttons, labels, plain text fields, scrollbars,
+	etc., to text mode user interfaces.  This package also contains the
+	shared library needed by programs built with newt, as well as a
+	/usr/bin/dialog replacement called whiptail.  Newt is based on the
 	slang library.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-CONFIGURE_OPTIONS += \
-	--without-gpm-support \
-	--without-tcl
+build
+	requires
+		popt-devel
+		python-devel
+		slang-devel
+	end
 
-define STAGE_PREPARE_CMDS
-	# make install searches for /usr/bin/install
-	cd $(DIR_APP) && sed -e "s/^INSTALL=.*/INSTALL = install -c/" -i po/Makefile
-endef
+	configure_options += \
+		--without-gpm-support \
+		--without-tcl
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install instroot=$(BUILDROOT)
-endef
+	prepare_cmds
+		# make install searches for /usr/bin/install
+		sed -e "s/^INSTALL=.*/INSTALL = install -c/" -i po/Makefile
+	end
+
+	install
+		make install instroot=%{BUILDROOT}
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-python
+		summary = Python bindings for newt.
+		description = %{summary}
+
+		provides
+			python-newt
+			python-snack
+		end
+
+		files
+			/usr/lib/python*/site-packages/*snack*
+		end
+	end
+end

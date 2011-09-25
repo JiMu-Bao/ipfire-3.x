@@ -1,63 +1,54 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = mc
+version    = 4.7.4
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Applications/System
+url        = http://www.ibiblio.org/mc/
+license    = GPLv2+
+summary    = User-friendly text console file manager and visual shell.
 
-PKG_NAME       = mc
-PKG_VER        = 4.7.4
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Applications/System
-PKG_URL        = http://www.ibiblio.org/mc/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = User-friendly text console file manager and visual shell.
-
-PKG_BUILD_DEPS+= e2fsprogs-devel glib2-devel pkg-config samba-devel slang-devel
-
-# This awkward dependency is found and cannot be resolved.
-PKG_REQUIRES_FILTER = perl\(pieces\)
-
-define PKG_DESCRIPTION
-	Midnight Commander is a visual shell much like a file manager, only \
-	with many more features. It is a text mode application, but it also \
-	includes mouse support. Midnight Commander's best features are its \
-	ability to FTP, view tar and zip files, and to poke into RPMs for \
+description
+	Midnight Commander is a visual shell much like a file manager, only 
+	with many more features. It is a text mode application, but it also
+	includes mouse support. Midnight Commander's best features are its
+	ability to FTP, view tar and zip files, and to poke into RPMs for
 	specific files.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+sources    = %{thisapp}.tar.bz2
+sources_dl =
 
-CONFIGURE_OPTIONS += \
-	--sysconfdir=/etc \
-	--libexecdir=/usr/lib \
-	--with-screen=slang \
-	--with-samba \
-	--without-x \
-	--enable-charset \
-	--disable-rpath
+build
+	requires
+		e2fsprogs-devel
+		glib2-devel
+		pkg-config
+		samba-devel
+		slang-devel
+	end
 
-define STAGE_INSTALL_CMDS
-	chmod 1755 $(BUILDROOT)/usr/lib/mc/cons.saver
-endef
+	# This awkward dependency is found and cannot be resolved.
+	PKG_REQUIRES_FILTER = perl\(pieces\)
+
+	configure_options += \
+		--sysconfdir=/etc \
+		--libexecdir=/usr/lib \
+		--with-screen=slang \
+		--with-samba \
+		--without-x \
+		--enable-charset \
+		--disable-rpath
+
+	install_cmds
+		chmod 1755 %{BUILDROOT}/usr/lib/mc/cons.saver
+	end
+end
+
+packages
+	package %{name}
+end

@@ -1,60 +1,45 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = iproute2
+version    = 2.6.39
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Base Networking/Tools
+url        = http://www.linuxfoundation.org/en/Net:Iproute2
+license    = GPLv2+
+summary    = Advanced IP routing and network device configuration tools.
 
-PKG_NAME       = iproute2
-PKG_VER        = 2.6.39
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Base Networking/Tools
-PKG_URL        = http://www.linuxfoundation.org/en/Net:Iproute2
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = Advanced IP routing and network device configuration tools.
-
-PKG_BUILD_DEPS+= bison db4-devel flex
-
-define PKG_DESCRIPTION
+description
 	The iproute package contains networking utilities (ip and rtmon, for \
 	example) which are designed to use the advanced networking \
 	capabilities of the Linux 2.4.x and 2.6.x kernel.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -i -e "s@DESTDIR=.*@DESTDIR=@" \
-		-e "s@/share/@/usr/share/@g" Makefile
-endef
+build
+	requires
+		bison
+		db4-devel
+		flex
+	end
 
-#define STAGE_BUILD
-#	cd $(DIR_APP) && make OPT_FLAGS="$(CFLAGS)" #$(PARALLELISMFLAGS)
-#endef
+	prepare_cmds
+		sed -i -e "s@DESTDIR=.*@DESTDIR=@" \
+			-e "s@/share/@/usr/share/@g" Makefile
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT)
-	-mkdir -pv $(BUILDROOT)/usr/sbin
-	cd $(DIR_APP) && mv -v $(BUILDROOT)/sbin/arpd $(BUILDROOT)/usr/sbin
-endef
+	install
+		make install DESTDIR=%{BUILDROOT}
+		mkdir -pv %{BUILDROOT}/usr/sbin
+		mv -v %{BUILDROOT}/sbin/arpd %{BUILDROOT}/usr/sbin
+	end
+end
+
+packages
+	package %{name}
+	end
+end

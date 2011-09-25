@@ -1,52 +1,36 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = hdparm
+version    = 9.37
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Base Applications/Hardware
+url        = http://sourceforge.net/projects/hdparm/
+license    = BSD
+summary    = A utility for displaying and/or setting hard disk parameters.
 
-PKG_NAME       = hdparm
-PKG_VER        = 9.37
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Base Applications/Hardware
-PKG_URL        = http://sourceforge.net/projects/hdparm/
-PKG_LICENSE    = BSD
-PKG_SUMMARY    = A utility for displaying and/or setting hard disk parameters.
-
-define PKG_DESCRIPTION
+description
 	Hdparm is a useful system utility for setting (E)IDE hard drive \
 	parameters. For example, hdparm can be used to tweak hard drive \
 	performance and to spin down hard drives for power conservation.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-define STAGE_BUILD
-	$(DO_FIX_LIBTOOL)
-	cd $(DIR_APP) && CFLAGS="$(CFLAGS)" make $(PARALELLIAMFLAGS) LDFLAGS= 
-endef
+build
+	build
+		cd %{DIR_APP} && CFLAGS="%{CFLAGS}" make %{PARALELLIAMFLAGS} LDFLAGS=
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT) binprefix=/usr
-endef
+	install
+		make install DESTDIR=%{BUILDROOT} binprefix=/usr
+	end
+end
+
+packages
+	package %{name}
+	end
+end

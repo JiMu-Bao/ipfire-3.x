@@ -1,64 +1,50 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = bind
+version    = 9.7.2-P3
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Networking/Tools
+url        = http://www.isc.org/products/BIND/
+license    = Proprietary
+summary    = BIND provides tools for the DNS.
 
-PKG_NAME       = bind
-PKG_VER        = 9.7.2-P3
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Networking/Tools
-PKG_URL        = http://www.isc.org/products/BIND/
-PKG_LICENSE    = Proprietary
-PKG_SUMMARY    = BIND provides tools for the DNS.
-
-PKG_BUILD_DEPS+= db4-devel openssl-devel
-
-define PKG_DESCRIPTION
-	BIND (Berkeley Internet Name Domain or named) is the most commonly used \
+description
+	BIND (Berkeley Internet Name Domain or named) is the most commonly used
 	DNS server on the Internet, especially on Unix-like systems.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = ftp://ftp.isc.org/isc/bind/%{version}/
 
-PKG_PACKAGES   = bind-utils
+build
+	requires
+		db4-devel
+		openssl-devel
+	end
 
-define STAGE_BUILD
-	cd $(DIR_APP) && \
+	build
 		./configure \
 			--prefix=/usr \
 			--mandir=/usr/share/man
 
-	cd $(DIR_APP) && make -C lib/dns #$(PARALLELISMFLAGS)
-	cd $(DIR_APP) && make -C lib/isc #$(PARALLELISMFLAGS)
-	cd $(DIR_APP) && make -C lib/bind9 #$(PARALLELISMFLAGS)
-	cd $(DIR_APP) && make -C lib/isccfg #$(PARALLELISMFLAGS)
-	cd $(DIR_APP) && make -C lib/lwres #$(PARALLELISMFLAGS)
-	cd $(DIR_APP) && make -C bin/dig #$(PARALLELISMFLAGS)
-endef
+		make -C lib/dns #%{PARALLELISMFLAGS}
+		make -C lib/isc #%{PARALLELISMFLAGS}
+		make -C lib/bind9 #%{PARALLELISMFLAGS}
+		make -C lib/isccfg #%{PARALLELISMFLAGS}
+		make -C lib/lwres #%{PARALLELISMFLAGS}
+		make -C bin/dig #%{PARALLELISMFLAGS}
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make -C bin/dig install DESTDIR=$(BUILDROOT)
-endef
+	install
+		make -C bin/dig install DESTDIR=%{BUILDROOT}
+	end
+end
+
+packages
+	package %{name}-utils
+		template MAIN
+	end
+end

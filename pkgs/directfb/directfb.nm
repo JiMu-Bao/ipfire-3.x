@@ -1,55 +1,52 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-include $(PKGROOT)/Include
+name       = DirectFB
+version    = 1.4.1
+release    = 2
 
-PKG_NAME       = DirectFB
-PKG_VER        = 1.4.1
-PKG_REL        = 2
+groups     = System/Graphics
+url        = http://www.directfb.org/
+license    = LGPLv2+
+summary    = Graphics abstraction library for the Linux Framebuffer Device.
 
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Graphics
-PKG_URL        = http://www.directfb.org/
-PKG_LICENSE    = LGPLv2+
-PKG_SUMMARY    = Graphics abstraction library for the Linux Framebuffer Device.
-
-PKG_BUILD_DEPS+= freetype-devel libjpeg-devel libVNCServer-devel perl \
-	sysfsutils-devel zlib-devel
-
-define PKG_DESCRIPTION
+description
 	DirectFB is a thin library that provides hardware graphics acceleration, \
 	input device handling and abstraction, integrated windowing system with \
 	support for translucent windows and multiple display layers on top of the \
 	Linux Framebuffer Device.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
+build
+	requires
+		freetype-devel
+		 libjpeg-devel
+		libVNCServer-devel
+		perl
+		sysfsutils-devel
+		zlib-devel
+	end
 
-CONFIGURE_OPTIONS += \
-	--disable-x11 \
-	--enable-sdl \
-	--enable-video4linux2 \
-	--enable-libv412 \
-	--enable-zlib \
-	--with-dither-rgb16=advanced \
-	--disable-mmx \
-	--disable-sse
+	configure_options += \
+		--disable-x11 \
+		--enable-sdl \
+		--enable-video4linux2 \
+		--enable-libv412 \
+		--enable-zlib \
+		--with-dither-rgb16=advanced \
+		--disable-mmx \
+		--disable-sse
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

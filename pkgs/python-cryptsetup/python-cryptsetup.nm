@@ -1,51 +1,39 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = python-cryptsetup
+version    = 0.0.9
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Filesystems
+url        = http://msivak.fedorapeople.org/pycryptsetup
+license    = GPLv2+
+summary    = Python bindings for cryptsetup.
 
-PKG_NAME       = python-cryptsetup
-PKG_VER        = 0.0.9
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Filesystems
-PKG_URL        = http://msivak.fedorapeople.org/pycryptsetup
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = Python bindings for cryptsetup.
-
-PKG_BUILD_DEPS+= cryptsetup-luks-devel python-devel
-
-define PKG_DESCRIPTION
+description
 	A python module to ease the manipulation with LUKS devices.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-define STAGE_BUILD
-	cd $(DIR_APP) && python setup.py build
-endef
+build
+	requires
+		cryptsetup-luks-devel
+		python-devel
+	end
 
-define STAGE_INSTALL	
-	cd $(DIR_APP) && python setup.py install -O1 --skip-build --root=$(BUILDROOT)
-endef
+	build
+		python setup.py build
+	end
+
+	install
+		python setup.py install -O1 --skip-build --root=%{BUILDROOT}
+	end
+end
+
+packages
+	package %{name}
+end

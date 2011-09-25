@@ -1,60 +1,52 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = sip
+version    = 4.12-snapshot-12acbffd0085
+major_ver  = 4
+release    = 1
+epoch      = 1
 
-include $(PKGROOT)/Include
+groups     = Development/Tools
+url        = http://www.riverbankcomputing.com/software/sip/intro
+license    = GPLv2 or GPLv3
+summary    = SIP - Python/C++ Bindings Generator.
 
-PKG_NAME       = sip
-PKG_VER        = 4.12-snapshot-12acbffd0085
-PKG_REL        = 0
-PKG_EPOCH      = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Tools
-PKG_URL        = http://www.riverbankcomputing.com/software/sip/intro
-PKG_LICENSE    = GPLv2 or GPLv3
-PKG_SUMMARY    = SIP - Python/C++ Bindings Generator.
-
-PKG_BUILD_DEPS+= gcc-c++ python-devel
-
-define PKG_DESCRIPTION
+description
 	SIP is a tool for generating bindings for C++ classes so that they can be \
 	accessed as normal Python classes. SIP takes many of its ideas from SWIG but, \
 	because it is specifically designed for C++ and Python, is able to generate \
 	tighter bindings. SIP is so called because it is a small SWIG.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = http://www.riverbankcomputing.com/static/Downloads/sip%{major_ver}/
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		gcc-c++
+		python-devel
+	end
 
-PKG_DEPS-$(PKG_NAME_REAL)-devel = sip
+	build
+		python configure.py \
+			CFLAGS+="%{CFLAGS}" \
+			CXXFLAGS+="%{CXXFLAGS}"
 
-define STAGE_BUILD
-	cd $(DIR_APP) && python configure.py \
-		CFLAGS+="$(CFLAGS)" CXXFLAGS+="$(CXXFLAGS)"
+		make %{PARALLELISMFLAGS}
+	end
+end
 
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
-endef
-
-PKG_FILES-$(PKG_NAME)-devel += /usr/bin/sip
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	
+		files += /usr/bin/sip
+	
+		requires = sip
+	end
+end

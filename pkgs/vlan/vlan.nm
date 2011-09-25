@@ -1,52 +1,41 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = vlan
+version    = 1.9
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Networking/Tools
+url        = http://www.candelatech.com/~greear/vlan.html
+license    = GPLv2+
+summary    = Linux 802.1q VLAN configuration utility.
 
-PKG_NAME       = vlan
-PKG_VER        = 1.9
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Networking/Tools
-PKG_URL        = http://www.candelatech.com/~greear/vlan.html
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = Linux 802.1q VLAN configuration utility.
-
-define PKG_DESCRIPTION
+description
 	The vconfig program configures and adjusts 802.1q VLAN parameters.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = http://www.candelatech.com/~greear/vlan/
 
-DIR_APP        = $(DIR_SRC)/$(PKG_NAME)
+DIR_APP    = %{DIR_SRC}/%{name}
 
-define STAGE_BUILD
-	cd $(DIR_APP) && make purge vconfig CCFLAGS="$(CFLAGS)"
-endef
+build
+	# Parallelism cannot be used here.
+	PARALLELISMFLAGS = -j1
 
-define STAGE_INSTALL
-	-mkdir -pv $(BUILDROOT)/sbin
-	cd $(DIR_APP) && install -c -p -m 0755 vconfig $(BUILDROOT)/sbin
-endef
+	make_build_targets += \
+		purge \
+		vconfig \
+		CCFLAGS="%{CFLAGS}"
+
+	install
+		mkdir -pv %{BUILDROOT}/sbin
+		install -c -p -m 0755 vconfig %{BUILDROOT}/sbin
+	end
+end
+
+packages
+	package %{name}
+	end
+end

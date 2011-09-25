@@ -1,70 +1,72 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = mesa
+version    = 7.8.2
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = Development/Tools
+url        = http://www.mesa3d.org
+license    = MIT
+summary    = Mesa graphics libraries.
 
-PKG_NAME       = mesa
-PKG_VER        = 7.8.2
-PKG_REL        = 2
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Tools
-PKG_URL        = http://www.mesa3d.org
-PKG_LICENSE    = MIT
-PKG_SUMMARY    = Mesa graphics libraries.
-
-PKG_BUILD_DEPS+= expat-devel pkg-config libX11-devel libXdamage-devel libXext-devel\
-	libXfixes-devel libXxf86vm-devel libdrm-devel libselinux-devel libxcb-devel\
-	 xorg-x11-proto-devel 
-
-PKG_PACKAGES  += $(PKG_NAME)-devel
-PKG_DEPS-$(PKG_NAME)-devel += libX11-devel
-
-define PKG_DESCRIPTION
+description
 	Mesa libGL runtime libraries and DRI drivers.
-endef
+end
 
-PKG_TARBALL    = MesaLib-$(PKG_VER).tar.bz2
+source_dl  =
+sources    = MesaLib-%{version}.tar.bz2
 
-DIR_APP        = $(DIR_SRC)/Mesa-$(PKG_VER)
+build
+	requires
+		expat-devel
+		pkg-config
+		libX11-devel
+		libXdamage-devel
+		libXext-devel
+		libXfixes-devel
+		libXxf86vm-devel
+		libdrm-devel
+		libselinux-devel
+		libxcb-devel
+		xorg-x11-proto-devel
+	end
 
-CFLAGS        += -Wl,-z,lazy
+	DIR_APP = %{DIR_SRC}/Mesa-%{version}
 
-QUALITY_AGENT_PERMIT_NOT_FULL_RELRO = yes
+	CFLAGS += -Wl,-z,lazy
 
-CONFIGURE_OPTIONS += \
-	--enable-pic \
-	--with-driver=dri \
-	--with-state-tracker=dri,glx \
-	--disable-glw \
-	--disable-glu \
-	--disable-glut \
-	--disable-gl-osmesa \
-	--disable-gallium \
-	--disable-gallium-intel \
-	--disable-gallium-svga \
-	--disable-gallium-radeon \
-	--disable-gallium-nouveau \
-	--disable-egl \
-	--without-demos
+	configure_options += \
+		--enable-pic \
+		--with-driver=dri \
+		--with-state-tracker=dri,glx \
+		--disable-glw \
+		--disable-glu \
+		--disable-glut \
+		--disable-gl-osmesa \
+		--disable-gallium \
+		--disable-gallium-intel \
+		--disable-gallium-svga \
+		--disable-gallium-radeon \
+		--disable-gallium-nouveau \
+		--disable-egl \
+		--without-demos
+end
+
+quality-agent
+	permit_not_full_relro = yes
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+
+		requires
+			libX11-devel
+		end
+	end
+end

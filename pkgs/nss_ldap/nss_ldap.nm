@@ -1,53 +1,28 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = nss_ldap
+version    = 265
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = System/Base
+url        = http://www.padl.com/
+license    = LGPLv2+
+summary    = NSS library and PAM module for LDAP.
 
-PKG_NAME       = nss_ldap
-PKG_VER        = 265
-PKG_REL        = 2
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = http://www.padl.com/
-PKG_LICENSE    = LGPLv2+
-PKG_SUMMARY    = NSS library and PAM module for LDAP.
-
-PKG_BUILD_DEPS+= autoconf automake cyrus-sasl-devel openldap-devel
-PKG_DEPS      += /lib/security/pam_ldap.so
-
-define PKG_DESCRIPTION
-	This package includes two LDAP access clients: nss_ldap and \
-	pam_ldap. Nss_ldap is a set of C library extensions that allow \
-	X.500 and LDAP directory servers to be used as a primary source \
-	of aliases, ethers, groups, hosts, networks, protocol, users, \
+description
+	This package includes two LDAP access clients: nss_ldap and
+	pam_ldap. Nss_ldap is a set of C library extensions that allow
+	X.500 and LDAP directory servers to be used as a primary source
+	of aliases, ethers, groups, hosts, networks, protocol, users,
 	RPCs, services, and shadow passwords.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PATCHES = \
+patches = \
 	nss_ldap-265-depth.patch \
 	nss_ldap-254-soname.patch \
 	nss_ldap-257-mozldap.patch \
@@ -62,43 +37,62 @@ PKG_PATCHES = \
 	nss_ldap-265-padl-bug-418.patch \
 	nss_ldap-265-setnetgrent.patch
 
-CONFIGURE_OPTIONS += \
-	--sysconfdir=/etc \
-	--libdir=/lib \
-	--with-ldap-lib=openldap \
-	--enable-rfc2307bis \
-	--with-ldap-conf-file=/etc/nss_ldap.conf \
-	--with-ldap-secret-file=/etc/nss_ldap.secret
+build
+	requires
+		autoconf
+		automake
+		cyrus-sasl-devel
+		openldap-devel
+	end
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -i -e 's,^ldap.conf$$,nss_ldap.conf,g' *.5
-	cd $(DIR_APP) && sed -i -e 's,^/etc/ldap\.,/etc/nss_ldap.,g' *.5
-	cd $(DIR_APP) && sed -i -e 's,ldap.secret,nss_ldap.secret,g' *.5
-	cd $(DIR_APP) && sed -i -e 's,(ldap.conf),(nss_ldap.conf),g' *.5
+	configure_options += \
+		--sysconfdir=/etc \
+		--libdir=/lib \
+		--with-ldap-lib=openldap \
+		--enable-rfc2307bis \
+		--with-ldap-conf-file=/etc/nss_ldap.conf \
+		--with-ldap-secret-file=/etc/nss_ldap.secret
 
-	# Fix call for vers_string.
-	cd $(DIR_APP) && sed -e "s/vers_string/.\/&/g" -i Makefile*
+	prepare_cmds
+		sed -i -e 's,^ldap.conf$$,nss_ldap.conf,g' *.5
+		sed -i -e 's,^/etc/ldap\.,/etc/nss_ldap.,g' *.5
+		sed -i -e 's,ldap.secret,nss_ldap.secret,g' *.5
+		sed -i -e 's,(ldap.conf),(nss_ldap.conf),g' *.5
 
-	cd $(DIR_APP) && autoreconf -vfi
-endef
+		# Fix call for vers_string.
+		sed -e "s/vers_string/.\/&/g" -i Makefile*
 
-STAGE_BUILD_TARGETS += LDFLAGS="-Wl,-z,nodelete"
+		autoreconf -vfi
+	end
 
-STAGE_INSTALL_TARGETS += LIBC_VERS=$(PKG_VER)
+	make_build_targets += \
+		LDFLAGS="-Wl,-z,nodelete"
 
-define STAGE_INSTALL_CMDS
-	# Remove awkward directory
-	rm -rvf $(BUILDROOT)/usr/usr
+	make_install_targets += \
+		LIBC_VERS=%{version}
 
-	mv -v $(BUILDROOT)/lib/* $(BUILDROOT)/usr/lib
-	rm -rvf $(BUILDROOT)/lib
-	ln -svf libnss_ldap-$(PKG_VER).so $(BUILDROOT)/usr/lib/libnss_ldap.so
+	install_cmds
+		# Remove awkward directory
+		rm -rvf %{BUILDROOT}/usr/usr
 
-	rm -vf $(BUILDROOT)/etc/nsswitch.ldap
+		mv -v %{BUILDROOT}/lib/* %{BUILDROOT}/usr/lib
+		rm -rvf %{BUILDROOT}/lib
+		ln -svf libnss_ldap-%{version}.so %{BUILDROOT}/usr/lib/libnss_ldap.so
 
-	cd $(DIR_APP) && sed 's|dc=padl|dc=example|g' ldap.conf > \
-		$(BUILDROOT)/etc/nss_ldap.conf
-	touch $(BUILDROOT)/etc/nss_ldap.secret
+		rm -vf %{BUILDROOT}/etc/nsswitch.ldap
 
-	ln -svf libnss_ldap.so.2 $(BUILDROOT)/usr/lib/libnss_ldap.so
-endef
+		cd %{DIR_APP} && sed 's|dc=padl|dc=example|g' ldap.conf > \
+			%{BUILDROOT}/etc/nss_ldap.conf
+		touch %{BUILDROOT}/etc/nss_ldap.secret
+
+		ln -svf libnss_ldap.so.2 %{BUILDROOT}/usr/lib/libnss_ldap.so
+	end
+end
+
+packages
+	package %{name}
+		requires
+			/lib/security/pam_ldap.so
+		end
+	end
+end

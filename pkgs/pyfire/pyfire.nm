@@ -1,51 +1,38 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = pyfire
+version    = 0.99.1
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://www.ipfire.org
+license    = GPLv3+
+summary    = A python library for easy functions.
 
-PKG_NAME       = pyfire
-PKG_VER        = 0.99.1
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.ipfire.org
-PKG_LICENSE    = GPLv3+
-PKG_SUMMARY    = A python library for easy functions.
-
-PKG_BUILD_DEPS+= python
-
-define PKG_DESCRIPTION
+description
 	Pyfire is a library which offers a lot of easy to use functions.
-endef
+end
 
-DIR_APP       = $(DIR_SOURCE)/src
+build
+	requires
+		python
+	end
 
-STAGE_PREPARE = # Nothing to do
-STAGE_BUILD = # Nothing to do
+	DIR_APP = %{DIR_SOURCE}/src
 
-define STAGE_INSTALL	
-	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT)
-	cd $(DIR_APP) && make clean
-endef
+	prepare = # Nothing to do
+
+	build = # Nothing to do
+
+	install
+		make install DESTDIR=%{BUILDROOT}
+		make clean
+	end
+end
+
+packages
+	package %{name}
+end

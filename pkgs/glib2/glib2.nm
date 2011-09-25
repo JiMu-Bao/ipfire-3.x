@@ -1,65 +1,59 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = glib
+version    = 2.29.14
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://www.gtk.org
+license    = LGPLv2+
+summary    = A library of handy utility functions.
 
-PKG_NAME       = glib
-PKG_VER        = 2.29.14
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.gtk.org
-PKG_LICENSE    = LGPLv2+
-PKG_SUMMARY    = A library of handy utility functions.
-
-PKG_BUILD_DEPS+= gettext libffi-devel libselinux-devel pcre-devel pkg-config\
-	 zlib-devel
-
-define PKG_DESCRIPTION
+description
 	GLib is the low-level core library that forms the basis \
 	for projects such as GTK+ and GNOME. It provides data structure \
 	handling for C, portability wrappers, and interfaces for such runtime \
 	functionality as an event loop, threads, dynamic loading, and an \
 	object system.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.xz
+source_dl  =
+sources    = %{thisapp}.tar.xz
 
-PKG_PACKAGES  += $(PKG_NAME)2-devel
+build
+	requires
+		gettext
+		libffi-devel
+		libselinux-devel
+		pcre-devel
+		pkg-config
+		zlib-devel
+	end
 
-CONFIGURE_OPTIONS += \
-	--sysconfdir=/etc \
-	--with-pcre=system
+	configure_options += \
+		--sysconfdir=/etc \
+		--with-pcre=system
 
-define STAGE_INSTALL_CMDS
-	cd $(DIR_APP) && ./mkinstalldirs $(BUILDROOT)/lib
-	cd $(BUILDROOT)/usr/lib && for name in glib gobject gmodule gthread gio; do \
-		mv -v lib$${name}-2.0.so.* ../../lib; \
-		ln -svf ../../lib/lib$${name}-2.0.so.*.* lib$${name}-2.0.so; \
-	done
+	install_cmds
+		./mkinstalldirs %{BUILDROOT}/lib
+		cd %{BUILDROOT}/usr/lib && for name in glib gobject gmodule gthread gio; do \
+			mv -v lib${name}-2.0.so.* ../../lib; \
+			ln -svf ../../lib/lib${name}-2.0.so.*.* lib${name}-2.0.so; \
+		done
 
-	-mkdir -pv $(BUILDROOT)/etc/profile.d/
-	cp -vf $(DIR_SOURCE)/glib2-locale.sh $(BUILDROOT)/etc/profile.d/
-endef
+		mkdir -pv %{BUILDROOT}/etc/profile.d/
+		cp -vf %{DIR_SOURCE}/glib2-locale.sh %{BUILDROOT}/etc/profile.d/
+	end
+end
+
+packages
+	package %{name}2
+	end
+	
+	package %{name}2-devel
+		template DEVEL
+	end
+end

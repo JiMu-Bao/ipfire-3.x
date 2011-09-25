@@ -1,227 +1,154 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008, 2009 Michael Tremer & Christian Schmidt           #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+# Configure build to compile with cloog and ppl.
+# XXX THIS PACKAGE DOES CURRENTLY NOT BUILD WITH CLOOG AND PPL WHICH
+# NEEDS TO BE FIXED SOON.
+build_cloog_ppl = 0
 
-include $(PKGROOT)/Include
+name       = gcc
+version    = 4.6.1
+release    = 3
 
-BUILD_CLOOG_PPL= 1
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = Development/Compilers
+url        = http://gcc.gnu.org/
+license    = GPLv3+ and GPLv2+ with exceptions
+summary    = Various compilers (C, C++, Objective-C, Java, ...).
 
-PKG_NAME       = gcc
-PKG_VER        = 4.6.1
-PKG_REL        = 3
-
-PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUPS     = Development/Compilers
-PKG_URL        = http://gcc.gnu.org/
-PKG_LICENSE    = GPLv3+ and GPLv2+ with exceptions
-PKG_SUMMARY    = Various compilers (C, C++, Objective-C, Java, ...).
-
-define PKG_DESCRIPTION
+description
 	The gcc package contains the GNU Compiler Collection. \
 	You'll need this package in order to compile C code.
-endef
+end
 
-BINUTILS_VER = 2.21.51.0.8-1
+# This is the at least required version of binutils.
+required_binutils_version = 2.21.51.0.8-1
 
-PKG_BUILD_DEPS+= \
-	autogen \
-	binutils>=$(BINUTILS_VER) \
-	dejagnu \
-	elfutils-devel \
-	expect \
-	flex \
-	gmp-devel \
-	libffi-devel \
-	mpc-devel \
-	mpfr-devel \
-	texinfo \
-	zlib-devel
+source_dl  = http://ftp.gnu.org/gnu/gcc/
+sources    = %{thisapp}.tar.gz
 
-PKG_DEPS-gcc  += binutils>=$(BINUTILS_VER) libgcc-devel
-
-ifeq "$(BUILD_CLOOG_PPL)" "1"
-	PKG_BUILD_DEPS += cloog-ppl-devel ppl-devel
-	PKG_DEPS-gcc   += cloog-ppl>=0.15
-	CONFIGURE_ARGS += --with-cloog --with-ppl
-endif
-
-# Make the GCC target platform
-GCC_TARGET_PLATFORM = $(subst -gnu,,$(DISTRO_MACHINE))
-
-ifeq "$(DISTRO_ARCH)" "x86_64"
-	CONFIGURE_ARGS = --disable-multilib
-endif
-
-ifeq "$(DISTRO_ARCH)" "i686"
-	CONFIGURE_ARGS = --with-arch=$(DISTRO_ARCH) --with-tune=generic
-endif
-
-# Modify CFLAGS
-#  Remove -m32 and -m64
-CFLAGS := $(subst -m32,,$(CFLAGS))
-CFLAGS := $(subst -m64,,$(CFLAGS))
-#  Remove -march=i686
-CFLAGS := $(subst -march=i686,,$(CFLAGS))
-
-HARD_CFLAGS = -DEFAULT_PIE_SSP -DEFAULT_RELRO -DEFAULT_BIND_NOW
-
-export CFLAGS
-export CXXFLAGS = $(subst -Wall,,$(CFLAGS))
-
-PKG_TARBALL   += $(THISAPP).tar.gz
-
-PKG_PATCHES    = \
-	gcc46-hack.patch0 \
-	gcc46-c++-builtin-redecl.patch0 \
-	gcc46-pr33763.patch0 \
-	gcc46-libgomp-omp_h-multilib.patch0 \
-	gcc46-libtool-no-rpath.patch0 \
-	gcc46-cloog-dl.patch0 \
-	gcc46-pr38757.patch0 \
-	gcc46-no-add-needed.patch0 \
-	gcc46-unwind-debughook-sdt.patch0 \
-	gcc46-ppl-0.10.patch \
-	gcc46-Woverlength-string.patch0 \
-	gcc46-Woverlength-string-asm.patch0 \
+patches
+	gcc46-hack.patch0
+	gcc46-c++-builtin-redecl.patch0
+	gcc46-pr33763.patch0
+	gcc46-libgomp-omp_h-multilib.patch0
+	gcc46-libtool-no-rpath.patch0
+	gcc46-cloog-dl.patch0
+	gcc46-pr38757.patch0
+	gcc46-no-add-needed.patch0
+	gcc46-unwind-debughook-sdt.patch0
+	gcc46-ppl-0.10.patch
+	gcc46-Woverlength-string.patch0
+	gcc46-Woverlength-string-asm.patch0
 	gcc-4.6.0-piepatches-20110407.patch
+end
 
-# A package for C++
-PKG_PACKAGES += $(PKG_NAME)-c++
-PKG_DEPS-$(PKG_NAME)-c++ = gcc libstdc++-devel
-define PKG_FILES-$(PKG_NAME)-c++
-	/usr/bin/*++
-	/usr/lib/gcc/*/*/cc1plus
-	/usr/share/man/man*/*++*
-endef
+build
+	requires
+		autogen
+		binutils>=%{required_binutils_version}
+		dejagnu
+		elfutils-devel
+		expect
+		flex
+		glibc-devel
+		gmp-devel
+		libffi-devel
+		mpc-devel
+		mpfr-devel
+		texinfo
+		zlib-devel
+	end
 
-# libgcc
-PKG_PACKAGES += libgcc
-define PKG_FILES-libgcc
-	/lib/libgcc*.so.*
-endef
+	# If cloog support is enabled, we require the devel packages for build.
+	if "%{build_cloog_ppl}" == "1"
+		requires += cloog-ppl-devel ppl-devel
+	end
 
-PKG_PACKAGES += libgcc-devel
-define PKG_FILES-libgcc-devel
-	/usr/lib/libgcc*.so
-endef
+	# A couple of configure arguments depending on the architecture and
+	# configuration.
+	configure_options =
 
-# libstdc++
-PKG_PACKAGES += libstdc++
-define PKG_FILES-libstdc++
-	/usr/lib/libstdc++*.so.*
-endef
+	if "%{DISTRO_ARCH}" == "x86_64"
+		configure_options = --disable-multilib
+	end
 
-PKG_PACKAGES += libstdc++-devel
-define PKG_FILES-libstdc++-devel
-	/usr/include/c++
-	/usr/lib/libstdc++*.so
-endef
+	if "%{DISTRO_ARCH}" == "i686"
+		configure_options = --with-arch=%{DISTRO_ARCH} --with-tune=generic
+	end
 
-# libgomp
-PKG_PACKAGES += libgomp
-define PKG_FILES-libgomp
-	/usr/lib/libgomp*.so.*
-endef
+	if "%{build_cloog_ppl}" == "1"
+		configure_options += --with-cloog --with-ppl
+	end
 
-PKG_PACKAGES += libgomp-devel
-define PKG_FILES-libgomp-devel
-	/usr/lib/libgomp*.so
-	/usr/lib/libgomp.spec
-endef
+	# CFLAGS for hardening.
+	HARD_CFLAGS = -DEFAULT_PIE_SSP -DEFAULT_RELRO -DEFAULT_BIND_NOW
 
-# libmudflap
-PKG_PACKAGES += libmudflap
-define PKG_FILES-libmudflap
-	/usr/lib/libmudflap*.so.*
-endef
+	prepare_cmds
+		mkdir -v %{DIR_SRC}/gcc-build
 
-PKG_PACKAGES += libmudflap-devel
-define PKG_FILES-libmudflap-devel
-	/usr/lib/libmudflap*.so
-endef
+		# Remove unneeded features that will save some compile time
+		rm -rf lib{gfortran,java,objc} gcc/{fortran,java,objc,objcp}
 
-# libquadmath
-PKG_PACKAGES += libquadmath
-define PKG_FILES-libquadmath
-	/usr/lib/libquadmath*.so.*
-endef
+		# Apply a sed substitution that will suppress the installation of
+		# libiberty.a. The version of libiberty.a provided by Binutils will be used
+		# instead:
+		sed -i 's/install_to_$(INSTALL_DEST) //' libiberty/Makefile.in
 
-PKG_PACKAGES += libquadmath-devel
-define PKG_FILES-libquadmath-devel
-	/usr/lib/libquadmath*.so
-endef
+		# Branding gcc
+		echo "%{DISTRO_NAME} %{version}-%{release}" > gcc/DEV-PHASE
 
-define STAGE_PREPARE_CMDS
-	-mkdir -v $(DIR_SRC)/gcc-build
+		# Libgomp uses -Werror regardless of --disable-werror, and this will cause a
+		# build failure when -D_FORTIFY_SOURCE=2 causes build time warnings:
+		sed -e "s/-Werror//" -i libgomp/configure
 
-	# Remove unneeded features that will save some compile time
-	rm -rf $(DIR_APP)/lib{gfortran,java,objc} \
-		$(DIR_APP)/gcc/{fortran,java,objc,objcp}
+		# The fixincludes script is known to occasionally erroneously attempt to
+		# "fix" the system headers installed so far. As the headers up to this point
+		# are known to not require fixing, issue the following command to prevent
+		# the fixincludes script from running:
+		sed -i 's@\./fixinc\.sh@-c true@' gcc/Makefile.in
 
-	# Apply a sed substitution that will suppress the installation of
-	# libiberty.a. The version of libiberty.a provided by Binutils will be used
-	# instead:
-	cd $(DIR_APP) && sed -i 's/install_to_$$(INSTALL_DEST) //' libiberty/Makefile.in
+		sed -i gcc/Makefile.in \
+			-e "s/-fno-exceptions/& -fno-asynchronous-unwind-tables/"
 
-	# Branding gcc
-	echo "$(DISTRO_NAME) $(PKG_VER)-$(PKG_RELEASE)" > $(DIR_APP)/gcc/DEV-PHASE
+		# we want to be able to control the pie patch logic via something other
+		# than ALL_CFLAGS...
+		sed -i gcc/Makefile.in \
+			-e '/^ALL_CFLAGS/iHARD_CFLAGS = ' \
+			-e 's|^ALL_CFLAGS = |ALL_CFLAGS = $(HARD_CFLAGS) |'
 
-	# Libgomp uses -Werror regardless of --disable-werror, and this will cause a
-	# build failure when -D_FORTIFY_SOURCE=2 causes build time warnings:
-	cd $(DIR_APP) && sed -e "s/-Werror//" -i libgomp/configure
-	
-	# The fixincludes script is known to occasionally erroneously attempt to
-	# "fix" the system headers installed so far. As the headers up to this point
-	# are known to not require fixing, issue the following command to prevent
-	# the fixincludes script from running:
-	cd $(DIR_APP) && sed -i 's@\./fixinc\.sh@-c true@' gcc/Makefile.in
+		# Enable the GCC hardening by default.
+		sed -i gcc/Makefile.in \
+			-e "s|^HARD_CFLAGS = |HARD_CFLAGS = %{HARD_CFLAGS} |"
 
-	cd $(DIR_APP) && sed -i gcc/Makefile.in \
-		-e "s/-fno-exceptions/& -fno-asynchronous-unwind-tables/"
+		# Compile the compiler with -fPIC as well.
+		sed -i gcc/Makefile.in \
+			-e "s|^ESP_NOPIE_CFLAGS = .*|ESP_NOPIE_CFLAGS =|"
 
-	# we want to be able to control the pie patch logic via something other
-	# than ALL_CFLAGS...
-	cd $(DIR_APP) && sed -i gcc/Makefile.in \
-		-e '/^ALL_CFLAGS/iHARD_CFLAGS = ' \
-		-e 's|^ALL_CFLAGS = |ALL_CFLAGS = $$(HARD_CFLAGS) |'
+		./contrib/gcc_update --touch
+	end
 
-	# Enable the GCC hardening by default.
-	cd $(DIR_APP) && sed -i gcc/Makefile.in \
-		-e "s|^HARD_CFLAGS = |HARD_CFLAGS = $(HARD_CFLAGS) |"
+	build
+		cd %{DIR_SRC}/gcc-build
 
-	# Compile the compile with -fPIC as well.
-	cd $(DIR_APP) && sed -i gcc/Makefile.in \
-		-e "s|^ESP_NOPIE_CFLAGS = .*|ESP_NOPIE_CFLAGS =|"
-endef
+		# Modify CFLAGS
+		OPT_FLAGS="%{CFLAGS}"
+		CFLAGS="%{CFLAGS}"
+		CFLAGS=$(echo ${CFLAGS} | sed -e 's/\(-Wp,\)\?-D_FORTIFY_SOURCE=[12]//g')
+		CFLAGS=$(echo ${CFLAGS} | sed -e 's/-m64//g;s/-m32//g;s/-m31//g')
+		CFLAGS=$(echo  ${CFLAGS} | sed -e 's/-march=i.86//g')
+		#CFLAGS=$(echo ${CFLAGS} | sed -e 's/ -pipe / /g')
+		CFLAGS=$(echo "${CFLAGS}" | sed -e 's/[[:blank:]]\+/ /g')
+		CXXFLAGS=$(echo  ${CFLAGS} | sed -e 's/ -Wall//g')
 
-define STAGE_BUILD
-	cd $(DIR_SRC)/gcc-build && \
-		CFLAGS="$(CFLAGS)" \
-		CXXFLAGS="$(CXXFLAGS)" \
-		XCFLAGS="$(CFLAGS)" \
-		TCFLAGS="$(CFLAGS)" \
-		../$(THISAPP)/configure \
-			--build=$(GCC_TARGET_PLATFORM) \
+		CFLAGS="${CFLAGS}" \
+		CXXFLAGS="${CXXFLAGS}" \
+		XCFLAGS="${CFLAGS}" \
+		TCFLAGS="${CFLAGS}" \
+		../%{thisapp}/configure \
+			--build=%{DISTRO_BUILDTARGET} \
 			--prefix=/usr \
 			--libexecdir=/usr/lib \
 			--mandir=/usr/share/man \
@@ -241,27 +168,122 @@ define STAGE_BUILD
 			--disable-libunwind-exceptions \
 			--enable-gnu-unique-object \
 			--enable-linker-build-id \
-			$(CONFIGURE_ARGS)
+			%{configure_options}
 
-	cd $(DIR_SRC)/gcc-build && make profiledbootstrap #$(PARALLELISMFLAGS)
-endef
+		# GCC does not support a parallel build.
+		make profiledbootstrap BOOT_CFLAGS="${OPT_FLAGS}" #%{PARALLELISMFLAGS}
+	end
 
-#define STAGE_TEST
-#	cd $(DIR_SRC)/gcc-build && make check
-#	cd $(DIR_APP) && ./contrib/test_summary
-#endef
+	#test
+	#	cd %{DIR_SRC}/gcc-build && make check
+	#	cd %{DIR_APP} && ./contrib/test_summary
+	#end
 
-define STAGE_INSTALL
-	cd $(DIR_SRC)/gcc-build && make install DESTDIR=$(BUILDROOT)
+	install
+		cd %{DIR_SRC}/gcc-build
+		make install DESTDIR=%{BUILDROOT}
 
-	-mkdir -pv $(BUILDROOT)/lib
-	ln -sfv ../usr/bin/cpp $(BUILDROOT)/lib/cpp
-	ln -sfv gcc $(BUILDROOT)/usr/bin/cc
+		mkdir -pv %{BUILDROOT}/lib
+		ln -sfv ../usr/bin/cpp %{BUILDROOT}/lib/cpp
+		ln -sfv gcc %{BUILDROOT}/usr/bin/cc
 
-	# Move libgcc_s to /lib
-	mv -vf $(BUILDROOT)/usr/lib/libgcc_s.so.1 $(BUILDROOT)/lib/
-	ln -svf ../../lib/libgcc_s.so.1 $(BUILDROOT)/usr/lib/libgcc_s.so
+		# Move libgcc_s to /lib
+		mv -vf %{BUILDROOT}/usr/lib/libgcc_s.so.1 %{BUILDROOT}/lib/
+		ln -svf ../../lib/libgcc_s.so.1 %{BUILDROOT}/usr/lib/libgcc_s.so
 
-	# Remove some GNU debugger stuff.
-	rm -vf $(BUILDROOT)/usr/lib/lib*.py
-endef
+		# Remove some GNU debugger stuff.
+		rm -vf %{BUILDROOT}/usr/lib/lib*.py
+	end
+end
+
+packages
+	package %{name}
+		groups += Build
+
+		requires
+			binutils>=%{required_binutils_version}
+			glibc-devel
+			libgcc-devel
+		end
+
+		if "%{build_cloog_ppl}" == "1"
+			requires += cloog-ppl>=0.15
+		end
+	end
+
+	# XXX add package descriptions
+
+	package %{name}-c++
+		requires = gcc=%{thisver} libstdc++-devel
+
+		files
+			/usr/bin/*++
+			/usr/lib/gcc/*/*/cc1plus
+			/usr/share/man/man*/*++*
+		end
+	end
+
+	package libgcc
+		files
+			/lib/libgcc*.so.*
+		end
+	end
+
+	package libgcc-devel
+		requires = libgcc=%{thisver}
+
+		files
+			/usr/lib/libgcc*.so
+		end
+	end
+
+	package libstdc++
+		files
+			/usr/lib/libstdc++*.so.*
+		end
+	end
+
+	package libstdc++-devel
+		files
+			/usr/include/c++
+			/usr/lib/libstdc++*.so
+		end
+	end
+
+	package libgomp
+		files
+			/usr/lib/libgomp*.so.*
+		end
+	end
+
+	package libgomp
+		files
+			/usr/lib/libgomp*.so
+			/usr/lib/libgomp.spec
+		end
+	end
+
+	package libmudflap
+		files
+			/usr/lib/libmudflap*.so.*
+		end
+	end
+
+	package libmudflap-devel
+		files
+			/usr/lib/libmudflap*.so
+		end
+	end
+
+	package libquadmath
+		files
+			/usr/lib/libquadmath*.so.*
+		end
+	end
+
+	package libquadmath-devel
+		files
+			/usr/lib/libquadmath*.so
+		end
+	end
+end

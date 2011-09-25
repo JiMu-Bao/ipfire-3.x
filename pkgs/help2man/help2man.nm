@@ -1,52 +1,37 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = help2man
+version    = 1.40.4
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Development/Tools
+url        = http://www.gnu.org/software/help2man
+license    = GPLv3+
+summary    = Create simple man pages from --help output.
 
-PKG_NAME       = help2man
-PKG_VER        = 1.40.4
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Tools
-PKG_URL        = http://www.gnu.org/software/help2man
-PKG_LICENSE    = GPLv3+
-PKG_SUMMARY    = Create simple man pages from --help output.
-
-define PKG_DESCRIPTION
+description
 	help2man is a script to create simple man pages from the --help and
 	--version output of programs.
 
 	Since most GNU documentation is now in info format, this provides a
 	way to generate a placeholder man page pointing to that resource while
 	still providing some useful information.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-CONFIGURE_OPTIONS += \
-	--disable-nls \
-	--libdir=/usr/lib/help2man
+build
+	configure_options += \
+		--disable-nls \
+		--libdir=/usr/lib/help2man
 
-STAGE_INSTALL_TARGETS += install_l10n
+	make_install_targets += install_l10n
+end
+
+packages
+	package %{name}
+	end
+end

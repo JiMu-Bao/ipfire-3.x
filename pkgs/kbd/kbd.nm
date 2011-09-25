@@ -1,59 +1,45 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = kbd
+version    = 1.15
+release    = 1
+epoch      = 1
 
-include $(PKGROOT)/Include
+groups     = System/Base
+url        = http://ftp.altlinux.org/pub/people/legion/kbd
+license    = GPLv2+
+summary    = Tools for configuring the console (keyboard, virtual terminals, etc.).
 
-PKG_NAME       = kbd
-PKG_VER        = 1.15
-PKG_REL        = 0
-PKG_EPOCH      = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = http://ftp.altlinux.org/pub/people/legion/kbd
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = Tools for configuring the console (keyboard, virtual terminals, etc.).
-
-define PKG_DESCRIPTION
+description
 	The kbd package contains tools for managing a Linux \
 	system's console's behavior, including the keyboard, the screen \
 	fonts, the virtual terminals and font files.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
-PKG_OBJECTS   += kbd-latarcyrheb-16-fixed.tar.bz2
-PKG_OBJECTS   += kbd-latsun-fonts.tar.bz2
+source_dl  =
+sources   += kbd-latarcyrheb-16-fixed.tar.bz2
+sources   += kbd-latsun-fonts.tar.bz2
 
-CONFIGURE_OPTIONS += --datadir=/lib/kbd
-
-define STAGE_PREPARE_CMDS
+build
+	configure_options += \
+		--datadir=/lib/kbd
+	
 	# Adding our own fonts
-	cd $(DIR_APP) && $(DO_EXTRACT) $(DIR_DL)/kbd-latsun-fonts.tar.bz2
-	cd $(DIR_APP) && $(DO_EXTRACT) $(DIR_DL)/kbd-latarcyrheb-16-fixed.tar.bz2
-endef
+	prepare_cmds
+		%{MACRO_EXTRACT} %{DIR_DL}/kbd-latarcyrheb-16-fixed.tar.bz2
+		%{MACRO_EXTRACT} %{DIR_DL}/kbd-latsun-fonts.tar.bz2
+	end
 
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/bin
-	mv -v $(BUILDROOT)/usr/bin/{kbd_mode,loadkeys,openvt,setfont} $(BUILDROOT)/bin
-endef
+	install_cmds
+		mkdir -pv %{BUILDROOT}/bin
+		mv -v %{BUILDROOT}/usr/bin/{kbd_mode,loadkeys,openvt,setfont} %{BUILDROOT}/bin
+	end
+end
+
+packages
+	package %{name}
+	end
+end

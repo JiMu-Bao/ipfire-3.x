@@ -1,59 +1,30 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = telnet
+version    = 0.17
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = Applications/Internet
+url        = http://www.ibiblio.org/pub/Linux/system/network/netkit/
+license    = BSD
+summary    = Telnet is a popular protocol for logging into remote systems over the Internet.
 
-PKG_NAME       = telnet
-PKG_VER        = 0.17
-PKG_REL        = 2
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Applications/Internet
-PKG_URL        = http://www.ibiblio.org/pub/Linux/system/network/netkit/ 
-PKG_LICENSE    = BSD
-PKG_SUMMARY    = Telnet is a popular protocol for logging into remote systems over the Internet.
-
-PKG_BUILD_DEPS+= gcc-c++ ncurses-devel 
-
-define PKG_DESCRIPTION
+description
 	Telnet is a popular protocol for logging into remote systems over the
 	Internet. The package includes a daemon that supports Telnet remote
 	logins into the host machine.
-endef
+end
 
-PKG_TARBALL    = netkit-$(THISAPP).tar.gz
-PKG_OBJECTS   += telnet-client.tar.gz
-
-DIR_APP = $(DIR_SRC)/netkit-$(THISAPP)
-
-# Overwite configure options, because configure script 
-# doesn't accept flags for used compiler or host definition
-CONFIGURE_OPTIONS = \
-	--prefix=/usr
+source_dl  = http://www.ibiblio.org/pub/Linux/system/network/netkit/
+sources    = netkit-%{thisapp}.tar.gz
+sources   += telnet-client.tar.gz
 
 # Apply patches in a special order
-PKG_PATCHES    = telnet-client-cvs.patch0 \
+patches    = \
+	telnet-client-cvs.patch0 \
 	telnetd-0.17.patch0 \
 	telnet-0.17-env.patch \
 	telnet-0.17-pek.patch0 \
@@ -71,27 +42,49 @@ PKG_PATCHES    = telnet-client-cvs.patch0 \
 	telnet-0.17-errno_test_sys_bsd.patch \
 	netkit-telnet-0.17-reallynodns.patch
 
-define STAGE_PREPARE 
-	cd $(DIR_SRC) && $(DO_EXTRACT) $(DIR_DL)/$(PKG_TARBALL)
-	cd $(DIR_APP) && mv telnet telnet-netkit
-	cd $(DIR_APP) && $(DO_EXTRACT) $(DIR_DL)/telnet-client.tar.gz
+build
+	requires
+		gcc-c++
+		ncurses-devel
+	end
 
-	$(DO_PATCHES)
-endef
+	DIR_APP = %{DIR_SRC}/netkit-%{thisapp}
 
-define STAGE_INSTALL
-	# We have to create the directories on our own
-	-mkdir -pv $(BUILDROOT)/usr/man/man{1,5,8}
-	-mkdir -pv $(BUILDROOT)/usr/{,s}bin 
+	# Overwite configure options, because configure script
+	# doesn't accept flags for used compiler or host definition
+	configure_options = \
+		--prefix=/usr
 
-	cd $(DIR_APP) && make install INSTALLROOT=$(BUILDROOT)
 
-	# Move manpages to correct place
-	-mkdir -pv $(BUILDROOT)/usr/share
-	mv $(BUILDROOT)/usr/man $(BUILDROOT)/usr/share/man
+	# For the telnet client we have to extract a second tarball into the source
+	# directory of the main tarball.
+	prepare
+		cd %{DIR_SRC} && %{MACRO_EXTRACT} %{DIR_DL}/netkit-%{thisapp}.tar.gz
+		cd %{DIR_APP} && mv telnet telnet-netkit
+		cd %{DIR_APP} && %{MACRO_EXTRACT} %{DIR_DL}/telnet-client.tar.gz
 
-	# Remove telnetd, we don't want it
-	rm -rf $(BUILDROOT)/usr/sbin
-	rm -rf $(BUILDROOT)/usr/share/man/man8
-	rm -rf $(BUILDROOT)/usr/share/man/man5
-endef
+		%{MACRO_PATCHES}
+	end
+
+	install
+		# We have to create the directories on our own
+		mkdir -pv %{BUILDROOT}/usr/man/man{1,5,8}
+		mkdir -pv %{BUILDROOT}/usr/{,s}bin
+
+		make install INSTALLROOT=%{BUILDROOT}
+
+		# Move manpages to correct place
+		mkdir -pv %{BUILDROOT}/usr/share
+		mv %{BUILDROOT}/usr/man %{BUILDROOT}/usr/share/man
+
+		# Remove telnetd, we don't want it
+		rm -rf %{BUILDROOT}/usr/sbin
+		rm -rf %{BUILDROOT}/usr/share/man/man8
+		rm -rf %{BUILDROOT}/usr/share/man/man5
+	end
+end
+
+packages
+	package %{name}
+	end
+end

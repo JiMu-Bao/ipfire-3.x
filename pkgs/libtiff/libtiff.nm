@@ -1,54 +1,45 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libtiff
+version    = 4.0.0beta7
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://www.libtiff.org
+license    = libtiff ( own )
+summary    = Library of functions for manipulating TIFF format image files.
 
-PKG_NAME       = libtiff
-PKG_VER        = 4.0.0beta7
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.libtiff.org
-PKG_LICENSE    = libtiff ( own )
-PKG_SUMMARY    = Library of functions for manipulating TIFF format image files.
-
-PKG_BUILD_DEPS+= gcc-c++ libjpeg-devel
-
-define PKG_DESCRIPTION
+description
 	The libtiff package contains a library of functions for manipulating \
 	TIFF (Tagged Image File Format) image format files.  TIFF is a widely \
 	used file format for bitmapped images.  TIFF files usually end in the \
 	.tif extension and they are often quite large.
-endef
+end
 
-PKG_TARBALL    = tiff-$(PKG_VER).tar.gz
+source_dl  =
+sources    = tiff-%{version}.tar.gz
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		gcc-c++
+		libjpeg-devel
+	end
 
-DIR_APP = /usr/src/tiff-$(PKG_VER)
+	DIR_APP = /usr/src/tiff-%{version}
 
-CONFIGURE_OPTIONS += \
-	--enable-defer-strile-load \
-	--enable-chunky-strip-read
+	configure_options += \
+		--enable-defer-strile-load \
+		--enable-chunky-strip-read
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

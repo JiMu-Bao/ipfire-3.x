@@ -1,54 +1,42 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = python-m2crypto
+version    = 0.21.1
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Development/Libraries
+url        = http://wiki.osafoundation.org/bin/view/Projects/MeTooCrypto
+license    = MIT
+summary    = Support for using OpenSSL in python scripts.
 
-PKG_NAME       = python-m2crypto
-PKG_VER        = 0.21.1
-PKG_REL        = 1
+description
+	This package allows you to call OpenSSL functions from python scripts.
+end
 
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Libraries
-PKG_URL        = http://wiki.osafoundation.org/bin/view/Projects/MeTooCrypto
-PKG_LICENSE    = MIT
-PKG_SUMMARY    = Support for using OpenSSL in python scripts.
+thisapp    = M2Crypto-%{version}
 
-PKG_BUILD_DEPS+= python-devel openssl-devel swig
+source_dl  =
 
-define PKG_DESCRIPTION
-    This package allows you to call OpenSSL functions from python scripts.
-endef
+build
+	requires
+		python-devel
+		openssl-devel
+		swig
+	end
 
-THISAPP        = M2Crypto-$(PKG_VER)
+	build
+		CFLAGS="%{CFLAGS}" python setup.py build
+	end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+	install
+		python setup.py install --skip-build --root=%{BUILDROOT}
+	end
+end
 
-define STAGE_BUILD
-	cd $(DIR_APP) && CFLAGS="$(CFLAGS)" python setup.py build
-endef
-
-define STAGE_INSTALL
-	cd $(DIR_APP) && python setup.py install --skip-build --root=$(BUILDROOT)
-endef
-
+packages
+	package %{name}
+	end
+end

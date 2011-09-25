@@ -1,52 +1,49 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = pango
+version    = 1.29.3
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://www.pango.org/
+license    = LGPLv2+
+summary    = System for layout and rendering of internationalized text.
 
-PKG_NAME       = pango
-PKG_VER        = 1.29.3
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.pango.org/
-PKG_LICENSE    = LGPLv2+
-PKG_SUMMARY    = System for layout and rendering of internationalized text.
-
-PKG_BUILD_DEPS+= cairo-devel fontconfig-devel freetype-devel gcc-c++ \
-	glib2-devel perl pkg-config
-
-PKG_DEPS-$(PKG_NAME)-devel += glib2-devel
-
-define PKG_DESCRIPTION
+description
 	Pango is a library for laying out and rendering of text, with an \
 	emphasis on internationalization.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.xz
+source_dl  =
+sources    = %{thisapp}.tar.xz
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		cairo-devel
+		fontconfig-devel
+		freetype-devel
+		gcc-c++
+		glib2-devel
+		perl
+		pkg-config
+	end
 
-CONFIGURE_OPTIONS += \
-	--sysconfdir=/etc
+	configure_options += \
+		--sysconfdir=/etc
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	
+		requires
+			glib2-devel
+		end
+	end
+end

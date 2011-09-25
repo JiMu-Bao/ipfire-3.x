@@ -1,57 +1,44 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = sysvinit
+version    = 2.86
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Base
+url        = https://alioth.debian.org/projects/pkg-sysvinit/
+license    = GPLv2+
+summary    = Programs which control basic system processes.
 
-PKG_NAME       = sysvinit
-PKG_VER        = 2.86
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = https://alioth.debian.org/projects/pkg-sysvinit/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = Programs which control basic system processes.
-
-PKG_BUILD_DEPS+= libselinux-devel
-
-define PKG_DESCRIPTION
+description
 	The sysvinit package contains a group of processes that control \
 	the very basic functions of your system.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+sources    = %{thisapp}.tar.gz
 
-CFLAGS        += -D_GNU_SOURCE
+CFLAGS    += -D_GNU_SOURCE
 
-define STAGE_BUILD
-	cd $(DIR_APP) && make -C src CFLAGS="$(CFLAGS)" LDFLAGS="" \
-		LCRYPT="-lcrypt" $(PARALLELISMFLAGS)
-endef
+build
+	requires
+		libselinux-devel
+	end
 
-define STAGE_INSTALL
-	-mkdir -pv $(BUILDROOT)/{bin,sbin,usr/{bin,include}}
-	-mkdir -pv $(BUILDROOT)/usr/share/man/man{1,5,8}
-	cd $(DIR_APP) && make -C src install ROOT=$(BUILDROOT)
-endef
+	make_build_targets += \
+		-C src CFLAGS="%{CFLAGS}" \
+		LDFLAGS="" \
+		LCRYPT="-lcrypt"
+
+	install
+		mkdir -pv %{BUILDROOT}/{bin,sbin,usr/{bin,include}}
+		mkdir -pv %{BUILDROOT}/usr/share/man/man{1,5,8}
+		make -C src install ROOT=%{BUILDROOT}
+	end
+end
+
+packages
+	package %{name}
+	end
+end

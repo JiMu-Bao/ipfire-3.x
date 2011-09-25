@@ -1,66 +1,52 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = setup
+version    = 3.0
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Base Build System/Base
+url        =
+license    = Public Domain
+summary    = A set of system configuration and setup files.
 
-PKG_NAME       = setup
-PKG_VER        = 3.0
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Base System/Base
-PKG_URL        =
-PKG_LICENSE    = Public Domain
-PKG_SUMMARY    = A set of system configuration and setup files.
-
-PKG_BUILD_DEPS = # Need no compiler.
-PKG_DEPS      += iana-etc
-
-define PKG_DESCRIPTION
+description
 	The setup package contains a set of important system configuration and
 	setup files, such as passwd, group, and profile.
-endef
+end
 
-DIR_APP = $(DIR_SOURCE)
+# No tarball.
+sources    =
 
-define STAGE_BUILD
-	cd $(DIR_APP) && ./shadowconvert.sh
-endef
+build
+	DIR_APP = %{DIR_SOURCE}
 
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
+	build
+		./shadowconvert.sh
+	end
 
-define STAGE_INSTALL
-	-mkdir -pv $(BUILDROOT)/etc/profile.d $(BUILDROOT)/var/log
+	test
+		make check
+	end
 
-	for i in aliases bashrc exports filesystems group gshadow host.conf \
-		hosts hosts.allow hosts.deny inputrc motd passwd printcap \
-		profile securetty shadow shells; do \
-		cp -vf $(DIR_APP)/$${i} $(BUILDROOT)/etc || exit 1; \
-	done
+	install
+		mkdir -pv %{BUILDROOT}/etc/profile.d %{BUILDROOT}/var/log
 
-	touch $(BUILDROOT)/etc/{environment,fstab} $(BUILDROOT)/var/log/lastlog
-	chmod -v 0400 $(BUILDROOT)/etc/{,g}shadow
-endef
+		for i in aliases bashrc exports filesystems group gshadow host.conf \
+			hosts hosts.allow hosts.deny inputrc motd passwd printcap \
+			profile securetty shadow shells; do \
+			cp -vf %{DIR_APP}/${i} %{BUILDROOT}/etc || exit 1; \
+		done
+
+		touch %{BUILDROOT}/etc/{environment,fstab} %{BUILDROOT}/var/log/lastlog
+		chmod -v 0400 %{BUILDROOT}/etc/{,g}shadow
+	end
+end
+
+packages
+	package %{name}
+		requires = iana-etc
+	end
+end

@@ -1,95 +1,86 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = iptables
+version    = 1.4.12
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Networking/Tools
+url        = http://www.netfilter.org/
+license    = GPL+
+summary    = Tools for managing Linux kernel packet filtering capabilities.
 
-PKG_NAME       = iptables
-PKG_VER        = 1.4.12
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Networking/Tools
-PKG_GROUPS-iptables = Base $(PKG_GROUPS)
-PKG_URL        = http://www.netfilter.org/
-PKG_LICENSE    = GPL+
-PKG_SUMMARY    = Tools for managing Linux kernel packet filtering capabilities.
-
-PKG_BUILD_DEPS+= libnfnetlink-devel libselinux-devel
-
-define PKG_DESCRIPTION
+description
 	The iptables utility controls the network packet filtering code in the \
 	Linux kernel. If you need to set up firewalls and/or IP masquerading, \
 	you should install this package.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		libnfnetlink-devel
+		libselinux-devel
+	end
 
-CFLAGS        += -fno-strict-aliasing
+	CFLAGS += -fno-strict-aliasing
 
-CONFIGURE_OPTIONS += \
-	--bindir=/bin \
-	--sbindir=/sbin \
-	--libdir=/lib \
-	--libexecdir=/lib \
-	--sysconfdir=/etc \
-	--with-pkgconfigdir=/usr/lib/pkgconfig \
-	--mandir=/usr/share/man \
-	--with-kernel=/usr \
-	--with-kbuild=/usr \
-	--with-ksource=/usr \
-	--enable-devel \
-	--enable-libipq
+	configure_options += \
+		--bindir=/bin \
+		--sbindir=/sbin \
+		--libdir=/lib \
+		--libexecdir=/lib \
+		--sysconfdir=/etc \
+		--with-pkgconfigdir=/usr/lib/pkgconfig \
+		--mandir=/usr/share/man \
+		--with-kernel=/usr \
+		--with-kbuild=/usr \
+		--with-ksource=/usr \
+		--enable-devel \
+		--enable-libipq
 
-define STAGE_PREPARE_CMDS
-	# Make more space for target name on output.
-	cd $(DIR_APP)/iptables && sed -e "s/%-9s/%-18s/g" -i ip{,6}tables.c
-endef
+	prepare_cmds
+		# Make more space for target name on output.
+		cd iptables && sed -e "s/%-9s/%-18s/g" -i ip{,6}tables.c
+	end
 
-define STAGE_INSTALL_CMDS
-	# install ip*tables.h header files
-	-mkdir -pv $(BUILDROOT)/usr/include/{iptables,libiptc}
-	cd $(DIR_APP) && install -v -m 644 include/ip{,6}tables.h \
-		$(BUILDROOT)/usr/include
-	cd $(DIR_APP) && install -v -m 644 include/iptables/internal.h \
-		$(BUILDROOT)/usr/include/iptables/
-	cd $(DIR_APP) && install -v -m 644 include/libiptc/*.h \
-		$(BUILDROOT)/usr/include/libiptc
+	install_cmds
+		# install ip*tables.h header files
+		mkdir -pv %{BUILDROOT}/usr/include/{iptables,libiptc}
+		install -v -m 644 include/ip{,6}tables.h \
+			%{BUILDROOT}/usr/include
+		install -v -m 644 include/iptables/internal.h \
+			%{BUILDROOT}/usr/include/iptables/
+		install -v -m 644 include/libiptc/*.h \
+			%{BUILDROOT}/usr/include/libiptc
 
-	-mkdir -pv $(BUILDROOT)/usr/lib
-	rm -vf $(BUILDROOT)/lib/libip{tc,4tc,6tc,q}.so $(BUILDROOT)/lib/libxtables.so
-	ln -svf ../../lib/libiptc.so.0 $(BUILDROOT)/usr/lib/libiptc.so
-	ln -svf ../../lib/libip4tc.so.0 $(BUILDROOT)/usr/lib/libip4tc.so
-	ln -svf ../../lib/libip6tc.so.0 $(BUILDROOT)/usr/lib/libip6tc.so
-	ln -svf ../../lib/libipq.so.0 $(BUILDROOT)/usr/lib/libipq.so
-	ln -svf ../../lib/libxtables.so.7 $(BUILDROOT)/usr/lib/libxtables.so
+		mkdir -pv %{BUILDROOT}/usr/lib
+		rm -vf %{BUILDROOT}/lib/libip{tc,4tc,6tc,q}.so %{BUILDROOT}/lib/libxtables.so
+		ln -svf ../../lib/libiptc.so.0 %{BUILDROOT}/usr/lib/libiptc.so
+		ln -svf ../../lib/libip4tc.so.0 %{BUILDROOT}/usr/lib/libip4tc.so
+		ln -svf ../../lib/libip6tc.so.0 %{BUILDROOT}/usr/lib/libip6tc.so
+		ln -svf ../../lib/libipq.so.0 %{BUILDROOT}/usr/lib/libipq.so
+		ln -svf ../../lib/libxtables.so.7 %{BUILDROOT}/usr/lib/libxtables.so
 
-	# Replace absolute symlink
-	ln -svf ../sbin/xtables-multi $(BUILDROOT)/bin/iptables-xml
+		# Replace absolute symlink
+		ln -svf ../sbin/xtables-multi %{BUILDROOT}/bin/iptables-xml
 
-	# Move binary which links to /usr/lib to /usr.
-	-mkdir -pv $(BUILDROOT)/usr/sbin
-	mv -v $(BUILDROOT)/{,usr/}sbin/nfnl_osf
-endef
+		# Move binary which links to /usr/lib to /usr.
+		mkdir -pv %{BUILDROOT}/usr/sbin
+		mv -v %{BUILDROOT}/{,usr/}sbin/nfnl_osf
+	end
+end
+
+packages
+	package %{name}
+		groups += Base
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

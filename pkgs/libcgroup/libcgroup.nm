@@ -1,66 +1,57 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libcgroup
+version    = 0.35.1
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Development/Libraries
+url        = http://libcg.sourceforge.net/
+license    = LGPLv2+
+summary    = Tools and libraries to control and monitor control groups.
 
-PKG_NAME       = libcgroup
-PKG_VER        = 0.35.1
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Libraries
-PKG_URL        = http://libcg.sourceforge.net/
-PKG_LICENSE    = LGPLv2+
-PKG_SUMMARY    = Tools and libraries to control and monitor control groups.
-
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
-
-PKG_BUILD_DEPS+= bison gcc-c++ flex
-
-define PKG_DESCRIPTION
+description
 	Control groups infrastructure. The tools and library help manipulate, \
 	control, administrate and monitor control groups and the associated \
-	controllers. 
-endef
+	controllers.
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-CONFIGURE_OPTIONS += \
-	--libdir=/lib \
-	--disable-pam \
-	--disable-tools \
-	--disable-daemon
+build
+	requires
+		bison
+		gcc-c++
+		flex
+	end
 
-#define STAGE_TEST
-#	cd $(DIR_APP) && make check
-#endef
+	configure_options += \
+		--libdir=/lib \
+		--disable-pam \
+		--disable-tools \
+		--disable-daemon
 
-define STAGE_INSTALL_CMDS
-	rm -rf $(BUILDROOT)/etc
+	#define test
+	#	make check
+	#endef
 
-	-mkdir -pv $(BUILDROOT)/usr/lib
-	rm -vf $(BUILDROOT)/lib/libcgroup.so
-	ln -svf ../../lib/libcgroup.so.1 $(BUILDROOT)/usr/lib/libcgroup.so
-endef
+	install_cmds
+		rm -rf %{BUILDROOT}/etc
 
+		mkdir -pv %{BUILDROOT}/usr/lib
+		rm -vf %{BUILDROOT}/lib/libcgroup.so
+		ln -svf ../../lib/libcgroup.so.1 %{BUILDROOT}/usr/lib/libcgroup.so
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

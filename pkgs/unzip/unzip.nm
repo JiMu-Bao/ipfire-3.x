@@ -1,67 +1,52 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = unzip
+version    = 6.0
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Applications/Archiving
+url        = ftp://ftp.info-zip.org/pub/infozip/src/
+license    = BSD
+summary    = A utility for unpacking zip files.
 
-PKG_NAME       = unzip
-PKG_VER        = 6.0
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Applications/Archiving
-PKG_URL        = ftp://ftp.info-zip.org/pub/infozip/src
-PKG_LICENSE    = BSD
-PKG_SUMMARY    = A utility for unpacking zip files.
-
-define PKG_DESCRIPTION
-	The unzip utility is used to list, test, or extract files from a zip \
-	archive. Zip archives are commonly found on MS-DOS systems. The zip \
-	utility, included in the zip package, creates zip archives. Zip and \
-	unzip are both compatible with archives created by PKWARE(R)'s PKZIP \
-	for MS-DOS, but the programs' options and default behaviors do differ \
+description
+	The unzip utility is used to list, test, or extract files from a zip
+	archive. Zip archives are commonly found on MS-DOS systems. The zip
+	utility, included in the zip package, creates zip archives. Zip and
+	unzip are both compatible with archives created by PKWARE(R)'s PKZIP
+	for MS-DOS, but the programs' options and default behaviors do differ
 	in some respects.
-endef
+end
 
+thisapp    = %{name}60
 
-THISAPP    = $(PKG_NAME)60
-PKG_TARBALL= $(THISAPP).tgz
+source_dl += ftp://ftp.info-zip.org/pub/infozip/src/
+sources    = %{thisapp}.tgz
 
-CFLAGS   += -D_LARGEFILE64_SOURCE
+CFLAGS    += -D_LARGEFILE64_SOURCE
 
+build
+	DIR_APP = %{DIR_SRC}/%{thisapp}
 
-define STAGE_PREPARE
-	cd $(DIR_SRC) && $(DO_EXTRACT) $(DIR_DL)/$(PKG_TARBALL)
+	prepare_cmds
+		ln -svf unix/Makefile Makefile
+	end
 
-	$(DO_PATCHES)
-endef
+	make_build_targets += \
+		generic \
+		CC="gcc %{CFLAGS}" \
+		LD=gcc
 
-define STAGE_BUILD
-	cd $(DIR_SRC)/$(THISAPP) && ln -svf unix/Makefile Makefile
-	cd $(DIR_SRC)/$(THISAPP) && make generic CC="gcc $(CFLAGS)" LD=gcc $(PARALLELISMFLAGS)
-endef
+	make_install_targetsi += \
+		prefix=%{BUILDROOT}/usr \
+		MANDIR=/usr/share/man/man1 \
+		INSTALL="cp -p"
+end
 
-define STAGE_INSTALL
-	cd $(DIR_SRC)/$(THISAPP) && make install prefix=$(BUILDROOT)/usr \
-		MANDIR=/usr/share/man/man1 INSTALL="cp -p"
-endef
+packages
+	package %{name}
+	end
+end

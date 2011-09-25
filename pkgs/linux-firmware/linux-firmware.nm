@@ -1,53 +1,39 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007-2011  IPFire Team  <info@ipfire.org>                     #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = linux-firmware
+version    = 20110311
+release    = 1
 
-include $(PKGROOT)/Include
+maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
+groups     = System/Libraries
+url        = http://www.kernel.org/pub/linux/kernel/people/dwmw2/firmware/
+license    = Non-GPL
+summary    = Firmware Binaries for some Devices.
 
-PKG_NAME       = linux-firmware
-PKG_VER        = 20110311
-PKG_REL        = 1
-
-PKG_MAINTAINER = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.kernel.org/pub/linux/kernel/people/dwmw2/firmware/
-PKG_LICENSE    = Non-GPL
-PKG_SUMMARY    = Firmware Binaries for some Devices.
-
-define PKG_DESCRIPTION
+description
 	linux-firmware provides some firmware binaries that \
 	are loaded into the devices at startup. \
 	For detailed license info check the WHENCE and LICENSE.* texts \
 	for the specific firmware.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_BUILD_DEPS =
+build
+	build
+		: # Nothing to do.
+	end
 
-STAGE_BUILD    = # Nothing to do.
+	install
+		mkdir -pv %{BUILDROOT}/lib/firmware
+		cp -prv * %{BUILDROOT}/lib/firmware
+	end
+end
 
-define STAGE_INSTALL
-	-mkdir -pv $(BUILDROOT)/lib/firmware
-	cd $(DIR_APP) && cp -prv * $(BUILDROOT)/lib/firmware
-endef
+packages
+	package %{name}
+	end
+end

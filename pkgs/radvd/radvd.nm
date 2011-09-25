@@ -1,57 +1,46 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = radvd
+version    = 1.8
+release    = 4
 
-include $(PKGROOT)/Include
+groups     = System/Daemons
+url        = http://www.litech.org/radvd/
+license    = BSD with advertising
+summary    = A Router Advertisement daemon.
 
-PKG_NAME       = radvd
-PKG_VER        = 1.8
-PKG_REL        = 4
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Daemons
-PKG_URL        = http://www.litech.org/radvd/
-PKG_LICENSE    = BSD with advertising
-PKG_SUMMARY    = A Router Advertisement daemon.
-
-PKG_BUILD_DEPS+= flex flex-devel bison
-PKG_DEPS      += /lib/network/network-radvd-config
-
-define PKG_DESCRIPTION
-	radvd is the router advertisement daemon for IPv6. It listens to \
-	router solicitations and sends router advertisements as described \
-	in Neighbor Discovery for IP Version 6. With these \
-	advertisements hosts can automatically configure their addresses and \
-	some other parameters. They also can choose a default router based \
+description
+	radvd is the router advertisement daemon for IPv6. It listens to
+	router solicitations and sends router advertisements as described
+	in Neighbor Discovery for IP Version 6. With these
+	advertisements hosts can automatically configure their addresses and
+	some other parameters. They also can choose a default router based
 	on these advertisements.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = http://www.litech.org/radvd/dist/
 
-CONFIGURE_OPTIONS += \
-	--mandir=/usr/share/man \
-	--with-pidfile=/var/run/radvd/radvd.pid
+build
+	requires
+		flex
+		flex-devel
+		bison
+	end
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -e "s/-lfl/-lfl_pic/g" -i Makefile.*
-endef
+	configure_options += \
+		--mandir=/usr/share/man \
+		--with-pidfile=/run/radvd/radvd.pid
+
+	prepare_cmds
+		sed -e "s/-lfl/-lfl_pic/g" -i Makefile.*
+	end
+end
+
+packages
+	package %{name}
+		reuires = /lib/network/network-radvd-config
+	end
+end

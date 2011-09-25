@@ -1,47 +1,36 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libpciaccess
+version    = 0.11.0
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Applications/Virtualization
+url        = http://cgit.freedesktop.org/xorg/lib/libpciaccess/
+license    = LGPLv2.1+
+summary    = Generic PCI access library.
 
-PKG_NAME       = libpciaccess
-PKG_VER        = 0.11.0
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Applications/Virtualization
-PKG_URL        = http://cgit.freedesktop.org/xorg/lib/libpciaccess/
-PKG_LICENSE    = LGPLv2.1+
-PKG_SUMMARY    = Generic PCI access library.
-
-PKG_BUILD_DEPS+= pkg-config
-
-define PKG_DESCRIPTION
+description
 	A toolkit to interact with the virtualization capabilities of recent \
 	versions of Linux.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		pkg-config
+	end
+end
 
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

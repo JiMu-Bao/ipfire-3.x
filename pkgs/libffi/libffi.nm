@@ -1,47 +1,32 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libffi
+version    = 3.0.9
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://sourceware.org/libffi
+license    = BSD
+summary    = A portable foreign function interface library.
 
-PKG_NAME       = libffi
-PKG_VER        = 3.0.9
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://sourceware.org/libffi
-PKG_LICENSE    = BSD
-PKG_SUMMARY    = A portable foreign function interface library.
-
-define PKG_DESCRIPTION
+description
 	The libffi library provides a portable, high level programming \
 	interface to various calling conventions. This allows a programmer to \
 	call any function specified by a call interface description at run time.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
-
-PKG_FILES-$(PKG_NAME_REAL)-devel += /usr/lib/libffi-$(PKG_VER)
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	
+		files += /usr/lib*/libffi-%{version}
+	end
+end

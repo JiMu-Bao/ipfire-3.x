@@ -1,74 +1,56 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = openssl
+version    = 1.0.0d
+release    = 3
 
-include $(PKGROOT)/Include
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = System/Libraries
+url        = http://www.openssl.org/
+license    = OpenSSL
+summary    = A general purpose cryptography library with TLS implementation.
 
-PKG_NAME       = openssl
-PKG_VER        = 1.0.0d
-PKG_REL        = 3
-
-PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.openssl.org/
-PKG_LICENSE    = OpenSSL
-PKG_SUMMARY    = A general purpose cryptography library with TLS implementation. 
-
-PKG_BUILD_DEPS+= bc gnutls-devel perl zlib-devel
-
-define PKG_DESCRIPTION
-	The OpenSSL toolkit provides support for secure communications between \
-	machines. OpenSSL includes a certificate management tool and shared \
+description
+	The OpenSSL toolkit provides support for secure communications between
+	machines. OpenSSL includes a certificate management tool and shared
 	libraries which provide various cryptographic algorithms and protocols.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		bc
+		gnutls-devel
+		perl
+		zlib-devel
+	end
 
-ifneq "$(MACHINE)" "i686"
-	SSL_ARCH = no-asm 386 # 386 implies no-sse2
-endif
+	prepare_cmds
+		find crypto/ -name Makefile -exec \
+			sed 's/^ASFLAGS=/&-Wa,--noexecstack /' -i {} \;
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && find crypto/ -name Makefile -exec \
-		sed 's/^ASFLAGS=/&-Wa,--noexecstack /' -i {} \;
+		# # Modify the various perl scripts to reference perl in the right location.
+		perl util/perlpath.pl /usr/bin
 
-	# # Modify the various perl scripts to reference perl in the right location.
-	cd $(DIR_APP) && perl util/perlpath.pl /usr/bin
+		# Generate a table with the compile settings for my perusal.
+		touch Makefile
+		make TABLE PERL=/usr/bin/perl
+	end
 
-	# Generate a table with the compile settings for my perusal.
-	cd $(DIR_APP) && touch Makefile
-	cd $(DIR_APP) && make TABLE PERL=/usr/bin/perl
-endef
+	if "%{DISTRO_ARCH}" == "i686"
+		SSL_ARCH = no-asm 386 # 386 implies no-sse2
+	end
 
-define STAGE_BUILD
-	cd $(DIR_APP) && \
+	build
 		./Configure \
 			--prefix=/usr \
 			--openssldir=/etc/pki/tls \
 			--enginesdir=/usr/lib/openssl/engines \
-			linux-elf $(SSL_ARCH) \
+			linux-elf \
 			shared \
 			zlib-dynamic \
 			enable-camellia \
@@ -79,39 +61,48 @@ define STAGE_BUILD
 			no-idea \
 			no-mdc2 \
 			no-rc5 \
-			-DSSL_FORBID_ENULL
+			-DSSL_FORBID_ENULL \
+			 %{SSL_ARCH}
 
-	# Build.
-	cd $(DIR_APP) && make depend all build-shared RPM_OPT_FLAGS="$(CFLAGS)" #$(PARALLELISMFLAGS)
+		# Build.
+		make depend all build-shared RPM_OPT_FLAGS="%{CFLAGS}" #%{PARALLELISMFLAGS}
 
-	# Generate hashes for the included certs.
-	cd $(DIR_APP) && make rehash build-shared
-endef
+		# Generate hashes for the included certs.
+		make rehash build-shared
+	end
 
-define STAGE_TEST
-	cd $(DIR_APP) && make test
-endef
+	test
+		make test
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install build-shared INSTALL_PREFIX=$(BUILDROOT)
+	install
+		make install build-shared INSTALL_PREFIX=%{BUILDROOT}
 
-	-mkdir -pv $(BUILDROOT)/lib
-	mv -vf $(BUILDROOT)/usr/lib/lib{crypto,ssl}.so.* $(BUILDROOT)/lib
-	ln -svf ../../lib/libcrypto.so.10 $(BUILDROOT)/usr/lib/libcrypto.so
-	ln -svf ../../lib/libssl.so.10 $(BUILDROOT)/usr/lib/libssl.so
+		mkdir -pv %{BUILDROOT}/lib
+		mv -vf %{BUILDROOT}/usr/lib/lib{crypto,ssl}.so.* %{BUILDROOT}/lib
+		ln -svf ../../lib/libcrypto.so.10 %{BUILDROOT}/usr/lib/libcrypto.so
+		ln -svf ../../lib/libssl.so.10 %{BUILDROOT}/usr/lib/libssl.so
 
-	# Install manpages do right place
-	-mkdir -pv $(BUILDROOT)/usr/share
-	mv -v $(BUILDROOT)/etc/pki/tls/man $(BUILDROOT)/usr/share/
+		# Install manpages do right place
+		mkdir -pv %{BUILDROOT}/usr/share
+		mv -v %{BUILDROOT}/etc/pki/tls/man %{BUILDROOT}/usr/share/
 
-	-mkdir -pv $(BUILDROOT)/usr/lib/openssl
-	mv -v $(BUILDROOT)/usr/lib/engines $(BUILDROOT)/usr/lib/openssl
+		mkdir -pv %{BUILDROOT}/usr/lib/openssl
+		mv -v %{BUILDROOT}/usr/lib/engines %{BUILDROOT}/usr/lib/openssl
 
-	-mkdir -pv $(BUILDROOT)/etc/pki/CA/private
-	chmod -v 700 -R $(BUILDROOT)/etc/pki/CA
+		mkdir -pv %{BUILDROOT}/etc/pki/CA/private
+		chmod -v 700 -R %{BUILDROOT}/etc/pki/CA
 
-	-mkdir -pv $(BUILDROOT)/etc/pki/tls
-	install -m 0644 $(DIR_SOURCE)/openssl.cnf $(BUILDROOT)/etc/pki/tls
-	cd $(DIR_APP) && cp -v -r certs $(BUILDROOT)/etc/pki/tls
-endef
+		mkdir -pv %{BUILDROOT}/etc/pki/tls
+		install -m 0644 %{DIR_SOURCE}/openssl.cnf %{BUILDROOT}/etc/pki/tls
+		cp -v -r certs %{BUILDROOT}/etc/pki/tls
+	end
+end
 
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+end

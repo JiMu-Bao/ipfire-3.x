@@ -1,51 +1,48 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = cairo
+version    = 1.10.2
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = System/Graphics
+url        = http://cairographics.org
+license    = LGPLv2 MPLv1.1
+summary    = A 2D graphics library.
 
-PKG_NAME       = cairo
-PKG_VER        = 1.10.2
-PKG_REL        = 2
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Graphics
-PKG_URL        = http://cairographics.org
-PKG_LICENSE    = LGPLv2 MPLv1.1
-PKG_SUMMARY    = A 2D graphics library.
-
-PKG_BUILD_DEPS+= fontconfig-devel freetype-devel libpng-devel pixman-devel \
-	pkg-config zlib-devel
-
-define PKG_DESCRIPTION
+description
 	Cairo is a 2D graphics library designed to provide high-quality display \
 	and print output.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = http://cairographics.org/releases/
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		fontconfig-devel
+		freetype-devel
+		libpng-devel
+		pixman-devel
+		pkg-config
+		zlib-devel
+	end
+end
 
-# The development package needs the other dependencies as well.
-PKG_DEPS-$(PKG_NAME_REAL)-devel += fontconfig-devel freetype-devel \
-	libpng-devel pixman-devel
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	
+		# The development package needs the other dependencies as well.
+		requires
+			fontconfig-devel
+			freetype-devel
+			libpng-devel
+			pixman-devel
+		end
+	end
+end

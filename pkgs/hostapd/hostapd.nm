@@ -1,60 +1,50 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = hostapd
+version    = 0.6.9
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Networking/Tools
+url        = http://hostap.epitest.fi/hostapd/
+license    = GPLv2+
+summary    = User space daemon to create Wifi Access points.
 
-PKG_NAME       = hostapd
-PKG_VER        = 0.6.9
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Networking/Tools
-PKG_URL        = http://hostap.epitest.fi/hostapd/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = User space daemon to create Wifi Access points.
-
-PKG_BUILD_DEPS+= libnl-devel openssl-devel
-
-define PKG_DESCRIPTION
+description
 	Hostapd is a user space daemon for access point and authentication \
 	servers. It implements IEEE 802.11 access point management, IEEE \
 	802.1X/WPA/WPA2/EAP Authenticators, RADIUS client, EAP server, and \
 	RADIUS authentication server.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP)/hostapd && cp -vf $(DIR_SOURCE)/config .config
-	cd $(DIR_APP)/hostapd && sed -e "s@/usr/local@$(BUILDROOT)/usr@g" -i Makefile
-endef
+build
+	requires
+		libnl-devel
+		openssl-devel
+	end
 
-define STAGE_BUILD
-	cd $(DIR_APP)/hostapd && make $(PARALLELISMFLAGS) CC=gcc
-endef
+	prepare_cmds
+		cd hostapd
+		cp -vf %{DIR_SOURCE}/config .config
+		sed -e "s@/usr/local@%{BUILDROOT}/usr@g" -i Makefile
+	end
 
-define STAGE_INSTALL
-	-mkdir -pv $(BUILDROOT)/usr/bin
-	cd $(DIR_APP)/hostapd && make install
-endef
+	build
+		cd hostapd
+		make %{PARALLELISMFLAGS} CC=gcc
+	end
+
+	install
+		mkdir -pv %{BUILDROOT}/usr/bin
+		cd hostapd && make install
+	end
+end
+
+packages
+	package %{name}
+	end
+end

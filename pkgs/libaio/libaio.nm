@@ -1,61 +1,51 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libaio
+version    = 0.3.109
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = ftp://ftp.kernel.org/pub/linux/libs/aio/
+license    = LGPLv2+
+summary    = Linux-native asynchronous I/O access library.
 
-PKG_NAME       = libaio
-PKG_VER        = 0.3.109
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = ftp://ftp.kernel.org/pub/linux/libs/aio/
-PKG_LICENSE    = LGPLv2+
-PKG_SUMMARY    = Linux-native asynchronous I/O access library.
-
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
-
-define PKG_DESCRIPTION
+description
 	The Linux-native asynchronous I/O facility (async I/O, or aio) \
 	has a richer API and capability set than the simple POSIX async I/O \
 	facility. This library, libaio, provides the Linux-native API for \
 	async I/O. The POSIX async I/O facility requires this library in \
 	order to provide kernel-accelerated async I/O capabilities, as do \
-	applications which require the Linux-native async I/O API. 
-endef
+	applications which require the Linux-native async I/O API.
+end
 
-PKG_BUILD_DEPS+= e2fsprogs-devel
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+build
+	requires
+		e2fsprogs-devel
+	end
 
-define STAGE_BUILD
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS) \
-		CFLAGS="$(CFLAGS) -I." CC="gcc"
-endef
+	build
+		make %{PARALLELISMFLAGS} \
+			CFLAGS="%{CFLAGS} -I." CC="gcc"
+	end
 
-define STAGE_INSTALL_CMDS
-	# Modify links to be relative
-	ln -svf libaio.so.1 $(BUILDROOT)/usr/lib/libaio.so
-	ln -svf libaio.so.1.0.1 $(BUILDROOT)/usr/lib/libaio.so.1
-endef
+	install_cmds
+		# Modify links to be relative
+		ln -svf libaio.so.1 %{BUILDROOT}/usr/lib/libaio.so
+		ln -svf libaio.so.1.0.1 %{BUILDROOT}/usr/lib/libaio.so.1
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

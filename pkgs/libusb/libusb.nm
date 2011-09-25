@@ -1,45 +1,34 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libusb
+version    = 1.0.8
+release    = 1
 
-include $(PKGROOT)/Include
+maintainer =
+groups     = System/Libraries
+url        = http://sourceforge.net/projects/libusb/
+license    = LGPLv2+
+summary    = A library which allows userspace access to USB devices.
 
-PKG_NAME       = libusb
-PKG_VER        = 1.0.8
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://sourceforge.net/projects/libusb/
-PKG_LICENSE    = LGPLv2+
-PKG_SUMMARY    = A library which allows userspace access to USB devices.
-
-define PKG_DESCRIPTION
+description
 	This package provides a way for applications to access USB devices.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+sources    = %{thisapp}.tar.bz2
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	configure_options += \
+		--disable-static
+end
 
-CONFIGURE_OPTIONS += --disable-static
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

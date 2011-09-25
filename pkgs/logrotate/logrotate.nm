@@ -1,66 +1,57 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = logrotate
+version    = 3.7.7
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = Base System/Base
+url        = https://fedorahosted.org/releases/l/o/logrotate/
+license    = GPL+
+summary    = Rotates, compresses, removes and mails system log files.
 
-PKG_NAME       = logrotate
-PKG_VER        = 3.7.7
-PKG_REL        = 2
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Base System/Base
-PKG_URL        = https://fedorahosted.org/releases/l/o/logrotate/
-PKG_LICENSE    = GPL+
-PKG_SUMMARY    = Rotates, compresses, removes and mails system log files.
-
-PKG_BUILD_DEPS+= coreutils gzip libselinux-devel popt-devel which
-
-define PKG_DESCRIPTION
+description
 	The logrotate utility is designed to simplify the administration of \
 	log files on a system which generates a lot of log files. Logrotate \
 	allows for the automatic rotation compression, removal and mailing of \
 	log files.  Logrotate can be set to handle a log file daily, weekly, \
 	monthly or when the log file gets to a certain size.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-define STAGE_BUILD
-	cd $(DIR_APP) && make RPM_OPT_FLAGS="$(CFLAGS)" WITH_SELINUX=yes $(PARALLELISMFLAGS)
-endef
+build
+	requires
+		coreutils
+		gzip
+		libselinux-devel
+		popt-devel
+		which
+	end
 
-define STAGE_TEST
-	cd $(DIR_APP) && make test
-endef
+	build
+		make RPM_OPT_FLAGS="%{CFLAGS}" WITH_SELINUX=yes %{PARALLELISMFLAGS}
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install BASEDIR=/usr PREFIX=$(BUILDROOT) \
-		MANDIR=/usr/share/man
+	test
+		make test
+	end
 
-	-mkdir -pv $(BUILDROOT)/var/lib
-	touch $(BUILDROOT)/var/lib/logrotate.status
+	install
+		make install BASEDIR=/usr PREFIX=%{BUILDROOT} \
+			MANDIR=/usr/share/man
 
-	# Creating directory for config files
-	mkdir -pv $(BUILDROOT)/etc/logrotate.d
-endef
+		mkdir -pv %{BUILDROOT}/var/lib
+		touch %{BUILDROOT}/var/lib/logrotate.status
+
+		# Creating directory for config files
+		mkdir -pv %{BUILDROOT}/etc/logrotate.d
+	end
+end
+
+packages
+	package %{name}
+	end
+end

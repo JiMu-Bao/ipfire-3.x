@@ -1,66 +1,56 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = vim
+version    = 7.3
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Base Applications/Editors
+url        = http://www.vim.org
+license    = PublicDomain/Charityware
+summary    = Very feature- and powerful editor.
 
-PKG_NAME       = vim
-PKG_VER        = 7.3
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Base Applications/Editors
-PKG_URL        = http://www.vim.org
-PKG_LICENSE    = PublicDomain/Charityware
-PKG_SUMMARY    = Very feature- and powerful editor.
-
-PKG_BUILD_DEPS+= libacl-devel libselinux-devel ncurses-devel
-
-define PKG_DESCRIPTION
+description
 	Vim is a highly configurable text editor built to enable efficient \
 	text editing. It is an improved version of the vi editor \
-	distributed with most UNIX systems. 
-endef
+	distributed with most UNIX systems.
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  = ftp://ftp.vim.org/pub/vim/unix/
+sources    = %{thisapp}.tar.bz2
 
-DIR_APP        = $(DIR_SRC)/$(PKG_NAME)73
+DIR_APP        = %{DIR_SRC}/%{name}73
 
-CONFIGURE_OPTIONS += \
-	--enable-multibyte \
-	--enable-selinux
+build
+	requires
+		libacl-devel
+		libselinux-devel
+		ncurses-devel
+	end
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
-endef
+	configure_options += \
+		--enable-multibyte \
+		--enable-selinux
 
-define STAGE_INSTALL_CMDS
-	ln -sfv vim $(BUILDROOT)/usr/bin/vi
+	configure_cmds
+		echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
+	end
 
-	# Install configuration
-	-mkdir -pv $(BUILDROOT)/etc
-	cp -vf $(DIR_SOURCE)/vimrc $(BUILDROOT)/etc/vimrc
+	install_cmds
+		ln -sfv vim %{BUILDROOT}/usr/bin/vi
 
-	# Remove script for c-shell
-	rm -rf $(BUILDROOT)/usr/share/vim/vim73/tools/vim132
-endef
+		# Install configuration
+		mkdir -pv %{BUILDROOT}/etc
+		cp -vf %{DIR_SOURCE}/vimrc %{BUILDROOT}/etc/vimrc
+
+		# Remove script for c-shell
+		rm -rf %{BUILDROOT}/usr/share/vim/vim73/tools/vim132
+	end
+end
+
+packages
+	package %{name}
+	end
+end

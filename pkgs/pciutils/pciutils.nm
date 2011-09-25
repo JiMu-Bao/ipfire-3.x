@@ -1,61 +1,53 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = pciutils
+version    = 3.1.7
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Base
+groups-pciutils = Base %{groups}
+url        = http://atrey.karlin.mff.cuni.cz/~mj/pciutils.shtml
+license    = GPLv2+
+summary    = PCI bus related utilities.
 
-PKG_NAME       = pciutils
-PKG_VER        = 3.1.7
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_GROUPS-pciutils = Base $(PKG_GROUPS)
-PKG_URL        = http://atrey.karlin.mff.cuni.cz/~mj/pciutils.shtml
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = PCI bus related utilities.
-
-define PKG_DESCRIPTION
-	The pciutils package contains various utilities for inspecting \
+description
+	The pciutils package contains various utilities for inspecting
 	and setting devices connected to the PCI bus.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-PKG_PACKAGES  += $(PKG_NAME)-devel $(PKG_NAME)-libs
+build
+	build
+		make SHARED=yes OPT="%{CFLAGS}" PREFIX=/usr \
+			IDSDIR=/usr/share/hwdata ZLIB=no %{PARALLELISMFLAGS}
+	end
 
-define STAGE_BUILD
-	cd $(DIR_APP) && make SHARED=yes OPT="$(CFLAGS)" PREFIX=/usr \
-		IDSDIR=/usr/share/hwdata ZLIB=no $(PARALLELISMFLAGS)
-endef
+	install
+		make SHARED=yes PREFIX=/usr install DESTDIR=%{BUILDROOT} \
+			IDSDIR=/usr/share/hwdata MANDIR=/usr/share/man
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make SHARED=yes PREFIX=/usr install DESTDIR=$(BUILDROOT) \
-		IDSDIR=/usr/share/hwdata MANDIR=/usr/share/man
+		mkdir -pv %{BUILDROOT}/usr/include/pci
+		install -v -m 644 %{DIR_APP}/lib/*.h %{BUILDROOT}/usr/include/pci
 
-	-mkdir -pv $(BUILDROOT)/usr/include/pci
-	install -v -m 644 $(DIR_APP)/lib/*.h $(BUILDROOT)/usr/include/pci
+		mkdir -pv %{BUILDROOT}/usr/lib
+		ln -svf libpci.so.3 %{BUILDROOT}/usr/lib/libpci.so
+	end
+end
 
-	-mkdir -pv $(BUILDROOT)/usr/lib
-	ln -svf libpci.so.3 $(BUILDROOT)/usr/lib/libpci.so
-endef
+packages
+	package %{name}
+	end
+	
+	package %{name}-libs
+		template LIBS
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

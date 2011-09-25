@@ -1,48 +1,35 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = gperf
+version    = 3.0.4
+release    = 0
 
-include $(PKGROOT)/Include
+groups     = Development/Tools
+url        = http://www.gnu.org/software/gperf/
+license    = GPLv2+
+summary    = A perfect hash function generator.
 
-PKG_NAME       = gperf
-PKG_VER        = 3.0.4
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Tools
-PKG_URL        = http://www.gnu.org/software/gperf/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = A perfect hash function generator.
-
-PKG_BUILD_DEPS+= gcc-c++
-
-define PKG_DESCRIPTION
+description
 	Gperf is a perfect hash function generator written in C++. Simply \
 	stated, a perfect hash function is a hash function and a data \
 	structure that allows recognition of a key word in a set of words \
 	using exactly one probe into the data structure.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-CONFIGURE_OPTIONS += --disable-static
+build
+	requires
+		gcc-c++
+	end
+
+	configure_options += --disable-static
+end
+
+packages
+	package %{name}
+	end
+end

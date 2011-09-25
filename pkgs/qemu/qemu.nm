@@ -1,70 +1,58 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = qemu-kvm
+version    = 0.14.0
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Applications/Virtualization
+url        = http://www.linux-kvm.org/page/Main_Page
+license    = GPLv2+
+summary    = QEMU is a generic and open source machine emulator and virtualizer.
 
-PKG_NAME       = qemu-kvm
-PKG_VER        = 0.14.0
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Applications/Virtualization
-PKG_URL        = http://www.linux-kvm.org/page/Main_Page
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = QEMU is a generic and open source machine emulator and virtualizer.
-
-PKG_BUILD_DEPS+= libcurl-devel libuuid-devel gnutls-devel ncurses-devel \
-	pciutils-devel sdl-devel zlib-devel
-
-define PKG_DESCRIPTION
-	QEMU is a processor emulator that relies on dynamic binary translation \
-	to achieve a reasonable speed while being easy to port on new host CPU \
+description
+	QEMU is a processor emulator that relies on dynamic binary translation
+	to achieve a reasonable speed while being easy to port on new host CPU
 	architectures.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-CFLAGS        := $(filter-out -pipe,$(CFLAGS))
-CFLAGS        := -O1 $(filter-out -O2,$(CFLAGS))
+build
+	requires
+		libcurl-devel
+		libuuid-devel
+		gnutls-devel
+		ncurses-devel
+		pciutils-devel
+		sdl-devel
+		zlib-devel
+	end
 
+	# target-list is not working with i386 because of some PIE or PIC errors
+	#--target-list="i386-linux-user i386-softmmu"
+	configure_options = \
+		--prefix=/usr \
+		--enable-kvm \
+		--extra-cflags="%{CFLAGS}" \
+		--disable-strip \
+		--disable-xen \
+		--sysconfdir=/etc \
+		--target-list="i386-softmmu"
 
-define QUALITY_AGENT_WHITELIST_EXECSTACK
-	/usr/share/qemu/openbios*
-endef
+	configure_cmds
+		sed -e "s@-Wl,-rpath,/usr/lib@@g" -i */config-target.mak
+	end
+end
 
-CONFIGURE_OPTIONS = \
-	--prefix=/usr \
-	--enable-kvm \
-	--extra-cflags="$(CFLAGS)" \
-	--disable-strip \
-	--disable-xen \
-	--sysconfdir=/etc \
-	--target-list="i386-softmmu"
+quality-agent
+	whitelist_execstack
+		/usr/share/qemu/openbios*
+	end
+end
 
-# target-list is not working with i386 because of some PIE or PIC errors
-#	--target-list="i386-linux-user i386-softmmu"
-
-define STAGE_CONFIGURE_CMDS
-	cd $(DIR_APP) && sed -e "s@-Wl,-rpath,/usr/lib@@g" -i */config-target.mak
-endef
+packages
+	package %{name}
+end

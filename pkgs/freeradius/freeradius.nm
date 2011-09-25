@@ -1,63 +1,40 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = freeradius-server
+version    = 2.1.9
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = System/Daemons
+url        = http://www.freeradius.org
+license    = GPLv2+ and LGPLv2+
+summary    = High-performance and highly configurable free RADIUS server.
 
-PKG_NAME       = freeradius-server
-PKG_VER        = 2.1.9
-PKG_REL        = 2
-
-PKG_MAINTAINER = 
-PKG_GROUPS     = System/Daemons
-PKG_URL        = http://www.freeradius.org
-PKG_LICENSE    = GPLv2+ and LGPLv2+
-PKG_SUMMARY    = High-performance and highly configurable free RADIUS server.
-
-PKG_BUILD_DEPS+= gdbm-devel libpcap-devel libtool libtool-devel openssl-devel \
-	perl
-
-# Freeradius requires make to generate it's certificates
-PKG_DEPS      += make
-
-define PKG_DESCRIPTION
+description
 	The FreeRADIUS Server Project is a high performance and highly \
 	configurable GPL'd free RADIUS server. \
 	FreeRADIUS is an Internet authentication daemon, which implements \
 	the RADIUS protocol, as defined in RFC 2865. It allows \
 	Network Access Servers to perform authentication for dial-up users.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-define QUALITY_AGENT_WHITELIST_RPATH
-	/usr/lib/freeradius
-endef
+build
+	requires
+		gdbm-devel
+		libpcap-devel
+		libtool
+		libtool-devel
+		openssl-devel
+		perl
+	end
 
-define STAGE_BUILD
-	cd $(DIR_APP) && \
+	build
 		./configure \
-			$(CONFIGURE_ARCH) \
+			%{CONFIGURE_ARCH} \
 			--prefix=/usr \
 			--sysconfdir=/etc \
 			--libdir=/usr/lib/freeradius \
@@ -73,17 +50,30 @@ define STAGE_BUILD
 			--without-rlm_sql_db2 \
 			--without-rlm_sql_oracle
 
-	cd $(DIR_APP) && make LIBTOOL="libtool --tag=CC" #$(PARALLELISMFLAGS)
-endef
+		make LIBTOOL="libtool --tag=CC" #%{PARALLELISMFLAGS}
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && R=$(BUILDROOT) make install
-endef
+	install
+		R=%{BUILDROOT} make install
+	end
 
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/etc/logrotate.d/
-	cp -vf $(DIR_SOURCE)/logrotate/freeradius $(BUILDROOT)/etc/logrotate.d/	
-endef
+	install_cmds
+		mkdir -pv %{BUILDROOT}/etc/logrotate.d/
+		cp -vf %{DIR_SOURCE}/logrotate/freeradius %{BUILDROOT}/etc/logrotate.d/
+	end
+end
+
+quality-agent
+	whitelist_rpath
+		/usr/lib/freeradius
+	end
+end
 
 # Generate certificates after installation
 # Command: cd /etc/raddb/certs/ && make Makefile
+
+packages
+	package %{name}
+		requires = make
+	end
+end

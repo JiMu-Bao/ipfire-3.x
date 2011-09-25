@@ -1,56 +1,48 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libXau
+version    = 1.0.6
+release    = 1
 
-include $(PKGROOT)/Include
+maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
+groups     = X/Libraries
+url        = http://xcb.freedesktop.org/
+license    = MIT
+summary    = Sample Authorization Protocol for X.
 
-PKG_NAME       = libXau
-PKG_VER        = 1.0.6
-PKG_REL        = 1
-
-PKG_MAINTAINER = Stefan Schantl <stefan.schantl@ipfire.org>
-PKG_GROUPS     = X/Libraries
-PKG_URL        = http://xcb.freedesktop.org/
-PKG_LICENSE    = MIT
-PKG_SUMMARY    = Sample Authorization Protocol for X.
-
-PKG_BUILD_DEPS+= pkg-config xorg-x11-proto-devel
-
-PKG_PACKAGES  += $(PKG_NAME)-devel
-
-define PKG_DESCRIPTION
+description
 	This is a very simple mechanism for providing individual access \
 	to an X Window System display.It uses existing core protocol and \
 	library hooks for specifying authorization data in the connection \
 	setup block to restrict use of the display to only those clients \
 	that show that they know a server-specific key called a \
 	magic cookie.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-CONFIGURE_OPTIONS += \
-	--disable-static
+build
+	requires
+		pkg-config
+		xorg-x11-proto-devel
+	end
 
-STAGE_INSTALL_TARGETS += \
-	INSTALL="install -p"
+	configure_options +=\
+		--disable-static
+
+	#make_install_targets +=\
+	#	INSTALL="install -p"
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

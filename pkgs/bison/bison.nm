@@ -1,63 +1,50 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = bison
+version    = 2.5
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Development/Tools
+url        = http://www.gnu.org/software/bison/
+license    = GPLv2+
+summary    = GNU Bison is a parser generator.
 
-PKG_NAME       = bison
-PKG_VER        = 2.5
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Tools
-PKG_URL        = http://www.gnu.org/software/bison/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = GNU Bison is a parser generator.
-
-PKG_BUILD_DEPS+= m4
-PKG_DEPS      += m4
-
-define PKG_DESCRIPTION
+description
 	Bison is a general-purpose parser generator that converts an annotated \
 	context-free grammar into an LALR(1) or GLR parser for that grammar.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = http://ftp.gnu.org/gnu/bison/
 
-define STAGE_CONFIGURE_CMDS
-	cd $(DIR_APP) && echo '#define YYENABLE_NLS 1' >> lib/config.h
-endef
+build
+	requires
+		m4
+	end
 
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
+	configure_cmds
+		echo '#define YYENABLE_NLS 1' >> lib/config.h
+	end
 
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/usr/lib
-	cd $(DIR_APP)/lib && gcc -shared -Wl,-soname,liby.so.$(PKG_VER) \
-		-o liby.so.$(PKG_VER) $(CFLAGS) main.o yyerror.o
-	cd $(DIR_APP)/lib && install -v liby.so.$(PKG_VER) \
-		$(BUILDROOT)/usr/lib/liby.so.$(PKG_VER)
-	ln -vsf liby.so.$(PKG_VER) $(BUILDROOT)/usr/lib/liby.so.2
-	ln -vsf liby.so.2 $(BUILDROOT)/usr/lib/liby.so
-endef
+	test
+		make check
+	end
+
+	install_cmds
+		mkdir -pv %{BUILDROOT}/usr/lib
+		cd %{DIR_APP}/lib && gcc -shared -Wl,-soname,liby.so.%{version} \
+			-o liby.so.%{version} %{CFLAGS} main.o yyerror.o
+		cd %{DIR_APP}/lib && install -v liby.so.%{version} \
+			%{BUILDROOT}/usr/lib/liby.so.%{version}
+		ln -vsf liby.so.%{version} %{BUILDROOT}/usr/lib/liby.so.2
+		ln -vsf liby.so.2 %{BUILDROOT}/usr/lib/liby.so
+	end
+end
+
+packages
+	package %{name}
+		requires += m4
+	end
+end

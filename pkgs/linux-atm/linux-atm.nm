@@ -1,59 +1,51 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = linux-atm
+version    = 2.4.1
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Daemons
+url        = http://linux-atm.sourceforge.net/
+license    = BSD and GPLv2 and GPLv2+ and LGPLv2+ and MIT
+summary    = Tools to support ATM networking under Linux.
 
-PKG_NAME       = linux-atm
-PKG_VER        = 2.4.1
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Daemons
-PKG_URL        = http://linux-atm.sourceforge.net/
-PKG_LICENSE    = BSD and GPLv2 and GPLv2+ and LGPLv2+ and MIT
-PKG_SUMMARY    = Tools to support ATM networking under Linux.
-
-PKG_BUILD_DEPS+= flex-devel kernel-headers perl
-
-define PKG_DESCRIPTION
+description
 	This package contains header files and libraries for development \
 	using theLinux ATM API.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		flex
+		flex-devel
+		kernel-headers
+		perl
+	end
 
-CONFIGURE_OPTIONS += \
-	--sysconfdir=/etc \
-	--mandir=/usr/share/man
+	configure_options += \
+		--sysconfdir=/etc \
+		--mandir=/usr/share/man
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -e "s/-lfl/&_pic/g" -i src/*{,/*}/Makefile.in
-endef
+	prepare_cmds
+		sed -e "s/-lfl/&_pic/g" -i src/*{,/*}/Makefile.in
+	end
 
-# Fails
-#define STAGE_TEST
-#	cd $(DIR_APP) && make check
-#endef
+	# Fails
+	#def test
+	#	make check
+	#end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

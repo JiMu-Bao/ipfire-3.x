@@ -1,48 +1,37 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = autoconf
+version    = 2.68
+release    = 1
+arch       = noarch
 
-include $(PKGROOT)/Include
+groups     = Development/Tools
+url        = http://www.gnu.org/software/autoconf/
+license    = GPLv2+
+summary    = A GNU tool for automatically configuring source code.
 
-PKG_NAME       = autoconf
-PKG_VER        = 2.68
-PKG_REL        = 1
-PKG_ARCH       = noarch
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Tools
-PKG_URL        = http://www.gnu.org/software/autoconf/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = A GNU tool for automatically configuring source code.
-
-PKG_BUILD_DEPS+= m4 perl
-PKG_DEPS      += m4
-
-define PKG_DESCRIPTION
+description
 	GNU's Autoconf is a tool for configuring source code and Makefiles. \
 	Using Autoconf, programmers can create portable and configurable \
 	packages, since the person building the package is allowed to \
 	specify various configuration options.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.xz
+source_dl  = http://ftp.gnu.org/gnu/autoconf/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		m4
+		perl
+	end
+end
+
+packages
+	package %{name}
+		requires = m4
+	end
+end

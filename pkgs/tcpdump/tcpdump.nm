@@ -1,52 +1,40 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = tcpdump
+version    = 4.1.1
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Networking/Sniffer
+url        = http://www.tcpdump.org/
+license    = BSD with advertising
+summary    = A network traffic monitoring tool.
 
-PKG_NAME       = tcpdump
-PKG_VER        = 4.1.1
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Networking/Sniffer
-PKG_URL        = http://www.tcpdump.org/
-PKG_LICENSE    = BSD with advertising
-PKG_SUMMARY    = A network traffic monitoring tool.
-
-PKG_BUILD_DEPS+= libpcap-devel openssl-devel
-
-define PKG_DESCRIPTION
-	Tcpdump is a command-line tool for monitoring network traffic. \
-	Tcpdump can capture and display the packet headers on a particular \
-	network interface or on all interfaces.  Tcpdump can display all of \
+description
+	Tcpdump is a command-line tool for monitoring network traffic.
+	Tcpdump can capture and display the packet headers on a particular
+	network interface or on all interfaces.  Tcpdump can display all of
 	the packet headers, or just the ones that match particular criteria.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = http://www.tcpdump.org/release/
 
-CFLAGS        += -fno-strict-aliasing
+CFLAGS    += -fno-strict-aliasing
 
-CONFIGURE_OPTIONS += \
-	--with-crypto \
-	--without-smi
+build
+	requires
+		libpcap-devel
+		openssl-devel
+	end
+
+	configure_options += \
+		--with-crypto \
+		--without-smi
+end
+
+packages
+	package %{name}
+	end
+end

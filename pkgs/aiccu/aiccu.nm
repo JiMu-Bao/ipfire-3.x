@@ -1,56 +1,43 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = aiccu
+version    = 20070115
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Daemons
+url        = http://www.sixxs.net/tools/aiccu/
+license    = BSD
+summary    = Automatic IPv6 Connectivity Client Utility for SixXS tunnels.
 
-PKG_NAME       = aiccu
-PKG_VER        = 20070115
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Daemons
-PKG_URL        = http://www.sixxs.net/tools/aiccu/
-PKG_LICENSE    = BSD
-PKG_SUMMARY    = Automatic IPv6 Connectivity Client Utility for SixXS tunnels.
-
-PKG_BUILD_DEPS+= gnutls-devel
-
-define PKG_DESCRIPTION
-	This client automatically gives one IPv6 connectivity without having \
-	to manually configure interfaces etc. One does need a SixXS account \
+description
+	This client automatically gives one IPv6 connectivity without having
+	to manually configure interfaces etc. One does need a SixXS account
 	and at least a tunnel.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = http://www.sixxs.net/archive/sixxs/aiccu/unix/
 
-DIR_APP = $(DIR_SRC)/$(PKG_NAME)
+build
+	requires
+		gnutls-devel
+	end
 
-define STAGE_BUILD
-	$(DO_FIX_LIBTOOL)
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS) RPM_OPT_FLAGS="$(CFLAGS)"
-endef
+	DIR_APP = %{DIR_SRC}/%{name}
 
-define STAGE_INSTALL_CMDS
-	rm -rvf $(BUILDROOT)/{etc,usr/share}
-endef
+	build
+		%{DO_FIX_LIBTOOL}
+		make %{PARALLELISMFLAGS} RPM_OPT_FLAGS="%{CFLAGS}"
+	end
+
+	install_cmds
+		rm -rvf %{BUILDROOT}/{etc,usr/share}
+	end
+end
+
+packages
+	package %{name}
+	end
+end

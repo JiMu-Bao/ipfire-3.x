@@ -1,59 +1,51 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = c_icap
+version    = 0.1.5
+release    = 1
 
-include $(PKGROOT)/Include
+maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
+groups     = Networking/Daemons
+url        = http://c-icap.sourceforge.net
+license    = GPLv2
+summary    = c-icap is an implementation of an ICAP server.
 
-PKG_NAME       = c_icap
-PKG_VER        = 0.1.5
-PKG_REL        = 1
-
-PKG_MAINTAINER = Christian Schmidt <christian.schmidt@ipfire.org>
-PKG_GROUPS     = Networking/Daemons
-PKG_URL        = http://c-icap.sourceforge.net
-PKG_LICENSE    = GPLv2
-PKG_SUMMARY    = c-icap is an implementation of an ICAP server.
-
-PKG_BUILD_DEPS+= zlib-devel db4-devel libtool-devel autoconf automake
-
-define QUALITY_AGENT_WHITELIST_RPATH
-	/usr/lib
-endef
-
-define PKG_DESCRIPTION
+description
 	c-icap is an implementation of an ICAP server. It can be used with \
 	HTTP proxies that support the ICAP protocol to implement content \
 	adaptation and filtering services.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+build
+	requires
+		autoconf
+		automake
+		db4-devel
+		libtool-devel
+		zlib-devel
+	end
 
-CONFIGURE_OPTIONS += \
-	--enable-large-files \
-	--enable-ipv6 \
-	--sysconfdir=/etc \
-	--localstatedir=/var
+	configure_options += \
+		--enable-large-files \
+		--enable-ipv6 \
+		--sysconfdir=/etc \
+		--localstatedir=/var
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && autoreconf -vfi
-endef
+	prepare_cmds
+		autoreconf -vfi
+	end
+end
+
+quality-agent
+	whitelist_rpath
+		/usr/lib
+	end
+end
+
+packages
+	package %{name}
+	end
+end

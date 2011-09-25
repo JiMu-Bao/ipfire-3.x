@@ -1,91 +1,71 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = shadow-utils
+version    = 4.1.4.3
+release    = 1
 
-include $(PKGROOT)/Include
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = Base System/Base
+url        = http://pkg-shadow.alioth.debian.org/
+license    = GPLv2+
+summary    = Utilities to deal with user accounts.
 
-PKG_NAME       = shadow-utils
-PKG_VER        = 4.1.4.3
-PKG_REL        = 1
-
-PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUPS     = Base System/Base
-PKG_URL        = ftp://pkg-shadow.alioth.debian.org/pub/pkg-shadow/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = Utilities to deal with user accounts.
-
-PKG_BUILD_DEPS+= audit-devel libcap-devel libselinux-devel
-PKG_OBSOLETES += shadow
-
-define PKG_DESCRIPTION
-	The shadow-utils package includes the necessary programs \
-	for converting UNIX password files to the shadow password \
+description
+	The shadow-utils package includes the necessary programs
+	for converting UNIX password files to the shadow password
 	format, plus programs for managing user and group accounts.
-endef
+end
 
-THISAPP        = shadow-$(PKG_VER)
-PKG_TARBALL    = $(THISAPP).tar.bz2
+obsoletes += shadow
+thisapp    = shadow-%{version}
 
-CONFIGURE_OPTIONS += \
-	--sysconfdir=/etc \
-	--enable-shadowgrp \
-	--with-sha-crypt \
-	--with-selinux \
-	--without-libcrack \
-	--without-libpam \
-	--disable-static
+source_dl  = http://pkg-shadow.alioth.debian.org/releases/
+sources    = %{thisapp}.tar.bz2
 
-define STAGE_PREPARE_CMDS
-	# Do not build these files:
-	cd $(DIR_APP) && \
+build
+	requires
+		audit-devel
+		libcap-devel
+		libselinux-devel
+	end
+
+	configure_options += \
+		--sysconfdir=/etc \
+		--enable-shadowgrp \
+		--with-sha-crypt \
+		--with-selinux \
+		--without-libcrack \
+		--without-libpam \
+		--disable-static
+
+	prepare_cmds
+		# Do not build these files:
 		for i in nologin chfn chgpasswd chpasswd chsh expiry gpasswd groups login \
 				logoutd passwd su; do \
-			sed -i "s/$$i\$$(EXEEXT)//" src/Makefile.in; \
+			sed -i "s/$$i\$%{EXEEXT}//" src/Makefile.in; \
 			find man -name Makefile.in -exec sed -i "s/$$i\.1/ /" {} \;; \
 		done
-	cd $(DIR_APP) && sed -i src/Makefile.in \
-		-e "s/^suidbins.*/# &/" -e "s/^suidubins.*/# &/"
 
-	# Do not install korean and zh man pages
-	cd $(DIR_APP) && sed -i -e 's/ ko//' -e 's/ zh_CN zh_TW//' man/Makefile.in
+		sed -i src/Makefile.in \
+			-e "s/^suidbins.*/# &/" -e "s/^suidubins.*/# &/"
 
-	# Do not install russion man pages - was broken in 4.1.4.3
-	cd $(DIR_APP) && sed -i -e 's/ ru//' man/Makefile.in
-endef
+		# Do not install korean and zh man pages
+		sed -i -e 's/ ko//' -e 's/ zh_CN zh_TW//' man/Makefile.in
 
-define STAGE_INSTALL_CMDS
-	# Remove man pages in other languages
-	rm -rfv $(BUILDROOT)/usr/share/man/{cs,de,fi,fr,hu,id,it,ja,pl,pt_BR,ru,sv,tr}
-endef
+		# Do not install russion man pages - was broken in 4.1.4.3
+		sed -i -e 's/ ru//' man/Makefile.in
+	end
 
-define STAGE_INSTALL_POST
-	# Capabilities
-	chmod u-s $(BUILDROOT)/usr/bin/chage
-	setcap cap_dac_read_search+ep $(BUILDROOT)/usr/bin/chage
+	install_cmds
+		# Remove man pages in other languages
+		rm -rfv %{BUILDROOT}/usr/share/man/{cs,de,fi,fr,hu,id,it,ja,pl,pt_BR,ru,sv,tr}
+	end
+end
 
-	chmod u-s $(BUILDROOT)/usr/bin/newgrp
-	setcap cap_dac_override,cap_setgid+ep $(BUILDROOT)/usr/bin/newgrp
-
-	# Configuration
-	install -p -c -m 0644 $(DIR_SOURCE)/login.defs $(BUILDROOT)/etc/login.defs
-endef
+packages
+	package %{name}
+	end
+end

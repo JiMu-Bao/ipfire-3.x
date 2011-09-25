@@ -1,95 +1,83 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libvirt
+version    = 0.9.0
+release    = 3
 
-include $(PKGROOT)/Include
+groups     = Applications/Virtualization
+url        = http://www.libvirt.org/
+license    = LGPLv2.1+
+summary    = A library for controlling VMs.
 
-PKG_NAME       = libvirt
-PKG_VER        = 0.9.0
-PKG_REL        = 3
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Applications/Virtualization
-PKG_URL        = http://www.libvirt.org/
-PKG_LICENSE    = LGPLv2.1+
-PKG_SUMMARY    = A library for controlling VMs.
-
-PKG_BUILD_DEPS+= \
-	avahi-devel \
-	cyrus-sasl-devel \
-	gnutls-devel \
-	libcurl-devel \
-	libgcrypt-devel \
-	libnl-devel \
-	libselinux-devel \
-	libdevmapper-devel \
-	libpciaccess-devel \
-	libssh2-devel \
-	libtool \
-	libudev-devel \
-	libxml2-devel \
-	lvm2 \
-	openssl-devel \
-	parted-devel \
-	perl-core \
-	pkg-config \
-	python-devel \
-	readline-devel \
-	xen-devel \
-	\
-	/bin/mount \
-	/bin/umount
-
-PKG_DEPS      += \
-	lvm2 \
-	\
-	/bin/mount \
-	/bin/umount
-
-define PKG_DESCRIPTION
+description
 	A toolkit to interact with the virtualization capabilities of recent \
 	versions of Linux.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-CONFIGURE_OPTIONS += \
-	--libexecdir=/usr/lib \
-	--disable-static \
-	--with-qemu \
-	--without-esx \
-	--without-hal \
-	--without-lxc \
-	--without-openvz \
-	--without-polkit \
-	--without-uml \
-	--without-vbox \
-	--with-xen \
-	--with-storage-fs \
-	--with-storage-lvm \
-	--with-storage-mpath \
-	--with-storage-disk \
-	--with-avahi \
-	--with-udev \
-	--with-libvirtd \
-	--with-selinux
+build
+	requires
+		avahi-devel
+		cyrus-sasl-devel
+		gnutls-devel
+		libcurl-devel
+		libgcrypt-devel
+		libnl-devel
+		libselinux-devel
+		libdevmapper-devel
+		libpciaccess-devel
+		libssh2-devel
+		libtool
+		libudev-devel
+		libxml2-devel
+		lvm2
+		openssl-devel
+		parted-devel
+		perl-core
+		pkg-config
+		python-devel
+		readline-devel
+		xen-devel
+		/bin/mount
+		/bin/umount
+	end
+
+	configure_options += \
+		--libexecdir=/usr/lib \
+		--disable-static \
+		--with-qemu \
+		--without-esx \
+		--without-hal \
+		--without-lxc \
+		--without-openvz \
+		--without-polkit \
+		--without-uml \
+		--without-vbox \
+		--with-xen \
+		--with-storage-fs \
+		--with-storage-lvm \
+		--with-storage-mpath \
+		--with-storage-disk \
+		--with-avahi \
+		--with-udev \
+		--with-libvirtd \
+		--with-selinux
+end
+
+packages
+	package %{name}
+		requires
+			lvm2
+			/bin/mount
+			/bin/umount
+		end
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

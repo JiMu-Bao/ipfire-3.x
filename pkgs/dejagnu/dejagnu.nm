@@ -1,59 +1,48 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = dejagnu
+version    = 1.4.4
+release    = 1
+arch       = noarch
 
-include $(PKGROOT)/Include
+groups     = Development/Tools
+url        = http://www.gnu.org/software/dejagnu/
+license    = GPLv2+
+summary    = A front end for testing other programs
 
-PKG_NAME       = dejagnu
-PKG_VER        = 1.4.4
-PKG_REL        = 1
-PKG_ARCH       = noarch
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Tools
-PKG_URL        = http://www.gnu.org/software/dejagnu/ 
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = A front end for testing other programs 
-
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
-
-PKG_BUILD_DEPS+= bison
-PKG_DEPS      += expect tcl
-
-define PKG_DESCRIPTION
+description
 	DejaGnu is an Expect/Tcl based framework for testing other programs.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-CONFIGURE_OPTIONS += \
-	--mandir=/usr/share/man
+build
+	requires
+		bison
+	end
 
-# Disabled because testsuite doesn't wort at the moment.
-#define STAGE_TEST
-	#cd $(DIR_APP) && make check
-#endef
+	configure_options += \
+		--mandir=/usr/share/man
 
-define STAGE_INSTALL_CMDS
-	cd $(DIR_APP) && make -C doc DESTDIR=$(BUILDROOT) install-man
-endef
+	# Disabled because testsuite doesn't wort at the moment.
+	#define test
+	#	make check
+	#endef
+
+	install_cmds
+		make -C doc DESTDIR=%{BUILDROOT} install-man
+	end
+end
+
+packages
+	package %{name}
+		requires = expect tcl
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

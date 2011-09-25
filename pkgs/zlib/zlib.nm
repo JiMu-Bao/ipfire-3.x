@@ -1,67 +1,51 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008, 2009 Michael Tremer & Christian Schmidt           #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = zlib
+version    = 1.2.5
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://www.gzip.org/zlib/
+license    = zlib
+summary    = The zlib compression and decompression library.
 
-PKG_NAME       = zlib
-PKG_VER        = 1.2.5
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.gzip.org/zlib/
-PKG_LICENSE    = zlib
-PKG_SUMMARY    = The zlib compression and decompression library.
-
-define PKG_DESCRIPTION
-	Zlib is a general-purpose, patent-free, lossless data compression \
+description
+	Zlib is a general-purpose, patent-free, lossless data compression
 	library which is used by many different programs.
-endef
+end
 
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
+source_dl  = http://zlib.net/
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+# Enable PIC build.
+CFLAGS    += -fPIC -DPIC
 
-CFLAGS        += -fPIC -DPIC
+build
+	configure_options = \
+		--prefix=/usr \
+		--libdir=/lib
 
-CONFIGURE_ENVIRONMENT += ac_cv_func_working_mktime=yes
+	test
+		make check
+	end
 
-CONFIGURE_OPTIONS = \
-	--prefix=/usr \
-	--libdir=/lib
+	install_cmds
+		mkdir -pv %{BUILDROOT}/usr/{include,lib}
+		cp -pfv zconf.h zlib.h %{BUILDROOT}/usr/include
+		rm -vf %{BUILDROOT}/lib/libz.so
+		ln -sfv ../../lib/libz.so.%{version} %{BUILDROOT}/usr/lib/libz.so
 
-PARALLELISMFLAGS = # No parallelism
+		mv -v %{BUILDROOT}/lib/pkgconfig %{BUILDROOT}/usr/lib/
+	end
+end
 
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
-
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/usr/{include,lib}
-	cd $(DIR_APP) && cp -pfv zconf.h zlib.h $(BUILDROOT)/usr/include
-	rm -vf $(BUILDROOT)/lib/libz.so
-	ln -sfv ../../lib/libz.so.$(PKG_VER) $(BUILDROOT)/usr/lib/libz.so
-
-	mv -v $(BUILDROOT)/lib/pkgconfig $(BUILDROOT)/usr/lib/
-endef
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

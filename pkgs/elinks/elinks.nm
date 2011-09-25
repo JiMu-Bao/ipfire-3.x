@@ -1,51 +1,42 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007-2011  IPFire Team  <info@ipfire.org>                     #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = elinks
+version    = 0.11.7
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Applications/Internet
+url        = http://elinks.or.cz/
+license    = GPLv2
+summary    = Full-Featured Text WWW Browser.
 
-PKG_NAME       = elinks
-PKG_VER        = 0.11.7
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Applications/Internet
-PKG_URL        = http://elinks.or.cz/
-PKG_LICENSE    = GPLv2
-PKG_SUMMARY    = Full-Featured Text WWW Browser.
-
-PKG_BUILD_DEPS+= expat-devel gdbm-devel gnutls-devel libidn-devel \
-	openssl-devel zlib-devel
-
-define PKG_DESCRIPTION
+description
 	ELinks is an advanced and well-established feature-rich text mode \
 	web (HTTP/FTP/..) browser. ELinks can render both frames and tables, \
 	is highly customizable and can be extended via Lua or Guile scripts. \
 	It is quite portable and runs on a variety of platforms.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-CONFIGURE_OPTIONS += \
-	--enable-bittorrent \
-	--enable-256-colors
+build
+	requires
+		expat-devel
+		gdbm-devel
+		gnutls-devel
+		libidn-devel
+		openssl-devel
+		zlib-devel
+	end
+
+	configure_options += \
+		--enable-bittorrent \
+		--enable-256-colors
+end
+
+packages
+	package %{name}
+	end
+end

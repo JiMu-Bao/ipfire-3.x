@@ -1,59 +1,49 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = less
+version    = 444
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Base Applications/Text
+url        = http://www.greenwoodsoftware.com/less/
+license    = GPLv3+
+summary    = A text file browser similar to more, but better.
 
-PKG_NAME       = less
-PKG_VER        = 444
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Base Applications/Text
-PKG_URL        = http://www.greenwoodsoftware.com/less/
-PKG_LICENSE    = GPLv3+
-PKG_SUMMARY    = A text file browser similar to more, but better.
-
-PKG_BUILD_DEPS+= ncurses-devel pcre-devel
-
-define PKG_DESCRIPTION
+description
 	The less utility is a text file browser that resembles more, but has \
 	more capabilities. Less allows you to move backwards in the file as \
 	well as forwards. Since less doesn't have to read the entire input file \
 	before it starts, less starts up more quickly than text editors (for \
 	example, vi).
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-CONFIGURE_OPTIONS += --sysconfdir=/etc --with-regex=pcre
+build
+	requires
+		ncurses-devel
+		pcre-devel
+	end
 
-CFLAGS += -D_GNU_SOURCE
+	configure_options += \
+		--sysconfdir=/etc \
+		--with-regex=pcre
 
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/etc/profile.d
-	install -v -m 755 $(DIR_SOURCE)/less.sh $(BUILDROOT)/etc/profile.d
+	CFLAGS += -D_GNU_SOURCE
 
-	-mkdir -pv $(BUILDROOT)/usr/bin
-	install -v -m 755 $(DIR_SOURCE)/lesspipe.sh $(BUILDROOT)/usr/bin
-endef
+	install_cmds
+		mkdir -pv %{BUILDROOT}/etc/profile.d
+		install -v -m 755 %{DIR_SOURCE}/less.sh %{BUILDROOT}/etc/profile.d
+
+		mkdir -pv %{BUILDROOT}/usr/bin
+		install -v -m 755 %{DIR_SOURCE}/lesspipe.sh %{BUILDROOT}/usr/bin
+	end
+end
+
+packages
+	package %{name}
+	end
+end

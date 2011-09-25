@@ -1,69 +1,63 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = LVM2
+version    = 2.02.54
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Base
+url        = http://sources.redhat.com/lvm2/
+license    = GPLv2
+summary    = Userland logical volume management tools.
 
-PKG_NAME       = LVM2
-PKG_VER        = 2.02.54
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = http://sources.redhat.com/lvm2/
-PKG_LICENSE    = GPLv2
-PKG_SUMMARY    = Userland logical volume management tools.
-
-PKG_BUILD_DEPS+= libselinux-devel pkg-config ncurses-devel readline-devel
-
-define PKG_DESCRIPTION
+description
 	LVM2 includes all of the support for handling read/write operations on \
 	physical volumes (hard disks, RAID-Systems, magneto optical, etc., \
 	multiple devices (MD), see mdadd(8) or even loop devices, see \
 	losetup(8)), creating volume groups (kind of virtual disks) from one \
 	or more physical volumes and creating one or more logical volumes \
 	(kind of logical partitions) in volume groups.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tgz
+thisapp    = %{name}.%{version}
 
-PKG_PACKAGES  += libdevmapper libdevmapper-devel
+source_dl  =
+sources    = %{thisapp}.tgz
 
-PKG_FILES-libdevmapper = $(PKG_FILES-$(PKG_NAME_REAL)-libs)
-PKG_FILES-libdevmapper-devel = $(PKG_FILES-$(PKG_NAME_REAL)-devel)
+build
+	requires
+		libselinux-devel
+		pkg-config
+		ncurses-devel
+		readline-devel
+	end
 
-THISAPP        = $(PKG_NAME).$(PKG_VER)
+	configure_options += \
+		--bindir=/bin \
+		--sbindir=/sbin \
+		--exec-prefix=/ \
+		--libdir=/lib \
+		--enable-pkgconfig
 
-CONFIGURE_OPTIONS += \
-	--bindir=/bin \
-	--sbindir=/sbin \
-	--exec-prefix=/ \
-	--libdir=/lib \
-	--enable-pkgconfig
+	install_cmds
+		mkdir -pv %{BUILDROOT}/usr/lib
+		rm -vf %{BUILDROOT}/lib/libdevmapper.so
+		ln -svf libdevmapper.so.1.02 %{BUILDROOT}/lib/libdevmapper.so.1
+		ln -svf ../../lib/libdevmapper.so.1 %{BUILDROOT}/usr/lib/libdevmapper.so
+	end
+end
 
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/usr/lib
-	rm -vf $(BUILDROOT)/lib/libdevmapper.so
-	ln -svf libdevmapper.so.1.02 $(BUILDROOT)/lib/libdevmapper.so.1
-	ln -svf ../../lib/libdevmapper.so.1 $(BUILDROOT)/usr/lib/libdevmapper.so
-endef
+packages
+	package %{name}
+	end
+	
+	package libdevmapper
+		template LIBS
+	end
+	
+	package libdevmapper-devel
+		template DEVEL
+	end
+end

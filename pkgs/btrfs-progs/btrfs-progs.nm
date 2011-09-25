@@ -1,58 +1,48 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = btrfs-progs
+version    = 0.19
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = System/Filesystems
+url        = http://btrfs.wiki.kernel.org/index.php/Main_Page
+license    = GPLv2
+summary    = Userspace programs for btrfs.
 
-PKG_NAME       = btrfs-progs
-PKG_VER        = 0.19
-PKG_REL        = 2
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Filesystems
-PKG_URL        = http://btrfs.wiki.kernel.org/index.php/Main_Page
-PKG_LICENSE    = GPLv2
-PKG_SUMMARY    = Userspace programs for btrfs.
-
-PKG_BUILD_DEPS+= e2fsprogs-devel libacl-devel libuuid-devel zlib-devel
-
-define PKG_DESCRIPTION
+description
 	The btrfs-progs package provides all the userpsace programs needed to create, \
 	check, modify and correct any inconsistencies in the btrfs filesystem.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+sources    = %{thisapp}.tar.bz2
 
-PKG_PATCHES    = btrfs-progs-upstream.patch
-PKG_PATCHES   += btrfs-progs-fix-labels.patch
-PKG_PATCHES   += btrfs-progs-build-everything.patch
-PKG_PATCHES   += btrfs-progs-valgrind.patch
-PKG_PATCHES   += btrfs-progs-build-fixes.patch
+patches    = btrfs-progs-upstream.patch
+patches   += btrfs-progs-fix-labels.patch
+patches   += btrfs-progs-build-everything.patch
+patches   += btrfs-progs-valgrind.patch
+patches   += btrfs-progs-build-fixes.patch
 
-define STAGE_BUILD
-	cd $(DIR_APP) && make CFLAGS="$(CFLAGS)" LDFLAGS="-lcom_err" all convert
-endef
+build
+	requires
+		e2fsprogs-devel
+		libacl-devel
+		libuuid-devel
+		zlib-devel
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make bindir=$(BUILDROOT)/sbin mandir=$(BUILDROOT)/usr/share install
-endef
+	build
+		make CFLAGS="%{CFLAGS}" LDFLAGS="-lcom_err" all convert
+	end
+
+	install
+		make bindir=%{BUILDROOT}/sbin mandir=%{BUILDROOT}/usr/share install
+	end
+end
+
+packages
+	package %{name}
+	end
+end

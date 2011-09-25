@@ -1,62 +1,57 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = cyrus-sasl
+version    = 2.1.23
+release    = 0
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://asg.web.cmu.edu/sasl/sasl-library.html
+license    = BSD
+summary    = The Cyrus SASL library.
 
-PKG_NAME       = cyrus-sasl
-PKG_VER        = 2.1.23
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://asg.web.cmu.edu/sasl/sasl-library.html
-PKG_LICENSE    = BSD
-PKG_SUMMARY    = The Cyrus SASL library.
-
-PKG_BUILD_DEPS+= db4-devel openssl-devel pam-devel
-
-define PKG_DESCRIPTION
+description
 	The cyrus-sasl package contains the Cyrus implementation of SASL. \
 	SASL is the Simple Authentication and Security Layer, a method for \
 	adding authentication support to connection-based protocols.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel $(PKG_NAME)-libs
+build
+	requires
+		db4-devel
+		openssl-devel
+		pam-devel
+	end
 
-CONFIGURE_OPTIONS += \
-	--sysconfdir=/etc \
-	--with-dbpath=/var/lib/sasl/sasldb2 \
-	--with-saslauthd=/var/run/saslauthd \
-	--mandir=/usr/share/man
+	configure_options += \
+		--sysconfdir=/etc \
+		--with-dbpath=/var/lib/sasl/sasldb2 \
+		--with-saslauthd=/var/run/saslauthd \
+		--mandir=/usr/share/man
 
-PARALLELISMFLAGS = # Disabled
+	PARALLELISMFLAGS = # Disabled
 
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/usr/lib/sasl2
-	cp -vf $(DIR_SOURCE)/smtpd.conf $(BUILDROOT)/usr/lib/sasl2/
+	install_cmds
+		mkdir -pv %{BUILDROOT}/usr/lib/sasl2
+		cp -vf %{DIR_SOURCE}/smtpd.conf %{BUILDROOT}/usr/lib/sasl2/
 
-	install -v -m700 -d $(BUILDROOT)/var/lib/sasl $(BUILDROOT)/var/run/saslauthd
-endef
+		install -v -m700 -d %{BUILDROOT}/var/lib/sasl %{BUILDROOT}/var/run/saslauthd
+	end
+end
+
+packages
+	package %{name}
+	end
+
+	package %{name}-libs
+		template LIBS
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

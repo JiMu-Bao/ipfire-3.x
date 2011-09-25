@@ -1,67 +1,68 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = sqlite
+version    = 3.7.3
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Databases
+url        = http://www.sqlite.org/
+license    = PublicDomain
+summary    = A small an versative Database, that uses simple text files.
 
-# XXX need to fix rpath
-QUALITY_AGENT_WHITELIST_RPATH = /usr/lib
-
-PKG_NAME       = sqlite
-PKG_VER        = 3.7.3
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Databases
-PKG_URL        = http://www.sqlite.org/
-PKG_LICENSE    = PublicDomain
-PKG_SUMMARY    = A small an versative Database, that uses simple text files.
-
-PKG_BUILD_DEPS+= autoconf automake libtool ncurses-devel readline-devel tcl
-
-define PKG_DESCRIPTION
+description
 	SQLite is a in-process library that implements a self-contained, \
 	serverless, zero-configuration, transactional SQL database engine. \
 	The code for SQLite is in the public domain and is thus free for \
 	use for any purpose, commercial or private. SQLite is currently \
 	found in more applications than we can count, including several \
 	high-profile projects.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		autoconf
+		automake
+		libtool
+		ncurses-devel
+		readline-devel
+		tcl
+	end
 
-CFLAGS += -DSQLITE_ENABLE_COLUMN_METADATA=1 -DSQLITE_DISABLE_DIRSYNC=1 \
-	-DSQLITE_ENABLE_FTS3=3 -DSQLITE_ENABLE_RTREE=1 -DSQLITE_SECURE_DELETE=1 \
-	-DSQLITE_ENABLE_UNLOCK_NOTIFY=1 -fno-strict-aliasing
+	CFLAGS += \
+		-DSQLITE_ENABLE_COLUMN_METADATA=1 \
+		-DSQLITE_DISABLE_DIRSYNC=1 \
+		-DSQLITE_ENABLE_FTS3=3 \
+		-DSQLITE_ENABLE_RTREE=1 \
+		-DSQLITE_SECURE_DELETE=1 \
+		-DSQLITE_ENABLE_UNLOCK_NOTIFY=1 \
+		-fno-strict-aliasing
 
-CONFIGURE_OPTIONS += \
-	--enable-threadsafe \
-	--enable-threads-override-locks \
-	--enable-load-extension \
-	--disable-tcl
+	configure_options += \
+		--enable-threadsafe \
+		--enable-threads-override-locks \
+		--enable-load-extension \
+		--disable-tcl
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && autoreconf -vfi
-endef
+	prepare_cmds
+		autoreconf -vfi
+	end
+end
+
+quality-agent
+	whitelist_rpath
+		/usr/lib
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+end

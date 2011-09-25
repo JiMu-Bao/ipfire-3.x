@@ -1,47 +1,34 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = pax-utils
+version    = 0.1.19
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Security/Tools
+url        = http://www.gentoo.org/proj/en/hardened/pax-utils.xml
+license    = GPLv2+
+summary    = Utilities for checking PaX features.
 
-PKG_NAME       = pax-utils
-PKG_VER        = 0.1.19
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Security/Tools
-PKG_URL        = http://www.gentoo.org/proj/en/hardened/pax-utils.xml
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = Utilities for checking PaX features.
-
-PKG_BUILD_DEPS+= libcap-devel
-
-define PKG_DESCRIPTION
+description
 	This package contains several utilities for checking PaX features.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-define STAGE_BUILD
-	cd $(DIR_APP) && make CFLAGS="$(CFLAGS)" USE_CAP=yes $(PARALLELISMFLAGS)
-endef
+build
+	requires
+		libcap-devel
+	end
+
+	build
+		make CFLAGS="%{CFLAGS}" USE_CAP=yes %{PARALLELISMFLAGS}
+	end
+end
+
+packages
+	package %{name}
+end

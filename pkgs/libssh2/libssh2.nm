@@ -1,56 +1,46 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libssh2
+version    = 1.2.7
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://www.libssh2.org/
+license    = BSD
+summary    = A library implementing the SSH2 protocol.
 
-PKG_NAME       = libssh2
-PKG_VER        = 1.2.7
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.libssh2.org/
-PKG_LICENSE    = BSD
-PKG_SUMMARY    = A library implementing the SSH2 protocol.
-
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
-
-PKG_BUILD_DEPS+= openssl-devel zlib-devel
-
-define PKG_DESCRIPTION
+description
 	libssh2 is a library implementing the SSH2 protocol as defined by \
 	Internet Drafts: SECSH-TRANS(22), SECSH-USERAUTH(25), \
 	SECSH-CONNECTION(23), SECSH-ARCH(20), SECSH-FILEXFER(06)*, \
 	SECSH-DHGEX(04), and SECSH-NUMBERS(10).
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-CONFIGURE_OPTIONS += \
-	--disable-static \
-	--disable-rpath
+build
+	requires
+		openssl-devel
+		zlib-devel
+	end
 
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
+	configure_options += \
+		--disable-static \
+		--disable-rpath
+
+	test
+		make check
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

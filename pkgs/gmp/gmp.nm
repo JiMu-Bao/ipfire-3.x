@@ -1,40 +1,18 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = gmp
+version    = 5.0.1
+release    = 0
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://gmplib.org/
+license    = LGPLv3+
+summary    = A GNU arbitrary precision library.
 
-PKG_NAME       = gmp
-PKG_VER        = 5.0.1
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://gmplib.org/
-PKG_LICENSE    = LGPLv3+
-PKG_SUMMARY    = A GNU arbitrary precision library.
-
-define PKG_DESCRIPTION
+description
 	The gmp package contains GNU MP, a library for arbitrary precision \
 	arithmetic, signed integers operations, rational numbers and floating \
 	point numbers. GNU MP is designed for speed, for both small and very \
@@ -42,32 +20,44 @@ define PKG_DESCRIPTION
 	arithmetic type, it uses fast algorithms, it carefully optimizes \
 	assembly code for many CPUs' most common inner loops, and it generally \
 	emphasizes speed over simplicity/elegance in its operations.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-PKG_BUILD_DEPS+= gcc-c++ m4
+build
+	requires
+		gcc-c++
+		m4
+	end
 
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
+	build
+		if [ "%{MACHINE}" = "x86_64" ]; then
+			ABI=64
+		else
+			ABI=32
+		fi
 
-ifeq "$(MACHINE)" "x86_64"
-	ABI = 64
-else
-	ABI = 32
-endif
-
-define STAGE_BUILD
-	cd $(DIR_APP) && \
-		ABI=$(ABI) \
+		ABI=%{ABI} \
 		./configure \
 			--prefix=/usr \
 			--enable-cxx \
 			--enable-mpbsd \
 			--disable-static
 
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
-endef
+		make %{PARALLELISMFLAGS}
+	end
 
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
+	test
+		make check
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

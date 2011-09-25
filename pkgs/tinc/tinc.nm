@@ -1,42 +1,18 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = tinc
+version    = 1.0.14
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Networking/Tools
+url        = http://www.tinc-vpn.org/
+license    = GPLv2+
+summary    = A virtual private network daemon.
 
-PKG_NAME       = tinc
-PKG_VER        = 1.0.14
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Networking/Tools
-PKG_URL        = http://www.tinc-vpn.org/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = A virtual private network daemon.
-
-PKG_BUILD_DEPS+= lzo-devel openssl-devel zlib-devel
-
-define PKG_DESCRIPTION
+description
 	tinc is a Virtual Private Network (VPN) daemon that uses tunnelling
 	and encryption to create a secure private network between hosts on
 	the Internet. Because the tunnel appears to the IP level network
@@ -44,6 +20,19 @@ define PKG_DESCRIPTION
 	existing software. This tunnelling allows VPN sites to share
 	information with each other over the Internet without exposing any
 	information to others.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = http://www.tinc-vpn.org/packages/
+
+build
+	requires
+		lzo-devel
+		openssl-devel
+		zlib-devel
+	end
+end
+
+packages
+	package %{name}
+	end
+end

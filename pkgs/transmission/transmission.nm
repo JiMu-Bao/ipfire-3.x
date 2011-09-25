@@ -1,45 +1,35 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = transmission
+version    = 2.22
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Internet/P2P
+url        = https://trac.transmissionbt.com
+license    = GPLv3
+summary    = A BitTorrent client.
 
-PKG_NAME       = transmission
-PKG_VER        = 2.22
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Internet/P2P
-PKG_URL        = https://trac.transmissionbt.com
-PKG_LICENSE    = GPLv3
-PKG_SUMMARY    = A BitTorrent client.
-
-PKG_BUILD_DEPS+= intltool libcurl-devel libevent-devel openssl-devel
-
-define PKG_DESCRIPTION
+description
 	Transmission is a BitTorrent client which features a simple
 	interface on top of a cross-platform back-end.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  = http://download.transmissionbt.com/files/
+sources    = %{thisapp}.tar.bz2
 
+build
+	requires
+		intltool
+		libcurl-devel
+		libevent-devel
+		openssl-devel
+	end
+end
+
+packages
+	package %{name}
+	end
+end

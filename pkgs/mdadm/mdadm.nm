@@ -1,67 +1,55 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = mdadm
+version    = 3.2.2
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Base
+url        = http://www.kernel.org/pub/linux/utils/raid/mdadm/
+license    = GPLv2+
+summary    = The mdadm program controls Linux md devices (software RAID arrays).
 
-PKG_NAME       = mdadm
-PKG_VER        = 3.2.2
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = http://www.kernel.org/pub/linux/utils/raid/mdadm/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = The mdadm program controls Linux md devices (software RAID arrays).
-
-PKG_BUILD_DEPS+= groff
-
-define PKG_DESCRIPTION
-	The mdadm program is used to create, manage, and monitor Linux MD (software \
-	RAID) devices.  As such, it provides similar functionality to the raidtools \
-	package.  However, mdadm is a single program, and it can perform \
-	almost all functions without a configuration file, though a configuration \
+description
+	The mdadm program is used to create, manage, and monitor Linux MD (software
+	RAID) devices.  As such, it provides similar functionality to the raidtools
+	package.  However, mdadm is a single program, and it can perform
+	almost all functions without a configuration file, though a configuration
 	file can be used to help with some common tasks.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		groff
+	end
 
-CFLAGS        += -fno-strict-aliasing
+	CFLAGS += -fno-strict-aliasing
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -e "s/^INSTALL = .*/INSTALL = install/" -i Makefile
-endef
+	prepare_cmds
+		sed -e "s/^INSTALL = .*/INSTALL = install/" -i Makefile
+	end
 
-define STAGE_BUILD
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS) CXFLAGS="$(CFLAGS)" \
-		CWFLAGS= SYSCONFDIR="/etc" MDASSEMBLE_AUTO=1
-endef
+	build
+		make %{PARALLELISMFLAGS} CXFLAGS="%{CFLAGS}" \
+			CWFLAGS= SYSCONFDIR="/etc" MDASSEMBLE_AUTO=1
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install BINDIR=/sbin DESTDIR=$(BUILDROOT)
+	install
+		make install BINDIR=/sbin DESTDIR=%{BUILDROOT}
 
-	-mkdir -pv $(BUILDROOT)/var/run/mdadm
-	chmod 700 $(BUILDROOT)/var/run/mdadm
-endef
+		mkdir -pv %{BUILDROOT}/var/run/mdadm
+		chmod 700 %{BUILDROOT}/var/run/mdadm
+	end
+end
+
+packages
+	package %{name}
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

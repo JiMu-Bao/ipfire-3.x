@@ -1,80 +1,69 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = cmake
+version    = 2.8.4
+release    = 1
 
-include $(PKGROOT)/Include
-
-PKG_NAME       = cmake
-PKG_VER        = 2.8.4
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Tools
-PKG_URL        = http://www.cmake.org
-PKG_LICENSE    = BSD
-PKG_SUMMARY    = Cross-platform make system.
-
-PKG_BUILD_DEPS+= expat-devel gcc-c++ libarchive-devel libcurl-devel \
-	ncurses-devel openssl-devel zlib-devel
+groups     = Development/Tools
+url        = http://www.cmake.org
+license    = BSD
+summary    = Cross-platform make system.
 
 # Add some fixes to work with lto.
 CFLAGS        += -Wl,-lpthread
 CXXFLAGS      += -Wl,-lpthread
 
-define PKG_DESCRIPTION
+description
 	CMake is used to control the software compilation process using simple \
 	platform and compiler independent configuration files. CMake generates \
 	native makefiles and workspaces that can be used in the compiler \
 	environment of your choice. CMake is quite sophisticated: it is possible \
 	to support complex environments requiring system configuration, pre-processor \
 	generation, code generation, and template instantiation.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+build
+	requires
+		expat-devel
+		gcc-c++
+		libarchive-devel
+		libcurl-devel
+		ncurses-devel
+		openssl-devel
+		zlib-devel
+	end
 
-define STAGE_PREPARE_CMDS
-	# Fixup permissions
-	cd $(DIR_APP) && find -name \*.h -o -name \*.cxx -print0 | xargs -0 chmod -x
-endef
+	prepare_cmds
+		# Fixup permissions
+		find -name \*.h -o -name \*.cxx -print0 | xargs -0 chmod -x
+	end
 
-define STAGE_BUILD
-	-mkdir -pv $(DIR_APP)/build
-	cd $(DIR_APP)/build && \
-		../bootstrap \
+	build
+		mkdir -pv build
+		cd build && ../bootstrap \
 			--prefix=/usr \
 			--datadir=/share/cmake \
-			--docdir=/share/doc/cmake-$(PKG_VER) \
+			--docdir=/share/doc/cmake-%{version} \
 			--mandir=/share/man \
 			--system-libs \
-			--parallel=$(shell /usr/bin/getconf _NPROCESSORS_ONLN)
+			--parallel=$(/usr/bin/getconf _NPROCESSORS_ONLN)
 
-	cd $(DIR_APP)/build && make VERBOSE=1 $(PARALLELISMFLAGS)
-endef
+		make VERBOSE=1 %{PARALLELISMFLAGS}
+	end
 
-define STAGE_TEST
-	cd $(DIR_APP)/build && bin/ctest -V -E ModuleNotices
-endef
+	test
+		cd build && bin/ctest -V -E ModuleNotices
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP)/build && make install DESTDIR=$(BUILDROOT)
-endef
+	install
+		cd build && make install DESTDIR=%{BUILDROOT}
+	end
+end
+
+packages
+	package %{name}
+	end
+end

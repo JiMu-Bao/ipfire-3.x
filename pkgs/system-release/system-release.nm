@@ -1,28 +1,7 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
-
-###############################################################################
-# Definitions
-###############################################################################
-
-include $(PKGROOT)/Include
 
 # Make the configuration of your distribution right here.
 DISTRO_NAME    = IPFire
@@ -32,55 +11,59 @@ DISTRO_RELEASE = 3
 DISTRO_SLOGAN  = Gluttony
 DISTRO_COLOR   = 0;31
 
-PKG_NAME       = $(DISTRO_SNAME)-release
-PKG_VER        = $(DISTRO_VERSION)
-PKG_REL        = 1
-PKG_EPOCH      = 3
-PKG_ARCH       = noarch
+name       = %{DISTRO_SNAME}-release
+version    = %{DISTRO_VERSION}
+release    = 1
+epoch      = 3
+arch       = noarch
 
-PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUPS     = Base System/Base
-PKG_URL        = http://www.ipfire.org
-PKG_LICENSE    =
-PKG_SUMMARY    = $(DISTRO_NAME) release files.
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = Base Build System/Base
+url        = http://www.ipfire.org
+license    =
+summary    = %{DISTRO_NAME} release files.
 
-# In general to this package is referred as "system-release".
-PKG_PROVIDES  += system-release
-PKG_OBSOLETES  = system-release
-
-define PKG_DESCRIPTION
-	$(DISTRO_NAME) release files such as pakfire configs and various /etc/ \
+description
+	%{DISTRO_NAME} release files such as pakfire configs and various /etc/ \
 	files that define the release.
-endef
+end
 
-PKG_TARBALL    =
+# No tarball.
+sources    =
 
-PKG_PACKAGES   = $(PKG_NAME)
+build
+	prepare = # Do nothing
+	build = # Do nothing
 
-STAGE_PREPARE = # Do nothing
-STAGE_BUILD = # Do nothing
+	install
+		mkdir -pv %{BUILDROOT}/etc
 
-define STAGE_INSTALL
-	-mkdir -pv $(BUILDROOT)/etc
+		echo "%{DISTRO_NAME} v%{DISTRO_VERSION} for %{DISTRO_ARCH} - %{DISTRO_SLOGAN} (\l)" \
+			> %{BUILDROOT}/etc/issue
+		echo "===============================" >> %{BUILDROOT}/etc/issue
+		echo "\n running on \s \r \m"          >> %{BUILDROOT}/etc/issue
 
-	echo "$(DISTRO_NAME) v$(DISTRO_VERSION) for $(DISTRO_ARCH) - $(DISTRO_SLOGAN) (\l)" \
-		> $(BUILDROOT)/etc/issue
-	echo "===============================" >> $(BUILDROOT)/etc/issue
-	echo "\n running on \s \r \m"          >> $(BUILDROOT)/etc/issue
+		echo "%{DISTRO_NAME} release %{DISTRO_VERSION} (%{DISTRO_SLOGAN})" \
+			> %{BUILDROOT}/etc/%{DISTRO_SNAME}-release
+		ln -svf %{DISTRO_SNAME}-release %{BUILDROOT}/etc/system-release
 
-	echo "$(DISTRO_NAME) release $(DISTRO_VERSION) ($(DISTRO_SLOGAN))" \
-		> $(BUILDROOT)/etc/$(DISTRO_SNAME)-release
-	ln -svf $(DISTRO_SNAME)-release $(BUILDROOT)/etc/system-release
+		# Set a default hostname that is set until the user customizes that.
+		echo "%{DISTRO_SNAME}.localdomain" > %{BUILDROOT}/etc/hostname
 
-	# Set a default hostname that is set until the user customizes that.
-	echo "$(DISTRO_SNAME).localdomain" > $(BUILDROOT)/etc/hostname
+		# Create /etc/os-release.
+		echo "NAME=\"%{DISTRO_NAME}\"" >> %{BUILDROOT}/etc/os-release
+		echo "VERSION=\"%{DISTRO_VERSION}\"" >> %{BUILDROOT}/etc/os-release
+		echo "ID=%{DISTRO_SNAME}" >> %{BUILDROOT}/etc/os-release
+		echo "VERSION_ID=%{DISTRO_RELEASE}" >> %{BUILDROOT}/etc/os-release
+		echo "PRETTY_NAME=\"%{DISTRO_NAME} %{DISTRO_VERSION} (%{DISTRO_SLOGAN})\"" \
+			>> %{BUILDROOT}/etc/os-release
+		echo "ANSI_COLOR=%{DISTRO_COLOR}" >> %{BUILDROOT}/etc/os-release
+	end
+end
 
-	# Create /etc/os-release.
-	echo "NAME=\"$(DISTRO_NAME)\"" >> $(BUILDROOT)/etc/os-release
-	echo "VERSION=\"$(DISTRO_VERSION)\"" >> $(BUILDROOT)/etc/os-release
-	echo "ID=$(DISTRO_SNAME)" >> $(BUILDROOT)/etc/os-release
-	echo "VERSION_ID=$(DISTRO_RELEASE)" >> $(BUILDROOT)/etc/os-release
-	echo "PRETTY_NAME=\"$(DISTRO_NAME) $(DISTRO_VERSION) ($(DISTRO_SLOGAN))\"" \
-		>> $(BUILDROOT)/etc/os-release
-	echo "ANSI_COLOR=$(DISTRO_COLOR)" >> $(BUILDROOT)/etc/os-release
-endef
+packages
+	package %{name}
+		provides = system-release
+		obsoletes = system-release
+	end
+end

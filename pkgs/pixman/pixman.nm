@@ -1,45 +1,35 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = pixman
+version    = 0.18.4
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://xorg.freedesktop.org/archive/individual/lib/
+license    = MIT
+summary    = Pixel manipulation library.
 
-PKG_NAME       = pixman
-PKG_VER        = 0.18.4
-PKG_REL        = 2
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://xorg.freedesktop.org/archive/individual/lib/
-PKG_LICENSE    = MIT
-PKG_SUMMARY    = Pixel manipulation library.
-
-PKG_BUILD_DEPS+= perl pkg-config
-
-define PKG_DESCRIPTION
+description
 	Pixman is a pixel manipulation library for X and cairo.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		perl
+		pkg-config
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

@@ -1,50 +1,41 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = eggdbus
+version    = 0.6
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://cgit.freedesktop.org/~david/eggdbus
+license    = LGPLv2+
+summary    = Experimental D-Bus bindings for GObject.
 
-PKG_NAME       = eggdbus
-PKG_VER        = 0.6
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://cgit.freedesktop.org/~david/eggdbus
-PKG_LICENSE    = LGPLv2+
-PKG_SUMMARY    = Experimental D-Bus bindings for GObject.
-
-PKG_BUILD_DEPS+= dbus-devel dbus-glib-devel glib2-devel pkg-config
-
-define PKG_DESCRIPTION
+description
 	Experimental D-Bus bindings for GObject.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		dbus-devel
+		dbus-glib-devel
+		glib2-devel
+	end
 
-CONFIGURE_OPTIONS += \
-	--disable-static
+	configure_options += \
+		--disable-static
 
-PARALLELISMFLAGS = # off
+	PARALLELISMFLAGS = # off
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

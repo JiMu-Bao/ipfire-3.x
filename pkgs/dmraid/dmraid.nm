@@ -1,71 +1,61 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = dmraid
+version    = 1.0.0.rc15
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Filesystems
+url        = http://people.redhat.com/heinzm/sw/dmraid
+license    = GPLv2+
+summary    = Device-mapper RAID tool and library.
 
-PKG_NAME       = dmraid
-PKG_VER        = 1.0.0.rc15
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Filesystems
-PKG_URL        = http://people.redhat.com/heinzm/sw/dmraid
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = Device-mapper RAID tool and library.
-
-PKG_BUILD_DEPS+= libdevmapper-devel libselinux-devel
-
-define PKG_DESCRIPTION
+description
 	DMRAID supports RAID device discovery, RAID set activation, creation, \
 	removal, rebuild and display of properties for ATARAID/DDF1 metadata on \
 	Linux >= 2.4 using device-mapper.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		libdevmapper-devel
+		libselinux-devel
+	end
 
-DIR_APP        = $(DIR_SRC)/$(PKG_NAME)/$(PKG_VER)
+	DIR_APP = %{DIR_SRC}/%{name}/%{version}
+	PARALLELISMFLAGS = # Disabled
 
-PARALLELISMFLAGS = # Disabled
+	make_install_targets += sbindir=%{BUILDROOT}/sbin
 
-STAGE_INSTALL_TARGETS += sbindir=$(BUILDROOT)/sbin
+	configure_options += \
+		--sbindir=/sbin \
+		--libdir=/lib \
+		--disable-static \
+		--disable-static_link \
+		--enable-libselinux
 
-CONFIGURE_OPTIONS += \
-	--sbindir=/sbin \
-	--libdir=/lib \
-	--disable-static \
-	--disable-static_link \
-	--enable-libselinux
+	build_cmds
+		make -C lib libdmraid.so
+	end
 
-define STAGE_BUILD_CMDS
-	cd $(DIR_APP) && make -C lib libdmraid.so
-endef
+	install_cmds
+		mkdir -pv %{BUILDROOT}/{,usr}/lib
+		install -v -m 755 lib/libdmraid.so \
+			%{BUILDROOT}/lib/libdmraid.so.%{version}
+		ln -svf ../../lib/libdmraid.so.%{version} %{BUILDROOT}/usr/lib/libdmraid.so
+	end
+end
 
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/{,usr}/lib
-	cd $(DIR_APP) && install -v -m 755 lib/libdmraid.so \
-		$(BUILDROOT)/lib/libdmraid.so.$(PKG_VER)
-	ln -svf ../../lib/libdmraid.so.$(PKG_VER) $(BUILDROOT)/usr/lib/libdmraid.so
-endef
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

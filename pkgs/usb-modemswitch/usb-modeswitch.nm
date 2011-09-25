@@ -1,44 +1,31 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = usb-modeswitch
+version    = 1.1.9
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Applications/System
+url        = http://www.draisberghof.de/usb_modeswitch
+license    = GPLv2
+summary    = A USB mode switching tool.
 
-PKG_NAME       = usb-modeswitch
-PKG_VER        = 1.1.9
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Applications/System
-PKG_URL        = http://www.draisberghof.de/usb_modeswitch
-PKG_LICENSE    = GPLv2
-PKG_SUMMARY    = A USB mode switching tool.
-
-PKG_BUILD_DEPS+= libusb-compat-devel
-
-define PKG_DESCRIPTION
+description
 	USB_ModeSwitch is (surprise!) a mode switching tool for controlling
 	"flip flop" (multiple device) USB gear.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  = http://www.draisberghof.de/usb_modeswitch/
+sources    = %{thisapp}.tar.bz2
+
+build
+	requires
+		libusb-compat-devel
+	end
+end
+
+packages
+	package %{name}
+end

@@ -1,61 +1,54 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = cryptsetup-luks
+version    = 1.1.0
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Filesystems
+url        = http://cryptsetup.googlecode.com/
+license    = GPLv2+
+summary    = A utility for setting up encrypted filesystems.
 
-PKG_NAME       = cryptsetup-luks
-PKG_VER        = 1.1.0
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Filesystems
-PKG_URL        = http://cryptsetup.googlecode.com/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = A utility for setting up encrypted filesystems.
-
-PKG_BUILD_DEPS+= libdevmapper-devel libgcrypt-devel \
-	libgpg-error-devel libuuid-devel popt-devel
-
-define PKG_DESCRIPTION
+description
 	This package contains cryptsetup, a utility for setting up \
 	encrypted filesystems using Device Mapper and the dm-crypt target.
-endef
+end
 
-PKG_TARBALL    = cryptsetup-$(PKG_VER).tar.bz2
+source_dl  =
+sources    = cryptsetup-%{version}.tar.bz2
 
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
+build
+	requires
+		libdevmapper-devel
+		libgcrypt-devel
+		libgpg-error-devel
+		libuuid-devel
+		popt-devel
+	end
 
-DIR_APP        = $(DIR_SRC)/cryptsetup-$(PKG_VER)
+	DIR_APP = %{DIR_SRC}/cryptsetup-%{version}
 
-CONFIGURE_OPTIONS += \
+	configure_options += \
 		--sbindir=/sbin \
 		--libdir=/lib \
 		--disable-static
 
-define STAGE_INSTALL_CMDS
-	rm -rvf $(BUILDROOT)/lib/cryptsetup{,.la,.so}
-	-mkdir -pv $(BUILDROOT)/usr/lib
-	mv -v $(BUILDROOT)/lib/pkgconfig $(BUILDROOT)/usr/lib/
-	ln -svf ../../lib/libcryptsetup.so.1 $(BUILDROOT)/usr/lib/libcryptsetup.so
-endef
+	install_cmds
+		rm -rvf %{BUILDROOT}/lib/cryptsetup{,.la,.so}
+		mkdir -pv %{BUILDROOT}/usr/lib
+		mv -v %{BUILDROOT}/lib/pkgconfig %{BUILDROOT}/usr/lib/
+		ln -svf ../../lib/libcryptsetup.so.1 %{BUILDROOT}/usr/lib/libcryptsetup.so
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

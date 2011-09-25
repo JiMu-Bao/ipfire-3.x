@@ -1,49 +1,34 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = nasm
+version    = 2.08.01
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Development/Languages
+url        = http://nasm.sourceforge.net/
+license    = LGPLv2+
+summary    = A portable x86 assembler which uses Intel-like syntax.
 
-PKG_NAME       = nasm
-PKG_VER        = 2.08.01
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Languages
-PKG_URL        = http://nasm.sourceforge.net/
-PKG_LICENSE    = LGPLv2+
-PKG_SUMMARY    = A portable x86 assembler which uses Intel-like syntax.
-
-define PKG_DESCRIPTION
-	NASM is the Netwide Assembler, a free portable assembler for the \
-	Intel 80x86 microprocessor series, using primarily the traditional \
+description
+	NASM is the Netwide Assembler, a free portable assembler for the
+	Intel 80x86 microprocessor series, using primarily the traditional
 	Intel instruction mnemonics and syntax.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-CFLAGS        += -fno-stack-protector
+build
+	CFLAGS += -fno-stack-protector
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install INSTALLROOT=$(BUILDROOT)
-endef
+	install
+		make install INSTALLROOT=%{BUILDROOT}
+	end
+end
+
+packages
+	package %{name}
+end

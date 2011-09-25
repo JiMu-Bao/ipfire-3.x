@@ -1,57 +1,46 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = freetype
+version    = 2.3.9
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Graphics
+url        = http://www.freetype.org/
+license    = FTL GPLv2+
+summary    = A free and portable font rendering engine.
 
-PKG_NAME       = freetype
-PKG_VER        = 2.3.9
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Graphics
-PKG_URL        = http://www.freetype.org/
-PKG_LICENSE    = FTL GPLv2+
-PKG_SUMMARY    = A free and portable font rendering engine.
-
-PKG_BUILD_DEPS+= pkg-config zlib-devel
-
-define PKG_DESCRIPTION
+description
 	The FreeType engine is a free and portable font rendering \
 	engine, developed to provide advanced font support for a variety of \
 	platforms and environments. FreeType is a library which can open and \
 	manages font files as well as efficiently load, hint and render \
 	individual glyphs. FreeType is not a font server or a complete \
 	text-rendering library.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		zlib-devel
+	end
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && \
+	prepare_cmds
 		sed -i -r -e 's:.*(#.*BYTE.*) .*:\1:' \
 			-e 's:.*(#.*SUBPIX.*) .*:\1:' \
 			include/freetype/config/ftoption.h
-endef
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

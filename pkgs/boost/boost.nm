@@ -1,84 +1,76 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = boost
+version    = 1.41.0
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://www.boost.org/
+license    = Boost
+summary    = The Boost C++ Libraries.
 
-PKG_NAME       = boost
-PKG_VER        = 1.41.0
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.boost.org/
-PKG_LICENSE    = Boost
-PKG_SUMMARY    = The Boost C++ Libraries.
-
-PKG_BUILD_DEPS+= cmake gcc-c++ zlib-devel
-
-define PKG_DESCRIPTION
-	Boost provides free peer-reviewed portable C++ source libraries. The \
-	emphasis is on libraries which work well with the C++ Standard \
-	Library, in the hopes of establishing existing practice for \
-	extensions and providing reference implementations so that the Boost \
+description
+	Boost provides free peer-reviewed portable C++ source libraries. The
+	emphasis is on libraries which work well with the C++ Standard
+	Library, in the hopes of establishing existing practice for
+	extensions and providing reference implementations so that the Boost
 	libraries are suitable for eventual standardization.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).cmake0.tar.gz
+source_dl  = # Cannot find the cmake file.
+sources    = %{thisapp}.cmake0.tar.gz
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+CFLAGS    += -fno-strict-aliasing
+CXXFLAGS  += -fno-strict-aliasing
 
-CFLAGS        += -fno-strict-aliasing
-CXXFLAGS      += -fno-strict-aliasing
+DIR_APP    = %{DIR_SRC}/%{thisapp}.cmake0
 
-DIR_APP        = $(DIR_SRC)/$(THISAPP).cmake0
+build
+	requires
+		cmake
+		gcc-c++
+		zlib-devel
+	end
 
-define STAGE_PREPARE_CMDS
-	-mkdir -pv $(DIR_APP)/serial
-endef
+	prepare_cmds
+		mkdir -pv %{DIR_APP}/serial
+	end
 
-define STAGE_BUILD
-	cd $(DIR_APP)/serial && \
-		cmake \
-			-DCMAKE_INSTALL_PREFIX=/usr \
-			-DCMAKE_BUILD_TYPE=RelWithDebInfo \
-			-DBUILD_TESTS="NONE" \
-			-DENABLE_SINGLE_THREADED=YES \
-			-DINSTALL_VERSIONED=OFF \
-			-DWITH_MPI=OFF \
-			-DENABLE_STATIC=OFF \
-			-DENABLE_DEBUG=OFF \
-			..
+	build
+		cd %{DIR_APP}/serial && \
+			cmake \
+				-DCMAKE_INSTALL_PREFIX=/usr \
+				-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+				-DBUILD_TESTS="NONE" \
+				-DENABLE_SINGLE_THREADED=YES \
+				-DINSTALL_VERSIONED=OFF \
+				-DWITH_MPI=OFF \
+				-DENABLE_STATIC=OFF \
+				-DENABLE_DEBUG=OFF \
+				..
 
-	cd $(DIR_APP)/serial && make VERBOSE=1 #$(PARALLELISMFLAGS)
-endef
+		make VERBOSE=1 #%{PARALLELISMFLAGS}
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP)/serial && make install DESTDIR=$(BUILDROOT)
+	install
+		cd %{DIR_APP}/serial && make install DESTDIR=%{BUILDROOT}
 
-	# Kill any debug library versions that may show up un-invited.
-	rm -f $(BUILDROOT)/usr/lib/*-d.*
+		# Kill any debug library versions that may show up un-invited.
+		rm -f %{BUILDROOT}/usr/lib/*-d.*
 
-	# Remove cmake configuration files used to build the Boost libraries
-	find $(BUILDROOT)/usr/lib -name '*.cmake' -exec rm -f {} \;
-endef
+		# Remove cmake configuration files used to build the Boost libraries
+		find %{BUILDROOT}/usr/lib -name '*.cmake' -exec rm -f {} \;
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

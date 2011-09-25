@@ -1,112 +1,108 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008, 2009 Michael Tremer & Christian Schmidt           #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = linux
+version    = 2.6.39
+release    = 4
 
-include $(PKGROOT)/Include
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = System/Kernels
+url        = http://www.kernel.org/
+license    = GPLv2
+summary    = The Linux kernel.
 
-PKG_NAME       = linux
-PKG_VER        = 2.6.39
-PKG_REL        = 4
-
-PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUPS     = System/Kernels
-PKG_URL        = http://www.kernel.org/
-PKG_LICENSE    = GPLv2
-PKG_SUMMARY    = The Linux kernel.
-
-PKG_BUILD_DEPS+= module-init-tools ncurses-devel perl
-PKG_DEPS-kernel= dracut linux-firmware
-
-define PKG_DESCRIPTION
+description
 	The kernel package contains the Linux kernel (vmlinuz), the core of any \
 	Linux operating system. The kernel handles the basic functions \
 	of the operating system: memory allocation, process allocation, device \
 	input and output, etc.
-endef
+end
 
 CFLAGS     =
 CXXFLAGS   =
 
-LOCALVERSION   = -$(DISTRO_SNAME)$(PKG_REL)
-FULLVER        = $(PKG_VER)$(LOCALVERSION)
+# Version helper variables.
+localversion = -%{DISTRO_SNAME}%{release}
+fullver      = %{version}%{localversion}
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+sources      = %{thisapp}.tar.bz2
 
-PKG_PACKAGES  += kernel-headers
+build
+	requires
+		module-init-tools
+		ncurses-devel
+		perl
+	end
 
-PKG_SUMMARY-kernel-headers     = Header files if the kernel release $(FULLVER).
-PKG_DESCRIPTION-kernel-headers = $(PKG_SUMMARY-kernel-headers)
-PKG_FILES-kernel-headers       = /usr/include
+	prepare_cmds
+		echo "%{localversion}" > localversion-%{DISTRO_SNAME}
+		rm -f %{DIR_APP}/localversion-grsec
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && echo "$(LOCALVERSION)" > localversion-$(DISTRO_SNAME)
-	rm -f $(DIR_APP)/localversion-grsec
+		sed -e "s/^HOSTCFLAGS.*=.*/& -fPIC/g" -i Makefile
 
-	cd $(DIR_APP) && sed -e "s/^HOSTCFLAGS.*=.*/& -fPIC/g" -i Makefile
+		cp -vf %{DIR_SOURCE}/%{DISTRO_SNAME}_logo.ppm \
+			drivers/video/logo/logo_linux_clut224.ppm
 
-	cd $(DIR_APP) && cp -vf $(DIR_SOURCE)/$(DISTRO_SNAME)_logo.ppm \
-		drivers/video/logo/logo_linux_clut224.ppm
+		make mrproper
 
-	cd $(DIR_APP) && make mrproper
+		# Install configuration file
+		cp -f %{DIR_SOURCE}/config %{DIR_APP}/.config
+	end
 
-	# Install configuration file
-	cp -f $(DIR_SOURCE)/config $(DIR_APP)/.config
-endef
+	build
+		yes "" | make oldconfig
 
-define STAGE_BUILD
-	cd $(DIR_APP) && yes "" | make oldconfig
+		# Check headers
+		make ARCH=x86 headers_check
 
-	# Check headers
-	cd $(DIR_APP) && make ARCH=x86 headers_check
+		make CC="gcc -nopie" %{PARALLELISMFLAGS}
+	end
 
-	cd $(DIR_APP) && make CC="gcc -nopie" $(PARALLELISMFLAGS)
-endef
+	install
+		make modules_install INSTALL_MOD_PATH=%{BUILDROOT}
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make modules_install INSTALL_MOD_PATH=$(BUILDROOT)
+		mkdir -pv %{BUILDROOT}/boot
+		cp -v arch/x86/boot/bzImage %{BUILDROOT}/boot/vmlinuz-%{fullver}
+		cp -v System.map %{BUILDROOT}/boot/System.map-%{fullver}
 
-	-mkdir -pv $(BUILDROOT)/boot
-	cd $(DIR_APP) && cp -v arch/x86/boot/bzImage $(BUILDROOT)/boot/vmlinuz-$(FULLVER)
-	cd $(DIR_APP) && cp -v System.map $(BUILDROOT)/boot/System.map-$(FULLVER)
+		mkdir -pv %{BUILDROOT}/lib/modules/%{fullver}/extra
 
-	-mkdir -pv $(BUILDROOT)/lib/modules/$(FULLVER)/extra
+		rm -vf %{BUILDROOT}/lib/modules/%{fullver}/{build,source}
 
-	rm -vf $(BUILDROOT)/lib/modules/$(FULLVER)/{build,source}
+		# Install the header files
+		make ARCH=x86 INSTALL_HDR_PATH=dest headers_install
+		mkdir -pv %{BUILDROOT}/usr/include
+		find dest/include \( -name .install -o -name ..install.cmd \) -delete
+		cp -rv dest/include/* %{BUILDROOT}/usr/include
 
-	# Install the header files
-	cd $(DIR_APP) && make ARCH=x86 INSTALL_HDR_PATH=dest headers_install
-	-mkdir -pv $(BUILDROOT)/usr/include
-	cd $(DIR_APP) && find dest/include \( -name .install -o -name ..install.cmd \) -delete
-	cd $(DIR_APP) && cp -rv dest/include/* $(BUILDROOT)/usr/include
+		# Glibc provides these headers
+		rm -rfv %{BUILDROOT}/usr/include/scsi \
+			%{BUILDROOT}/usr/include/asm*/atomic.h \
+			%{BUILDROOT}/usr/include/asm*/io.h \
+			%{BUILDROOT}/usr/include/asm*/irq.h
 
-	# Glibc provides these headers
-	rm -rfv $(BUILDROOT)/usr/include/scsi \
-		$(BUILDROOT)/usr/include/asm*/atomic.h \
-		$(BUILDROOT)/usr/include/asm*/io.h \
-		$(BUILDROOT)/usr/include/asm*/irq.h
+		# Create an empty settings file for dracut
+		mkdir -vp %{BUILDROOT}/etc/ld.so.conf.d/
+		echo "# Placeholder file, no vDSO hwcap entries used in this kernel." \
+		> %{BUILDROOT}/etc/ld.so.conf.d/kernel-%{fullver}.conf
+	end
+end
 
-        # Create an empty settings file for dracut
-        mkdir -vp $(BUILDROOT)/etc/ld.so.conf.d/
-        echo "# Placeholder file, no vDSO hwcap entries used in this kernel." \
-        > $(BUILDROOT)/etc/ld.so.conf.d/kernel-$(FULLVER).conf
-endef
+packages
+	package kernel
+		requires
+			dracut
+			linux-firmware
+		end
+	end
+	
+	package kernel-headers
+		template DEVEL
+	
+		summary = Header files of the kernel release %{fullver}.
+		desciption = %{summary}
+	end
+	
+end

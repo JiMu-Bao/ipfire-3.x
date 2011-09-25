@@ -1,85 +1,79 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = binutils
+version    = 2.21.51.0.8
+release    = 1
 
-include $(PKGROOT)/Include
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = Development/Tools
+url        = http://www.gnu.org/software/binutils/
+license    = GPLv2+
+summary    = The GNU Binutils are a collection of binary tools.
 
-PKG_NAME       = binutils
-PKG_VER        = 2.21.51.0.8
-PKG_REL        = 1
-
-PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUPS     = Development/Tools
-PKG_URL        = http://www.gnu.org/software/binutils/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = The GNU Binutils are a collection of binary tools.
-
-define PKG_DESCRIPTION
-	The GNU Binary Utilities, or binutils, is a collection of programming \
+description
+	The GNU Binary Utilities, or binutils, is a collection of programming
 	tools for the manipulation of object code in various object file formats.
-endef
+end
 
-PKG_BUILD_DEPS+= bison dejagnu flex gcc-c++ texinfo zlib-devel
+source_dl  = http://ftp.gnu.org/gnu/binutils/
 
-PKG_TARBALL   += $(THISAPP).tar.gz
+build
+	requires
+		bison
+		dejagnu
+		flex
+		gcc-c++
+		texinfo
+		zlib-devel
+	end
 
-define STAGE_PREPARE_CMDS
-	-mkdir -pv $(DIR_SRC)/binutils-build
+	prepare_cmds
+		mkdir -pv %{DIR_SRC}/binutils-build
 
-	# Suppress the installation of an outdated standards.info file as a newer
-	# one is installed later on in the Autoconf instructions:
-	cd $(DIR_APP) && rm -fv etc/standards.info
-	cd $(DIR_APP) && sed -e '/^INFO/s/standards.info //' -i etc/Makefile.in
+		# Suppress the installation of an outdated standards.info file as a newer
+		# one is installed later on in the Autoconf instructions:
+		rm -fv etc/standards.info
+		sed -e '/^INFO/s/standards.info //' -i etc/Makefile.in
 
-	cd $(DIR_APP) && sed -i -e 's/%''{release}/$(PKG_RELEASE)/g' bfd/Makefile{.am,.in}
-endef
+		sed -i -e 's/%''{release}/%{release}/g' bfd/Makefile{.am,.in}
+	end
 
-BINUTILS_TARGET_PLATFORM = $(subst -gnu,,$(DISTRO_MACHINE))
 
-define STAGE_BUILD
-	cd $(DIR_SRC)/binutils-build && \
-		../$(THISAPP)/configure \
-			--host=$(BINUTILS_TARGET_PLATFORM) \
-			--build=$(BINUTILS_TARGET_PLATFORM) \
-			--target=$(BINUTILS_TARGET_PLATFORM) \
-			--prefix=/usr \
-			--mandir=/usr/share/man \
-			--enable-shared \
-			--disable-nls \
-			--disable-werror \
-			--disable-static
+	build
+		BINUTILS_TARGET_PLATFORM=$(echo "%{DISTRO_MACHINE}" | sed -e "s/-gnu//")
 
-	cd $(DIR_SRC)/binutils-build && make tooldir=/usr $(PARALLELISMFLAGS)
-endef
+		cd %{DIR_SRC}/binutils-build && \
+			../%{thisapp}/configure \
+				--host=${BINUTILS_TARGET_PLATFORM} \
+				--build=${BINUTILS_TARGET_PLATFORM} \
+				--target=${BINUTILS_TARGET_PLATFORM} \
+				--prefix=/usr \
+				--mandir=/usr/share/man \
+				--enable-shared \
+				--disable-nls \
+				--disable-werror \
+				--disable-static
 
-#define STAGE_TEST
-	# Apply a sed substitution to prevent a testsuite error:
-	#cd $(DIR_APP) && sed -i 's/getline/get_line/' libiberty/testsuite/test-demangle.c
-	#cd $(DIR_SRC)/binutils-build && make check
-#endef
+		cd %{DIR_SRC}/binutils-build && make tooldir=/usr %{PARALLELISMFLAGS}
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_SRC)/binutils-build && make tooldir=/usr install DESTDIR=$(BUILDROOT)
+	#def test
+	#	# Apply a sed substitution to prevent a testsuite error:
+	#	sed -i 's/getline/get_line/' libiberty/testsuite/test-demangle.c
+	#	cd %{DIR_SRC}/binutils-build && make check
+	#end
 
-	cp -fv $(DIR_APP)/include/libiberty.h $(BUILDROOT)/usr/include
-endef
+	install
+		cd %{DIR_SRC}/binutils-build && make tooldir=/usr install DESTDIR=%{BUILDROOT}
+
+		cp -fv %{DIR_APP}/include/libiberty.h %{BUILDROOT}/usr/include
+	end
+end
+
+packages
+	package %{name}
+	end
+end

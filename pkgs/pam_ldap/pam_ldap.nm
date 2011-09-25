@@ -1,95 +1,85 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = pam_ldap
+version    = 186
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Base
+url        = http://www.padl.com/OSS/pam_ldap.html
+license    = GPL and LGPL
+summary    = A pam/ldap module that supports password changes.
 
-PKG_NAME       = pam_ldap
-PKG_VER        = 186
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = http://www.padl.com/OSS/pam_ldap.html
-PKG_LICENSE    = GPL and LGPL
-PKG_SUMMARY    = A pam/ldap module that supports password changes.
-
-PKG_BUILD_DEPS+= autoconf automake openldap-devel pam-devel
-
-define PKG_DESCRIPTION
+description
 	The pam_ldap module provides the means for Solaris and Linux servers \
 	and workstations to authenticate against LDAP directories, and to \
 	change their passwords in the directory.
-endef
+end
 
 # Always change this if the nss_ldap package has been updated!
 NSS_LDAP_VER = 265
 
-PKG_TARBALL    = $(THISAPP).tar.gz
-PKG_OBJECTS += nss_ldap-$(NSS_LDAP_VER).tar.gz
+source_dl  =
+sources   += nss_ldap-%{NSS_LDAP_VER}.tar.gz
 
-CONFIGURE_OPTIONS += \
-	--sysconfdir=/etc \
-	--libdir=/lib \
-	--mandir=/usr/share/man \
-	--with-ldap-conf-file=/etc/pam_ldap.conf \
-	--with-ldap-secret-file=/etc/pam_ldap.secret
+build
+	requires
+		autoconf
+		automake
+		openldap-devel
+		pam-devel
+	end
 
-define STAGE_PREPARE_CMDS
-	# Extract source tarball of nss_ldap
-	cd $(DIR_SRC) && $(DO_EXTRACT) $(DIR_DL)/nss_ldap-$(NSS_LDAP_VER).tar.gz
-	
-	# Copy needed files from nss_ldap
-	cd $(DIR_APP) && cp -av $(DIR_SRC)/nss_ldap-$(NSS_LDAP_VER)/resolve.c .
-	cd $(DIR_APP) && cp -av $(DIR_SRC)/nss_ldap-$(NSS_LDAP_VER)/resolve.h .
-	cd $(DIR_APP) && cp -av $(DIR_SRC)/nss_ldap-$(NSS_LDAP_VER)/snprintf.c .
-	cd $(DIR_APP) && cp -av $(DIR_SRC)/nss_ldap-$(NSS_LDAP_VER)/snprintf.h .
-	
-	cd $(DIR_APP) && sed -i -e 's,^ldap.conf$$,pam_ldap.conf,g' *.5
-	cd $(DIR_APP) && sed -i -e 's,^/etc/ldap\.,/etc/pam_ldap.,g' *.5
-	cd $(DIR_APP) && sed -i -e 's,in ldap.co$nf,in pam_ldap.conf,g' *.5
-	cd $(DIR_APP) && sed -i -e 's,of ldap.conf,of pam_ldap.conf,g' *.5
-	cd $(DIR_APP) && sed -i -e 's,ldap.secret,pam_ldap.secret,g' *.5
-	cd $(DIR_APP) && sed -i -e 's,(ldap.conf),(pam_ldap.conf),g' *.5
+	configure_options += \
+		--sysconfdir=/etc \
+		--libdir=/lib \
+		--mandir=/usr/share/man \
+		--with-ldap-conf-file=/etc/pam_ldap.conf \
+		--with-ldap-secret-file=/etc/pam_ldap.secret
 
-	cd $(DIR_APP) && autoreconf -f -i
-endef
+	prepare_cmds
+		# Extract source tarball of nss_ldap
+		cd %{DIR_SRC} && %{MACRO_EXTRACT} %{DIR_DL}/nss_ldap-%{NSS_LDAP_VER}.tar.gz
 
-STAGE_BUILD_TARGETS += LDFLAGS="-Wl,-z,nodelete"
+		# Copy needed files from nss_ldap
+		cd %{DIR_APP} && cp -av %{DIR_SRC}/nss_ldap-%{NSS_LDAP_VER}/resolve.c .
+		cp -av %{DIR_SRC}/nss_ldap-%{NSS_LDAP_VER}/resolve.h .
+		cp -av %{DIR_SRC}/nss_ldap-%{NSS_LDAP_VER}/snprintf.c .
+		cp -av %{DIR_SRC}/nss_ldap-%{NSS_LDAP_VER}/snprintf.h .
 
-define STAGE_INSTALL
-	# Create directory layout 
-	mkdir -pv $(BUILDROOT)/{etc,/lib/security,/usr/lib}
+		sed -i -e 's,^ldap.conf$$,pam_ldap.conf,g' *.5
+		sed -i -e 's,^/etc/ldap\.,/etc/pam_ldap.,g' *.5
+		sed -i -e 's,in ldap.co$nf,in pam_ldap.conf,g' *.5
+		sed -i -e 's,of ldap.conf,of pam_ldap.conf,g' *.5
+		sed -i -e 's,ldap.secret,pam_ldap.secret,g' *.5
+		sed -i -e 's,(ldap.conf),(pam_ldap.conf),g' *.5
 
-	# Prevent to install an ldap.conf
-	touch $(BUILDROOT)/etc/ldap.conf
-	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT)
-	rm -rvf $(BUILDROOT)/etc/ldap.conf
-	
-	# Install the default configuration file and change padl to example
-	cd $(DIR_APP) && sed 's|dc=padl|dc=example|g' ldap.conf > $(BUILDROOT)/etc/pam_ldap.conf
-	chmod 644 $(BUILDROOT)/etc/pam_ldap.conf
+		autoreconf -f -i
+	end
 
-	# Create an empty ldap.secret file
-	touch $(BUILDROOT)/etc/pam_ldap.secret
-endef
+	make_build_targets += \
+		LDFLAGS="-Wl,-z,nodelete"
+
+	install
+		# Create directory layout
+		mkdir -pv %{BUILDROOT}/{etc,/lib/security,/usr/lib}
+
+		# Prevent to install an ldap.conf
+		touch %{BUILDROOT}/etc/ldap.conf
+		make install DESTDIR=%{BUILDROOT}
+		rm -rvf %{BUILDROOT}/etc/ldap.conf
+
+		# Install the default configuration file and change padl to example
+		sed 's|dc=padl|dc=example|g' ldap.conf > %{BUILDROOT}/etc/pam_ldap.conf
+		chmod 644 %{BUILDROOT}/etc/pam_ldap.conf
+
+		# Create an empty ldap.secret file
+		touch %{BUILDROOT}/etc/pam_ldap.secret
+	end
+end
+
+packages
+	package %{name}
+end

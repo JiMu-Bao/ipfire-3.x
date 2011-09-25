@@ -1,48 +1,38 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = cpufrequtils
+version    = 008
+release    = 4
 
-include $(PKGROOT)/Include
+groups     = Base Applications/System
+url        = http://htop.sourceforge.net/
+license    = GPLv2
+summary    = Command line tools to determine current CPUfreq settings and to modify them
 
-PKG_NAME       = cpufrequtils
-PKG_VER        = 008
-PKG_REL        = 4
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Base Applications/System
-PKG_URL        = http://htop.sourceforge.net/
-PKG_LICENSE    = GPLv2
-PKG_SUMMARY    = Command line tools to determine current CPUfreq settings and to modify them
-
-PKG_BUILD_DEPS+= gettext libtool sysfsutils 
-
-define PKG_DESCRIPTION
+description
 	Command line tools to determine current CPUfreq settings and to modify them
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		gettext
+		libtool
+		sysfsutils
+	end
 
-STAGE_INSTALL_TARGETS += mandir=/usr/share/man
+	make_install_targets += mandir=/usr/share/man
+end
 
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

@@ -1,64 +1,51 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libidn
+version    = 1.22
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://www.gnu.org/software/libidn/
+license    = LGPLv2+ GPLv3+
+summary    = Internationalized Domain Name support library.
 
-PKG_NAME       = libidn
-PKG_VER        = 1.22
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.gnu.org/software/libidn/
-PKG_LICENSE    = LGPLv2+ GPLv3+
-PKG_SUMMARY    = Internationalized Domain Name support library.
-
-define PKG_DESCRIPTION
+description
 	GNU Libidn is an implementation of the Stringprep, Punycode and \
 	IDNA specifications defined by the IETF Internationalized Domain \
 	Names (IDN) working group, used for internationalized domain \
 	names.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	configure_options += \
+		--libdir=/lib \
+		--disable-csharp \
+		--disable-static
 
-CONFIGURE_OPTIONS += \
-	--libdir=/lib \
-	--disable-csharp \
-	--disable-static
+	test
+		make -C tests check
+	end
 
-define STAGE_TEST
-	cd $(DIR_APP) && make -C tests check
-endef
+	install
+		make install DESTDIR=%{BUILDROOT} \
+			pkgconfigdir=/usr/lib/pkgconfig
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT) \
-		pkgconfigdir=/usr/lib/pkgconfig
+		mkdir -pv %{BUILDROOT}/usr/lib
+		rm -vf %{BUILDROOT}/lib/libidn.so
+		ln -svf ../../lib/libidn.so.11.6.5 %{BUILDROOT}/usr/lib/libidn.so
+	end
+end
 
-	-mkdir -pv $(BUILDROOT)/usr/lib
-	rm -vf $(BUILDROOT)/lib/libidn.so
-	ln -svf ../../lib/libidn.so.11.6.5 $(BUILDROOT)/usr/lib/libidn.so
-endef
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

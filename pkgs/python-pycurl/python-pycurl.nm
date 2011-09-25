@@ -1,70 +1,59 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = python-pycurl
+version    = 7.19.0
+release    = 3
+thisapp    = pycurl-%{version}
 
-include $(PKGROOT)/Include
-
-PKG_NAME       = pycurl
-PKG_VER        = 7.19.0
-PKG_REL        = 3
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Languages
-PKG_URL        = http://pycurl.sourceforge.net/
-PKG_LICENSE    = LGPLv2+ or MIT
-PKG_SUMMARY    = A Python interface to libcurl.
-
-CFLAGS        += -DHAVE_CURL_OPENSSL
-
-PKG_BUILD_DEPS+= libcurl-devel openssl-devel python-devel
+groups     = Development/Languages
+url        = http://pycurl.sourceforge.net/
+license    = LGPLv2+ or MIT
+summary    = A Python interface to libcurl.
 
 # During its initialization, PycURL checks that the actual libcurl version
 # is not lower than the one used when PycURL was built.
 # Yes, that should be handled by library versioning (which would then get
 # automatically reflected).
 # For now, we have to reflect that dependency.
-LIBCURL_VERSION = $(shell curl-config --version | awk '{ print $$NF }')
-PKG_DEPS += libcurl>=$(LIBCURL_VERSION)
+LIBCURL_VERSION = $(shell curl-config --version | awk '{ print $NF }')
+PKG_DEPS += libcurl>=%{LIBCURL_VERSION}
 
-define PKG_DESCRIPTION
-	PycURL is a Python interface to libcurl. PycURL can be used to fetch \
-	objects identified by a URL from a Python program, similar to the \
-	urllib Python module. PycURL is mature, very fast, and supports a lot \
+description
+	PycURL is a Python interface to libcurl. PycURL can be used to fetch
+	objects identified by a URL from a Python program, similar to the
+	urllib Python module. PycURL is mature, very fast, and supports a lot
 	of features.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-define STAGE_BUILD
-	cd $(DIR_APP) && python setup.py build
-endef
+build
+	requires
+		libcurl-devel
+		openssl-devel
+		python-devel
+	end
 
-define STAGE_TEST
-	cd $(DIR_APP) && PYTHONPATH=$PWD/build/lib* python tests/test_internals.py -q
-endef
+	CFLAGS += -DHAVE_CURL_OPENSSL
 
-define STAGE_INSTALL	
-	cd $(DIR_APP) && python setup.py install --skip-build -O1 \
-		--root=$(BUILDROOT)
-	cd $(DIR_APP) && rm -rf $(BUILDROOT)/usr/share/doc/pycurl
-endef
+	build
+		python setup.py build
+	end
+
+	test
+		PYTHONPATH=$PWD/build/lib* python tests/test_internals.py -q
+	end
+
+	install
+		python setup.py install --skip-build -O1 \
+			--root=%{BUILDROOT}
+		rm -rf %{BUILDROOT}/usr/share/doc/pycurl
+	end
+end
+
+packages
+	package %{name}
+end

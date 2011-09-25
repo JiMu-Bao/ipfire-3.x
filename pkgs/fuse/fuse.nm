@@ -1,58 +1,47 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = fuse
+version    = 2.8.5
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Filesystems
+url        = http://fuse.sf.net/
+license    = GPL+
+summary    = File System in Userspace (FUSE) utilities.
 
-PKG_NAME       = fuse
-PKG_VER        = 2.8.5
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Filesystems
-PKG_URL        = http://fuse.sf.net/
-PKG_LICENSE    = GPL+
-PKG_SUMMARY    = File System in Userspace (FUSE) utilities.
-
-PKG_BUILD_DEPS+= libselinux-devel
-
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
-
-define PKG_DESCRIPTION
+description
 	With FUSE it is possible to implement a fully functional \
 	filesystem in a userspace program. This package contains the \
 	FUSE userspace tools to mount a FUSE filesystem.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-CONFIGURE_OPTIONS += \
-	--disable-static \
-	--disable-rpath
+build
+	requires
+		libselinux-devel
+	end
 
-define STAGE_INSTALL_CMDS
-	rm -vrf $(BUILDROOT)/etc/init.d
+	configure_options += \
+		--disable-static \
+		--disable-rpath
 
-	# Remove /dev/fuse which cannot be packaged.
-	rm -rvf $(BUILDROOT)/dev
-endef
+	install_cmds
+		rm -vrf %{BUILDROOT}/etc/init.d
+
+		# Remove /dev/fuse which cannot be packaged.
+		rm -rvf %{BUILDROOT}/dev
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

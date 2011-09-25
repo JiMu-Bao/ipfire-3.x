@@ -1,53 +1,40 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = make
+version    = 3.81
+release    = 1
 
-include $(PKGROOT)/Include
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = Build Development/Tools
+url        = http://www.gnu.org/software/make/
+license    = GPLv2+
+summary    = A GNU tool which simplifies the build process for users.
 
-PKG_NAME       = make
-PKG_VER        = 3.81
-PKG_REL        = 0
-
-PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUPS     = Development/Tools
-PKG_URL        = http://www.gnu.org/software/make/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = A GNU tool which simplifies the build process for users.
-
-define PKG_DESCRIPTION
-	A GNU tool for controlling the generation of executables and other \
-	non-source files of a program from the program's source files. Make \
-	allows users to build and install packages without any significant \
-	knowledge about the details of the build process. The details about \
-	how the program should be built are provided for make in the program's \
+description
+	A GNU tool for controlling the generation of executables and other
+	non-source files of a program from the program's source files. Make
+	allows users to build and install packages without any significant
+	knowledge about the details of the build process. The details about
+	how the program should be built are provided for make in the program's
 	makefile.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-CONFIGURE_OPTIONS += --mandir=/usr/share
+build
+	configure_options += \
+		--mandir=/usr/share
 
-define STAGE_TEST
-	cd $(DIR_APP) && sed -e "s/-w/& /" -i tests/scripts/features/recursion
-	cd $(DIR_APP) && make check
-endef
+	test
+		sed -e "s/-w/& /" -i tests/scripts/features/recursion
+		make check
+	end
+end
+
+packages
+	package %{name}
+end

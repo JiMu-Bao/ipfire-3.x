@@ -1,40 +1,18 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libevent
+version    = 2.0.10
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Development/Tools
+url        = http://sourceforge.net/projects/levent/files/libevent/libevent-2.0
+license    = BSD
+summary    = Abstract asynchronous event notification library.
 
-PKG_NAME       = libevent
-PKG_VER        = 2.0.10
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Tools
-PKG_URL        = http://sourceforge.net/projects/levent/files/libevent/libevent-2.0
-PKG_LICENSE    = BSD
-PKG_SUMMARY    = Abstract asynchronous event notification library.
-
-define PKG_DESCRIPTION
+description
 	The libevent API provides a mechanism to execute a callback \
 	function when a specific event occurs on a file descriptor or \
 	after a timeout has been reached. libevent is meant to replace \
@@ -42,12 +20,23 @@ define PKG_DESCRIPTION
 	servers. An application just needs to call event_dispatch() and \
 	can then add or remove events dynamically without having to \
 	change the event loop.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP)-stable.tar.gz
+source_dl  =
+sources    = %{thisapp}-stable.tar.gz
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	DIR_APP = %{DIR_SRC}/%{thisapp}-stable
 
-DIR_APP = $(DIR_SRC)/$(THISAPP)-stable
+	configure_options += \
+		--mandir=/usr/share/man
+end
 
-CONFIGURE_OPTIONS += --mandir=/usr/share/man
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

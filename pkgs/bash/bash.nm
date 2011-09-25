@@ -1,83 +1,72 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = bash
+version    = 4.2
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = Base Build System/Tools
+url        = http://www.gnu.org/software/bash/
+license    = GPLv2+
+summary    = Bash is short for born again shell.
 
-PKG_NAME       = bash
-PKG_VER        = 4.2
-PKG_REL        = 2
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Base System/Tools
-PKG_URL        = http://www.gnu.org/software/bash/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = Bash is short for born again shell.
-
-define PKG_DESCRIPTION
+description
 	Bash is the shell, or command language interpreter, that will appear in \
 	the GNU operating system. Bash is an sh-compatible shell that incorporates \
 	useful features from the Korn shell (ksh) and C shell (csh). It is intended \
 	to conform to the IEEE POSIX P1003.2/ISO 9945.2 Shell and Tools standard.
-endef
+end
 
-PKG_BUILD_DEPS+= autoconf automake bison ncurses-devel readline-devel
-PKG_DEPS      += /etc/bashrc /etc/profile
+source_dl  = http://ftp.gnu.org/gnu/bash/
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+build
+	requires
+		autoconf
+		automake
+		bison
+		ncurses-devel
+		readline-devel
+	end
 
-define STAGE_PREPARE_CMDS
-	# Bash uses the RTLD_LAZY option when loading libraries. We want to use
-	# RTLD_NOW (it is defined from <dlfcn.h>:
-	cd $(DIR_APP) && sed -e "s/filename, RTLD_LAZY/filename, RTLD_NOW/" \
-		-i builtins/enable.def
+	prepare_cmds
+		# Bash uses the RTLD_LAZY option when loading libraries. We want to use
+		# RTLD_NOW (it is defined from <dlfcn.h>:
+		sed -e "s/filename, RTLD_LAZY/filename, RTLD_NOW/" \
+			-i builtins/enable.def
 
-	cd $(DIR_APP) && sed -i "s|htmldir = @htmldir@|htmldir = /usr/share/doc/$(THISAPP)|" \
-		Makefile.in
-endef
+		sed -i "s|htmldir = @htmldir@|htmldir = /usr/share/doc/%{thisapp}|" \
+			Makefile.in
+	end
 
-CONFIGURE_ENVIRONMENT += ac_cv_func_working_mktime=yes
+	configure_options += \
+		--bindir=/bin \
+		--without-bash-malloc \
+		--with-installed-readline
 
-CONFIGURE_OPTIONS += \
-	--bindir=/bin \
-	--without-bash-malloc \
-	--with-installed-readline
+	# Test hangs forever
+	#def test
+	#	make tests
+	#end
 
-# Test hangs forever
-#define STAGE_TEST
-#	cd $(DIR_APP) && make tests
-#endef
+	install_cmds
+		mkdir -pv %{BUILDROOT}/{bin,etc/profile.d,root}
 
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/{bin,etc/profile.d,root}
+		# Bash startup files
+		cp -vf %{DIR_SOURCE}/dot_bash_logout %{BUILDROOT}/root/.bash_logout
+		cp -vf %{DIR_SOURCE}/dot_bash_profile %{BUILDROOT}/root/.bash_profile
+		cp -vf %{DIR_SOURCE}/dot_bashrc %{BUILDROOT}/root/.bashrc
 
-	# Bash startup files
-	cp -vf $(DIR_SOURCE)/dot_bash_logout $(BUILDROOT)/root/.bash_logout
-	cp -vf $(DIR_SOURCE)/dot_bash_profile $(BUILDROOT)/root/.bash_profile
-	cp -vf $(DIR_SOURCE)/dot_bashrc $(BUILDROOT)/root/.bashrc
+		# /etc/profile.d
+		cp -vf %{DIR_SOURCE}/profile.d/* %{BUILDROOT}/etc/profile.d
 
-	# /etc/profile.d
-	cp -vf $(DIR_SOURCE)/profile.d/* $(BUILDROOT)/etc/profile.d
+		ln -svf bash %{BUILDROOT}/bin/sh
+	end
+end
 
-	ln -svf bash $(BUILDROOT)/bin/sh
-endef
+packages
+	package %{name}
+		requires = /etc/bashrc /etc/profile
+	end
+end

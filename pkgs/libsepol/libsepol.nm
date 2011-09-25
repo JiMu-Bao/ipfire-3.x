@@ -1,57 +1,45 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libsepol
+version    = 2.0.41
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://www.selinuxproject.org
+license    = LGPLv2+
+summary    = SELinux binary policy manipulation library.
 
-PKG_NAME       = libsepol
-PKG_VER        = 2.0.41
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.selinuxproject.org
-PKG_LICENSE    = LGPLv2+
-PKG_SUMMARY    = SELinux binary policy manipulation library.
-
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
-
-define PKG_DESCRIPTION
+description
 	libsepol provides an API for the manipulation of SELinux binary \
 	policies.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tgz
+source_dl  =
+sources    = %{thisapp}.tgz
 
-define STAGE_BUILD
-	cd $(DIR_APP) && make clean
-	cd $(DIR_APP) && make CFLAGS="$(CFLAGS)" $(PARALELLISMFLAGS)
-endef
+build
+	build
+		make clean
+		make CFLAGS="%{CFLAGS}" %{PARALELLISMFLAGS}
+	end
 
-define STAGE_INSTALL_CMDS
-	# Remove binaries
-	rm -rf $(BUILDROOT)/usr/bin
+	install_cmds
+		# Remove binaries
+		rm -rf %{BUILDROOT}/usr/bin
+
+		# Remove manpages from binaries
+		rm -rf %{BUILDROOT}/usr/share/man/man8
+	end
+end
+
+packages
+	package %{name}
+	end
 	
-	# Remove manpages from binaries
-	rm -rf $(BUILDROOT)/usr/share/man/man8
-endef 
+	package %{name}-devel
+		template DEVEL
+	end
+end

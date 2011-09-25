@@ -1,56 +1,49 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = ldapvi
+version    = 1.7
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Applications/Editors
+url        = http://www.lichteblau.com/ldapvi/
+license    = GPLv2+
+summary    = An interactive LDAP client.
 
-PKG_NAME       = ldapvi
-PKG_VER        = 1.7
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Applications/Editors
-PKG_URL        = http://www.lichteblau.com/ldapvi/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = An interactive LDAP client.
-
-PKG_BUILD_DEPS+= glib2-devel ncurses-devel openldap-devel openssl-devel \
-	pkg-config popt-devel readline-devel
-PKG_DEPS      += vim
-
-define PKG_DESCRIPTION
+description
 	ldapvi is an interactive LDAP client for Unix terminals. Using it, you can \
 	update LDAP entries with a text editor, which is the same as vi. Think of \
 	it as vipw(1) for LDAP.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && for i in $$(find . -name "*.[ch]"); do \
-		sed -e "s/getline/_&/g" -i $$i; done
-endef
+build
+	requires
+		glib2-devel
+		ncurses-devel
+		openldap-devel
+		openssl-devel
+		pkg-config
+		popt-devel
+		readline-devel
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install prefix=$(BUILDROOT)/usr
-endef
+	prepare_cmds
+		for i in $(find . -name "*.[ch]"); do \
+			sed -e "s/getline/_&/g" -i $i
+		done
+	end
+
+	install
+		make install prefix=%{BUILDROOT}/usr
+	end
+end
+
+packages
+	package %{name}
+		requires = vim
+	end
+end

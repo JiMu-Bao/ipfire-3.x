@@ -1,72 +1,69 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = pyQt
+version    = 4.8.1
+release    = 1
+epoch      = 0
 
-include $(PKGROOT)/Include
+groups     = Development/Languages
+url        = http://www.riverbankcomputing.com/software/pyqt/
+license    = GPLv3 or GPLv2 with exceptions
+summary    = Python bindings for Qt4.
 
-PKG_NAME       = pyQt
-PKG_VER        = 4.8.1
-PKG_REL        = 0
-PKG_EPOCH      = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Languages
-PKG_URL        = http://www.riverbankcomputing.com/software/pyqt/
-PKG_LICENSE    = GPLv3 or GPLv2 with exceptions
-PKG_SUMMARY    = Python bindings for Qt4.
-
-PKG_BUILD_DEPS+= gcc-c++ libXext-devel python-devel qt-devel sip-devel
-PKG_DEPS      += sip
-
-define PKG_DESCRIPTION
+description
 	 Python bindings for Qt4
-endef
+end
 
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
+source_dl  =
+sources    = PyQt-x11-gpl-%{version}.tar.gz
 
-define PKG_FILES-$(PKG_NAME_REAL)-devel
-	/usr/bin
-	/usr/lib/python*/site-packages/PyQt4/pyqtconfig*
-	/usr/lib/python*/site-packages/PyQt4/uic/pyuic.py*
-	/usr/share/sip
-endef
+build
+	requires
+		gcc-c++
+		libXext-devel
+		python-devel
+		qt-devel
+		sip-devel
+	end
 
-PKG_TARBALL    = PyQt-x11-gpl-$(PKG_VER).tar.gz
+	DIR_APP = %{DIR_SRC}/PyQt-x11-gpl-%{version}
 
-DIR_APP        = $(DIR_SRC)/PyQt-x11-gpl-$(PKG_VER)
+	build
+		python configure.py \
+			--assume-shared \
+			--confirm-license \
+			--verbose
 
-define STAGE_BUILD
-	cd $(DIR_APP) && python configure.py \
-		--assume-shared \
-		--confirm-license \
-		--verbose
+		make %{PARALLELISMFLAGS}
+	end
 
-	cd $(DIR_APP) && make $(PARALLELISMFLAGS)
-endef
+	make_install_targets += \
+		INSTALL_ROOT=%{BUILDROOT}
 
-STAGE_INSTALLTARGET += INSTALL_ROOT=$(BUILDROOT)
+	install_cmds
+		# Remove python3 port
+		rm -rfv %{BUILDROOT}/usr/lib/python*/site-packages/PyQt4/uic/port_v3
+	end
+end
 
-define STAGE_INSTALL_CMDS
-	# Remove python3 port
-	rm -rfv $(BUILDROOT)/usr/lib/python*/site-packages/PyQt4/uic/port_v3
-endef
+packages
+	package %{name}
+		requires
+			sip
+		end
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	
+		files
+			/usr/bin
+			/usr/lib/python*/site-packages/PyQt4/pyqtconfig*
+			/usr/lib/python*/site-packages/PyQt4/uic/pyuic.py*
+			/usr/share/sip
+		end
+	end
+end

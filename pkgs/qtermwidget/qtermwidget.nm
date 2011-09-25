@@ -1,71 +1,60 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = qtermwidget
+version    = 0.1
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = /Tools
+url        = http://qtermwidget.sourceforge.net/
+license    = GPLv2
+summary    = A QT4 terminal emulation widget.
 
-PKG_NAME       = qtermwidget
-PKG_VER        = 0.1
-PKG_REL        = 2
+description
+	QTermWidget is an opensource project based on KDE4 Konsole
+	application. The main goal of this project is to provide
+	unicode-enabled, embeddable QT4 widget for using as a built-in
+	console (or terminal emulation widget).
+end
 
-PKG_MAINTAINER =
-PKG_GROUPS     = /Tools
-PKG_URL        = http://qtermwidget.sourceforge.net/
-PKG_LICENSE    = GPLv2
-PKG_SUMMARY    = A QT4 terminal emulation widget.
+source_dl  =
 
-PKG_BUILD_DEPS+= gcc-c++ python-devel qt-devel
+build
+	requires
+		gcc-c++
+		python-devel
+		qt-devel
+	end
 
-define PKG_DESCRIPTION
-	QTermWidget is an opensource project based on KDE4 Konsole \
-	application. The main goal of this project is to provide \
-	unicode-enabled, embeddable QT4 widget for using as a built-in \
-	console (or terminal emulation widget). 
-endef
+	DIR_APP = %{DIR_SRC}/%{name}
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+	# XXX Why do we have to set this flag here ?
+	export QMAKESPEC=linux-g++
 
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
+	build
+		qmake
+		make #%{PARALLELISMFLAGS}
+	end
 
-DIR_APP        = $(DIR_SRC)/$(PKG_NAME)
+	install
+		# Install headers
+		mkdir -pv %{BUILDROOT}/usr/include/%{name}
+		cp -vf lib/*.h %{BUILDROOT}/usr/include/%{name}
 
-# XXX Why do we have to set this flag here ?
-export QMAKESPEC=linux-g++
+		# Only install the library
+		mkdir -pv %{BUILDROOT}/usr/lib
+		cp -vf libqtermwidget.so.0 %{BUILDROOT}/usr/lib
+		ln -svf libqtermwidget.so.0 %{BUILDROOT}/usr/lib/libqtermwidget.so
+	end
+end
 
-define STAGE_BUILD
-	cd $(DIR_APP) && qmake
-	cd $(DIR_APP) && make #$(PARALLELISMFLAGS)
-endef
-
-define STAGE_INSTALL
-	# Install headers
-	-mkdir -pv $(BUILDROOT)/usr/include/$(PKG_NAME)
-	cd $(DIR_APP) && cp -vf lib/*.h $(BUILDROOT)/usr/include/$(PKG_NAME)
-
-	# Install lib
-	-mkdir -pv $(BUILDROOT)/usr/lib
-	cd $(DIR_APP) && cp -vf libqtermwidget.so.0 $(BUILDROOT)/usr/lib
-	ln -svf libqtermwidget.so.0 $(BUILDROOT)/usr/lib/libqtermwidget.so
-
-	# Do not install binaries	
-endef
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

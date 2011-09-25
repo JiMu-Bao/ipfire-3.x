@@ -1,61 +1,49 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = screen
+version    = 4.0.3
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Application/System
+url        = http://www.gnu.org/software/screen
+license    = GPLv2+
+summary    = A screen manager that supports multiple logins on one terminal.
 
-PKG_NAME       = screen
-PKG_VER        = 4.0.3
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Application/System
-PKG_URL        = http://www.gnu.org/software/screen
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = A screen manager that supports multiple logins on one terminal.
-
-PKG_BUILD_DEPS+= ncurses-devel pam-devel
-
-define PKG_DESCRIPTION
-	The screen utility allows you to have multiple logins on just one \
-	terminal. Screen is useful for users who telnet into a machine or \
-	are connected via a dumb terminal, but want to use more than just \
+description
+	The screen utility allows you to have multiple logins on just one
+	terminal. Screen is useful for users who telnet into a machine or
+	are connected via a dumb terminal, but want to use more than just
 	one login.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = http://ftp.gnu.org/gnu/screen/
 
-CONFIGURE_OPTIONS += \
-	--with-socket-dir=/var/run/screen \
-	--with-sys-screenrc=/etc/screenrc \
-	--mandir=/usr/share/man
+build
+	requires
+		ncurses-devel
+		pam-devel
+	end
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && sed -i -e "s%/usr/local/etc/screenrc%/etc/screenrc%" {etc,doc}/*
-endef
+	configure_options += \
+		--with-socket-dir=/var/run/screen \
+		--with-sys-screenrc=/etc/screenrc \
+		--mandir=/usr/share/man
 
-define STAGE_INSTALL_CMDS
-	# Install screenrc
-	-mkdir -pv $(BUILDROOT)/etc
-	cp -vf $(DIR_SOURCE)/screenrc $(BUILDROOT)/etc/screenrc
-endef
+	prepare_cmds
+		sed -i -e "s%/usr/local/etc/screenrc%/etc/screenrc%" {etc,doc}/*
+	end
+
+	install_cmds
+		# Install screenrc
+		mkdir -pv %{BUILDROOT}/etc
+		cp -vf %{DIR_SOURCE}/screenrc %{BUILDROOT}/etc/screenrc
+	end
+end
+
+packages
+	package %{name}
+	end
+end

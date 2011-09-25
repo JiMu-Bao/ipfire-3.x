@@ -1,57 +1,42 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = ed
+version    = 1.5
+release    = 3
 
-include $(PKGROOT)/Include
+groups     = Application/Text
+url        = http://www.gnu.org/software/ed/
+license    = GPLv3+
+summary    = The GNU line editor.
 
-PKG_NAME       = ed
-PKG_VER        = 1.5
-PKG_REL        = 3
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Application/Text
-PKG_URL        = http://www.gnu.org/software/ed/
-PKG_LICENSE    = GPLv3+
-PKG_SUMMARY    = The GNU line editor.
-
-define PKG_DESCRIPTION
+description
 	Ed is a line-oriented text editor, used to create, display, and modify \
 	text files (both interactively and via shell scripts).  For most \
 	purposes, ed has been replaced in normal usage by full-screen editors \
 	(emacs and vi, for example).
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-CONFIGURE_OPTIONS += \
-	--exec-prefix=/
+build
+	configure_options += \
+		--exec-prefix=/
 
-STAGE_BUILD_TARGET = CFLAGS="$(CFLAGS)"
+	make_build_target = CFLAGS="%{CFLAGS}"
 
-define STAGE_INSTALL
-	# Create directory for man pages
-	mkdir -pv $(BUILDROOT)/usr/share/man/man1
+	install
+		# Create directory for man pages
+		mkdir -pv %{BUILDROOT}/usr/share/man/man1
 
-	cd $(DIR_APP) && make install bindir=/bin mandir=/usr/share/man \
-		DESTDIR=$(BUILDROOT)
-endef
+		make install bindir=/bin mandir=/usr/share/man \
+			DESTDIR=%{BUILDROOT}
+	end
+end
+
+packages
+	package %{name}
+	end
+end

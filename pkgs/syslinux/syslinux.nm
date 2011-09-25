@@ -1,66 +1,66 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = syslinux
+version    = 4.02
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Boot
+url        = http://syslinux.zytor.com/
+license    = GPLv2+
+summary    = Simple kernel loader which boots from a FAT filesystem.
 
-PKG_NAME       = syslinux
-PKG_VER        = 4.02
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Boot
-PKG_URL        = http://syslinux.zytor.com/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = Simple kernel loader which boots from a FAT filesystem.
-
-PKG_BUILD_DEPS+= nasm python-devel
-
-define PKG_DESCRIPTION
+description
 	SYSLINUX is a suite of bootloaders, currently supporting DOS FAT \
 	filesystems, Linux ext2/ext3 filesystems (EXTLINUX), PXE network boots \
 	(PXELINUX), or ISO 9660 CD-ROMs (ISOLINUX).  It also includes a tool, \
 	MEMDISK, which loads legacy operating systems from these media.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = http://www.kernel.org/pub/linux/utils/boot/syslinux/
 
-CFLAGS         = -Werror -Wno-unused -finline-limit=2000
+build
+	requires
+		nasm
+		python-devel
+	end
+	
+	CFLAGS = -Werror -Wno-unused -finline-limit=2000
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && make clean
-endef
+	prepare_cmds
+		cd %{DIR_APP} && make clean
+	end
 
-define STAGE_BUILD
-	cd $(DIR_APP) && make installer $(PARALLELISMFLAGS) \
-		CC="gcc -std=gnu99 -fgnu89-inline -fno-pic -fno-pie -nopie"
-	cd $(DIR_APP) && make -C sample tidy
-endef
+	build
+		make installer \
+			%{PARALLELISMFLAGS} \
+			CC="gcc \
+			-std=gnu99 \
+			-fgnu89-inline \
+			-fno-pic \
+			-fno-pie \
+			-nopie"
+		make -C sample tidy
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install-all INSTALLROOT=$(BUILDROOT) \
-		CC="gcc -std=gnu99 -fgnu89-inline -fno-pic -fno-pie -nopie" \
-		MANDIR=/usr/share/man
+	install
+		make install-all \
+			INSTALLROOT=%{BUILDROOT} \
+			CC="gcc \
+			-std=gnu99 \
+			-fgnu89-inline \
+			-fno-pic \
+			-fno-pie \
+			-nopie" \
+			MANDIR=/usr/share/man
 
-	rm -rvf $(BUILDROOT)/{boot,tftpboot}
-endef
+		rm -rvf %{BUILDROOT}/{boot,tftpboot}
+	end
+end
+
+packages
+	package %{name}
+	end
+end

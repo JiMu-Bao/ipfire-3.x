@@ -1,102 +1,98 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = iscsi-initiator-utils
+version    = 6.2.0.872
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Networking/Tools
+url        = http://bridge.sourceforge.net/
+license    = GPLv2+
+summary    = iSCSI daemon and utility programs.
 
-PKG_NAME       = iscsi-initiator-utils
-PKG_VER        = 6.2.0.872
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Networking/Tools
-PKG_URL        = http://bridge.sourceforge.net/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = iSCSI daemon and utility programs.
-
-PKG_BUILD_DEPS+= openssl-devel python-devel
-
-define PKG_DESCRIPTION
+description
 	The iscsi package provides the server daemon for the iSCSI protocol, \
 	as well as the utility programs used to manage it. iSCSI is a protocol \
 	for distributed disk access using SCSI commands sent over Internet \
 	Protocol networks.
-endef
+end
 
-PKG_PACKAGES  += libiscsi libiscsi-devel
+source_dl  =
+sources    = open-iscsi-2.0-872-rc4-bnx2i.tar.gz
 
-define PKG_FILES-libiscsi
-	/usr/lib/libiscsi.so.*
-endef
+build
+	requires
+		openssl-devel
+		python-devel
+	end
 
-define PKG_FILES-libiscsi-devel
-	/usr/lib/libiscsi.so
-	/usr/include
-endef
+	DIR_APP = %{DIR_SRC}/open-iscsi-2.0-872-rc4-bnx2i
 
-PKG_TARBALL    = open-iscsi-2.0-872-rc4-bnx2i.tar.gz
-DIR_APP        = $(DIR_SRC)/open-iscsi-2.0-872-rc4-bnx2i
+	prepare_cmds
+		cd libiscsi && sed -e "s/^all.*/all: lib tests/" -i Makefile
+	end
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP)/libiscsi && sed -e "s/^all.*/all: lib tests/" -i Makefile
-endef
+	build
+		cd %{DIR_APP}/utils/open-isns && ./configure
+		cd %{DIR_APP}/utils/open-isns && make
+		cd %{DIR_APP} && make -C utils/sysdeps
+		cd %{DIR_APP} && make -C utils/fwparam_ibft
+		cd %{DIR_APP} && make -C usr
+		cd %{DIR_APP} && make -C utils
+		cd %{DIR_APP} && make -C libiscsi
+		cd %{DIR_APP}/libiscsi && python setup.py build
+	end
 
-define STAGE_BUILD
-	cd $(DIR_APP)/utils/open-isns && ./configure
-	cd $(DIR_APP)/utils/open-isns && make
-	cd $(DIR_APP) && make -C utils/sysdeps
-	cd $(DIR_APP) && make -C utils/fwparam_ibft
-	cd $(DIR_APP) && make -C usr
-	cd $(DIR_APP) && make -C utils
-	cd $(DIR_APP) && make -C libiscsi
-	cd $(DIR_APP)/libiscsi && python setup.py build
-endef
+	install
+		mkdir -pv %{BUILDROOT}/sbin
+		mkdir -pv %{BUILDROOT}/usr/share/man/man8
+		mkdir -pv %{BUILDROOT}/etc/{iscsi,sysconfig}
+		mkdir -pv %{BUILDROOT}/etc/NetworkManager/dispatcher.d
+		mkdir -pv %{BUILDROOT}/var/lib/iscsi/{nodes,send_targets,static,isns,slp,ifaces}
+		mkdir -pv %{BUILDROOT}/var/lock/iscsi
+		mkdir -pv %{BUILDROOT}/usr/lib
+		mkdir -pv %{BUILDROOT}/usr/include
+		mkdir -pv %{BUILDROOT}/usr/lib/python2.7/site-packages
 
-define STAGE_INSTALL
-	-mkdir -pv $(BUILDROOT)/sbin
-	-mkdir -pv $(BUILDROOT)/usr/share/man/man8
-	-mkdir -pv $(BUILDROOT)/etc/{iscsi,sysconfig}
-	-mkdir -pv $(BUILDROOT)/etc/NetworkManager/dispatcher.d
-	-mkdir -pv $(BUILDROOT)/var/lib/iscsi/{nodes,send_targets,static,isns,slp,ifaces}
-	-mkdir -pv $(BUILDROOT)/var/lock/iscsi
-	-mkdir -pv $(BUILDROOT)/usr/lib
-	-mkdir -pv $(BUILDROOT)/usr/include
-	-mkdir -pv $(BUILDROOT)/usr/lib/python2.7/site-packages
- 
-	cd $(DIR_APP) && install -p -m 755 usr/iscsid usr/iscsiadm utils/iscsi-iname usr/iscsistart \
-		$(BUILDROOT)/sbin
-	cd $(DIR_APP) && install -p -m 644 doc/iscsiadm.8 $(BUILDROOT)/usr/share/man/man8
-	cd $(DIR_APP) && install -p -m 644 doc/iscsid.8 $(BUILDROOT)/usr/share/man/man8
-	cd $(DIR_APP) && install -p -m 644 etc/iscsid.conf $(BUILDROOT)/etc/sysconfig/iscsi
-	cd $(DIR_APP) && install -p -m 644 doc/iscsistart.8 $(BUILDROOT)/usr/share/man/man8
-	cd $(DIR_APP) && install -p -m 644 doc/iscsi-iname.8 $(BUILDROOT)/usr/share/man/man8
+		install -p -m 755 usr/iscsid usr/iscsiadm utils/iscsi-iname usr/iscsistart \
+			%{BUILDROOT}/sbin
+		install -p -m 644 doc/iscsiadm.8 %{BUILDROOT}/usr/share/man/man8
+		install -p -m 644 doc/iscsid.8 %{BUILDROOT}/usr/share/man/man8
+		install -p -m 644 etc/iscsid.conf %{BUILDROOT}/etc/sysconfig/iscsi
+		install -p -m 644 doc/iscsistart.8 %{BUILDROOT}/usr/share/man/man8
+		install -p -m 644 doc/iscsi-iname.8 %{BUILDROOT}/usr/share/man/man8
 
-	cd $(DIR_APP) && install -p -m 755 $(DIR_SOURCE)/04-iscsi $(BUILDROOT)/etc/NetworkManager/dispatcher.d
+		install -p -m 755 %{DIR_SOURCE}/04-iscsi %{BUILDROOT}/etc/NetworkManager/dispatcher.d
 
-	cd $(DIR_APP) && install -p -m 755 libiscsi/libiscsi.so.0 $(BUILDROOT)/usr/lib
-	ln -svf libiscsi.so.0 $(BUILDROOT)/usr/lib/libiscsi.so
-	cd $(DIR_APP) && install -p -m 644 libiscsi/libiscsi.h $(BUILDROOT)/usr/include
+		install -p -m 755 libiscsi/libiscsi.so.0 %{BUILDROOT}/usr/lib
+		ln -svf libiscsi.so.0 %{BUILDROOT}/usr/lib/libiscsi.so
+		install -p -m 644 libiscsi/libiscsi.h %{BUILDROOT}/usr/include
 
-	cd $(DIR_APP) && install -p -m 755 libiscsi/build/lib.linux-*/libiscsimodule.so \
-		$(BUILDROOT)/usr/lib/python2.7/site-packages
-endef
+		install -p -m 755 libiscsi/build/lib.linux-*/libiscsimodule.so \
+			%{BUILDROOT}/usr/lib/python2.7/site-packages
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package libiscsi
+		template LIBS
+	
+		files
+			/usr/lib*/libiscsi.so.*
+		end
+	end
+	
+	package libiscsi-devel
+		template DEVEL
+	
+		files
+			/usr/lib/libiscsi.so
+			/usr/include
+		end
+	end
+end

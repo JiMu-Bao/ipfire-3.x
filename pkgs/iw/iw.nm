@@ -1,50 +1,39 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = iw
+version    = 3.0
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Base
+url        = http://www.linuxwireless.org/en/users/Documentation/iw
+license    = BSD
+summary    = A nl80211 based wireless configuration tool.
 
-PKG_NAME       = iw
-PKG_VER        = 3.0
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = http://www.linuxwireless.org/en/users/Documentation/iw
-PKG_LICENSE    = BSD
-PKG_SUMMARY    = A nl80211 based wireless configuration tool.
-
-PKG_BUILD_DEPS+= libnl-devel pkg-config
-
-define PKG_DESCRIPTION
+description
 	iw is a new nl80211 based CLI configuration utility for wireless \
 	devices. It supports almost all new drivers that have been added \
 	to the kernel recently.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/sbin
-	mv -v $(BUILDROOT)/usr/sbin/iw $(BUILDROOT)/sbin/iw
-endef
+build
+	requires
+		libnl-devel
+		pkg-config
+	end
+
+	install_cmds
+		mkdir -pv %{BUILDROOT}/sbin
+		mv -v %{BUILDROOT}/usr/sbin/iw %{BUILDROOT}/sbin/iw
+	end
+end
+
+packages
+	package %{name}
+	end
+end

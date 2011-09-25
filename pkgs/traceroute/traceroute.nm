@@ -1,57 +1,43 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = traceroute
+version    = 2.0.12
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Application/Internet
+url        = http://traceroute.sourceforge.net
+license    = GPLv2+
+summary    = Traces the route taken by packets over an IPv4/IPv6 network.
 
-PKG_NAME       = traceroute
-PKG_VER        = 2.0.12
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Application/Internet
-PKG_URL        = http://traceroute.sourceforge.net
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = Traces the route taken by packets over an IPv4/IPv6 network.
-
-define PKG_DESCRIPTION
-	The traceroute utility displays the route used by IP packets \
-	on their way to a specified network (or Internet) host. \
-	Traceroute displays the IP number and host name (if possible) \
-	of the machines along the route taken by the packets. \
-	Traceroute is used as a network debugging tool. If you're \
-	having network connectivity problems, traceroute will show you \
+description
+	The traceroute utility displays the route used by IP packets
+	on their way to a specified network (or Internet) host.
+	Traceroute displays the IP number and host name (if possible)
+	of the machines along the route taken by the packets.
+	Traceroute is used as a network debugging tool. If you're
+	having network connectivity problems, traceroute will show you
 	where the trouble is coming from along the route.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  = http://downloads.sourceforge.net/project/%{name}/%{name}/%{thisapp}/
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && echo "CFLAGS += $(CFLAGS)" >> Make.defines
-endef
+build
+	prepare_cmds
+		echo "CFLAGS += %{CFLAGS}" >> Make.defines
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install prefix=$(BUILDROOT)/usr
-	chmod 755 $(BUILDROOT)/usr/bin/traceroute
-	ln -svf traceroute $(BUILDROOT)/usr/bin/traceroute6
-endef
+	install
+		make install prefix=%{BUILDROOT}/usr
+
+		chmod 755 %{BUILDROOT}/usr/bin/traceroute
+		ln -svf traceroute %{BUILDROOT}/usr/bin/traceroute6
+	end
+end
+
+packages
+	package %{name}
+	end
+end

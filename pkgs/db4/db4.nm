@@ -1,63 +1,37 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
-
-include $(PKGROOT)/Include
-
-PKG_NAME       = db
-PKG_VER_MAJ    = 4.7
-PKG_VER_MIN    = 25
-PKG_VER        = $(PKG_VER_MAJ).$(PKG_VER_MIN)
-PKG_REL        = 0
-PKG_EPOCH      = 1
+name       = db
+version_major = 4.7
+version_minor = 25
+version    = %{version_major}.%{version_minor}
+release    = 1
+epoch      = 1
 
 # Never update this to major version 5.
 
-PKG_MAINTAINER = Michael Tremer <michael.tremer@ipfire.org>
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.oracle.com/technology/products/berkeley-db/
-PKG_LICENSE    = Proprietary
-PKG_SUMMARY    = Berkeley DB is a library that provides an embedded database.
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = System/Libraries
+url        = http://www.oracle.com/technology/products/berkeley-db/
+license    = Proprietary
+summary    = Berkeley DB is a library that provides an embedded database.
 
-PKG_BUILD_DEPS+= gcc-c++
-
-define PKG_DESCRIPTION
+description
 	Berkeley DB (BDB) is a computer software library that provides \
 	a high-performance embedded database.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES   = $(PKG_NAME_REAL)-devel $(PKG_NAME_REAL)-utils \
-	$(PKG_NAME_REAL) $(PKG_NAME_REAL)-cxx
+build
+	requires
+		gcc-c++
+	end
 
-PKG_FILES                        = /usr/lib/libdb-$(PKG_VER_MAJ).so
-PKG_FILES-$(PKG_NAME_REAL)-cxx   = /usr/lib/libdb_cxx-$(PKG_VER_MAJ).so
-PKG_FILES-$(PKG_NAME_REAL)-devel = /usr/include /usr/lib
-PKG_FILES-$(PKG_NAME_REAL)-utils = /usr/bin
-
-define STAGE_BUILD
-	cd $(DIR_APP)/build_unix && \
+	build
+		cd %{DIR_APP}/build_unix
 		CC=gcc \
 		../dist/configure \
 			--prefix=/usr \
@@ -65,10 +39,31 @@ define STAGE_BUILD
 			--enable-cxx \
 			--disable-static
 
-	cd $(DIR_APP)/build_unix && make $(PARALLELISMFLAGS)
-endef
+		make %{PARALLELISMFLAGS}
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP)/build_unix && make install DESTDIR=$(BUILDROOT) \
-		docdir=/usr/share/doc/$(THISAPP)
-endef
+	install
+		cd %{DIR_APP}/build_unix
+		make install DESTDIR=%{BUILDROOT} \
+			docdir=/usr/share/doc/%{thisapp}
+	end
+end
+
+# XXX insert descriptions
+packages
+	package db4
+		files = /usr/lib*/libdb-%{version_major}.so
+	end
+	
+	package db4-devel
+		template DEVEL
+	end
+	
+	package db4-utils
+		files = /usr/bin
+	end
+	
+	package db4-cxx
+		files = /usr/lib*/libdb_cxx-%{version_major}.so
+	end
+end

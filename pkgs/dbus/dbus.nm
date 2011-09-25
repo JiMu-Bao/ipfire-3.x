@@ -1,74 +1,69 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = dbus
+version    = 1.4.0
+release    = 3
 
-include $(PKGROOT)/Include
+groups     = System/Daemons
+url        = http://www.freedesktop.org/software/dbus/
+license    = GPLv2+ AFL
+summary    = D-BUS message bus.
 
-PKG_NAME       = dbus
-PKG_VER        = 1.4.0
-PKG_REL        = 3
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Daemons
-PKG_URL        = http://www.freedesktop.org/software/dbus/
-PKG_LICENSE    = GPLv2+ AFL
-PKG_SUMMARY    = D-BUS message bus.
-
-PKG_BUILD_DEPS+= audit-devel expat-devel libselinux-devel
-
-define PKG_DESCRIPTION
+description
 	D-BUS is a system for sending messages between applications. It is \
 	used both for the system-wide message bus service, and as a \
 	per-user-login-session messaging facility.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel $(PKG_NAME)-libs
+build
+	requires
+		audit-devel
+		expat-devel
+		libselinux-devel
+	end
 
-PKG_FILES-$(PKG_NAME)-devel += /usr/lib/dbus-1.0
+	configure_options += \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--libdir=/lib \
+		--libexecdir=/lib \
+		--enable-libaudit \
+		--enable-selinux=yes \
+		--with-systemdsystemunitdir=/lib/systemd/system/ \
+		--with-dbus-user=dbus
 
-CONFIGURE_OPTIONS += \
-	--sysconfdir=/etc \
-	--localstatedir=/var \
-	--libdir=/lib \
-	--libexecdir=/lib \
-	--enable-libaudit \
-	--enable-selinux=yes \
-	--with-systemdsystemunitdir=/lib/systemd/system/ \
-	--with-dbus-user=dbus
+	install_cmds
+		mkdir -pv %{BUILDROOT}/usr/lib
+		mv -v %{BUILDROOT}/lib/pkgconfig %{BUILDROOT}/usr/lib/
 
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/usr/lib
-	mv -v $(BUILDROOT)/lib/pkgconfig $(BUILDROOT)/usr/lib/
+		#change the arch-deps.h include directory to /usr/lib instead of /lib
+		sed -e 's@-I${libdir}@-I${prefix}/lib@' -i %{BUILDROOT}/usr/lib/pkgconfig/dbus-1.pc
 
-	#change the arch-deps.h include directory to /usr/lib instead of /lib
-	sed -e 's@-I$${libdir}@-I$${prefix}/lib@' -i $(BUILDROOT)/usr/lib/pkgconfig/dbus-1.pc
+		mkdir -pv %{BUILDROOT}/usr/lib/dbus-1.0/include
+		mv -v %{BUILDROOT}/lib/dbus-1.0/include/* %{BUILDROOT}/usr/lib/dbus-1.0/include
+		rm -rvf %{BUILDROOT}/lib/dbus-1.0
 
-	-mkdir -pv $(BUILDROOT)/usr/lib/dbus-1.0/include
-	mv -v $(BUILDROOT)/lib/dbus-1.0/include/* $(BUILDROOT)/usr/lib/dbus-1.0/include
-	rm -rvf $(BUILDROOT)/lib/dbus-1.0
+		rm -vf %{BUILDROOT}/lib/libdbus-1.so
+		ln -svf ../../lib/libdbus-1.so.3 %{BUILDROOT}/usr/lib/libdbus-1.so
+	end
+end
 
-	rm -vf $(BUILDROOT)/lib/libdbus-1.so
-	ln -svf ../../lib/libdbus-1.so.3 $(BUILDROOT)/usr/lib/libdbus-1.so
-endef
+packages
+	package %{name}
+	end
+	
+	package %{name}-libs
+		template LIBS
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	
+		files += /usr/lib/dbus-1.0
+	end
+end

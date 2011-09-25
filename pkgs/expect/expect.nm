@@ -1,66 +1,56 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = expect
+version    = 5.43
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = Development/Languages
+url        = http://expect.nist.gov/
+license    = Public Domain
+summary    = A program-script interaction and testing utility.
 
-PKG_NAME       = expect
-PKG_VER        = 5.43
-PKG_REL        = 0
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Languages
-PKG_URL        = http://expect.nist.gov/
-PKG_LICENSE    = Public Domain
-PKG_SUMMARY    = A program-script interaction and testing utility.
-
-PKG_BUILD_DEPS+= autoconf automake tcl
-
-define PKG_DESCRIPTION
+description
 	xpect is a tcl application for automating and testing \
 	interactive applications such as telnet, ftp, passwd, fsck, \
 	rlogin, tip, etc. Expect makes it easy for a script to \
 	control another program and interact with it.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).0.tar.gz
+source_dl  =
+sources    = %{thisapp}.0.tar.gz
 
-CONFIGURE_OPTIONS = \
-	--mandir=/usr/share/man \
-	--with-tcl=/usr/lib \
-	--with-tclinclude=/usr/include/ \
-	--with-x=no \
-	--enable-shared
+build
+	requires
+		autoconf
+		automake
+		tcl
+	end
 
-define STAGE_TEST
-	cd $(DIR_APP) && make test
-endef
+	configure_options = \
+		--mandir=/usr/share/man \
+		--with-tcl=/usr/lib \
+		--with-tclinclude=/usr/include/ \
+		--with-x=no \
+		--enable-shared
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install INSTALL_ROOT=$(BUILDROOT)
-	
-	# remove cryptdir/decryptdir, as Linux has no crypt command
-	rm -f $(BUILDROOT)/usr/bin/{cryptdir,decryptdir} 
-	rm -f $(BUILDROOT)/usr/share/man1/{cryptdir,decryptdir}.1*
-	rm -f $(BUILDROOT)/usr/bin/autopasswd
-endef
+	test
+		make test
+	end
+
+	install
+		make install INSTALL_ROOT=%{BUILDROOT}
+
+		# remove cryptdir/decryptdir, as Linux has no crypt command
+		rm -f %{BUILDROOT}/usr/bin/{cryptdir,decryptdir}
+		rm -f %{BUILDROOT}/usr/share/man1/{cryptdir,decryptdir}.1*
+		rm -f %{BUILDROOT}/usr/bin/autopasswd
+	end
+end
+
+packages
+	package %{name}
+	end
+end

@@ -1,49 +1,38 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = lldpd
+version    = 0.5.2
+release    = 5
 
-include $(PKGROOT)/Include
+groups     = Networking/Tools
+url        = https://trac.luffy.cx/lldpd/
+license    = GPL
+summary    = Utilities for the Link Layer Discovery Protocol.
 
-PKG_NAME       = lldpd
-PKG_VER        = 0.5.2
-PKG_REL        = 5
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Networking/Tools
-PKG_URL        = https://trac.luffy.cx/lldpd/
-PKG_LICENSE    = GPL
-PKG_SUMMARY    = Utilities for the Link Layer Discovery Protocol.
-
-PKG_BUILD_DEPS+= libxml2-devel pkg-config zlib-devel
-
-define PKG_DESCRIPTION
+description
 	The LLDPD project aims to provide a comprehensive implementation of \
 	the IEEE standard 802.1AB Link Layer Discovery Protocol.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-CONFIGURE_OPTIONS += \
-	--with-xml \
-	--with-privsep-user=lldpd \
-	--with-privsep-group=lldpd
+build
+	requires
+		libxml2-devel
+		pkg-config
+		zlib-devel
+	end
+
+	configure_options += \
+		--with-xml \
+		--with-privsep-user=lldpd \
+		--with-privsep-group=lldpd
+end
+
+packages
+	package %{name}
+	end
+end

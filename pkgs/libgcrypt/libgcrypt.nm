@@ -1,57 +1,50 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libgcrypt
+version    = 1.5.0
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://www.gnupg.org/
+license    = LGPLv2.1+
+summary    = A general-purpose cryptography library.
 
-PKG_NAME       = libgcrypt
-PKG_VER        = 1.5.0
-PKG_REL        = 1
 
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.gnupg.org/
-PKG_LICENSE    = LGPLv2.1+
-PKG_SUMMARY    = A general-purpose cryptography library.
-
-PKG_BUILD_DEPS+= gcc-c++ libgpg-error-devel
-PKG_DEPS-$(PKG_NAME_REAL)-devel += libgpg-error-devel
-
-define PKG_DESCRIPTION
+description
 	Libgcrypt is a general purpose crypto library based on the code used \
 	in GNU Privacy Guard.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		gcc-c++
+		libgpg-error-devel
+	end
 
-CONFIGURE_OPTIONS += \
-	--libdir=/lib \
-	--enable-noexecstack \
+	configure_options += \
+		--libdir=/lib \
+		--enable-noexecstack \
 
-define STAGE_INSTALL_CMDS
-	-mkdir -pv $(BUILDROOT)/usr/lib
-	rm -vf $(BUILDROOT)/lib/libgcrypt.so
-	ln -sfv ../../lib/libgcrypt.so.11 $(BUILDROOT)/usr/lib/libgcrypt.so
-endef
+	install_cmds
+		mkdir -pv %{BUILDROOT}/usr/lib
+		rm -vf %{BUILDROOT}/lib/libgcrypt.so
+		ln -sfv ../../lib/libgcrypt.so.11 %{BUILDROOT}/usr/lib/libgcrypt.so
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	
+		requires = libgpg-error-devel
+	end
+end

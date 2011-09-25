@@ -1,43 +1,18 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = flex
+version    = 2.5.35
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = Development/Tools
+url        = http://flex.sourceforge.net/
+license    = BSD
+summary    = A tool for creating scanners (text pattern recognizers).
 
-PKG_NAME       = flex
-PKG_VER        = 2.5.35
-PKG_REL        = 2
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Tools
-PKG_URL        = http://flex.sourceforge.net/
-PKG_LICENSE    = BSD
-PKG_SUMMARY    = A tool for creating scanners (text pattern recognizers).
-
-PKG_BUILD_DEPS+= bison gcc-c++ m4
-PKG_DEPS      += m4
-
-define PKG_DESCRIPTION
+description
 	The flex program generates scanners. Scanners are programs which can \
 	recognize lexical patterns in text. Flex takes pairs of regular \
 	expressions and C code as input and generates a C source file as \
@@ -47,21 +22,38 @@ define PKG_DESCRIPTION
 	executes the corresponding C code. Flex was designed to work with \
 	both Yacc and Bison, and is used by many programs as part of their \
 	build process.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		bison
+		gcc-c++
+		m4
+	end
 
-CONFIGURE_OPTIONS += \
-	--mandir=/usr/share/man
+	configure_options += \
+		--mandir=/usr/share/man
 
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
+	test
+		make check
+	end
 
-define STAGE_INSTALL_CMDS
-	echo "#!/bin/sh"			>  $(BUILDROOT)/usr/bin/lex
-	echo "exec /usr/bin/flex -l \"$$@\""	>> $(BUILDROOT)/usr/bin/lex
-	chmod 755 $(BUILDROOT)/usr/bin/lex
-endef
+	install_cmds
+		echo "#!/bin/sh"			>  %{BUILDROOT}/usr/bin/lex
+		echo "exec /usr/bin/flex -l \"$$@\""	>> %{BUILDROOT}/usr/bin/lex
+		chmod 755 %{BUILDROOT}/usr/bin/lex
+	end
+end
+
+packages
+	package %{name}
+		requires = m4
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

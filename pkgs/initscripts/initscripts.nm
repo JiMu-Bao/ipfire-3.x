@@ -1,78 +1,80 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = initscripts
+epoch      = 1
+version    = 2.99
+release    = 5
 
-include $(PKGROOT)/Include
+groups     = Base System/Boot
+url        =
+license    = GPLv3+
+summary    = The set of scripts that initalize the system.
 
-PKG_NAME       = initscripts
-PKG_EPOCH      = 1
-PKG_VER        = 2.99
-PKG_REL        = 5
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Base System/Boot
-PKG_URL        =
-PKG_LICENSE    = GPLv3+
-PKG_SUMMARY    = The set of scripts that initalize the system.
-
-PKG_BUILD_DEPS+= glib2-devel popt-devel
-PKG_DEPS      += bash coreutils e2fsprogs grep iproute2 module-init-tools \
-	procps sed system-release udev util-linux
-
-define PKG_DESCRIPTION
+description
 	The initscripts package contains the basic system scripts used to boot \
 	your system and shut the system down cleanly.
-endef
+end
 
-DIR_APP = $(DIR_SOURCE)
+# Nothing to download.
+sources    =
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP)/src && make clean
-endef
+build
+	requires
+		glib2-devel
+		popt-devel
+	end
 
-define STAGE_BUILD
-	cd $(DIR_APP)/src && make $(PARALLELISMFLAGS)
-endef
+	DIR_APP = %{DIR_SOURCE}
 
-define STAGE_TEST
-	cd $(DIR_APP)/src && make test
-endef
+	prepare_cmds
+		cd src && make clean
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP)/src && make install clean DESTDIR=$(BUILDROOT)
+	build
+		cd src && make %{PARALLELISMFLAGS}
+	end
 
-	-mkdir -pv $(BUILDROOT)/etc/{init,sysconfig}
+	test
+		cd src && make test
+	end
 
-	cp -vf $(DIR_SOURCE)/functions $(BUILDROOT)/etc/init/
+	install
+		cd src && make install clean DESTDIR=%{BUILDROOT}
 
-	for i in $(DIR_SOURCE)/sysconfig/*; do \
-		install -v -m 644 $$i $(BUILDROOT)/etc/sysconfig/; \
-	done
-	chmod -v 755 $(BUILDROOT)/etc/sysconfig/rc.local
+		mkdir -pv %{BUILDROOT}/etc/{init,sysconfig}
 
-	cp -vf $(DIR_SOURCE)/sysctl.conf $(BUILDROOT)/etc
+		cp -vf %{DIR_SOURCE}/functions %{BUILDROOT}/etc/init/
 
-	# Install udev rules
-	-mkdir -pv $(BUILDROOT)/lib/udev/rules.d/
-	cp -vf $(DIR_SOURCE)/udev/* $(BUILDROOT)/lib/udev/rules.d/
-endef
+		for i in %{DIR_SOURCE}/sysconfig/*; do
+			install -v -m 644 $i %{BUILDROOT}/etc/sysconfig/
+		done
+		chmod -v 755 %{BUILDROOT}/etc/sysconfig/rc.local
+
+		cp -vf %{DIR_SOURCE}/sysctl.conf %{BUILDROOT}/etc
+
+		# Install udev rules
+		mkdir -pv %{BUILDROOT}/lib/udev/rules.d/
+		cp -vf %{DIR_SOURCE}/udev/* %{BUILDROOT}/lib/udev/rules.d/
+	end
+end
+
+packages
+	package %{name}
+		requires
+			bash
+			coreutils
+			e2fsprogs
+			grep
+			iproute2
+			module-init-tools
+			procps
+			sed
+			system-release
+			udev
+			util-linux
+		end
+	end
+end

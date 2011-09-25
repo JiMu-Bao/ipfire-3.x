@@ -1,56 +1,46 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = libmpc
+version    = 0.9
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = System/Libraries
+url        = http://www.multiprecision.org/
+license    = LGPLv2.1+
+summary    = Mpc is a C library for the arithmetic of complex numbers.
 
-PKG_NAME       = libmpc
-PKG_VER        = 0.9
-PKG_REL        = 2
+thisapp    = mpc-%{version}
 
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Libraries
-PKG_URL        = http://www.multiprecision.org/
-PKG_LICENSE    = LGPLv2.1+
-PKG_SUMMARY    = Mpc is a C library for the arithmetic of complex numbers.
-
-THISAPP        = mpc-$(PKG_VER)
-
-PKG_BUILD_DEPS+= gmp-devel>=4.3.2 mpfr-devel>=2.4.2
-
-define PKG_DESCRIPTION
+description
 	Mpc is a C library for the arithmetic of complex numbers with \
 	arbitrarily high precision and correct rounding of the result. \
 	It is built upon and follows the same principles as Mpfr.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME_REAL)-devel
+build
+	requires
+		gmp-devel>=4.3.2
+		mpfr-devel>=2.4.2
+	end
 
-# http://lists.gforge.inria.fr/pipermail/mpc-discuss/2011-February/000805.html
-export EGREP=egrep
+	# http://lists.gforge.inria.fr/pipermail/mpc-discuss/2011-February/000805.html
+	export EGREP=egrep
 
-define STAGE_TEST
-	cd $(DIR_APP) && make check
-endef
+	test
+		make check
+	end
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

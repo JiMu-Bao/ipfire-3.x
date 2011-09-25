@@ -1,52 +1,45 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = multipath-tools
+version    = 0.4.9
+release    = 1
 
-include $(PKGROOT)/Include
+groups     = System/Base
+url        = http://christophe.varoqui.free.fr/
+license    = GPL+
+summary    = Tools to manage multipath devices using device-mapper.
 
-PKG_NAME       = multipath-tools
-PKG_VER        = 0.4.9
-PKG_REL        = 1
-
-PKG_MAINTAINER =
-PKG_GROUPS     = System/Base
-PKG_URL        = http://christophe.varoqui.free.fr/
-PKG_LICENSE    = GPL+
-PKG_SUMMARY    = Tools to manage multipath devices using device-mapper.
-
-PKG_BUILD_DEPS+= gzip libaio-devel libdevmapper-devel ncurses-devel readline-devel
-
-define PKG_DESCRIPTION
-	This package provides tools to manage multipath devices by \
+description
+	This package provides tools to manage multipath devices by
 	instructing the device-mapper multipath kernel module what to do.
-endef
+end
 
-PKG_TARBALL    = $(PKG_NAME)-091027.tar.gz
+source_dl  =
+sources    = %{name}-091027.tar.gz
 
-PKG_PACKAGES  += $(PKG_NAME)-devel
+build
+	requires
+		gzip
+		libaio-devel
+		libdevmapper-devel
+		ncurses-devel
+		readline-devel
+	end
 
-DIR_APP = $(DIR_SRC)/$(PKG_NAME)
+	DIR_APP = %{DIR_SRC}/%{name}
 
-define STAGE_INSTALL_CMDS
-	rm -rf $(BUILDROOT)/etc/rc.d
-endef
+	install_cmds
+		rm -rf %{BUILDROOT}/etc/rc.d
+	end
+end
+
+packages
+	package %{name}
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

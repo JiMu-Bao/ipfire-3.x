@@ -1,90 +1,112 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = xen
+version    = 4.1.1
+release    = 3
 
-include $(PKGROOT)/Include
+maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
+groups     = Applications/Virtualization
+url        = http://www.xen.org/
+license    = GPLv2+
+summary    = The Xen tools.
 
-PKG_NAME       = xen
-PKG_VER        = 4.1.1
-PKG_REL        = 3
+description
+	The Xen hypervisor, the powerful open source industry standard
+	for virtualization, offers a powerful, efficient, and secure
+	feature set for virtualization.
+end
 
-PKG_MAINTAINER = Ben Schweikert <ben.schweikert@ipfire.org>
-PKG_GROUPS     = Applications/Virtualization
-PKG_URL        = http://www.xen.org/
-PKG_LICENSE    = GPLv2+
-PKG_SUMMARY    = The Xen tools.
+source_dl  =
+sources    = %{thisapp}.tar.gz
 
-define PKG_DESCRIPTION
-       The Xen hypervisor, the powerful open source industry standard \
-       for virtualization, offers a powerful, efficient, and secure \
-       feature set for virtualization.
-endef
+build
+	requires
+		gettext-devel
+		kernel-headers
+		libuuid-devel
+		ncurses-devel
+		openssl-devel
+		python
+		python-devel
+		sdl-devel
+		xorg-x11-proto-devel
+		zlib-devel
+	end
 
-PKG_BUILD_DEPS+= gettext-devel kernel-headers libuuid-devel ncurses-devel \
-	openssl-devel python python-devel sdl-devel xorg-x11-proto-devel \
-	zlib-devel
+	prepare_cmds
+		# Following two lines are disabling HVM. HVM does not work because \
+		# of some PIE errors we get when we try to build the firmware part \
+		# needed for different architektures.
+		sed -i -e '/^CONFIG_IOEMU := y$$/d' config/*.mk
+		sed -i -e '/SUBDIRS-$%{CONFIG_X86} += firmware/d' tools/Makefile
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+		rm -f Config.mk~
+	end
 
-PKG_PACKAGES  += $(PKG_NAME)-devel $(PKG_NAME)-libs $(PKG_NAME)-hypervisor \
-	$(PKG_NAME)-runtime
+	make_build_targets += \
+		xen tools
 
-PKG_SUMMARY-$(PKG_NAME)-hypervisor = This package contains the Xen hypervisor
-PKG_SUMMARY-$(PKG_NAME)-devel = This package contains what's needed to \
-	develop applications which manage Xen virtual machines.
-PKG_SUMMARY-$(PKG_NAME)-libs = This package contains the libraries needed to \
-	run applications which manage Xen virtual machines
-PKG_SUMMARY-$(PKG_NAME)-runtime = This package contains the runtime programs \
-	and daemons which form the core Xen userspace environment.
+	make_install_targets +=\
+		xen install-tools
 
-define PKG_FILES-$(PKG_NAME)-hypervisor
-	/boot/*
-endef
+	install_cmds
+		rm -R %{BUILDROOT}/etc/init.d
+	end
+end
 
-define PKG_FILES-$(PKG_NAME)-runtime
-	/usr/bin/*
-endef
+quality-agent
+	whitelist_execstack
+		/boot/*
+	end
+end
 
-# libs: Use files from template and add /usr/lib/fs.
-PKG_FILES-$(PKG_NAME)-libs += /usr/lib/fs
+packages
+	package %{name}
+	end
+	
+	package %{name}-libs
+		template LIBS
 
-define QUALITY_AGENT_WHITELIST_EXECSTACK
-	/boot/*
-endef
+		description
+			This package contains the libraries needed to
+			run applications which manage Xen virtual machines
+		end
+	
+		files += /usr/lib/fs
+	end
+	
+	package %{name}-hypervisor
+		summary = The Xen hypervisor.
+		description
+			This package contains the Xen hypervisor.
+		end
+	
+		files
+			/boot/*
+		end
+	end
+	
+	package %{name}-runtime
+		summary = Runtime programms and daemons for Xen environments.
+		description
+			This package contains the runtime programs
+			and daemons which form the core Xen userspace environment.
+		end
+	
+		files
+			/usr/bin/*
+		end
+	end
+	
+	package %{name}-devel
+		template DEVEL
 
-define STAGE_BUILD
-	# Following two lines are disabling HVM. HVM does not work because \
-	# of some PIE errors we get when we try to build the firmware part \
-	# needed for different architektures.
-	cd $(DIR_APP) && sed -i -e '/^CONFIG_IOEMU := y$$/d' config/*.mk
-	cd $(DIR_APP) && sed -i -e '/SUBDIRS-$$(CONFIG_X86) += firmware/d' tools/Makefile
-
-	cd $(DIR_APP) && rm -f Config.mk~
-
-	cd $(DIR_APP) && make xen tools $(PARALLELISMFLAGS)
-endef
-
-define STAGE_INSTALL
-	cd $(DIR_APP) && make xen install-tools DESTDIR=$(BUILDROOT)
-	rm -R $(BUILDROOT)/etc/init.d
-endef
+		description
+			This package contains what's needed to
+			develop applications which manage Xen virtual machines.
+		end
+	end
+end

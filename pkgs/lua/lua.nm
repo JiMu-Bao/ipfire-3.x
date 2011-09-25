@@ -1,42 +1,18 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = lua
+version    = 5.1.4
+release    = 2
 
-include $(PKGROOT)/Include
+groups     = Development/Languages
+url        = http://www.lua.org/
+license    = MIT
+summary    = Powerful light-weight programming language.
 
-PKG_NAME       = lua
-PKG_VER        = 5.1.4
-PKG_REL        = 2
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Development/Languages
-PKG_URL        = http://www.lua.org/
-PKG_LICENSE    = MIT
-PKG_SUMMARY    = Powerful light-weight programming language.
-
-PKG_BUILD_DEPS+= autoconf automake libtool ncurses-devel readline-devel
-
-define PKG_DESCRIPTION
+description
 	Lua is a powerful light-weight programming language designed for \
 	extending applications. Lua is also frequently used as a \
 	general-purpose, stand-alone language. Lua is free software. \
@@ -45,30 +21,50 @@ define PKG_DESCRIPTION
 	is dynamically typed, interpreted from bytecodes, and has automatic \
 	memory management with garbage collection, making it ideal for \
 	configuration, scripting, and rapid prototyping.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.gz
+source_dl  =
 
-PKG_PACKAGES  += $(PKG_NAME)-devel $(PKG_NAME)-libs
+build
+	requires
+		autoconf
+		automake
+		libtool
+		ncurses-devel
+		readline-devel
+	end
 
-PKG_FILES-$(PKG_NAME)-libs = \
-	/usr/lib/liblua-5.1.so
+	prepare_cmds
+		chmod u+x autogen.sh config.guess config.sub configure \
+			depcomp install-sh missing
+		sh autogen.sh
+	end
 
-define STAGE_PREPARE_CMDS
-	cd $(DIR_APP) && chmod u+x autogen.sh config.guess config.sub configure \
-		depcomp install-sh missing
-	cd $(DIR_APP) && sh autogen.sh
-endef
+	configure_options += \
+		--mandir=/usr/share/man \
+		--with-readline
 
-CONFIGURE_OPTIONS += \
-	--mandir=/usr/share/man \
-	--with-readline
+	# hack so that only /usr/bin/lua gets linked with readline as it is the
+	# only one which needs this and otherwise we get License troubles
+	make_build_targets =  LIBS="-ldl" luac_LDADD="liblua.la -lm -ldl"
 
-# hack so that only /usr/bin/lua gets linked with readline as it is the
-# only one which needs this and otherwise we get License troubles
-STAGE_BUILD_TARGETS =  LIBS="-ldl" luac_LDADD="liblua.la -lm -ldl"
+	# Remove readline from lua.pc
+	build_cmds
+		sed -i 's/-lreadline -lncurses //g' etc/lua.pc
+	end
+end
 
-# Remove readline from lua.pc
-define STAGE_BUILD_CMDS
-	cd $(DIR_APP) && sed -i 's/-lreadline -lncurses //g' etc/lua.pc
-endef
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+	
+	package %{name}-libs
+		template LIBS
+	
+		files += /usr/lib/*/liblua-5.1.so
+	end
+end

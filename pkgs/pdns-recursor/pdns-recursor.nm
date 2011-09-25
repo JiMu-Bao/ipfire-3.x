@@ -1,69 +1,58 @@
 ###############################################################################
-#                                                                             #
-# IPFire.org - A linux based firewall                                         #
-# Copyright (C) 2007, 2008 Michael Tremer & Christian Schmidt                 #
-#                                                                             #
-# This program is free software: you can redistribute it and/or modify        #
-# it under the terms of the GNU General Public License as published by        #
-# the Free Software Foundation, either version 3 of the License, or           #
-# (at your option) any later version.                                         #
-#                                                                             #
-# This program is distributed in the hope that it will be useful,             #
-# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
-# GNU General Public License for more details.                                #
-#                                                                             #
-# You should have received a copy of the GNU General Public License           #
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
-#                                                                             #
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-###############################################################################
-# Definitions
-###############################################################################
+name       = pdns-recursor
+version    = 3.3
+release    = 4
 
-include $(PKGROOT)/Include
+groups     = Networking/DNS
+url        = http://powerdns.com/
+license    = GPLv2
+summary    = A modern, advanced and high performance recursing nameserver.
 
-PKG_NAME       = pdns-recursor
-PKG_VER        = 3.3
-PKG_REL        = 4
-
-PKG_MAINTAINER =
-PKG_GROUPS     = Networking/DNS
-PKG_URL        = http://powerdns.com/
-PKG_LICENSE    = GPLv2
-PKG_SUMMARY    = A modern, advanced and high performance recursing nameserver.
-
-PKG_BUILD_DEPS+= gcc-c++ boost-devel lua-devel
-
-define PKG_DESCRIPTION
-	PowerDNS Recursor is a non authoritative/recursing DNS server. Use this \
+description
+	PowerDNS Recursor is a non authoritative/recursing DNS server. Use this
 	package if you need a dns cache for your network.
-endef
+end
 
-PKG_TARBALL    = $(THISAPP).tar.bz2
+source_dl  =
+sources    = %{thisapp}.tar.bz2
 
-define STAGE_BUILD
-	cd $(DIR_APP) && LUA=1 LUA_CPPFLAGS_CONFIG= LUA_LIBS_CONFIG=-llua \
-		make OPTFLAGS="$(CFLAGS)" #$(PARALLELISMFLAGS)
-endef
+build
+	requires
+		gcc-c++
+		boost-devel
+		lua-devel
+	end
 
-define STAGE_INSTALL
-	cd $(DIR_APP) && make install DESTDIR=$(BUILDROOT) \
-		CONFIGDIR=/etc/$(PKG_NAME)
+	build
+		LUA=1 LUA_CPPFLAGS_CONFIG= LUA_LIBS_CONFIG=-llua \
+			make OPTFLAGS="%{CFLAGS}" #%{PARALLELISMFLAGS}
+	end
 
-	# Remove sysvinit file
-	rm -rf $(BUILDROOT)/etc/init.d
+	install
+		make install DESTDIR=%{BUILDROOT} \
+			CONFIGDIR=/etc/%{name}
 
-	# Remove shipped config file
-	rm -rf $(BUILDROOT)/etc/$(PKG_NAME)/recursor.conf-dist
+		# Remove sysvinit file
+		rm -rf %{BUILDROOT}/etc/init.d
 
-	# Install our default config file
-	cp -vf $(DIR_SOURCE)/recursor.conf $(BUILDROOT)/etc/$(PKG_NAME)/recursor.conf
+		# Remove shipped config file
+		rm -rf %{BUILDROOT}/etc/%{name}/recursor.conf-dist
 
-	# Create folder for chroot
-	-mkdir -pv $(BUILDROOT)/var/lib/pdns-recursor
-endef
+		# Install our default config file
+		cp -vf %{DIR_SOURCE}/recursor.conf %{BUILDROOT}/etc/%{name}/recursor.conf
+
+		# Create folder for chroot
+		mkdir -pv %{BUILDROOT}/var/lib/pdns-recursor
+	end
+end
 
 # XXX Need to create user and group "pdns-recursor" at installation
 # useradd -r -g pdns-recursor pdns-recursor -d /var/lib/pdns-recursor -s /sbin/nologin
+
+packages
+	package %{name}
+end
