@@ -19,11 +19,11 @@ license    = Proprietary
 summary    = Berkeley DB is a library that provides an embedded database.
 
 description
-	Berkeley DB (BDB) is a computer software library that provides \
+	Berkeley DB (BDB) is a computer software library that provides
 	a high-performance embedded database.
 end
 
-source_dl  =
+source_dl  = http://download.oracle.com/berkeley-db/
 
 build
 	requires
@@ -49,21 +49,31 @@ build
 	end
 end
 
-# XXX insert descriptions
 packages
 	package db4
-		files = /usr/lib*/libdb-%{version_major}.so
-	end
 	
 	package db4-devel
 		template DEVEL
+
+		files += \
+			!/usr/lib*/libdb-%{version_major}.so
 	end
 	
 	package db4-utils
-		files = /usr/bin
+		summary = Command line tools for managing Berkeley DB (version 4) databases.
+		description = %{summary}
+
+		files
+			/usr/bin
+		end
 	end
 	
 	package db4-cxx
-		files = /usr/lib*/libdb_cxx-%{version_major}.so
+		summary = The Berkeley DB database library (version 4) for C++.
+		description = %{summary}
+
+		files
+			/usr/lib*/libdb_cxx-%{version_major}.so
+		end
 	end
 end
