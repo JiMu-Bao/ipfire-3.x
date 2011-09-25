@@ -6,7 +6,7 @@
 name       = initscripts
 epoch      = 1
 version    = 2.99
-release    = 5
+release    = 6
 
 groups     = Base System/Boot
 url        =
