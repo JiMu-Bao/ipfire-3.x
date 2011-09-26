@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = libvirt
-version    = 0.9.0
-release    = 3
+version    = 0.9.6
+release    = 1
 
 groups     = Applications/Virtualization
 url        = http://www.libvirt.org/
