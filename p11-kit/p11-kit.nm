@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = p11-kit
-version    = 0.3
+version    = 0.7
 release    = 1
 
 groups     = System/Libraries
@@ -21,12 +21,15 @@ description
 	components or libraries living in the same process.
 end
 
-source_dl  =
+source_dl  = http://p11-glue.freedesktop.org/releases/
+
+build
+	configure_options += --sysconfdir=/etc
+end
 
 packages
 	package %{name}
-	end
-	
+
 	package %{name}-devel
 		template DEVEL
 	end
