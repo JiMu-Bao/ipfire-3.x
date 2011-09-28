@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = gnutls
-version    = 3.0.0
+version    = 3.0.3
 release    = 1
 
 groups     = System/Libraries
@@ -19,14 +19,14 @@ description
 	TLS working group.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.gnu.org/gnu/gnutls/
 sources    = %{thisapp}.tar.xz
 
 build
 	requires
 		libtasn1-devel
 		nettle-devel
-		p11-kit-devel
+		p11-kit-devel>=0.4
 		zlib-devel
 	end
 
@@ -44,6 +44,10 @@ end
 
 packages
 	package %{name}
+		requires
+			p11-kit>=0.4
+		end
+	end
 
 	package %{name}-devel
 		template DEVEL
