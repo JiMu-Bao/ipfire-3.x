@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = gdb
-version    = 7.2
+version    = 7.3.1
 release    = 1
 
 groups     = Development/Debuggers
@@ -18,8 +18,8 @@ description
 	and printing their data.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+source_dl  = ftp://ftp.gnu.org/gnu/gdb/
+sources    = %{thisapp}.tar.gz
 
 build
 	requires
