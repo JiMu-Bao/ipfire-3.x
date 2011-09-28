@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = ccache
-version    = 3.1.5
+version    = 3.1.6
 release    = 1
 
 groups     = Development/Compilers
@@ -20,7 +20,7 @@ description
 end
 
 source_dl  = http://samba.org/ftp/ccache/
-sources    = %{thisapp}.tar.bz2
+sources    = %{thisapp}.tar.xz
 
 # Sets ccache max size up to 2 GB
 CFLAGS += -DDEFAULT_MAXSIZE=2097152
@@ -64,5 +64,4 @@ end
 
 packages
 	package %{name}
-	end
 end
