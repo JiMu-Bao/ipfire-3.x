@@ -5,7 +5,7 @@
 
 name       = dhcp
 version    = 4.2.1-P1
-release    = 1
+release    = 2
 
 groups     = Networking/Daemons
 url        = http://isc.org/products/DHCP/
@@ -27,9 +27,9 @@ build
 		--sysconfdir=/etc \
 		--with-srv-lease-file=/var/lib/dhcpd/dhcpd.leases \
 		--with-cli-lease-file=/var/lib/dhclient/dhclient.leases \
-		--with-srv-pid-file=/var/run/dhcpd.pid \
-		--with-cli-pid-file=/var/run/dhclient.pid \
-		--with-relay-pid-file=/var/run/dhcrelay.pid
+		--with-srv-pid-file=/run/dhcpd.pid \
+		--with-cli-pid-file=/run/dhclient.pid \
+		--with-relay-pid-file=/run/dhcrelay.pid
 
 	install_cmds
 		rm -vf %{BUILDROOT}/etc/dhclient.conf
@@ -41,7 +41,14 @@ build
 
 		install -v -m 755 %{DIR_SOURCE}/dhclient-script \
 			%{BUILDROOT}/sbin/dhclient-script
+
+		# Create runtime folders.
 		mkdir -pv %{BUILDROOT}/var/lib/dhclient
+		mkdir -pv %{BUILDROOT}/var/lib/dhcpd
+
+		# Create empty lease files.
+		touch %{BUILDROOT}/var/lib/dhclient/dhclient.leases
+		touch %{BUILDROOT}/var/lib/dhcpd/dhcpd.leases
 
 		# Remove header files.
 		# There is nothing that makes use out of them.
