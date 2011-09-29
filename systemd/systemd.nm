@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 33
-release    = 2
+release    = 3
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -109,8 +109,30 @@ packages
 		requires
 			dbus
 			python-cairo
-			python-dbus udev>=172
+			python-dbus
+			udev>=172
 			util-linux>=2.19
+		end
+
+		script postin
+			# Generate Machine ID.
+			/bin/systemd-machine-id-setup > /dev/null 2>&1 || :
+
+			# Reexec systemd daemon.
+			/bin/systemctl daemon-reexec > /dev/null 2>&1 || :
+
+			# Make sure pam_systemd is enabled
+			if ! /bin/grep -q pam_systemd /etc/pam.d/system-auth-ac ; then
+				/usr/sbin/authconfig --update --nostart >/dev/null 2>&1 || :
+
+				# Try harder
+				/bin/grep -q pam_systemd /etc/pam.d/system-auth-ac || /usr/sbin/authconfig --updateall --nostart >/dev/null 2>&1 || :
+			fi
+		end
+
+		script postup
+			# Restart login service after update
+			/bin/systemctl try-restart systemd-logind.service >/dev/null 2>&1 || :
 		end
 	end
 	
@@ -130,6 +152,25 @@ packages
 			/bin/systemctl
 			/bin/systemd-tmpfiles
 			/usr/share/man/man1/systemctl.*
+		end
+
+		script postin
+			# Enable default services.
+			systemctl enable \
+				getty@.service \
+				remote-fs.target > /dev/null 2>&1 || :
+		end
+
+		script preun
+			# Disable default services.
+			systemctl disable \
+				getty@.service \
+				remote-fs.target > /dev/null 2>&1 || :
+		end
+
+		script postup
+			# Reload service files
+			systemctl daemon-reload > /dev/null 2>&1 || :
 		end
 	end
 	
