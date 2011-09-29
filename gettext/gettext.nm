@@ -5,7 +5,7 @@
 
 name       = gettext
 version    = 0.18.1.1
-release    = 1
+release    = 2
 
 groups     = System/Base
 url        = http://www.gnu.org/software/gettext/
@@ -13,19 +13,19 @@ license    = GPLv3 LGPL2+
 summary    = GNU libraries and utilities for producing multi-lingual messages.
 
 description
-	The GNU gettext package provides a set of tools and documentation for \
-	producing multi-lingual messages in programs. Tools include a set of \
-	conventions about how programs should be written to support message \
-	catalogs, a directory and file naming organization for the message \
-	catalogs, a runtime library which supports the retrieval of translated \
-	messages, and stand-alone programs for handling the translatable and \
-	the already translated strings. Gettext provides an easy to use \
-	library and tools for creating, using, and modifying natural language \
-	catalogs and is a powerful and simple method for internationalizing \
+	The GNU gettext package provides a set of tools and documentation for
+	producing multi-lingual messages in programs. Tools include a set of
+	conventions about how programs should be written to support message
+	catalogs, a directory and file naming organization for the message
+	catalogs, a runtime library which supports the retrieval of translated
+	messages, and stand-alone programs for handling the translatable and
+	the already translated strings. Gettext provides an easy to use
+	library and tools for creating, using, and modifying natural language
+	catalogs and is a powerful and simple method for internationalizing
 	programs.
 end
 
-source_dl  =
+source_dl  = http://ftp.gnu.org/pub/gnu/gettext/
 
 build
 	requires
@@ -46,9 +46,22 @@ end
 
 packages
 	package %{name}
-	end
 	
 	package %{name}-devel
 		template DEVEL
+
+		requires += \
+			gettext-libs=%{thisver}
+	end
+
+	package %{name}-libs
+		template LIBS
+
+		files
+			/usr/lib/libgettextlib-*.so
+			/usr/lib/libgettextpo.so.*
+			/usr/lib/libgettextsrc-*.so
+			/usr/lib/preloadable_libintl.so
+		end
 	end
 end
