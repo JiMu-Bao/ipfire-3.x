@@ -5,7 +5,7 @@
 
 name       = readline
 version    = 6.2
-release    = 3
+release    = 4
 
 groups     = System/Libraries
 url        = ftp://ftp.gnu.org/gnu/readline/
@@ -46,15 +46,12 @@ build
 
 		mkdir -pv %{BUILDROOT}/etc/profile.d
 		cp -vf %{DIR_SOURCE}/readline.sh %{BUILDROOT}/etc/profile.d/
-
-		cp -vf %{DIR_SOURCE}/inputrc %{BUILDROOT}/etc/
 	end
 end
 
 packages
 	package %{name}
-	end
-	
+
 	package %{name}-devel
 		template DEVEL
 	end
