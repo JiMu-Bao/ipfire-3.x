@@ -3,10 +3,11 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = glib
-version    = 2.30.0
-version_major = 2.30
-release    = 1
+name       = glib2
+ver_major  = 2.30
+version    = %{ver_major}.0
+release    = 2
+thisapp    = glib-%{version}
 
 groups     = System/Libraries
 url        = http://www.gtk.org
@@ -51,10 +52,9 @@ build
 end
 
 packages
-	package %{name}2
-	end
-	
-	package %{name}2-devel
+	package %{name}
+
+	package %{name}-devel
 		template DEVEL
 	end
 end
