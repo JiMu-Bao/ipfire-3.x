@@ -4,7 +4,8 @@
 ###############################################################################
 
 name       = glib
-version    = 2.29.14
+version    = 2.30.0
+version_major = 2.30
 release    = 1
 
 groups     = System/Libraries
@@ -13,14 +14,14 @@ license    = LGPLv2+
 summary    = A library of handy utility functions.
 
 description
-	GLib is the low-level core library that forms the basis \
-	for projects such as GTK+ and GNOME. It provides data structure \
-	handling for C, portability wrappers, and interfaces for such runtime \
-	functionality as an event loop, threads, dynamic loading, and an \
+	GLib is the low-level core library that forms the basis
+	for projects such as GTK+ and GNOME. It provides data structure
+	handling for C, portability wrappers, and interfaces for such runtime
+	functionality as an event loop, threads, dynamic loading, and an
 	object system.
 end
 
-source_dl  =
+source_dl  = http://ftp.gnome.org/pub/gnome/sources/glib/%{version_major}/
 sources    = %{thisapp}.tar.xz
 
 build
