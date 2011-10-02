@@ -5,7 +5,7 @@
 
 name       = bind
 version    = 9.8.1
-release    = 1
+release    = 2
 
 groups     = Networking/Tools
 url        = http://www.isc.org/products/BIND/
@@ -168,7 +168,7 @@ packages
 			getent passwd named > /dev/null || \
 				useradd -r -g named -d /var/named -s /sbin/nologin \
 				-c "User for bind DNS server" named
-			exit0
+			exit 0
 		end
 
 		# XXX Add systemd scriptlet if a service file becomes available
