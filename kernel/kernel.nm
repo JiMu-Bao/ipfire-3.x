@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = linux
-version    = 2.6.39
-release    = 4
+name       = kernel
+version    = 3.0.4
+release    = 1
+thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Kernels
@@ -20,14 +21,11 @@ description
 	input and output, etc.
 end
 
-CFLAGS     =
-CXXFLAGS   =
-
 # Version helper variables.
 localversion = -%{DISTRO_SNAME}%{release}
 fullver      = %{version}%{localversion}
 
-sources      = %{thisapp}.tar.bz2
+sources      = %{thisapp}.tar.gz
 
 build
 	requires
@@ -87,6 +85,9 @@ build
 		mkdir -vp %{BUILDROOT}/etc/ld.so.conf.d/
 		echo "# Placeholder file, no vDSO hwcap entries used in this kernel." \
 		> %{BUILDROOT}/etc/ld.so.conf.d/kernel-%{fullver}.conf
+
+		# Remove all firmware files which are distributed by linux-firmware
+		rm -rfv %{BUILDROOT}/lib/firmware
 	end
 end
 
