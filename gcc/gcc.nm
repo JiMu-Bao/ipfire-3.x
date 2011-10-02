@@ -10,7 +10,7 @@ build_cloog_ppl = 0
 
 name       = gcc
 version    = 4.6.1
-release    = 3
+release    = 4
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -203,6 +203,7 @@ packages
 		requires
 			binutils>=%{required_binutils_version}
 			glibc-devel
+			gmp-devel
 			libgcc-devel
 		end
 
