@@ -7,7 +7,7 @@
 
 name       = glibc
 version    = 2.14
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -29,11 +29,15 @@ source_dl  = http://ftp.gnu.org/gnu/glibc/
 sources    = %{thisapp}.tar.xz
 
 build
+	# Optimize glibc for kernel
+	OPTIMIZED_KERNEL = 2.6.32
+
 	requires
 		audit-devel
 		autoconf
 		automake
 		gettext
+		kernel-headers>=%{OPTIMIZED_KERNEL}
 		libcap-devel
 		libselinux-devel
 		texinfo
@@ -50,9 +54,6 @@ build
 
 	export CFLAGS   = %{GLIBC_FLAGS}
 	export CXXFLAGS = %{GLIBC_FLAGS}
-
-	# Optimize glibc for kernel
-	OPTIMIZED_KERNEL = 2.6.32
 
 	export QUALITY_AGENT_RPATH_ALLOW_ORIGIN=yes
 
