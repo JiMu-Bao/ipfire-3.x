@@ -5,7 +5,7 @@
 
 name       = coreutils
 version    = 8.13
-release    = 1
+release    = 2
 
 groups     = Base Build System/Base
 url        = http://www.gnu.org/software/coreutils/
@@ -44,8 +44,8 @@ build
 		--enable-selinux \
 		--enable-largefile \
 		--disable-rpath \
-		--enable-install-program=arch,hostname,su \
-		--enable-no-install-program=kill,uptime
+		--enable-install-program=arch,su \
+		--enable-no-install-program=hostname,kill,uptime
 
 	prepare_cmds
 		aclocal -I m4
@@ -59,7 +59,7 @@ build
 	install_cmds
 		mkdir -pv %{BUILDROOT}/{bin,etc/profile.d,usr/sbin}
 		mv -v %{BUILDROOT}/usr/bin/{cat,chgrp,chmod,chown,cp,date,dd,df,echo} %{BUILDROOT}/bin
-		mv -v %{BUILDROOT}/usr/bin/{false,hostname,ln,ls,mkdir,mknod,mv,pwd,readlink,rm} %{BUILDROOT}/bin
+		mv -v %{BUILDROOT}/usr/bin/{false,ln,ls,mkdir,mknod,mv,pwd,readlink,rm} %{BUILDROOT}/bin
 		mv -v %{BUILDROOT}/usr/bin/{rmdir,stty,sync,touch,true,uname} %{BUILDROOT}/bin
 		mv -v %{BUILDROOT}/usr/bin/chroot %{BUILDROOT}/usr/sbin
 		mv -v %{BUILDROOT}/usr/bin/{head,sleep,nice} %{BUILDROOT}/bin
@@ -80,5 +80,4 @@ end
 
 packages
 	package %{name}
-	end
 end
