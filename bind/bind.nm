@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = bind
-version    = 9.7.2-P3
+version    = 9.8.1
 release    = 1
 
 groups     = Networking/Tools
@@ -19,32 +19,191 @@ end
 
 source_dl  = ftp://ftp.isc.org/isc/bind/%{version}/
 
+sources = \
+	bind-9.8.1.tar.gz \
+	bind-config-8.tar.bz2
+
+# Apply patches in a special order.
+patches = \
+	bind-nonexec.patch \
+	bind-9.5-PIE.patch \
+	bind-9.3.2-redhat_doc.patch \
+	bind-96-dyndb.patch \
+	bind98-rh725741.patch \
+	bind-9.5-overflow.patch \
+	bind-9.5-dlz-64bit.patch \
+	bind-9.5-libidn.patch \
+	bind-9.5-libidn2.patch \
+	bind-9.5-libidn3.patch \
+	bind-9.5-parallel-build.patch \
+	bind95-rh461409.patch\
+	bind-96-libtool2.patch \
+	bind-95-rh452060.patch \
+	bind97-dist-pkcs11.patch \
+	bind97-rh478718.patch \
+	bind97-rh570851.patch \
+	bind97-exportlib.patch \
+	bind97-rh645544.patch \
+	bind97-rh699951.patch \
+	bind97-rh693982.patch \
+	bind97-rh700097.patch \
+	bind97-rh714049.patch \
+	bind98-dlz_buildfix.patch \
+	bind98-rh735103.patch
+
 build
 	requires
+		autoconf
+		automake
+		chrpath
 		db4-devel
+		libtool
+		libcap-devel
+		libidn-devel
+		pkg-config
 		openssl-devel
 	end
 
-	build
-		./configure \
-			--prefix=/usr \
-			--mandir=/usr/share/man
+	configure_options += \
+		--with-libtool \
+		--sysconfdir=/etc \
+		--localstatedir=/var \
+		--enable-threads \
+		--enable-ipv6 \
+		--with-pic \
+		--disable-static \
+		--disable-openssl-version-check \
+		--enable-exportlib \
+		--with-export-libdir=/lib/ \
+		--with-export-includedir=/usr/include/ \
+		--includedir=/usr/include/bind9/ \
+		--with-pkcs11=/usr/lib/pkcs11/PKCS11_API.so \
+		--with-gssapi=yes \
+		--disable-isc-spnego
 
-		make -C lib/dns #%{PARALLELISMFLAGS}
-		make -C lib/isc #%{PARALLELISMFLAGS}
-		make -C lib/bind9 #%{PARALLELISMFLAGS}
-		make -C lib/isccfg #%{PARALLELISMFLAGS}
-		make -C lib/lwres #%{PARALLELISMFLAGS}
-		make -C bin/dig #%{PARALLELISMFLAGS}
+	prepare
+		cd %{DIR_SRC} && %{MACRO_EXTRACT} %{DIR_DL}/%{thisapp}.tar.gz
+
+		# Create m4 directory.
+		cd %{DIR_APP} && mkdir -pv m4
+
+		# Apply all patches.
+		%{MACRO_PATCHES}
+
+		# Branding.
+		sed -i -e 's/RELEASEVER=\(.*\)/RELEASEVER=\1-%{DISTRO_NAME}-%{version}-%{release}/' version
+
+		# Regenerate build environment
+		libtoolize -c -f
+		aclocal -I m4 --force
+		autoconf -f
 	end
 
 	install
-		make -C bin/dig install DESTDIR=%{BUILDROOT}
+		# Compress doc files.
+		gzip -9 doc/rfc/*
+
+		# Create directory layout.
+		mkdir -pv %{BUILDROOT}/usr/lib/bind
+		mkdir -pv %{BUILDROOT}/var/named/{slaves,data,dynamic}
+		mkdir -pv %{BUILDROOT}/usr/share/man/{man1,man5,man8}
+		mkdir -pv %{BUILDROOT}/run/named
+		mkdir -pv %{BUILDROOT}/var/log
+
+		# Create named chroot environment.
+		mkdir -pv %{BUILDROOT}/var/named/chroot/{dev,etc,var}
+		mkdir -pv %{BUILDROOT}/var/named/chroot/var/{log,named,run/named,tmp}
+		mkdir -pv %{BUILDROOT}/var/named/chroot/etc/{pki/dnssec-keys,named}
+		mkdir -pv %{BUILDROOT}/var/named/chroot/usr/lib/bind
+		mkdir -pv %{BUILDROOT}/var/named/chroot/dev/null
+		mkdir -pv %{BUILDROOT}/var/named/chroot/dev/random
+		mkdir -pv %{BUILDROOT}/var/named/chroot/dev/zero
+		mkdir -pv %{BUILDROOT}/var/named/chroot/etc/localtime
+
+		touch %{BUILDROOT}/var/named/chroot/etc/named.conf
+
+		# Run make install
+		make DESTDIR=%{BUILDROOT} install
+
+		# Remove RPATH from libraries.
+		chrpath --delete %{BUILDROOT}/lib*/*export*.so.*
+
+		# Remove unwanted files
+		rm -rvf %{BUILDROOT}/etc/bind.keys
+
+		# Create ghost config files
+		touch %{BUILDROOT}/var/log/named.log
+
+		# Configuration files
+		tar -C %{BUILDROOT} -xaf %{DIR_DL}/bind-config-8.tar.bz2
+		touch %{BUILDROOT}/etc/rndc.key
+		touch %{BUILDROOT}/etc/rndc.conf
+		
+		mkdir %{BUILDROOT}/etc/named
+		install -m 644 bind.keys %{BUILDROOT}/etc/named.iscdlv.key
+		install -m 644 %{DIR_SOURCE}/trusted-key.key %{BUILDROOT}/etc/trusted-key.key
+
+		# Recreate symlinks for export libraries
+		rm -rf %{BUILDROOT}/lib/lib*-export.so
+
+		ln -svf ../../lib/libdns-export.so.81 %{BUILDROOT}/usr/lib/libdns-export.so
+		ln -svf ../../lib/libirs-export.so.80 %{BUILDROOT}/usr/lib/libirs-export.so
+		ln -svf ../../lib/libisccfg-export.so.82 %{BUILDROOT}/usr/lib/libisccfg-export.so
+		ln -svf ../../lib/libisc-export.so.83 %{BUILDROOT}/usr/lib/libisc-export.so
 	end
 end
 
 packages
+	package %{name}
+		requires
+			bind-utils
+			bind-chroot
+		end
+
+		prerequires += shadow-utils
+
+		script prein
+			# Create unprivileged user and group.
+			getent group named > /dev/null || groupadd -r named
+			getent passwd named > /dev/null || \
+				useradd -r -g named -d /var/named -s /sbin/nologin \
+				-c "User for bind DNS server" named
+			exit0
+		end
+
+		# XXX Add systemd scriptlet if a service file becomes available
+	end
+
 	package %{name}-utils
-		template MAIN
+		summary = Utilities for querying bind DNS name server.
+		description = %{summary}
+
+		files
+			/usr/bin/dig
+			/usr/bin/host
+			/usr/bin/nslookup
+			/usr/bin/nsupdate
+			/usr/share/man/man1/dig.1*
+			/usr/share/man/man1/host.1*
+			/usr/share/man/man1/nslookup.1*
+			/usr/share/man/man1/nsupdate.1*
+		end
+	end
+
+	package %{name}-chroot
+		summary = Chroot environment for bind DNS servers.
+		description = %{summary}
+
+		files
+			/var/named/chroot
+		end
+	end
+
+	package %{name}-libs
+		template LIBS
+	end
+
+	package %{name}-devel
+		template DEVEL
 	end
 end
