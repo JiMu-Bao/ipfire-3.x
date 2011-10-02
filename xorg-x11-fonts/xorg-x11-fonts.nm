@@ -5,7 +5,7 @@
 
 name       = xorg-x11-fonts
 version    = 7.2
-release    = 2
+release    = 3
 arch       = noarch
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -63,7 +63,7 @@ build
 		xorg-x11-font-utils-devel
 	end
 
-	configure_optins += \
+	configure_options += \
 		--with-fontrootdir=/usr/share/X11/fonts \
 		--disable-iso8859-3 \
 		--disable-iso8859-4 \
@@ -110,7 +110,9 @@ build
 		done
 
 		# Install unifont
-		cp -vf %{DIR_DL}/unifont-5.1.20080820.pcf.gz %{BUILDROOT}/usr/share/fonts/X11/misc/unifont.pcf.gz
+		mkdir -pv %{BUILDROOT}/usr/share/X11/fonts/misc
+		cp -vf %{DIR_DL}/unifont-5.1.20080820.pcf.gz \
+			%{BUILDROOT}/usr/share/X11/fonts/misc/unifont.pcf.gz
 	end
 end
 
