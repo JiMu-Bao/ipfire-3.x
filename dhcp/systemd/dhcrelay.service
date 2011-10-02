@@ -1,0 +1,9 @@
+[Unit]
+Description=DHCP Relay Agent Daemon
+After=syslog.target network.target
+
+[Service]
+ExecStart=/usr/sbin/dhcrelay -d --no-pid
+
+[Install]
+WantedBy=multi-user.target
