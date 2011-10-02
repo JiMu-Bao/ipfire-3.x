@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = quagga
-version    = 0.99.18
+version    = 0.99.20
 release    = 1
 
 groups     = Networking/Routing
@@ -41,12 +41,11 @@ end
 
 packages
 	package %{name}
-	end
-	
+
 	package %{name}-libs
 		template LIBS
 	end
-	
+
 	package %{name}-devel
 		template DEVEL
 	end
