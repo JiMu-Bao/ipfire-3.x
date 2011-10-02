@@ -1,0 +1,9 @@
+[Unit]
+Description=DHCPv4 Server Daemon
+After=syslog.target network.target
+
+[Service]
+ExecStart=/usr/sbin/dhcpd -d -user dhcpd -group dhcpd --no-pid
+
+[Install]
+WantedBy=multi-user.target
