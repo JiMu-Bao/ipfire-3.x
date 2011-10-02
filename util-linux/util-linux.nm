@@ -6,10 +6,9 @@
 name       = util-linux
 version    = 2.19
 major_ver  = 2.19
-release    = 2
+release    = 3
 
 groups     = System/Base
-#groups-%{name} = Base %{groups}
 url        = http://kernel.org/~kzak/util-linux/
 license    = GPLv2 and GPLv2+ and BSD with advertising and Public Domain
 summary    = A collection of basic system utilities.
@@ -44,7 +43,6 @@ build
 		--bindir=/bin \
 		--sbindir=/sbin \
 		--disable-wall \
-		--enable-arch \
 		--enable-kill \
 		--enable-login-utils \
 		--enable-partx \
@@ -99,7 +97,18 @@ end
 
 packages
 	package %{name}
-		requires = /etc/pam.d/system-auth
+		groups += Base
+
+		requires
+			/etc/pam.d/system-auth
+		end
+
+		obsoletes = util-linux-ng
+
+		conflicts
+			setup<3.0-2
+			util-linux-ng
+		end
 	end
 	
 	# Package information for libblkid
