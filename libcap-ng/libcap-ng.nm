@@ -5,7 +5,7 @@
 
 name       = libcap-ng
 version    = 0.6.5
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://people.redhat.com/sgrubb/libcap-ng
@@ -13,16 +13,25 @@ license    = LGPLv2+
 summary    = An alternate posix capabilities library.
 
 description
-	Libcap-ng is a library that makes using posix capabilities \
+	Libcap-ng is a library that makes using posix capabilities
 	easier.
 end
 
-source_dl  =
+source_dl  = http://people.redhat.com/sgrubb/libcap-ng/
 
 build
 	requires
 		libattr-devel
 		python
+	end
+
+	install_cmds
+		# Move libraries to lib
+		mkdir -pv %{BUILDROOT}/lib
+		mv -vf %{BUILDROOT}/usr/lib/libcap-ng.so.* %{BUILDROOT}/lib/
+
+		# Recreate symlink
+		ln -svf ../../lib/libcap-ng.so.0 %{BUILDROOT}/usr/lib/libcap-ng.so
 	end
 
 	# XXX Testsuite is broken by the package developers
