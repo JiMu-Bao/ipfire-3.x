@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = pcre
-version    = 8.12
-release    = 2
+version    = 8.13
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.pcre.org/
@@ -18,7 +18,7 @@ description
 	API are also supplied in the library libpcreposix.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
 
 build
 	requires
@@ -45,8 +45,7 @@ end
 
 packages
 	package %{name}
-	end
-	
+
 	package %{name}-devel
 		template DEVEL
 	end
