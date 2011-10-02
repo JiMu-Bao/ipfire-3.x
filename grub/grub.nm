@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = grub
-version    = 1.98
-release    = 6
+version    = 1.99
+release    = 1
 
 groups     = Base System/Boot
 url        = http://www.gnu.org/software/grub/
@@ -19,7 +19,7 @@ description
 	systems.
 end
 
-source_dl  =
+source_dl  = http://ftp.gnu.org/gnu/grub/
 
 build
 	requires
@@ -30,45 +30,33 @@ build
 		freetype-devel
 		gettext
 		ncurses-devel
-		xorg-x11-fonts
 		zlib-devel
 	end
 
-	CFLAGS += -fno-strict-aliasing
+	# Can only use very basic CFLAGS.
+	export CFLAGS = -O2 -pipe
+	export CXXFLAGS = %{CFLAGS}
 
 	configure_options += \
 		--sysconfdir=/etc \
-		--with-platform=pc \
-		--enable-grub-emu
-
-	prepare_cmds
-		sed -e "s@ GNU/Linux\"@\"@" -i util/grub.d/10_linux.in
-	end
+		--sbindir=/sbin \
+		--with-platform=pc
 
 	install
 		make install DESTDIR=%{BUILDROOT}
-
-		sed -e "s/pkgdatadir/pkglibdir/g" -i %{BUILDROOT}/usr/sbin/grub-install
-
-		mkdir -pv %{BUILDROOT}/boot/grub
 
 		# Install theme file
 		install -m 0744 %{DIR_SOURCE}/05_theme %{BUILDROOT}/etc/grub.d/
 
 		# Install splash background
+		mkdir -pv %{BUILDROOT}/boot/grub
 		install %{DIR_SOURCE}/splash.png %{BUILDROOT}/boot/grub
-
-		# XXX - We will have to do this after the installation of the package by pakfire
-		# Generate grub compatible font for graphical boot menu
-		# This only converts Latin-1, Latin Extended A+B, Arrows, Box and Block characters
-		%{BUILDROOT}/usr/bin/grub-mkfont --output=%{BUILDROOT}/boot/grub/unifont.pf2 \
-			--range=0x0000-0x0241,0x2190-0x21FF,0x2500-0x259f /usr/share/X11/fonts/misc/unifont.pcf.gz
 	end
 end
 
 quality-agent
 	whitelist_nx
-		/usr/bin/*|/usr/sbin/*
+		/sbin/*|/usr/bin/*
 	end
 end
 
@@ -77,6 +65,14 @@ packages
 		requires
 			gettext
 			os-prober
+			/usr/share/X11/fonts/misc/unifont.pcf.gz
+		end
+
+		# Generate grub compatible font for graphical boot menu
+		# This only converts Latin-1, Latin Extended A+B, Arrows, Box and Block characters
+		script postin
+			/usr/bin/grub-mkfont --output /boot/grub/unifont.pf2 \
+				--range=0x0000-0x0241,0x2190-0x21FF,0x2500-0x259f /usr/share/X11/fonts/misc/unifont.pcf.gz
 		end
 	end
 end
