@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = coreutils
-version    = 8.12
-release    = 2
+version    = 8.13
+release    = 1
 
 groups     = Base Build System/Base
 url        = http://www.gnu.org/software/coreutils/
@@ -13,14 +13,12 @@ license    = GPLv3+
 summary    = A set of basic GNU tools commonly used in shell scripts.
 
 description
-	These are the GNU core utilities. This package is the combination of \
+	These are the GNU core utilities. This package is the combination of
 	the old GNU fileutils, sh-utils, and textutils packages.
 end
 
 source_dl  = http://ftp.gnu.org/gnu/coreutils/
 sources    = %{thisapp}.tar.xz
-
-CFLAGS    += -D_GNU_SOURCE=1 -fno-strict-aliasing
 
 build
 	requires
@@ -36,10 +34,16 @@ build
 		pam-devel
 	end
 
+	CFLAGS += \
+		-D_GNU_SOURCE=1 \
+		-fno-strict-aliasing
+
 	configure_options += \
+		--libexecdir=/usr/lib \
 		--enable-pam \
 		--enable-selinux \
 		--enable-largefile \
+		--disable-rpath \
 		--enable-install-program=arch,hostname,su \
 		--enable-no-install-program=kill,uptime
 
