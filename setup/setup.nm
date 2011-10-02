@@ -5,7 +5,7 @@
 
 name       = setup
 version    = 3.0
-release    = 1
+release    = 2
 
 groups     = Base Build System/Base
 url        =
@@ -40,7 +40,7 @@ build
 			cp -vf %{DIR_APP}/${i} %{BUILDROOT}/etc || exit 1; \
 		done
 
-		touch %{BUILDROOT}/etc/{environment,fstab} %{BUILDROOT}/var/log/lastlog
+		touch %{BUILDROOT}/etc/{environment,fstab}
 		chmod -v 0400 %{BUILDROOT}/etc/{,g}shadow
 	end
 end
