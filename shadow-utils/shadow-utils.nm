@@ -5,7 +5,8 @@
 
 name       = shadow-utils
 version    = 4.1.4.3
-release    = 1
+release    = 2
+thisapp    = shadow-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Base System/Base
@@ -18,9 +19,6 @@ description
 	for converting UNIX password files to the shadow password
 	format, plus programs for managing user and group accounts.
 end
-
-obsoletes += shadow
-thisapp    = shadow-%{version}
 
 source_dl  = http://pkg-shadow.alioth.debian.org/releases/
 sources    = %{thisapp}.tar.bz2
@@ -45,8 +43,8 @@ build
 		# Do not build these files:
 		for i in nologin chfn chgpasswd chpasswd chsh expiry gpasswd groups login \
 				logoutd passwd su; do \
-			sed -i "s/$$i\$%{EXEEXT}//" src/Makefile.in; \
-			find man -name Makefile.in -exec sed -i "s/$$i\.1/ /" {} \;; \
+			sed -i "s/$i\$(EXEEXT)//" src/Makefile.in; \
+			find man -name Makefile.in -exec sed -i "s/$i\.1/ /" {} \;; \
 		done
 
 		sed -i src/Makefile.in \
@@ -67,5 +65,11 @@ end
 
 packages
 	package %{name}
+		obsoletes += shadow
+
+		conflicts
+			shadow
+			pam<1.1.0-4
+		end
 	end
 end
