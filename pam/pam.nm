@@ -5,7 +5,7 @@
 
 name       = pam
 version    = 1.1.0
-release    = 3
+release    = 4
 thisapp    = Linux-PAM-%{version}
 
 groups     = System/Base
@@ -54,7 +54,6 @@ build
 		#sed -i 's/yes/no/' %{BUILDROOT}/etc/default/useradd
 		mkdir -pv %{BUILDROOT}/etc/security
 		install -v -m644 %{DIR_SOURCE}/pam_env.conf %{BUILDROOT}/etc/security/pam_env.conf
-		cp -vf %{DIR_SOURCE}/login.defs %{BUILDROOT}/etc
 
 		# Included in setup package
 		rm -f %{BUILDROOT}/etc/environment
