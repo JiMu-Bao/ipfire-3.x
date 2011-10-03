@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = pakfire
-version    = 0.9.6
+version    = 0.9.10
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -18,21 +18,19 @@ description
 	packages.
 end
 
-source_dl  =
+source_dl  = http://source.ipfire.org/releases/pakfire/
 
 build
 	requires
-		intltool
 		libsolv-devel
 		python-devel
-		python-distutils-extra
 	end
 
 	CFLAGS += -fno-strict-aliasing
 
 	test
 		# Check, if the binary module is loadable.
-		cd %{DIR_APP}/build/lib*/pakfire/ && python -c "import _pakfire"
+		cd %{DIR_APP}/python/src/ && python -c "import _pakfire"
 	end
 end
 
@@ -40,12 +38,22 @@ packages
 	package %{name}
 		groups += Base
 
+		requires = pakfire-common=%{thisver}
+	end
+
+	package %{name}-common
 		requires
 			pyliblzma
 			python-progressbar
 			python-urlgrabber
 			pyxattr
 			system-release
+		end
+
+		files
+			/usr/lib/pakfire/pakfire-multicall.py
+			/usr/lib*/python*/site-packages/pakfire*
+			/usr/share/locale
 		end
 	end
 	
@@ -55,13 +63,36 @@ packages
 			The tools that are needed to build new pakfire packages.
 		end
 		groups += Build
-	
+
 		requires
 			%{name}=%{thisver}
+			quality-agent=%{thisver}
+		end
+		conflicts = build-essentials
+
+		files
+			/usr/bin/pakfire-builder
+			/usr/bin/pakfire-server
+			/usr/lib/pakfire/*
+			!/usr/lib/pakfire/pakfire-multicall.py
+		end
+	end
+
+	package quality-agent
+		arch = noarch
+
+		summary = The pakfire quality agent.
+		description
+			The quality agent tests resulting packages that come out
+			of the build service.
+			It is a collection of scripts that check if everything is
+			working right.
 		end
 
 		files
-			/usr/bin/pakfire-build
+			/usr/lib/pakfire/quality-agent*
 		end
+
+		requires = binutils file grep
 	end
 end
