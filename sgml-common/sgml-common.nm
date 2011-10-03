@@ -1,0 +1,111 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = sgml-common
+version    = 0.6.3
+release    = 1
+
+groups     = Applications/Text
+url        =
+license    = GPL+
+summary    = Common SGML catalog and DTD files.
+
+desciption
+	The sgml-common package contains a collection of entities and DTDs
+	that are useful for processing SGML, but that don't need to be
+	included in multiple packages.  Sgml-common also includes an
+	up-to-date Open Catalog file.
+end
+
+source_dl =
+sources   = %{thisapp}.tgz
+
+build
+	requires
+		autoconf
+		automake
+		libxml2-devel
+	end
+
+	configure_options += \
+		--mandir=/usr/share/man \
+		--sysconfdir=/etc
+
+	prepare_cmds
+		for i in COPYING INSTALL install-sh missing mkinstalldirs; do \
+			rm -f ${i}; \
+			cp -pvf /usr/share/automake*/${i} .; \
+		done
+	end
+
+	install_cmds
+		mkdir -pv %{BUILDROOT}/etc/{sg,x}ml/docbook
+		mkdir -pv %{BUILDROOT}/usr/share/sgml/docbook
+	
+		# Touch SGML catalog
+		touch %{BUILDROOT}/etc/sgml/catalog
+
+		# Create an empty XML catalog.
+		xmlcatalog --noout --create %{BUILDROOT}/etc/xml/catalog
+
+		# Now put the common DocBook entries in it
+		xmlcatalog --noout --add "delegatePublic" \
+			"-//OASIS//ENTITIES DocBook XML" \
+			"file:///etc/sgml/docbook/xmlcatalog" %{BUILDROOT}/etc/xml/catalog
+
+		xmlcatalog --noout --add "delegatePublic" \
+			"-//OASIS//DTD DocBook XML" \
+			"file:///etc/sgml/docbook/xmlcatalog" %{BUILDROOT}/etc/xml/catalog
+
+		xmlcatalog --noout --add "delegatePublic" \
+			"ISO 8879:1986" \
+			"file:///etc/sgml/docbook/xmlcatalog" %{BUILDROOT}/etc/xml/catalog
+
+		xmlcatalog --noout --add "delegateSystem" \
+			"http://www.oasis-open.org/docbook/" \
+			"file:///etc/sgml/docbook/xmlcatalog" %{BUILDROOT}/etc/xml/catalog
+
+		xmlcatalog --noout --add "delegateURI" \
+			"http://www.oasis-open.org/docbook/" \
+			"file:///etc/sgml/docbook/xmlcatalog" %{BUILDROOT}/etc/xml/catalog
+
+		# Also create the common DocBook catalog
+		xmlcatalog --noout --create \
+			%{BUILDROOT}/etc/sgml/docbook/xmlcatalog
+
+		ln -svf ../../../../etc/sgml/docbook/xmlcatalog \
+			%{BUILDROOT}/usr/share/sgml/docbook/xmlcatalog
+
+		rm -f %{BUILDROOT}/usr/share/sgml/xml.dcl
+
+		install -p -m0644 %{DIR_SOURCE}/*.dcl %{DIR_SOURCE}/*.soc \
+			%{BUILDROOT}/usr/share/sgml
+
+		rm -rf %{BUILDROOT}/usr/share/xml/*
+	end
+end
+
+packages
+	package %{name}
+		requires
+			xml-common
+		end
+	end
+
+	package xml-common
+		summary = Common XML catalog and DTD files.
+		description
+			The xml-common is a subpackage of sgml-common which contains
+			a collection XML catalogs that are useful for processing XML,
+			but that don't need to be included in main package.
+		end
+
+		files
+			/etc/xml
+			/etc/sgml/docbook/xmlcatalog
+			/usr/share/sgml/docbook/xmlcatalog
+		end
+	end
+end
