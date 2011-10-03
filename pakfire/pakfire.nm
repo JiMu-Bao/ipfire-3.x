@@ -5,7 +5,7 @@
 
 name       = pakfire
 version    = 0.9.10
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Packaging
@@ -22,6 +22,7 @@ source_dl  = http://source.ipfire.org/releases/pakfire/
 
 build
 	requires
+		gettext
 		libsolv-devel
 		python-devel
 	end

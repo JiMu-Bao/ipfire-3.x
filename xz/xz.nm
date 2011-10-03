@@ -5,7 +5,7 @@
 
 name       = xz
 version    = 5.0.3
-release    = 1
+release    = 2
 
 groups     = Build Applications/Compression
 url        = http://tukaani.org/xz/
@@ -26,11 +26,11 @@ sources    = %{thisapp}.tar.xz
 packages
 	package %{name}
 
-	package %{name}-devel
-		template DEVEL
-	end
-
 	package %{name}-libs
 		template LIBS
+	end
+
+	package %{name}-devel
+		template DEVEL
 	end
 end
