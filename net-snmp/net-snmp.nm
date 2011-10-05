@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = net-snmp
-version    = 5.7
+version    = 5.7.1
 release    = 1
 
 groups     = Networking/Daemons
@@ -18,7 +18,7 @@ description
 	computer equipment and even devices like UPSs.
 end
 
-source_dl  =
+source_dl  = https://sourceforge.net/projects/net-snmp/files/net-snmp/%{version}/
 
 build
 	requires
