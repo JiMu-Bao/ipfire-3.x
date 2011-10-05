@@ -4,9 +4,9 @@
 ###############################################################################
 
 name       = squid
-version    = 3.1.12
 major_ver  = 3.1
-release    = 1
+version    = %{major_ver}.12
+release    = 2
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
@@ -38,7 +38,7 @@ build
 		/usr/bin/smbclient
 	end
 
-	export PKG_REQUIRES_FILTER = perl\(Authen::Smb\)
+	CFLAGS += -Wno-error
 
 	configure_options += \
 		--datadir=/usr/lib/squid \
@@ -101,5 +101,7 @@ end
 packages
 	package %{name}
 		requires = /usr/bin/smbclient
+
+		filter_requires = perl\(Authen::Smb\)
 	end
 end
