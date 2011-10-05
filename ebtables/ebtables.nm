@@ -5,7 +5,7 @@
 
 name       = ebtables
 version    = v2.0.9-2
-release    = 1
+release    = 2
 
 groups     = Networking/Tools
 url        = http://ebtables.sourceforge.net/
@@ -35,8 +35,6 @@ build
 
 		rm -vfr %{BUILDROOT}/etc/{init.d,sysconfig}
 	end
-
-	export PKG_REQUIRES_FILTER = libebt
 end
 
 quality-agent
@@ -47,5 +45,8 @@ end
 
 packages
 	package %{name}
+		filter_requires
+			libebt
+		end
 	end
 end
