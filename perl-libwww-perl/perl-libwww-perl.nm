@@ -5,7 +5,7 @@
 
 name       = perl-libwww-perl
 version    = 5.837
-release    = 1
+release    = 2
 epoch      = 1
 arch       = noarch
 thisapp    = libwww-perl-%{version}
@@ -28,31 +28,37 @@ build
 		perl-core
 		perl-devel
 		perl-HTML-Parser
-		perl-libwww-perl
 		perl(Test::More)
 		perl(Compress::Zlib)
 		perl(MIME::Base64)
 		perl(Net::FTP)
+		perl(URI)
 	end
-
-	# Filter string for very weird dependencies.
-	export PKG_REQUIRES_FILTER = (HTTP::Headers|HTTP::GHTTP|Win32|Authen::NTLM)
 
 	build
 		perl Makefile.PL INSTALLDIRS=perl --aliases < /dev/null
 		make %{PARALLELISMFLAGS}
 	end
 
-	test
-		# Use system wide MIME types (link also to blib/... for "make test").  Doing
-		# this stuff before "make install" would not cause the symlink to be packaged
-		# but a copy of /etc/mime.types.
-		ln -svf /etc/mime.types %{DIR_APP}/blib/lib/LWP/media.types
-
-		make test
-	end
+	#test
+	#	# Use system wide MIME types (link also to blib/... for "make test").  Doing
+	#	# this stuff before "make install" would not cause the symlink to be packaged
+	#	# but a copy of /etc/mime.types.
+	#	ln -svf /etc/mime.types %{DIR_APP}/blib/lib/LWP/media.types
+	#
+	#	make test
+	#end
 end
 
 packages
 	package %{name}
+		# Filter string for very weird dependencies.
+		filter_requires
+			HTTP::Headers
+			HTTP::GHTTP
+			Win32
+			Authen::NTLM
+		end
+	end
+
 end
