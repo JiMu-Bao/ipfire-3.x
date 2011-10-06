@@ -6,7 +6,7 @@
 name       = perl
 version    = 5.14.1
 # Never reset release in this package, just increase.
-release    = 6
+release    = 7
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Languages
@@ -100,9 +100,9 @@ build
 		make %{PARALLELISMFLAGS}
 	end
 
-#	test
-#		make test
-#	end
+	test
+		make test
+	end
 
 	install_cmds
 		# Remove precreated directories
