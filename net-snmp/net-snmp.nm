@@ -5,7 +5,7 @@
 
 name       = net-snmp
 version    = 5.7.1
-release    = 1
+release    = 2
 
 groups     = Networking/Daemons
 url        = http://net-snmp.sourceforge.net
@@ -48,6 +48,12 @@ end
 
 packages
 	package %{name}
+		# XXX Although we don't want to build perl modules,
+		# we have this requirement?!
+		filter_requires
+			perl\(NetSNMP::TrapReceiver\)
+		end
+	end
 
 	package %{name}-libs
 		template LIBS
