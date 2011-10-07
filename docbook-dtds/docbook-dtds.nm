@@ -1,0 +1,289 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = docbook-dtds
+version    = 1.0
+release    = 1
+
+groups     = Applications/Text
+url        = http://www.oasis-open.org/docbook/
+license    = Copyright only
+summary    = SGML and XML document type definitions for DocBook.
+
+description
+	The DocBook Document Type Definition (DTD) describes the syntax of
+	technical documentation texts (articles, books and manual pages).
+	This syntax is XML-compliant and is developed by the OASIS consortium.
+	This package contains SGML and XML versions of the DocBook DTD.
+end
+
+# Update version as runtime dependency if changes.
+version_openjade = 1.3.2
+
+sources = \
+	docbk30.zip \
+	docbk31.zip \
+	docbk40.zip \
+	docbk41.zip \
+	docbkx412.zip \
+	docbook-4.2.zip \
+	docbook-xml-4.2.zip \
+	docbook-4.3.zip \
+	docbook-xml-4.3.zip \
+	docbook-4.4.zip \
+	docbook-xml-4.4.zip \
+	docbook-4.5.zip \
+	docbook-xml-4.5.zip
+
+# Update directories at the scriptlets if there will be any changes.
+directories = \
+	3.0-sgml \
+	3.1-sgml \
+	4.0-sgml \
+	4.1-sgml \
+	4.1.2-xml \
+	4.2-sgml \
+	4.2-xml \
+	4.3-sgml \
+	4.3-xml \
+	4.4-sgml \
+	4.4-xml \
+	4.5-sgml \
+	4.5-xml
+
+build
+	requires
+		dos2unix
+		unzip>=6.0-2
+	end
+
+	prepare
+		# Define a bash function to extract the files
+		function macro_extract()
+		{
+		  mkdir -pv %{DIR_APP}/$2
+		  cd %{DIR_APP}/$2 && unzip %{DIR_DL}/$1
+		}
+
+		# Extract files
+		macro_extract docbk30.zip 3.0-sgml
+		macro_extract docbk31.zip 3.1-sgml
+		macro_extract docbk40.zip 4.0-sgml
+		macro_extract docbk41.zip 4.1-sgml
+		macro_extract docbkx412.zip 4.1.2-xml
+		macro_extract docbook-4.2.zip 4.2-sgml
+		macro_extract docbook-xml-4.2.zip 4.2-xml
+		macro_extract docbook-4.3.zip 4.3-sgml
+		macro_extract docbook-xml-4.3.zip 4.3-xml
+		macro_extract docbook-4.4.zip 4.4-sgml
+		macro_extract docbook-xml-4.4.zip 4.4-xml
+		macro_extract docbook-4.5.zip 4.5-sgml
+		macro_extract docbook-xml-4.5.zip 4.5-xml			
+
+		# Convert all catalog files to unix format
+		cd %{DIR_APP} && dos2unix */docbook.cat
+
+		%{MACRO_PATCHES}
+
+		sed -e's,\(NAMELEN\s\+\)44\(\s\*\)\?,\1256,' -i.namelen */docbook.dcl
+		sed -i 's/\r//' */*.txt
+		chown -R root:root .
+		chmod -R a+rX,g-w,o-w .
+	end
+
+	build = # Nothing to do
+
+	install
+		mkdir -pv %{BUILDROOT}/etc/sgml
+		for fmt in sgml xml; do
+			ln -svf $fmt-docbook-4.5.cat %{BUILDROOT}/etc/sgml/$fmt-docbook.cat
+		done
+
+		for dir in %{directories}; do
+			fmt=${dir#*-}; ver=${dir%%-*}
+				cd %{DIR_APP}/$dir
+				DESTDIR=%{BUILDROOT}/usr/share/sgml/docbook/$fmt-dtd-$ver
+			mkdir -pv $DESTDIR
+			case $fmt in
+				sgml)   mkdir -pv $DESTDIR; install -v *.dcl $DESTDIR ;;
+				xml)    mkdir -pv $DESTDIR/ent; install -v ent/* $DESTDIR/ent ;;
+			esac
+			install -v *.dtd *.mod $DESTDIR
+			install -v docbook.cat $DESTDIR/catalog
+			touch %{BUILDROOT}/etc/sgml/${dir#*-}-docbook-$ver.cat
+		done
+	end
+end
+
+packages
+	package %{name}
+		requires
+			openjade=%{version_openjade}
+		end
+
+		script postin
+			set -x
+
+			## Clean up pre-docbook-dtds mess caused by broken trigger.
+			for ver in 3.0 3.1 4.0 4.1 4.2; do
+				if [ -f /etc/sgml/sgml-docbook-${ver}.cat ]; then
+					/usr/bin/xmlcatalog --noout --sgml --del /etc/sgml/sgml-docbook-${ver}.cat \
+						/usr/share/sgml/openjade-%{version_openjade}/catalog 2>/dev/null
+				fi
+			done
+
+			# The STYLESHEETS/catalog command is for the case in which the style sheets
+			# were installed after another DTD but before this DTD
+			for STYLESHEETS in /usr/share/sgml/docbook/dsssl-stylesheets-*; do : ; done
+				case $STYLESHEETS in
+				   *-"*") STYLESHEETS= ;;
+				esac
+
+				for dir in %{directories}; do
+					fmt=${dir#*-}
+					ver=${dir%%-*}
+
+					## SGML catalog
+					# Update the centralized catalog corresponding to this version of the DTD
+					for cat_dir in /usr/share/sgml/sgml-iso-entities-8879.1986 /usr/share/sgml/docbook/$fmt-dtd-$ver $STYLESHEETS; do
+						/usr/bin/xmlcatalog --sgml --add /etc/sgml/$fmt-docbook-$ver.cat $cat_dir/catalog
+					done
+
+					## XML catalog
+					if [ $fmt = xml -a -w /usr/share/sgml/docbook/xmlcatalog ]; then
+						while read f desc; do
+						case $vers in 4.[45]) f=${f/-/} ;; esac
+							/usr/bin/xmlcatalog --add public "$desc" /usr/share/sgml/docbook/$fmt-dtd-$ver/$f /usr/share/sgml/docbook/xmlcatalog
+						done <<ENDENT
+					ent/iso-pub.ent	ISO 8879:1986//ENTITIES Publishing//EN
+					ent/iso-grk1.ent	ISO 8879:1986//ENTITIES Greek Letters//EN
+					dbpoolx.mod	-//OASIS//ELEMENTS DocBook XML Information Pool V$vers//EN
+					ent/iso-box.ent	ISO 8879:1986//ENTITIES Box and Line Drawing//EN
+					docbookx.dtd	-//OASIS//DTD DocBook XML V$vers//EN
+					ent/iso-grk3.ent	ISO 8879:1986//ENTITIES Greek Symbols//EN
+					ent/iso-amsn.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Negated Relations//EN
+					ent/iso-num.ent	ISO 8879:1986//ENTITIES Numeric and Special Graphic//EN
+					dbcentx.mod	-//OASIS//ENTITIES DocBook XML Character Entities V$vers//EN
+					ent/iso-grk4.ent	ISO 8879:1986//ENTITIES Alternative Greek Symbols//EN
+					dbnotnx.mod	-//OASIS//ENTITIES DocBook XML Notations V$vers//EN
+					ent/iso-dia.ent	ISO 8879:1986//ENTITIES Diacritical Marks//EN
+					ent/iso-grk2.ent	ISO 8879:1986//ENTITIES Monotoniko Greek//EN
+					dbgenent.mod	-//OASIS//ENTITIES DocBook XML Additional General Entities V$vers//EN
+					dbhierx.mod	-//OASIS//ELEMENTS DocBook XML Document Hierarchy V$vers//EN
+					ent/iso-amsa.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Arrow Relations//EN
+					ent/iso-amso.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Ordinary//EN
+					ent/iso-cyr1.ent	ISO 8879:1986//ENTITIES Russian Cyrillic//EN
+					ent/iso-tech.ent	ISO 8879:1986//ENTITIES General Technical//EN
+					ent/iso-amsc.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Delimiters//EN
+					soextblx.dtd	-//OASIS//DTD XML Exchange Table Model 19990315//EN
+					calstblx.dtd	-//OASIS//DTD DocBook XML CALS Table Model V$vers//EN
+					ent/iso-lat1.ent	ISO 8879:1986//ENTITIES Added Latin 1//EN
+					ent/iso-amsb.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Binary Operators//EN
+					ent/iso-lat2.ent	ISO 8879:1986//ENTITIES Added Latin 2//EN
+					ent/iso-amsr.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Relations//EN
+					ent/iso-cyr2.ent	ISO 8879:1986//ENTITIES Non-Russian Cyrillic//EN
+					ENDENT
+
+						for f in System URI; do
+							/usr/bin/xmlcatalog --add rewrite$f "http://www.oasis-open.org/docbook/xml/$vers" \
+							/usr/share/sgml/docbook/$fmt-dtd-$ver /usr/share/sgml/docbook/xmlcatalog
+						done
+					fi
+				done
+
+				sed -ni '
+					/xml-docbook/ H
+					/xml-docbook/ !p
+						$ {
+							g
+							s/^\n//p
+						}
+					' /etc/sgml/catalog
+
+			# Finally, make sure everything in /etc/sgml is readable!
+			chmod a+r /etc/sgml/*
+		end
+
+		script postun
+			# Redefine directories from package header. Don't forget to update this if there are any changes.
+			directories=\
+				3.0-sgml \
+				3.1-sgml \
+				4.0-sgml \
+				4.1-sgml \
+				4.1.2-xml \
+				4.2-sgml \
+				4.2-xml \
+				4.3-sgml \
+				4.3-xml \
+				4.4-sgml \
+				4.4-xml \
+				4.5-sgml \
+				4.5-xml
+
+			# remove entries only on removal of package
+			if [ "$1" = 0 ]; then
+ 
+				entities="
+					ent/iso-pub.ent
+					ent/iso-grk1.ent
+					dbpoolx.mod
+					ent/iso-box.ent
+					docbookx.dtd
+					ent/iso-grk3.ent
+					ent/iso-amsn.ent
+					ent/iso-num.ent
+					dbcentx.mod
+					ent/iso-grk4.ent
+					dbnotnx.mod
+					ent/iso-dia.ent
+					ent/iso-grk2.ent
+					dbgenent.mod
+					dbhierx.mod
+					ent/iso-amsa.ent
+					ent/iso-amso.ent
+					ent/iso-cyr1.ent
+					ent/iso-tech.ent
+					ent/iso-amsc.ent
+					soextblx.dtd
+					calstblx.dtd
+					ent/iso-lat1.ent
+					ent/iso-amsb.ent
+					ent/iso-lat2.ent
+					ent/iso-amsr.ent
+					ent/iso-cyr2.ent"
+
+			for dir in %{directories}; do
+				fmt=${dir#*-} ver=${dir%%-*}
+
+				## SGML catalog
+				# Update the centralized catalog corresponding to this version of the DTD
+				/usr/bin/xmlcatalog --noout --sgml --del /etc/sgml/catalog /etc/sgml/$fmt-docbook-$ver.cat
+				rm -f /etc/sgml/$fmt-docbook-$ver.cat
+
+				## XML catalog
+				if [ $fmt = xml -a -w /usr/share/sgml/docbook/xmlcatalog ]; then
+					for f in $entities; do
+						case $ver in 4.[45]) f=${f/-/} ;; esac
+							/usr/bin/xmlcatalog --noout --del /usr/share/sgml/docbook/$fmt-dtd-$ver/$f /usr/share/sgml/docbook/xmlcatalog
+					done
+					/usr/bin/xmlcatalog --noout --del /usr/share/sgml/docbook/$fmt-dtd-$ver /usr/share/sgml/docbook/xmlcatalog
+				fi
+			done
+
+			# See the comment attached to this command in the postin scriptlet.
+			sed -ni '
+				/xml-docbook/ H
+				/xml-docbook/ !p
+					$ {
+						g
+						s/^\n//p
+					}
+				' /etc/sgml/catalog
+			fi
+		end
+	end
+	
+end
