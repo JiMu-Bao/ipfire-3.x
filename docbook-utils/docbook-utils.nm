@@ -1,0 +1,51 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = docbook-utils
+version    = 0.6.14
+release    = 1
+
+groups     = Applications/Text
+url        = http://sources.redhat.com/docbook-tools/
+license    = GPLv2+
+summary    = Shell scripts for managing DocBook documents.
+
+description
+	This package contains scripts are for easy conversion from DocBook
+	files to other formats, and for comparing SGML files.
+end
+
+# Manual list patches because they need to be applied in specical order
+patches = \
+	%{name}-spaces.patch \
+	%{name}-2ndspaces.patch \
+	%{name}-w3mtxtconvert.patch \
+	%{name}-grepnocolors.patch \
+	%{name}-sgmlinclude.patch \
+	%{name}-rtfmanpage.patch \
+	%{name}-papersize.patch \
+	%{name}-nofinalecho.patch \
+	%{name}-newgrep.patch
+
+build
+	requires
+		docbook-dsssl
+		docbook-dtds
+		openjade
+		sgml-common
+	end
+
+	configure_options += \
+		--libdir=/usr/lib \
+		--mandir=/usr/share/man
+end
+
+packages
+	package %{name}
+		requires
+			docbook-dtds
+		end
+	end
+end
