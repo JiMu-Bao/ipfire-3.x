@@ -40,7 +40,7 @@ build
 		CC="gcc %{CFLAGS}" \
 		LD=gcc
 
-	make_install_targets += \
+	make_install_targetsi += \
 		prefix=%{BUILDROOT}/usr \
 		MANDIR=/usr/share/man/man1 \
 		INSTALL="cp -p"
