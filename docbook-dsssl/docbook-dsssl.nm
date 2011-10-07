@@ -1,0 +1,76 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = docbook-dsssl
+version    = 1.79
+release    = 1
+
+groups     = Applications/Text
+url        = http://docbook.sourceforge.net/
+license    = GPLv2+
+summary    = The DocBook DSSSL Stylesheets package contains DSSSL stylesheets.
+
+description
+	The DocBook DSSSL Stylesheets package contains DSSSL stylesheets. These
+	are used by OpenJade or other tools to transform SGML and XML DocBook files.
+end
+
+source_dl =
+
+sources  += %{name}-doc-%{version}.tar.bz2
+
+build
+	requires
+		sgml-common
+	end
+
+	build = # empty
+
+	install
+		mkdir -pv %{BUILDROOT}/usr/bin %{BUILDROOT}/usr/share/man/man1
+		install -v -m755 bin/collateindex.pl %{BUILDROOT}/usr/bin
+		install -v -m644 bin/collateindex.pl.1 %{BUILDROOT}/usr/share/man/man1
+
+		install -v -d -m755 %{BUILDROOT}/usr/share/sgml/docbook/dsssl-stylesheets-%{version}
+		cp -v -R * %{BUILDROOT}/usr/share/sgml/docbook/dsssl-stylesheets-%{version}
+
+		mkdir -pv %{BUILDROOT}/etc/sgml
+		install-catalog --add %{BUILDROOT}/etc/sgml/dsssl-docbook-stylesheets.cat \
+		%{BUILDROOT}/usr/share/sgml/docbook/dsssl-stylesheets-%{version}/catalog
+		install-catalog --add %{BUILDROOT}/etc/sgml/dsssl-docbook-stylesheets.cat \
+		%{BUILDROOT}/usr/share/sgml/docbook/dsssl-stylesheets-%{version}/common/catalog
+		install-catalog --add %{BUILDROOT}/etc/sgml/sgml-docbook.cat \
+		%{BUILDROOT}/etc/sgml/dsssl-docbook-stylesheets.cat
+
+		# Remove empty conflicting file.
+		rm -rvf %{BUILDROOT}/etc/sgml/sgml-docbook.cat
+	end
+end
+
+packages
+	package %{name}
+		requires
+			sgml-common
+		end
+
+		script postin
+			# Install catalog files.
+			for centralized in /etc/sgml/*-docbook-*.cat; do
+				/usr/bin/install-catalog --add ${centralized} /usr/share/sgml/docbook/dsssl-stylesheets-%{version}/catalog /dev/null 2>/dev/null
+			done
+
+			exit 0
+		end
+
+		script preun
+			# Uninstall catalog files.
+			for centralized in /etc/sgml/*-docbook-*.cat; do
+				/usr/bin/install-catalog --remove ${centralized} /usr/share/sgml/docbook/dsssl-stylesheets-%{version}/catalog > /dev/null 2>/dev/null
+			done
+
+			exit 0
+		end
+	end
+end
