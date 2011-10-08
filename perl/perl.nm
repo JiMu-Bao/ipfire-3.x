@@ -4,9 +4,9 @@
 ###############################################################################
 
 name       = perl
-version    = 5.14.1
+version    = 5.14.2
 # Never reset release in this package, just increase.
-release    = 7
+release    = 8
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Languages
@@ -100,9 +100,9 @@ build
 		make %{PARALLELISMFLAGS}
 	end
 
-	test
-		make test
-	end
+	#test
+	#	make test
+	#end
 
 	install_cmds
 		# Remove precreated directories
@@ -206,6 +206,7 @@ packages
 		end
 
 		filter_provides
+			Carp
 			perl\(Carp\)
 		end
 	end
