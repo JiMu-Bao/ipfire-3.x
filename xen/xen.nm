@@ -5,7 +5,7 @@
 
 name       = xen
 version    = 4.1.1
-release    = 3
+release    = 4
 
 maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
 groups     = Applications/Virtualization
@@ -32,7 +32,9 @@ build
 		python
 		python-devel
 		sdl-devel
+		texinfo
 		xorg-x11-proto-devel
+		wget
 		zlib-devel
 	end
 
@@ -40,8 +42,8 @@ build
 		# Following two lines are disabling HVM. HVM does not work because \
 		# of some PIE errors we get when we try to build the firmware part \
 		# needed for different architektures.
-		sed -i -e '/^CONFIG_IOEMU := y$$/d' config/*.mk
-		sed -i -e '/SUBDIRS-$%{CONFIG_X86} += firmware/d' tools/Makefile
+		sed -i -e '/^CONFIG_IOEMU := y$/d' config/*.mk
+		sed -i -e '/SUBDIRS-$(CONFIG_X86) += firmware/d' tools/Makefile
 
 		rm -f Config.mk~
 	end
@@ -65,8 +67,7 @@ end
 
 packages
 	package %{name}
-	end
-	
+
 	package %{name}-libs
 		template LIBS
 
@@ -74,33 +75,33 @@ packages
 			This package contains the libraries needed to
 			run applications which manage Xen virtual machines
 		end
-	
+
 		files += /usr/lib/fs
 	end
-	
+
 	package %{name}-hypervisor
 		summary = The Xen hypervisor.
 		description
 			This package contains the Xen hypervisor.
 		end
-	
+
 		files
 			/boot/*
 		end
 	end
-	
+
 	package %{name}-runtime
 		summary = Runtime programms and daemons for Xen environments.
 		description
 			This package contains the runtime programs
 			and daemons which form the core Xen userspace environment.
 		end
-	
+
 		files
 			/usr/bin/*
 		end
 	end
-	
+
 	package %{name}-devel
 		template DEVEL
 
