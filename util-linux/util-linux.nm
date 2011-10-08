@@ -6,7 +6,7 @@
 name       = util-linux
 version    = 2.19
 major_ver  = 2.19
-release    = 3
+release    = 4
 
 groups     = System/Base
 url        = http://kernel.org/~kzak/util-linux/
@@ -84,8 +84,6 @@ build
 		mkdir -pv %{BUILDROOT}/etc
 		ln -svf /proc/mounts %{BUILDROOT}/etc/mtab
 	end
-
-	export PKG_REQUIRES_FILTER = /proc/.*/mounts
 end
 
 # This symlink is allowed to be absolute.
@@ -102,6 +100,8 @@ packages
 		requires
 			/etc/pam.d/system-auth
 		end
+
+		filter_requires = /proc/.*/mounts
 
 		obsoletes = util-linux-ng
 

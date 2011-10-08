@@ -5,7 +5,7 @@
 
 name       = python
 version    = 2.7.1
-release    = 3
+release    = 4
 thisapp    = Python-%{version}
 
 groups     = Development/Languages
@@ -44,7 +44,6 @@ build
 	end
 
 	export CFLAGS  += -D_GNU_SOURCE -fwrapv
-	export CPPFLAGS = $(shell pkg-config --cflags-only-I libffi)
 
 	prepare_cmds
 		sed -e "s/#*shared*/*shared*/g" -i Modules/Setup.dist
@@ -59,6 +58,8 @@ build
 	end
 
 	build
+		export CPPFLAGS=$(pkg-config --cflags-only-I libffi)
+
 		OPT="%{CFLAGS}" \
 			./configure \
 				--prefix=/usr \
@@ -78,12 +79,11 @@ end
 
 packages
 	package %{name}
-	end
-	
+
 	package %{name}-devel
 		template DEVEL
 	
-		files =+ \
+		files += \
 			!/usr/lib/python*/config/Makefile \
 			!/usr/include/python*/pyconfig.h
 	end

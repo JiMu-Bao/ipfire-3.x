@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = gnupg
-version    = 2.0.17
+version    = 2.0.18
 release    = 1
 
 groups     = Security/Tools
@@ -20,7 +20,7 @@ description
 	standard as described by several RFCs.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.gnupg.org/gcrypt/gnupg/
 sources    = %{thisapp}.tar.bz2
 
 build
@@ -41,5 +41,4 @@ end
 
 packages
 	package %{name}
-	end
 end
