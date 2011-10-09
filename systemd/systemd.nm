@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = systemd
-version    = 33
-release    = 3
+version    = 36
+release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -113,6 +113,8 @@ packages
 			udev>=172
 			util-linux>=2.19
 		end
+
+		prerequires += authconfig
 
 		script postin
 			# Generate Machine ID.
