@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = dbus
-version    = 1.4.0
-release    = 4
+version    = 1.4.14
+release    = 1
 
 groups     = System/Daemons
 url        = http://www.freedesktop.org/software/dbus/
