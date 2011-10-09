@@ -5,7 +5,7 @@
 
 name       = dbus
 version    = 1.4.14
-release    = 1
+release    = 2
 
 groups     = System/Daemons
 url        = http://www.freedesktop.org/software/dbus/
@@ -58,10 +58,10 @@ packages
 		prerequires += shadow-utils
 
 		script prein
-			getent group dbus >/dev/null || groupadd -r dbus > /dev/null 2>&1 || :
+			getent group dbus >/dev/null || groupadd -r dbus
 			getent passwd dbus >/dev/null || \
-				useradd -r -g dbus -d HOMEDIR -s /sbin/nologin \
-					-c "User for dbus service" dbus > /dev/null 2>&1 || :
+				useradd -r -g dbus -d / -s /sbin/nologin \
+					-c "User for dbus service" dbus
 			exit  0
 		end
 
