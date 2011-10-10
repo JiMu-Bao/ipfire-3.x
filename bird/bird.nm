@@ -5,7 +5,7 @@
 
 name       = bird
 version    = 1.3.1
-release    = 1
+release    = 2
 
 groups     = Networking/Routing
 url        = http://bird.network.cz/
@@ -57,5 +57,28 @@ end
 
 packages
 	package %{name}
+		prerequires = systemd-units
+
+		script postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/bin/systemctl --no-reload disable bird.service > /dev/null 2>&1 || :
+			/bin/systemctl stop bird.service > /dev/null 2>&1 || :
+
+			/bin/systemctl --no-reload disable bird6.service > /dev/null 2>&1 || :
+			/bin/systemctl stop bird6.service > /dev/null 2>&1 || :
+		end
+
+		script postun
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/bin/systemctl daemon-reload 2>&1 || :
+			/bin/systemctl reload-or-try-restart bird.service >/dev/null 2>&1 || :
+			/bin/systemctl reload-or-try-restart bird6.service >/dev/null 2>&1 || :
+		end
 	end
 end
