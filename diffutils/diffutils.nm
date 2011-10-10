@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = diffutils
-version    = 3.0
+version    = 3.2
 release    = 1
 
 groups     = Base Build Development/Tools
@@ -19,7 +19,7 @@ description
 	cmp can show the characters that differ between the two files.
 end
 
-source_dl  =
+source_dl  = http://ftp.gnu.org/gnu/diffutils/
 
 build
 	configure_options += \

@@ -5,7 +5,7 @@
 
 name       = cairo
 version    = 1.10.2
-release    = 2
+release    = 3
 
 groups     = System/Graphics
 url        = http://cairographics.org
@@ -21,6 +21,7 @@ source_dl  = http://cairographics.org/releases/
 
 build
 	requires
+		binutils>=2.21.51.0.8-2
 		fontconfig-devel
 		freetype-devel
 		libpng-devel
@@ -32,8 +33,7 @@ end
 
 packages
 	package %{name}
-	end
-	
+
 	package %{name}-devel
 		template DEVEL
 	

@@ -5,7 +5,7 @@
 
 name       = mc
 version    = 4.7.4
-release    = 1
+release    = 2
 
 groups     = Applications/System
 url        = http://www.ibiblio.org/mc/
@@ -32,9 +32,6 @@ build
 		slang-devel
 	end
 
-	# This awkward dependency is found and cannot be resolved.
-	PKG_REQUIRES_FILTER = perl\(pieces\)
-
 	configure_options += \
 		--sysconfdir=/etc \
 		--libexecdir=/usr/lib \
@@ -51,4 +48,9 @@ end
 
 packages
 	package %{name}
+		# This awkward dependency is found and cannot be resolved.
+		filter_requires
+			perl\(pieces\)
+		end
+	end
 end

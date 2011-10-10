@@ -5,7 +5,7 @@
 
 name       = cups
 version    = 1.4.5
-release    = 5
+release    = 6
 
 groups     = Applications/Printing
 url        = http://cups.org/software.php
@@ -73,11 +73,6 @@ build
 		cp -vf %{DIR_SOURCE}/cups.logrotate %{BUILDROOT}/etc/logrotate.d/cups
 	end
 end
-
-# XXX what is this?
-# This line has to be added at the installation of cups.
-# File: /lib/udev/rules.d/99-systemd.rules
-# Line: SUBSYSTEM=="usb", ATTR{serial}=="AL01077498", TAG+="systemd", ENV{SYSTEMD_WANTS}="cups.service"
 
 packages
 	package %{name}

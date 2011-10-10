@@ -5,10 +5,10 @@
 
 name       = python-gudev
 version    = 147.1
-release    = 1
+release    = 2
 
 groups     = Development/Tools
-url        = http://flex.sourceforge.net/
+url        = http://www.kernel.org/pub/linux/utils/kernel/hotplug/gudev/
 license    = LGPLv3+
 summary    = Python (PyGObject) bindings to the GUDev library.
 
@@ -32,7 +32,7 @@ build
 
 	DIR_APP = %{DIR_SRC}/nzjrs-python-gudev-5fac65a
 
-	CFLAGS += -I$(wildcard /usr/include/pygtk*)
+	CFLAGS += -I/usr/include/pygtk-2.0
 
 	prepare_cmds
 		./autogen.sh
