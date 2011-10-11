@@ -5,7 +5,7 @@
 
 name       = udev
 version    = 172
-release    = 2
+release    = 3
 
 groups     = Base System/Base
 url        = ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug/
@@ -45,10 +45,6 @@ build
 		--with-systemdsystemunitdir=/lib/systemd/system
 
 	install_cmds
-		# Install rules
-		mkdir -pv %{BUILDROOT}/lib/udev/rules.d/
-		install -m644 -v %{DIR_SOURCE}/rules/*.rules %{BUILDROOT}/lib/udev/rules.d/
-
 		# Install pkg-config files correctly
 		mv -v %{BUILDROOT}/lib/pkgconfig %{BUILDROOT}/usr/lib
 
@@ -59,8 +55,6 @@ build
 		ln -svf ../../../../lib/udev/udev-acl \
 			%{BUILDROOT}/usr/lib/ConsoleKit/run-seat.d/udev-acl.ck
 
-		install -m 755 %{DIR_SOURCE}/console_init %{BUILDROOT}/lib/udev/
-
 		# Remove network rules. We have our own in the network package.
 		rm -v %{BUILDROOT}/lib/udev/{write_net_rules,rules.d/75-persistent-net-generator.rules}
 	end
@@ -68,12 +62,11 @@ end
 
 packages
 	package %{name}
-	end
-	
+
 	package lib%{name}
 		template LIBS
 	end
-	
+
 	package lib%{name}-devel
 		template DEVEL
 	end
