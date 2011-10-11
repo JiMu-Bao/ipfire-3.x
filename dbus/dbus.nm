@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = dbus
-version    = 1.4.0
-release    = 3
+version    = 1.4.14
+release    = 2
 
 groups     = System/Daemons
 url        = http://www.freedesktop.org/software/dbus/
@@ -13,12 +13,12 @@ license    = GPLv2+ AFL
 summary    = D-BUS message bus.
 
 description
-	D-BUS is a system for sending messages between applications. It is \
-	used both for the system-wide message bus service, and as a \
+	D-BUS is a system for sending messages between applications. It is
+	used both for the system-wide message bus service, and as a
 	per-user-login-session messaging facility.
 end
 
-source_dl  =
+source_dl  = http://dbus.freedesktop.org/releases/dbus/
 
 build
 	requires
@@ -55,6 +55,40 @@ end
 
 packages
 	package %{name}
+		prerequires += shadow-utils
+
+		script prein
+			getent group dbus >/dev/null || groupadd -r dbus
+			getent passwd dbus >/dev/null || \
+				useradd -r -g dbus -d / -s /sbin/nologin \
+					-c "User for dbus service" dbus
+			exit  0
+		end
+
+		# Just search for new unit files that were just installed.
+		script postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		
+			# The dbus service should be started on default.
+			/bin/systemctl enable dbus.service > /dev/null 2>&1 || : 
+		end
+
+		# Disable the service that is to be removed and stop it if it is still running.
+		script preun
+			/bin/systemctl --no-reload disable dbus.service >/dev/null 2>&1 || :
+			/bin/systemctl stop dbus.service >/dev/null 2>&1 || :
+		end
+
+		# Just tell systemd that unitfiles have been removed.
+		script postun
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		# Try to restart the service if it is running.
+		script postup
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl try-restart dbus.service >/dev/null 2>&1 || :
+		end
 	end
 	
 	package %{name}-libs
