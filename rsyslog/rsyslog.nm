@@ -5,7 +5,7 @@
 
 name       = rsyslog
 version    = 5.8.0
-release    = 2
+release    = 3
 
 groups     = Base System/Daemons
 url        = http://www.rsyslog.com/
@@ -21,12 +21,7 @@ description
 	relay chains.
 end
 
-provides  += syslog
-
 source_dl  = http://www.rsyslog.com/files/download/rsyslog/
-
-CFLAGS    += \
-	-DSYSLOGD_PIDNAME=\"syslogd.pid\"
 
 build
 	requires
@@ -35,6 +30,9 @@ build
 		libnet-devel
 		zlib-devel
 	end
+
+	CFLAGS += \
+		-DSYSLOGD_PIDNAME=\"syslogd.pid\"
 
 	configure_options += \
 		--exec-prefix= \
@@ -69,5 +67,31 @@ end
 packages
 	package %{name}
 		requires = logrotate
+		provides += syslog
+
+		prerequires = systemd-units
+
+		script postin
+			for n in /var/log/{messages,secure,maillog,spooler}; do
+				[ -f "${n}" ] && continue
+				umask 066 && touch ${n}
+			done
+
+			/bin/systemctl enable rsyslog.service >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/bin/systemctl --no-reload disable rsyslog.service >/dev/null 2>&1 || :
+			/bin/systemctl stop rsyslog.service 2>&1 || :
+		end
+
+		script postun
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl try-restart rsyslog.service >/dev/null 2>&1 || :
+		end
 	end
 end
