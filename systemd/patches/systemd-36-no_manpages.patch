@@ -1,7 +1,7 @@
 diff -Nur a/Makefile.am b/Makefile.am
---- a/Makefile.am	2011-08-03 04:19:53.000000000 +0200
-+++ b/Makefile.am	2011-08-05 19:41:33.923993685 +0200
-@@ -692,81 +692,18 @@
+--- a/Makefile.am	2011-09-23 18:30:02.000000000 +0200
++++ b/Makefile.am	2011-10-09 16:44:18.293116056 +0200
+@@ -749,82 +749,13 @@
          src/dbus-loop.h \
          src/spawn-agent.h
  
@@ -42,6 +42,7 @@ diff -Nur a/Makefile.am b/Makefile.am
 -	man/systemd-logind.conf.5 \
 -	man/tmpfiles.d.5 \
 -	man/hostname.5 \
+-        man/timezone.5 \
 -	man/machine-id.5 \
 -	man/vconsole.conf.5 \
 -	man/locale.conf.5 \
@@ -53,12 +54,11 @@ diff -Nur a/Makefile.am b/Makefile.am
 -        man/systemd-loginctl.1
 +MANPAGES =
  
- if ENABLE_BINFMT
+-if ENABLE_BINFMT
 -MANPAGES += \
 -	man/binfmt.d.5
-+MANPAGES +=
-+
- endif
+-endif
++MANPAGES_ALIAS =
  
 -MANPAGES_ALIAS = \
 -	man/reboot.8 \
@@ -80,8 +80,6 @@ diff -Nur a/Makefile.am b/Makefile.am
 -dist_man_MANS = \
 -	$(MANPAGES) \
 -	$(MANPAGES_ALIAS)
-+MANPAGES_ALIAS =
-+
 +dist_man_MANS =
  
 -nodist_man_MANS = \
