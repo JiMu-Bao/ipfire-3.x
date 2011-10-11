@@ -5,7 +5,8 @@
 
 name       = grub
 version    = 1.99
-release    = 1
+release    = 2
+sup_arches = i686
 
 groups     = Base System/Boot
 url        = http://www.gnu.org/software/grub/
@@ -51,6 +52,9 @@ build
 		# Install splash background
 		mkdir -pv %{BUILDROOT}/boot/grub
 		install %{DIR_SOURCE}/splash.png %{BUILDROOT}/boot/grub
+
+		# Install empty configuration file.
+		touch %{BUILDROOT}/boot/grub/grub.cfg
 	end
 end
 
@@ -66,6 +70,11 @@ packages
 			gettext
 			os-prober
 			/usr/share/X11/fonts/misc/unifont.pcf.gz
+		end
+
+		configfiles
+			/boot/grub/grub.cfg
+			/etc/default/grub
 		end
 
 		# Generate grub compatible font for graphical boot menu
