@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = pakfire
-version    = 0.9.12
+version    = 0.9.13
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
