@@ -6,7 +6,7 @@
 name       = network
 epoch      = 1
 version    = 001
-release    = 1
+release    = 2
 arch       = noarch
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -51,6 +51,26 @@ packages
 			wpa_supplicant
 			/bin/ipcalc
 			/usr/bin/logger
+		end
+
+		prerequires = systemd-units
+
+		# Enable network service, so it starts at the first boot.
+		script postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl --no-reload enable network.service >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/bin/systemctl --no-reload disable network.service >/dev/null 2>&1 || :
+			/bin/systemctl stop network.service >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+
+			# Maybe it is not a good idea to restart network.
+			#/bin/systemctl try-reload-or-restart network.service >/dev/null 2>&1 || :
 		end
 	end
 end
