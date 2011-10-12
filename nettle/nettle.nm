@@ -5,7 +5,7 @@
 
 name       = nettle
 version    = 2.2
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.lysator.liu.se/~nisse/nettle/
@@ -40,8 +40,8 @@ packages
 	package %{name}
 
 	package %{name}-devel
-		requires
-			gmp-devel
-		end
+		template DEVEL
+
+		requires += gmp-devel
 	end
 end
