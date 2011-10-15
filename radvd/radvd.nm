@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = radvd
-version    = 1.8
-release    = 4
+version    = 1.8.3
+release    = 1
 
 groups     = System/Daemons
 url        = http://www.litech.org/radvd/
