@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = nettle
-version    = 2.2
-release    = 2
+version    = 2.4
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.lysator.liu.se/~nisse/nettle/
@@ -19,7 +19,7 @@ description
 	or even in kernel space.
 end
 
-source_dl  =
+source_dl  = http://www.lysator.liu.se/~nisse/archive/
 
 build
 	requires
