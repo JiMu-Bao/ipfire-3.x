@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libcap
-version    = 2.19
+version    = 2.22
 release    = 1
 
 groups     = System/Libraries
@@ -13,7 +13,7 @@ license    = LGPL2+
 summary    = Library for getting and setting POSIX.1e capabilities.
 
 description
-	libcap is a library for getting and setting POSIX.1e (formerly POSIX 6) \
+	libcap is a library for getting and setting POSIX.1e (formerly POSIX 6)
 	draft 15 capabilities.
 end
 
@@ -45,8 +45,7 @@ end
 
 packages
 	package %{name}
-	end
-	
+
 	package %{name}-devel
 		template DEVEL
 	end
