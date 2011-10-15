@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = python
-version    = 2.7.1
-release    = 4
+version    = 2.7.2
+release    = 1
 thisapp    = Python-%{version}
 
 groups     = Development/Languages
@@ -21,8 +21,8 @@ description
 	libraries, as well as to various windowing systems.
 end
 
-source_dl  =
-sources    = %{thisapp}.tgz
+source_dl  = http://python.org/ftp/python/%{version}/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
