@@ -6,7 +6,7 @@
 name       = util-linux
 version    = 2.19
 major_ver  = 2.19
-release    = 5
+release    = 6
 
 groups     = System/Base
 url        = http://kernel.org/~kzak/util-linux/
@@ -85,6 +85,12 @@ build
 		# Create /etc/mtab symlink
 		mkdir -pv %{BUILDROOT}/etc
 		ln -svf /proc/mounts %{BUILDROOT}/etc/mtab
+
+		# Set capabilities
+		chmod -v -s %{BUILDROOT}/bin/mount
+		setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep %{BUILDROOT}/bin/mount
+		chmod -v -s %{BUILDROOT}/bin/umount
+		setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep %{BUILDROOT}/bin/umount
 	end
 end
 
