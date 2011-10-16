@@ -5,8 +5,8 @@
 
 name       = network
 epoch      = 1
-version    = 001
-release    = 2
+version    = 002
+release    = 1
 arch       = noarch
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -25,7 +25,7 @@ description
 	everything.
 end
 
-source_dl  =
+source_dl  = http://source.ipfire.org/releases/network/
 
 build
 	build = # Do nothing
