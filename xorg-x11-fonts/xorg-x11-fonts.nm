@@ -5,7 +5,7 @@
 
 name       = xorg-x11-fonts
 version    = 7.2
-release    = 3
+release    = 4
 arch       = noarch
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -19,7 +19,8 @@ description
 	Arabic fonts for use with X Window System.
 end
 
-source_dl = http://ftp.x.org/pub/individual/font/ http://unifoundry.com/
+source_dl  = http://ftp.x.org/pub/individual/font/
+source_dl += http://unifoundry.com/
 
 sources = \
 	encodings-1.0.3.tar.bz2 \
@@ -113,11 +114,290 @@ build
 		mkdir -pv %{BUILDROOT}/usr/share/X11/fonts/misc
 		cp -vf %{DIR_DL}/unifont-5.1.20080820.pcf.gz \
 			%{BUILDROOT}/usr/share/X11/fonts/misc/unifont.pcf.gz
+
+		# XXX Do we need to create these symlinks to use the fonts - check this in a running X environment. 
+		# Install catalogue symlinks
+		#mkdir -pv %{BUILDROOT}/etc/X11/fontpath.d
+		#ln -svf ../../../usr/share/X11/fonts/100dpi %{BUILDROOT}/etc/X11/fontpath.d/xorg-x11-fonts-100dpi
+		#ln -svf ../../../usr/share/X11/fonts/75dpi %{BUILDROOT}/etc/X11/fontpath.d/xorg-x11-fonts-75dpi
+		#ln -svf ../../../usr/share/X11/fonts/cyrillic %{BUILDROOT}/etc/X11/fontpath.d/xorg-x11-fonts-cyrillic
+		#ln -svf ../../../usr/share/X11/fonts/misc %{BUILDROOT}/etc/X11/fontpath.d/xorg-x11-fonts-misc
+		#ln -svf ../../../usr/share/X11/fonts/Type1 %{BUILDROOT}/etc/X11/fontpath.d/xorg-x11-fonts-Type1
 	end
 end
 
 packages
+	# Template for 75 DPI fonts
+	template 75DPI
+		requires
+			fontconfig
+		end
+
+		#files
+		#	/etc/X11/fontpath.d/xorg-x11-fonts-75dpi
+		#end
+
+		prerequires = xorg-x11-font-utils
+
+		script postin
+			/usr/bin/mkfontdir /usr/share/X11/fonts/75dpi
+		end
+
+		script postun
+			/usr/bin/mkfontdir /usr/share/X11/fonts/75dpi
+		end
+	end
+
+	# Template for 100 DPI fonts
+	template 100DPI
+		requires
+			fontconfig
+		end
+
+		#files
+		#	/etc/X11/fontpath.d/xorg-x11-fonts-100
+		#end
+
+		prerequires = xorg-x11-font-utils
+
+		script postin
+			/usr/bin/mkfontdir /usr/share/X11/fonts/100dpi
+		end
+
+		script postun
+			/usr/bin/mkfontdir /usr/share/X11/fonts/100dpi
+		end
+	end
+
 	package %{name}
-		requires = fontconfig
+		summary = Bitmap fonts for the X Window System.
+		description
+			This package contains misc bitmap Chinese, Japanese, Korean, Indic, and Arabic
+			fonts for use with X Window System.
+		end
+
+		requires
+			fontconfig
+		end
+
+		prerequires = xorg-x11-font-utils
+
+		script postin
+			/usr/bin/xorg-x11-fonts-update-dirs --skip-fontscale /usr/share/X11/fonts/misc
+		end
+
+		script postun
+			/usr/bin/xorg-x11-fonts-update-dirs --skip-fontscale /usr/share/X11/fonts/misc
+		end
+	end
+
+	package %{name}-Type1
+		summary = Type1 fonts provided by the X Window System.
+		description
+			A collection of Type1 fonts which are part of the core X Window System
+			distribution.
+		end
+
+		requires
+			fontconfig
+		end
+
+		files
+			/usr/share/X11/fonts/Type1/
+		end
+
+		prerequires = xorg-x11-font-utils
+
+		script postin
+			/usr/bin/xorg-x11-fonts-update-dirs --skip-fontscale /usr/share/X11/fonts/Type1
+		end
+
+		script postun
+			/usr/bin/xorg-x11-fonts-update-dirs --skip-fontscale /usr/share/X11/fonts/Type1
+		end
+	end
+
+	package %{name}-75dpi
+		template 75DPI
+
+		summary = A set of 75dpi resolution fonts for the X Window System.
+		description
+			A set of 75 dpi fonts used by the X window system.
+		end
+
+		files +=\
+			/usr/share/X11/fonts/75dpi/
+	end
+
+	package %{name}-100dpi
+		template 100DPI
+
+		summary = A set of 100dpi resolution fonts for the X Window System.
+		description
+			A set of 100 dpi fonts used by the X window system.
+		end
+
+		files +=\
+			/usr/share/X11/fonts/100dpi/
+	end
+
+	package %{name}-ISO8859-1-75dpi
+		template 75DPI
+
+		summary = A set of 75dpi ISO-8859-1 fonts for X.
+		description
+			Contains a set of 75dpi fonts for ISO-8859-1.
+		end
+
+		files +=\
+			/usr/share/X11/fonts/75dpi/*ISO8859-1.*
+	end
+
+	package %{name}-ISO8859-1-100dpi
+		template 100DPI
+
+		summary = A set of 100dpi ISO-8859-1 fonts for X.
+		description
+			Contains a set of 100dpi fonts for ISO-8859-1.
+		end
+
+		files +=\
+			/usr/share/X11/fonts/100dpi/*ISO8859-1.*
+	end
+
+	package %{name}-ISO8859-2-75dpi
+		template 75DPI
+
+		summary = A set of 75dpi Central European language fonts for X.
+		description
+			Contains a set of 75dpi fonts for Central European languages.
+		end
+
+		files +=\
+			/usr/share/X11/fonts/75dpi/*ISO8859-2.*
+	end
+
+	package %{name}-ISO8859-2-100dpi
+		template 100DPI
+
+		summary = A set of 100dpi Central European language fonts for X.
+		description
+			Contains a set of 100dpi fonts for Central European languages.
+		end
+
+		files +=\
+			/usr/share/X11/fonts/100dpi/*ISO8859-2.*
+	end
+
+	package %{name}-ISO8859-9-75dpi
+		template 75DPI
+
+		summary = ISO8859-9-75dpi fonts.
+		description
+			Contains a set of 75dpi fonts for the Turkish language.
+		end
+
+		files +=\
+			/usr/share/X11/fonts/75dpi/*ISO8859-9.*
+	end
+
+	package %{name}-ISO8859-9-100dpi
+		template 100DPI
+
+		summary = ISO8859-9-100dpi fonts.
+		description
+			Contains a set of 100dpi fonts for the Turkish language.
+		end
+
+		files +=\
+			/usr/share/X11/fonts/100dpi/*ISO8859-9.*
+	end
+
+	package %{name}-ISO8859-14-75dpi
+		template 75DPI
+
+		summary = ISO8859-14-75dpi fonts.
+		description
+			Contains a set of 75dpi fonts in the ISO8859-14 encoding which
+			provide Welsh support.
+		end
+
+		files +=\
+			/usr/share/X11/fonts/75dpi/*ISO8859-14.*
+	end
+
+	package %{name}-ISO8859-14-100dpi
+		template 100DPI
+
+		summary = ISO8859-14-100dpi fonts.
+		description
+			Contains a set of 100dpi fonts in the ISO8859-14 encoding which
+			provide Welsh support.
+		end
+
+		files +=\
+			/usr/share/X11/fonts/100dpi/*ISO8859-14.*
+	end
+
+	package %{name}-ISO8859-15-75dpi
+		template 75DPI
+
+		summary = ISO8859-15-75dpi fonts.
+		description
+			Contains a set of 75dpi fonts in the ISO8859-15 encoding which
+			provide Euro support.
+		end
+
+		files +=\
+			/usr/share/X11/fonts/75dpi/*ISO8859-15.*
+	end
+
+	package %{name}-ISO8859-15-100dpi
+		template 100DPI
+
+		summary = ISO8859-15-100dpi fonts.
+		description
+			Contains a set of 100dpi fonts in the ISO8859-15 encoding which
+			provide Euro support.
+		end
+
+		files +=\
+			/usr/share/X11/fonts/100dpi/*ISO8859-15.*
+	end
+
+	package %{name}-cyrillic
+		summary = Cyrillic fonts for X.
+		description
+			Contains a set of Cyrillic fonts.
+		end
+
+		requires
+			fontconfig
+		end
+
+		files
+			/usr/share/X11/fonts/cyrillic/
+		end
+
+		prerequires = xorg-x11-font-utils
+
+		script postin
+			/usr/bin/mkfontdir /usr/share/X11/fonts/cyrillic
+		end
+
+		script postun
+			/usr/bin/mkfontdir /usr/share/X11/fonts/cyrillic
+		end
+	end
+
+	package %{name}-unifont
+		summary = The GNU unifont.
+		description
+			GNU Unifont, contains glyphs for every printable code point in the Unicode 5.1 Basic Multilingual Plane (BMP).
+		end
+	
+		files
+			/usr/share/X11/fonts/misc/unifont.pcf.gz	
+		end
 	end
 end
