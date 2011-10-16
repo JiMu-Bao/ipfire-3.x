@@ -5,7 +5,8 @@
 
 name       = docbook-dtds
 version    = 1.0
-release    = 1
+release    = 2
+arch       = noarch
 
 groups     = Applications/Text
 url        = http://www.oasis-open.org/docbook/
@@ -56,7 +57,7 @@ directories = \
 build
 	requires
 		dos2unix
-		unzip>=6.0-2
+		unzip>=6.0-3
 	end
 
 	prepare
@@ -96,6 +97,7 @@ build
 	build = # Nothing to do
 
 	install
+		# Create Symlinks.
 		mkdir -pv %{BUILDROOT}/etc/sgml
 		for fmt in sgml xml; do
 			ln -svf $fmt-docbook-4.5.cat %{BUILDROOT}/etc/sgml/$fmt-docbook.cat
@@ -123,15 +125,20 @@ packages
 			openjade=%{version_openjade}
 		end
 
-		script postin
-			set -x
+		prerequires += \
+			libxml2 \
+			openjade=%{version_openjade} \
+			sgml-common
 
-			## Clean up pre-docbook-dtds mess caused by broken trigger.
-			for ver in 3.0 3.1 4.0 4.1 4.2; do
-				if [ -f /etc/sgml/sgml-docbook-${ver}.cat ]; then
-					/usr/bin/xmlcatalog --noout --sgml --del /etc/sgml/sgml-docbook-${ver}.cat \
-						/usr/share/sgml/openjade-%{version_openjade}/catalog 2>/dev/null
-				fi
+		script postin
+			# Install catalog files.
+			for dir in %{directories}; do
+				fmt=${dir#*-}
+				ver=${dir%%-*}
+					/usr/bin/xmlcatalog --sgml --noout --add /etc/sgml/${fmt}-docbook-${ver}.cat \
+						/usr/share/sgml/docbook/${fmt}-dtd-${ver}/catalog > /dev/null 2>/dev/null
+					/usr/bin/xmlcatalog --sgml --noout --add /etc/sgml/${fmt}-docbook-${ver}.cat \
+						/usr/share/sgml/sgml-iso-entities-8879.1986/catalog > /dev/null 2>/dev/null
 			done
 
 			# The STYLESHEETS/catalog command is for the case in which the style sheets
@@ -148,14 +155,14 @@ packages
 					## SGML catalog
 					# Update the centralized catalog corresponding to this version of the DTD
 					for cat_dir in /usr/share/sgml/sgml-iso-entities-8879.1986 /usr/share/sgml/docbook/$fmt-dtd-$ver $STYLESHEETS; do
-						/usr/bin/xmlcatalog --sgml --add /etc/sgml/$fmt-docbook-$ver.cat $cat_dir/catalog
+						/usr/bin/xmlcatalog --sgml --noout --add /etc/sgml/$fmt-docbook-$ver.cat $cat_dir/catalog > /dev/null 2>/dev/null
 					done
 
 					## XML catalog
 					if [ $fmt = xml -a -w /usr/share/sgml/docbook/xmlcatalog ]; then
 						while read f desc; do
 						case $vers in 4.[45]) f=${f/-/} ;; esac
-							/usr/bin/xmlcatalog --add public "$desc" /usr/share/sgml/docbook/$fmt-dtd-$ver/$f /usr/share/sgml/docbook/xmlcatalog
+							/usr/bin/xmlcatalog --add public "$desc" /usr/share/sgml/docbook/$fmt-dtd-$ver/$f /usr/share/sgml/docbook/xmlcatalog > /dev/null 2>/dev/null
 						done <<ENDENT
 					ent/iso-pub.ent	ISO 8879:1986//ENTITIES Publishing//EN
 					ent/iso-grk1.ent	ISO 8879:1986//ENTITIES Greek Letters//EN
@@ -184,11 +191,11 @@ packages
 					ent/iso-lat2.ent	ISO 8879:1986//ENTITIES Added Latin 2//EN
 					ent/iso-amsr.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Relations//EN
 					ent/iso-cyr2.ent	ISO 8879:1986//ENTITIES Non-Russian Cyrillic//EN
-					ENDENT
+			ENDENT
 
 						for f in System URI; do
 							/usr/bin/xmlcatalog --add rewrite$f "http://www.oasis-open.org/docbook/xml/$vers" \
-							/usr/share/sgml/docbook/$fmt-dtd-$ver /usr/share/sgml/docbook/xmlcatalog
+							/usr/share/sgml/docbook/$fmt-dtd-$ver /usr/share/sgml/docbook/xmlcatalog > /dev/null 2>/dev/null
 						done
 					fi
 				done
@@ -207,22 +214,6 @@ packages
 		end
 
 		script postun
-			# Redefine directories from package header. Don't forget to update this if there are any changes.
-			directories=\
-				3.0-sgml \
-				3.1-sgml \
-				4.0-sgml \
-				4.1-sgml \
-				4.1.2-xml \
-				4.2-sgml \
-				4.2-xml \
-				4.3-sgml \
-				4.3-xml \
-				4.4-sgml \
-				4.4-xml \
-				4.5-sgml \
-				4.5-xml
-
 			# remove entries only on removal of package
 			if [ "$1" = 0 ]; then
  
@@ -285,5 +276,4 @@ packages
 			fi
 		end
 	end
-	
 end
