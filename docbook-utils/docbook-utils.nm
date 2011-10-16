@@ -46,6 +46,8 @@ packages
 	package %{name}
 		requires
 			docbook-dtds
+			docbook-dsssl
+			openjade
 		end
 	end
 end
