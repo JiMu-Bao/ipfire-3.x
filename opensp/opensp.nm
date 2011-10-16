@@ -31,6 +31,7 @@ build
 		--disable-static \
 		--disable-rpath \
 		--disable-doc-build \
+		--enable-http \
 		--enable-default-catalog=/etc/sgml/catalog \
 		--enable-default-search-path=/usr/share/sgml:/usr/share/xml
 end
