@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = pakfire
-version    = 0.9.14
+version    = 0.9.15
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -23,6 +23,7 @@ source_dl  = http://source.ipfire.org/releases/pakfire/
 build
 	requires
 		gettext
+		libcap-devel
 		libsolv-devel
 		python-devel
 	end
@@ -47,7 +48,6 @@ packages
 			pyliblzma
 			python-progressbar
 			python-urlgrabber
-			pyxattr
 			system-release
 		end
 
