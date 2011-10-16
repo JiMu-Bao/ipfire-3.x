@@ -1,0 +1,44 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-SGMLSpm
+version    = 1.03ii
+release    = 1
+arch       = noarch
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/SGMLSpm/
+license    = GPLv2+
+summary    = Perl library for parsing the output of nsgmls.
+
+description
+	Perl programs can use the SGMLSpm module to help convert SGML, HTML or XML
+	documents into new formats.
+end
+
+source_dl  = http://www.cpan.org/authors/id/D/DM/DMEGG/
+
+thisapp    = SGMLSpm-%{version}
+
+build
+	DIR_APP = %{DIR_SRC}/SGMLSpm
+
+	build = # Nothing to do.
+
+	install
+		# Create directory layout.
+		mkdir -pv %{BUILDROOT}/usr/bin
+		mkdir -pv %{BUILDROOT}/usr/share/perl5
+
+		# Install the module.
+		make install_system \
+			BINDIR=%{BUILDROOT}/usr/bin/ \
+			PERL5DIR=%{BUILDROOT}/usr/share/perl5/
+	end
+end
+
+packages
+	package %{name}
+end
