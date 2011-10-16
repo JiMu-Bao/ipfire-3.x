@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = samba
-version    = 3.5.11
+version    = 3.6.0
 release    = 1
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
@@ -95,3 +95,4 @@ packages
 		template DEVEL
 	end
 end
+
