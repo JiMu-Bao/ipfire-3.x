@@ -53,16 +53,38 @@ packages
 			jade
 		end
 
+		prerequires +=\
+			docbook-dtds \
+			sgml-common 
+
 		script postin
 			# Install catalog files on system.
 			/usr/bin/install-catalog --add /etc/sgml/openjade-%{version}.soc \
-			/usr/share/sgml/%{name}-%{version}/catalog >/dev/null 2>/dev/null || :
+				/usr/share/sgml/%{name}-%{version}/catalog >/dev/null 2>/dev/null
+
+			# Integrate openjade catalog into docbook catalogs.
+			for dir in /usr/share/sgml/docbook/*; do
+				dir=$(basename ${dir})
+				fmt=${dir%%-*}
+				ver=${dir##*-}
+					/usr/bin/xmlcatalog --sgml --noout --add /etc/sgml/${fmt}-docbook-${ver}.cat \
+						/usr/share/sgml/openjade-%{version}/catalog > /dev/null 2>/dev/null
+			done
 		end
 
 		script preun
 			# Uninstall the catalog files.
 			/usr/bin/install-catalog --remove /etc/sgml/%{name}-%{version}.soc \
-			/usr/share/sgml/%{name}-%{version}/catalog >/dev/null 2>/dev/null || :
+				/usr/share/sgml/%{name}-%{version}/catalog >/dev/null 2>/dev/null
+
+			# Remove openjade catalog from docbook catalogs.
+			for dir in /usr/share/sgml/docbook/*; do
+				dir=$(basename ${dir})
+				fmt=${dir%%-*}
+				ver=${dir##*-}
+					/usr/bin/xmlcatalog --sgml --noout --remove /etc/sgml/${fmt}-docbook-${ver}.cat \
+						/usr/share/sgml/openjade-%{version}/catalog > /dev/null 2>/dev/null
+			done
 		end
 	end
 
