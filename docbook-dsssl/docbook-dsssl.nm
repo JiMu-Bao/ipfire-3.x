@@ -5,7 +5,8 @@
 
 name       = docbook-dsssl
 version    = 1.79
-release    = 1
+release    = 2
+arch       = noarch
 
 groups     = Applications/Text
 url        = http://docbook.sourceforge.net/
@@ -17,9 +18,7 @@ description
 	are used by OpenJade or other tools to transform SGML and XML DocBook files.
 end
 
-source_dl =
-
-sources  += %{name}-doc-%{version}.tar.bz2
+source_dl = http://prdownloads.sourceforge.net/docbook/
 
 build
 	requires
@@ -36,14 +35,6 @@ build
 		install -v -d -m755 %{BUILDROOT}/usr/share/sgml/docbook/dsssl-stylesheets-%{version}
 		cp -v -R * %{BUILDROOT}/usr/share/sgml/docbook/dsssl-stylesheets-%{version}
 
-		mkdir -pv %{BUILDROOT}/etc/sgml
-		install-catalog --add %{BUILDROOT}/etc/sgml/dsssl-docbook-stylesheets.cat \
-		%{BUILDROOT}/usr/share/sgml/docbook/dsssl-stylesheets-%{version}/catalog
-		install-catalog --add %{BUILDROOT}/etc/sgml/dsssl-docbook-stylesheets.cat \
-		%{BUILDROOT}/usr/share/sgml/docbook/dsssl-stylesheets-%{version}/common/catalog
-		install-catalog --add %{BUILDROOT}/etc/sgml/sgml-docbook.cat \
-		%{BUILDROOT}/etc/sgml/dsssl-docbook-stylesheets.cat
-
 		# Remove empty conflicting file.
 		rm -rvf %{BUILDROOT}/etc/sgml/sgml-docbook.cat
 	end
@@ -52,25 +43,27 @@ end
 packages
 	package %{name}
 		requires
+			docbook-dtds
 			sgml-common
 		end
+
+		prerequires +=\
+			docbook-dtds \
+			libxml2 \
+			sgml-common
 
 		script postin
 			# Install catalog files.
 			for centralized in /etc/sgml/*-docbook-*.cat; do
-				/usr/bin/install-catalog --add ${centralized} /usr/share/sgml/docbook/dsssl-stylesheets-%{version}/catalog /dev/null 2>/dev/null
+				/usr/bin/xmlcatalog --sgml --noout --add ${centralized} /usr/share/sgml/docbook/dsssl-stylesheets-%{version}/catalog > /dev/null 2>/dev/null
 			done
-
-			exit 0
 		end
 
 		script preun
 			# Uninstall catalog files.
 			for centralized in /etc/sgml/*-docbook-*.cat; do
-				/usr/bin/install-catalog --remove ${centralized} /usr/share/sgml/docbook/dsssl-stylesheets-%{version}/catalog > /dev/null 2>/dev/null
+				/usr/bin/xmlcatalog --remove ${centralized} /usr/share/sgml/docbook/dsssl-stylesheets-%{version}/catalog > /dev/null 2>/dev/null
 			done
-
-			exit 0
 		end
 	end
 end
