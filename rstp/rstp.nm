@@ -5,7 +5,7 @@
 
 name       = rstp
 version    = 0.21
-release    = 5
+release    = 6
 
 groups     = Networking/Tools
 url        = http://git.ipfire.org/?p=thirdparty/rstp.git;a=summary
@@ -31,5 +31,19 @@ end
 
 packages
 	package %{name}
+		script postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl --no-reload enable rstp.service >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/bin/systemctl --no-reload disable rstp.service >/dev/null 2>&1 || :
+			/bin/systemctl stop rstp.service >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl try-restart rstp.service >/dev/null 2>&1 || :
+		end
 	end
 end
