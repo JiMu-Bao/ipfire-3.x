@@ -6,7 +6,7 @@
 name       = util-linux
 version    = 2.19
 major_ver  = 2.19
-release    = 6
+release    = 7
 
 groups     = System/Base
 url        = http://kernel.org/~kzak/util-linux/
@@ -82,22 +82,11 @@ build
 			%{BUILDROOT}/usr/share/man/man8/{vipw,vigr}.*
 		rm -fv %{BUILDROOT}/usr/share/getopt/*.tcsh
 
-		# Create /etc/mtab symlink
-		mkdir -pv %{BUILDROOT}/etc
-		ln -svf /proc/mounts %{BUILDROOT}/etc/mtab
-
 		# Set capabilities
 		chmod -v -s %{BUILDROOT}/bin/mount
 		setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep %{BUILDROOT}/bin/mount
 		chmod -v -s %{BUILDROOT}/bin/umount
 		setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep %{BUILDROOT}/bin/umount
-	end
-end
-
-# This symlink is allowed to be absolute.
-quality-agent
-	whitelist_symlink
-		/etc/mtab
 	end
 end
 
@@ -109,13 +98,21 @@ packages
 			/etc/pam.d/system-auth
 		end
 
-		filter_requires = /proc/.*/mounts
-
 		obsoletes = util-linux-ng
 
 		conflicts
 			setup<3.0-2
 			util-linux-ng
+		end
+
+		preprequires += coreutils
+
+		script postin
+			touch /var/log/lastlog
+
+			# mtab symlink
+			rm -f /etc/mtab
+			ln -s /proc/mounts /etc/mtab
 		end
 	end
 
