@@ -5,7 +5,7 @@
 
 name       = cups
 version    = 1.4.5
-release    = 6
+release    = 7
 
 groups     = Applications/Printing
 url        = http://cups.org/software.php
@@ -17,7 +17,7 @@ description
 	by Apple Inc. for Mac OS(R) X and other UNIX(R)-like operating systems.
 end
 
-source_dl  =
+source_dl  = http://ftp.easysw.com/pub/cups/%{version}/
 sources    = %{thisapp}-source.tar.bz2
 
 build
@@ -81,6 +81,8 @@ packages
 	
 	package %{name}-devel
 		template DEVEL
+
+		requires += %{name}-libs=%{thisver}
 	end
 	
 	package %{name}-libs
