@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = pakfire
-version    = 0.9.15
-release    = 1
+version    = 0.9.16
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Packaging
@@ -58,7 +58,7 @@ packages
 		end
 	end
 	
-	package %{name}-build
+	package %{name}-builder
 		summary = The pakfire builder.
 		description
 			The tools that are needed to build new pakfire packages.
@@ -69,6 +69,8 @@ packages
 			%{name}=%{thisver}
 			quality-agent=%{thisver}
 		end
+		provides = pakfire-build=%{thisver}
+		obsoletes = pakfire-build<%{thisver}
 		conflicts = build-essentials
 
 		files
