@@ -5,7 +5,7 @@
 
 name       = setup
 version    = 3.0
-release    = 2
+release    = 3
 
 groups     = Base Build System/Base
 url        =
@@ -48,5 +48,22 @@ end
 packages
 	package %{name}
 		requires = iana-etc
+
+		configfiles
+			/etc/aliases
+			/etc/exports
+			/etc/fstab
+			/etc/group
+			/etc/gshadow
+			/etc/host.conf
+			/etc/hosts
+			/etc/hosts.allow
+			/etc/hosts.deny
+			/etc/motd
+			/etc/passwd
+			/etc/printcap
+			/etc/shadow
+			/etc/shells
+		end
 	end
 end
