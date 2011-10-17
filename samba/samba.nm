@@ -5,7 +5,7 @@
 
 name       = samba
 version    = 3.6.0
-release    = 1
+release    = 2
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
@@ -37,7 +37,9 @@ build
 		automake
 		avahi-devel
 		cups-devel
+		gettext
 		ncurses-devel
+		libacl-devel
 		libcap-devel
 		openldap-devel
 		openssl-devel
@@ -45,6 +47,7 @@ build
 		popt-devel
 		readline-devel
 		which
+		zlib-devel
 	end
 
 	DIR_APP = %{DIR_SRC}/%{thisapp}/source3
@@ -93,6 +96,8 @@ packages
 	
 	package %{name}-devel
 		template DEVEL
+
+		requires += %{name}-libs=%{thisver}
 	end
 end
 
