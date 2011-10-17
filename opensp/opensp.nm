@@ -5,7 +5,7 @@
 
 name       = opensp
 version    = 1.5.2
-release    = 1
+release    = 2
 
 groups     = Application/Text
 url        = http://openjade.sourceforge.net/
@@ -24,16 +24,34 @@ thisapp = OpenSP-%{version}
 build
 	requires
 		gcc-c++
+		docbook-dtds
+		docbook-xsl
+		libxml2
+		libxslt
+		xmlto
 	end
 
 	configure_options += \
+		--mandir=/usr/share/man/ \
 		--disable-dependency-tracking \
 		--disable-static \
 		--disable-rpath \
-		--disable-doc-build \
 		--enable-http \
 		--enable-default-catalog=/etc/sgml/catalog \
 		--enable-default-search-path=/usr/share/sgml:/usr/share/xml
+
+	install_cmds
+		# Create symlinks and manpages for binaries wtitout "o".
+		for file in nsgmls sgmlnorm spam spent sx ; do
+			ln -s o${file} %{BUILDROOT}/usr/bin/${file}
+			echo ".so man1/o${file}.1" > %{BUILDROOT}/usr/share/man/man1/${file}.1
+		done
+
+		# Rename sx to sgml2xml.
+		mv %{BUILDROOT}/usr/bin/sx %{BUILDROOT}/usr/bin/sgml2xml
+		mv %{BUILDROOT}/usr/share/man//man1/{sx,sgml2xml}.1
+	end
+
 end
 
 packages
