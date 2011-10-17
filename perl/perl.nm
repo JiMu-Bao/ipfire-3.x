@@ -6,7 +6,7 @@
 name       = perl
 version    = 5.14.2
 # Never reset release in this package, just increase.
-release    = 8
+release    = 9
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Languages
@@ -130,6 +130,7 @@ packages
 	package perl
 		requires
 			perl-libs=%{thisver}
+			perl(Carp)
 		end
 
 		provides
