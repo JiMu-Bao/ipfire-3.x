@@ -5,9 +5,9 @@
 
 name       = file
 version    = 5.09
-release    = 1
+release    = 2
 
-groups     = Base Build System/Tools
+groups     = System/Tools
 url        = http://www.darwinsys.com/file/
 license    = BSD
 summary    = A utility for determining file types.
@@ -36,6 +36,8 @@ end
 
 packages
 	package %{name}
+		groups += Base Build
+	end
 
 	package %{name}-devel
 		template DEVEL
