@@ -1,0 +1,46 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = xmlto
+version    = 0.0.24
+release    = 1
+
+groups     = Applications/System
+url        = https://fedorahosted.org/xmlto/
+license    = GPLv2+
+summary    = A tool for converting XML files to various formats.
+
+description
+	This is a package for converting XML files to various formats using XSL
+	stylesheets.
+end
+
+source_dl  = https://fedorahosted.org/releases/x/m/%{name}/
+source     = %{thisapp}.tar.bz2
+
+build
+	requires
+		docbook-dtds
+		docbook-xsl
+		flex
+		libxslt
+		util-linux
+	end
+
+	configure_options +=\
+		BASH=/bin/bash
+
+	test
+		make check
+	end
+end
+
+packages
+	package %{name}
+		requires
+			util-linux
+		end
+	end
+end
