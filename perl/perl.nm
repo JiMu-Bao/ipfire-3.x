@@ -4,9 +4,11 @@
 ###############################################################################
 
 name       = perl
-version    = 5.12.3
-release    = 4
+version    = 5.14.2
+# Never reset release in this package, just increase.
+release    = 9
 
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Languages
 url        = http://www.perl.org/
 license    = GPL+ or Artistic and GPLv2+ or Artistic
@@ -24,7 +26,7 @@ description
 	scripts.
 end
 
-source_dl  =
+source_dl  = http://www.cpan.org/src/5.0/
 
 build
 	requires
@@ -41,9 +43,6 @@ build
 	# So we need to pass it explicitely.
 	CFLAGS += -fstack-protector-all
 
-	# Filter string for very weird dependencies.
-	export PKG_REQUIRES_FILTER = (DBD\:\:SQLite|DBIx\:\:Simple|perl>=[0-9]\:.*|NDBM_File|Your\:\:Module\:\:Here|FCGI|Mac\:\:.*)
-
 	prepare_cmds
 		sed -i 's/command /command[ -]/' makedepend.SH
 	end
@@ -56,7 +55,6 @@ build
 
 		sh ./Configure -des \
 			-Doptimize="%{CFLAGS}" \
-			-Dccdlflags="-Wl,--enable-new-dtags" \
 			-Dversion=%{version} \
 			-Dmyhostname=localhost \
 			-Dperladmin=root@localhost \
@@ -102,9 +100,9 @@ build
 		make %{PARALLELISMFLAGS}
 	end
 
-#	test
-#		make test
-#	end
+	#test
+	#	make test
+	#end
 
 	install_cmds
 		# Remove precreated directories
@@ -120,81 +118,101 @@ quality-agent
 	end
 end
 
+# This variable contains the constant version string
+# of this perl package.
+perl_requires := %{name}=%{thisver}
+
+perl_filter_requires
+	perl>=[0-9]\:.*
+end
+
 packages
-	package %{name}
+	package perl
 		requires
-			%{name}-libs=%{thisver}
+			perl-libs=%{thisver}
+			perl(Carp)
 		end
 
 		provides
-			# These provides are needed by the perl pkg itself with auto-generated perl.req
-			%{name}(VMS::Filespec)
-			%{name}(VMS::Stdio)
-	
 			# Compat provides
-			%{name}(:MODULE_COMPAT_5.12.3)
-			%{name}(:MODULE_COMPAT_5.12.2)
-			%{name}(:MODULE_COMPAT_5.12.1)
-			%{name}(:MODULE_COMPAT_5.12.0)
+			perl(:MODULE_COMPAT_5.14.2)
+			perl(:MODULE_COMPAT_5.14.1)
+			perl(:MODULE_COMPAT_5.14.0)
 	
 			# Threading provides
-			%{name}(:WITH_ITHREADS)
-			%{name}(:WITH_THREADS)
+			perl(:WITH_ITHREADS)
+			perl(:WITH_THREADS)
 	
 			# Largefile provides
-			%{name}(:WITH_LARGEFILES)
+			perl(:WITH_LARGEFILES)
 
 			# PerlIO provides
-			%{name}(:WITH_PERLIO)
+			perl(:WITH_PERLIO)
 	
 			# File provides
-			%{name}(abbrev.pl)
-			%{name}(assert.pl)
-			%{name}(bigfloat.pl)
-			%{name}(bigint.pl)
-			%{name}(bigrat.pl)
-			%{name}(bytes_heavy.pl)
-			%{name}(cacheout.pl)
-			%{name}(complete.pl)
-			%{name}(ctime.pl)
-			%{name}(dotsh.pl)
-			%{name}(dumpvar.pl)
-			%{name}(exceptions.pl)
-			%{name}(fastcwd.pl)
-			%{name}(find.pl)
-			%{name}(finddepth.pl)
-			%{name}(flush.pl)
-			%{name}(ftp.pl)
-			%{name}(getcwd.pl)
-			%{name}(getopt.pl)
-			%{name}(getopts.pl)
-			%{name}(hostname.pl)
-			%{name}(importenv.pl)
-			%{name}look.pl)
-			%{name}(newgetopt.pl)
-			%{name}(open2.pl)
-			%{name}(open3.pl)
-			%{name}(perl5db.pl)
-			%{name}(pwd.pl)
-			%{name}(shellwords.pl)
-			%{name}(stat.pl)
-			%{name}(syslog.pl)
-			%{name}(tainted.pl)
-			%{name}(termcap.pl)
-			%{name}(timelocal.pl)
-			%{name}(utf8_heavy.pl)
-			%{name}(validate.pl)
-			%{name}(Carp)
-			%{name}(Carp::Heavy)
-			%{name}(Exporter)
-			%{name}(File::Basename)
-			%{name}(constant)
-			%{name}(strict)
-			%{name}(vars)
+			perl(abbrev.pl)
+			perl(assert.pl)
+			perl(bigfloat.pl)
+			perl(bigint.pl)
+			perl(bigrat.pl)
+			perl(bytes_heavy.pl)
+			perl(cacheout.pl)
+			perl(complete.pl)
+			perl(ctime.pl)
+			perl(dotsh.pl)
+			perl(dumpvar.pl)
+			perl(exceptions.pl)
+			perl(fastcwd.pl)
+			perl(find.pl)
+			perl(finddepth.pl)
+			perl(flush.pl)
+			perl(ftp.pl)
+			perl(getcwd.pl)
+			perl(getopt.pl)
+			perl(getopts.pl)
+			perl(hostname.pl)
+			perl(importenv.pl)
+			perllook.pl)
+			perl(newgetopt.pl)
+			perl(open2.pl)
+			perl(open3.pl)
+			perl(perl5db.pl)
+			perl(pwd.pl)
+			perl(shellwords.pl)
+			perl(stat.pl)
+			perl(syslog.pl)
+			perl(tainted.pl)
+			perl(termcap.pl)
+			perl(timelocal.pl)
+			perl(utf8_heavy.pl)
+			perl(validate.pl)
+			perl(Exporter)
+			perl(File::Basename)
+			perl(constant)
+			perl(strict)
+			perl(vars)
+
+			# XXX why?
+			perl(Mac::InternetConfig)
+			perl(NDBM_File)
+		end
+
+		filter_requires
+			%{perl_filter_requires}
+			DBIx
+			InternetConfig
+			perl\(Mac
+			perl\(NDBM_File
+			perl\(VMS
+		end
+
+		filter_provides
+			Carp
+			perl\(Carp\)
 		end
 	end
 	
-	package %{name}-libs
+	package perl-libs
 		template LIBS
 	
 		provides
@@ -206,7 +224,7 @@ packages
 		end
 	end
 	
-	package %{name}-devel
+	package perl-devel
 		template DEVEL
 	
 		files
@@ -226,7 +244,7 @@ packages
 		end
 	end
 	
-	#package %{name}-tests
+	#package perl-tests
 	#	summary = Testsuite to check your Perl installation.
 	#	description-perl-tests
 	#		This package contains the test suite included with perl %{thisver}.
@@ -239,9 +257,9 @@ packages
 	#	end
 	#end
 	
-	package %{name}-Archive-Extract
+	package perl-Archive-Extract
 		epoch = 0
-		version = 0.38
+		version = 0.48
 		arch = noarch
 	
 		summary = Generic archive extracting mechanism.
@@ -250,7 +268,7 @@ packages
 		end
 
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 	
 		files
@@ -259,9 +277,9 @@ packages
 		end
 	end
 	
-	package %{name}-Archive-Tar
+	package perl-Archive-Tar
 		epoch = 0
-		version = 1.54
+		version = 1.76
 		arch = noarch
 	
 		summary = A module for Perl manipulation of .tar files.
@@ -274,22 +292,48 @@ packages
 		end
 
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 	
 		files
 			/usr/bin/ptar
 			/usr/bin/ptardiff
+			/usr/bin/ptargrep
 			/usr/share/perl5/Archive/Tar.pm
 			/usr/share/man/man1/ptar.1*
 			/usr/share/man/man1/ptardiff.1*
+			/usr/share/man/man1/ptargrep.1*
 			/usr/share/man/man3/Archive::Tar*
 		end
 	end
-	
-	package %{name}-Compress-Raw-Zlib
+
+	package perl-Class-ISA
 		epoch = 0
-		version = 2.024
+		version = 0.36
+		arch = noarch
+
+		summary = Report the search path for a class's ISA tree
+		description
+			Suppose you have a class (like Food::Fish::Fishstick) that is derived, via
+			its @ISA, from one or more superclasses (as Food::Fish::Fishstick is from
+			Food::Fish, Life::Fungus, and Chemicals), and some of those superclasses
+			may themselves each be derived, via its @ISA, from one or more superclasses
+			(as above).
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			/usr/share/perl5/Class/ISA.pm
+			/usr/share/man/man3/Class::ISA.3*
+		end
+	end
+	
+	package perl-Compress-Raw-Zlib
+		epoch = 0
+		version = 2.033
 
 		summary = Low-Level Interface to the zlib compression library.
 		description
@@ -298,7 +342,7 @@ packages
 		end
 
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 	
 		files
@@ -306,10 +350,47 @@ packages
 			/usr/share/man/man3/Compress::Raw::Zlib*
 		end
 	end
-	
-	package %{name}-CPAN
+
+	package perl-CGI
 		epoch = 0
-		version = 1.9402
+		version = 3.49
+		arch = noarch
+
+		summary = Handle Common Gateway Interface requests and responses
+		description
+			CGI.pm is a stable, complete and mature solution for processing and preparing
+			HTTP requests and responses. Major features including processing form
+			submissions, file uploads, reading and writing cookies, query string generation
+			and manipulation, and processing and preparing HTTP headers. Some HTML
+			generation utilities are included as well.
+
+			CGI.pm performs very well in in a vanilla CGI.pm environment and also comes
+			with built-in support for mod_perl and mod_perl2 as well as FastCGI.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		provides
+			perl(CGI)=%{version}
+		end
+
+		filter_requires
+			perl\(FCGI\)
+		end
+
+		files
+			/usr/share/perl5/CGI
+			/usr/share/perl5/CGI.pm
+			/usr/share/man/man3/CGI.3*
+			/usr/share/man/man3/CGI::*.3*
+		end
+	end
+	
+	package perl-CPAN
+		epoch = 0
+		version = 1.9600.01
 		arch = noarch
 	
 		summary = Query, download and build perl modules from CPAN sites.
@@ -318,13 +399,17 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 			perl(Digest::SHA)
 		end
 	
 		provides
 			cpan
 			cpan=$(version-perl-CPAN)
+		end
+
+		filter_requires
+			perl\(Mac::BuildTools\)
 		end
 	
 		files
@@ -335,9 +420,62 @@ packages
 		end
 	end
 
-	package %{name}-CPANPLUS
+	package perl-CPAN-Meta
 		epoch = 0
-		version = 0.9
+		version = 2.110440
+		arch = noarch
+
+		summary = Distribution metadata for a CPAN dist.
+		description
+			Software distributions released to the CPAN include a META.json or, for
+			older distributions, META.yml, which describes the distribution, its
+			contents, and the requirements for building and installing the
+			distribution. The data structure stored in the META.json file is described
+			in CPAN::Meta::Spec.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			/usr/share/perl5/CPAN/Meta.pm
+			/usr/share/perl5/CPAN/Meta
+			/usr/share/perl5/CPAN/Meta/Converter.pm
+			/usr/share/perl5/CPAN/Meta/Feature.pm
+			/usr/share/perl5/CPAN/Meta/History.pm
+			/usr/share/perl5/CPAN/Meta/Prereqs.pm
+			/usr/share/perl5/CPAN/Meta/Spec.pm
+			/usr/share/perl5/CPAN/Meta/Validator.pm
+			/usr/share/man/man5/CPAN::Meta.*
+		end
+	end
+
+	package perl-CPAN-Meta-YAML
+		epoch = 0
+		version = 0.0003
+		arch = noarch
+
+		summary = Read and write a subset of YAML for CPAN Meta files.
+		description
+			This module implements a subset of the YAML specification for use in reading
+			and writing CPAN metadata files like META.yml and MYMETA.yml. It should not be
+			used for any other general YAML parsing or generation task.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			/usr/share/perl5/CPAN/Meta/YAML.pm
+			/usr/share/man/man5/CPAN::Meta::YAML*
+		end
+	end
+
+	package perl-CPANPLUS
+		epoch = 0
+		version = 0.9103
 		arch = noarch
 	
 		summary = API & CLI access to the CPAN mirrors.
@@ -347,15 +485,21 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
-			%{name}(Digest::SHA)
-			%{name}(Module::Pluggable)>=2.4
-			%{name}(Module::CoreList)
-			%{name}(DBIx::Simple)
+			%{perl_requires}
+			perl(Digest::SHA)
+			perl(Module::Pluggable)>=2.4
+			perl(Module::CoreList)
 		end
 	
 		provides
-			%{name}-CPANPLUS-Dist-Build=0.06
+			perl-CPANPLUS-Dist-Build=0.06
+		end
+
+		filter_requires
+			%{perl_filter_requires}
+			DBIx
+			Your::Module::Here
+			perl\(DBD::SQLite\)
 		end
 	
 		files
@@ -368,10 +512,94 @@ packages
 			/usr/share/man/man3/CPANPLUS*
 		end
 	end
-	
-	package %{name}-Digest-SHA
+
+	package perl-Carp
 		epoch = 0
-		version = 5.47
+		version = 1.20
+		arch = noarch
+
+		summary = Alternative warn and die for modules.
+		description
+			The Carp routines are useful in your own modules because they act like
+			die() or warn(), but with a message which is more likely to be useful to a
+			user of your module. In the case of cluck, confess, and longmess that
+			context is a summary of every call in the call-stack. For a shorter message
+			you can use carp or croak which report the error as being from where your
+			module was called. There is no guarantee that that is where the error was,
+			but it is a good educated guess.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		# Do not export unversioned module
+		filter_provides = ^perl\(Carp\)\s*$
+
+		files
+			/usr/share/perl5/Carp*
+			/usr/share/man3/Carp*
+		end
+	end
+
+	package perl-Digest
+		epoch = 0
+		version = 1.16
+		arch = noarch
+
+		summary = Modules that calculate message digests.
+		description
+			The Digest:: modules calculate digests, also called "fingerprints" or
+			"hashes", of some data, called a message. The digest is (usually)
+			some small/fixed size string. The actual size of the digest depend of
+			the algorithm used. The message is simply a sequence of arbitrary
+			bytes or bits.
+		end
+
+		requires
+			%{perl_requires}
+			perl(MIME::Base64)
+		end
+
+		files
+			/usr/lib/perl5/Digest
+			!/usr/lib/perl5/Digest/*
+			/usr/share/perl5/Digest.pm
+			/usr/share/perl5/Digest/base.pm
+			/usr/share/perl5/Digest/file.pm
+			/usr/share/man/man5/Digest.3*
+			/usr/share/man/man5/Digest::base.3*
+			/usr/share/man/man5/Digest::file.3*
+		end
+	end
+
+	package perl-Digest-MD5
+		epoch = 0
+		version = 2.51
+
+		summary = Perl Interface to the MD5 Algorithm.
+		description
+			The Digest::MD5 module allows you to use the RSA Data Security Inc. MD5
+			Message Digest algorithm from within Perl programs. The algorithm takes as
+			input a message of arbitrary length and produces as output a 128-bit
+			"fingerprint" or "message digest" of the input.
+		end
+
+		requires
+			%{perl_requires}
+			perl(Digest::base)>=1.00
+		end
+
+		files
+			/usr/lib/perl5/Digest/MD5.pm
+			/usr/lib/perl5/auto/Digest/MD5
+			/usr/share/man/man3/Digest::MD5.3*
+		end
+	end
+	
+	package perl-Digest-SHA
+		epoch = 0
+		version = 5.61
 	
 		summary = Perl extension for SHA-1/224/256/384/512.
 		description
@@ -382,20 +610,22 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
+			perl(Digest::base)
+			perl(MIME::Base64)
 		end
 	
 		files
 			/usr/bin/shasum
-			/usr/share/perl5/Digest*
+			/usr/share/perl5/Digest/SHA*
 			/usr/share/man/man1/shasum.1*
 			/usr/share/man/man3/Digest::SHA.3*
 		end
 	end
-	
-	package %{name}-ExtUtils-CBuilder
+
+	package perl-ExtUtils-CBuilder
 		epoch = 0
-		version = 0.27
+		version = 0.280203
 		arch = noarch
 
 		summary = Compile and link C code for Perl modules.
@@ -405,53 +635,53 @@ packages
 			motivated by the Module::Build project, but may be useful for other
 			purposes as well.
 		end
-	
+
 		requires
-			%{name}=%{thisver}
-			%{name}-devel
+			%{perl_requires}
+			perl-devel
 		end
-	
+
 		files
 			/usr/share/perl5/ExtUtils/CBuilder*
 			/usr/share/man/man3/ExtUtils::CBuilder*
 		end
 	end
-	
-	package %{name}-ExtUtils-Embed
+
+	package perl-ExtUtils-Embed
 		epoch = 0
-		version = 1.28
+		version = 1.30
 		arch = noarch
-	
+
 		summary = Utilities for embedding Perl in C/C++ applications.
 		description
 			Utilities for embedding Perl in C/C++ applications.
 		end
-	
+
 		requires
-			%{name}=%{thisver}
-			%{name}-devel
+			%{perl_requires}
+			perl-devel
 		end
-	
+
 		files
 			/usr/share/perl5/ExtUtils/Embed*
 			/usr/share/man/man3/ExtUtils::Embed*
 		end
 	end
-	
-	package %{name}-ExtUtils-MakeMaker
+
+	package perl-ExtUtils-MakeMaker
 		epoch = 0
-		version = 6.56
+		version = 6.57_05
 		arch = noarch
-	
+
 		summary = Create a module Makefile.
 		description
 			Create a module Makefile.
 		end
-	
+
 		requires
-			%{name}=%{thisver}
-			%{name}-devel
-			%{name}(Test::Harness)
+			%{perl_requires}
+			perl-devel
+			perl(Test::Harness)
 		end
 
 		files
@@ -486,10 +716,10 @@ packages
 			/usr/share/man/man3/ExtUtils::testlib.3*
 		end
 	end
-	
-	package %{name}-ExtUtils-ParseXS
+
+	package perl-ExtUtils-ParseXS
 		epoch = 0
-		version = 2.21
+		version = 2.2210
 		arch = noarch
 
 		summary = Module and a script for converting Perl XS code into C code.
@@ -498,61 +728,87 @@ packages
 			constructs necessary to let C functions manipulate Perl values and creates
 			the glue necessary to let Perl access those functions.
 		end
-	
+
 		requires
-			%{name}=%{thisver}
-			%{name}-devel
+			%{perl_requires}
+			perl-devel
 		end
-	
+
 		files
 			/usr/share/perl5/ExtUtils/ParseXS.pm
 			/usr/share/perl5/ExtUtils/xsubpp
 			/usr/share/man/man3/ExtUtils::ParseXS.3*
 		end
 	end
-	
-	package %{name}-File-Fetch
-		epoch = 0
-		version = 6.56
+
+	package perl-File-Fetch
+		epoch = 1
+		version = 0.32
 		arch = noarch
 
 		summary = Generic file fetching mechanism.
 		description
 			File::Fetch is a generic file fetching mechanism.
 		end
-	
+
 		requires
-			%{name}=%{thisver}
-			%{name}(IPC::Cmd)>=0.36
-			%{name}(Module::Load::Conditional)>=0.04
-			%{name}(Params::Check)>=0.07
+			%{perl_requires}
+			perl(IPC::Cmd)>=0.36
+			perl(Module::Load::Conditional)>=0.04
+			perl(Params::Check)>=0.07
 		end
-	
+
 		files
 			/usr/share/perl5/File/Fetch.pm
 			/usr/share/man/man3/File::Fetch.3*
 		end
 	end
-	
-	package %{name}-IO-Compress
+
+	package perl-HTTP-Tiny
 		epoch = 0
-		version = 2.026
-	
+		version = 0.012
+		arch = noarch
+
+		summary = A small, simple, correct HTTP/1.1 client.
+		description
+			This is a very simple HTTP/1.1 client, designed primarily for doing simple GET
+			requests without the overhead of a large framework like LWP::UserAgent.
+			It is more correct and more complete than HTTP::Lite. It supports proxies
+			(currently only non-authenticating ones) and redirection. It also correctly
+			resumes after EINTR.
+		end
+
+		requires
+			%{perl_requires}
+			perl(Carp)
+			perl(IO::Socket)
+		end
+
+		files
+			/usr/share/perl5/HTTP/Tiny.pm
+			/usr/share/man/man5/HTTP::Tiny*
+		end
+	end
+
+	package perl-IO-Compress
+		epoch = 0
+		version = 2.033
+
 		summary = IO::Compress wrapper for modules.
 		description
 			This module is the base class for all IO::Compress and IO::Uncompress
 			modules. This module is not intended for direct use in application code.
 			Its sole purpose is to to be sub-classed by IO::Compress modules.
 		end
-	
+
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
-	
+
 		provides
-			%{name}(IO::Uncompress::Bunzip2)
+			perl(IO::Uncompress::Bunzip2)
 		end
-	
+
 		files
 			/usr/share/perl5/Compress/Zlib.pm
 			/usr/lib/perl5/auto/Compress/Zlib/
@@ -568,8 +824,8 @@ packages
 			/usr/share/man/man3/IO::Uncompress::Base.*
 		end
 	end
-	
-	package %{name}-IO-Zlib
+
+	package perl-IO-Zlib
 		epoch = 0
 		version = 1.10
 		arch = noarch
@@ -581,40 +837,67 @@ packages
 			the same way as an IO::File object so you can have common code that doesn't
 			know which sort of file it is using.
 		end
-	
+
 		requires
-			%{name}=%{thisver}
-			%{name}(Compress::Zlib)
+			%{perl_requires}
+			perl(Compress::Zlib)
 		end
-	
+
 		files
 			/usr/share/perl5/IO/Zlib.pm
 			/usr/share/man/man3/IO::Zlib.*
 		end
 	end
-	
-	package %{name}-IPC-Cmd
+
+	package perl-IPC-Cmd
 		epoch = 0
-		version = 0.54
+		version = 0.70
 		arch = noarch
-	
+
 		summary = Finding and running system commands made easy.
 		description
 			IPC::Cmd allows you to run commands, interactively if desired, in a
 			platform independent way, but have them still work.
 		end
-	
+
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
+			perl(ExtUtils::MakeMaker)
 		end
-	
+
 		files
 			/usr/share/perl5/IPC/Cmd.pm
 			/usr/share/man/man3/IPC::Cmd.3*
 		end
 	end
+
+	package perl-JSON-PP
+		epoch = 0
+		version = 2.27150
+		arch = noarch
+
+		summary = JSON::XS compatible pure-Perl module.
+		description
+			JSON::XS is the fastest and most proper JSON module on CPAN. It is written by
+			Marc Lehmann in C, so must be compiled and installed in the used environment.
+			JSON::PP is a pure-Perl module and is compatible with JSON::XS.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			/usr/bin/json_pp
+			/usr/share/perl5/JSON/PP
+			/usr/share/perl5/JSON/PP.pm
+			/usr/share/man/man1/json_pp.1*
+			/usr/share/man/man3/JSON::PP.3*
+			/usr/share/man/man3/JSON::PP::Boolean.3pm*
+		end
+	end
 	
-	package %{name}-Locale-Maketext-Simple
+	package perl-Locale-Maketext-Simple
 		epoch = 0
 		version = 0.21
 		arch = noarch
@@ -627,7 +910,7 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 	
 		files
@@ -636,9 +919,9 @@ packages
 		end
 	end
 	
-	package %{name}-Log-Message
+	package perl-Log-Message
 		epoch = 0
-		version = 0.02
+		version = 0.04
 		arch = noarch
 	
 		summary = Generic message storage mechanism.
@@ -652,11 +935,11 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 	
 		provides
-			%{name}(Log::Message::Handlers)=%{version}
+			perl(Log::Message::Handlers)=%{version}
 		end
 
 		files
@@ -671,9 +954,9 @@ packages
 		end
 	end
 	
-	package %{name}-Log-Message-Simple
+	package perl-Log-Message-Simple
 		epoch = 0
-		version = 0.06
+		version = 0.08
 		arch = noarch
 	
 		summary = Simplified frontend to Log::Message.
@@ -683,7 +966,7 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 	
 		files
@@ -692,9 +975,9 @@ packages
 		end
 	end
 	
-	package %{name}-Module-Build
+	package perl-Module-Build
 		epoch = 0
-		version = 0.3603
+		version = 0.3800
 		arch = noarch
 	
 		summary = Perl module for building and installing Perl modules.
@@ -711,10 +994,11 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
-			%{name}(Archive::Tar)>=1.08
-			%{name}(ExtUtils::CBuilder)>=0.15
-			%{name}(ExtUtils::ParseXS)>=1.02
+			%{perl_requires}
+			perl(Archive::Tar)>=1.08
+			perl(CPAN::Meta)>=2.110420
+			perl(ExtUtils::CBuilder)>=0.15
+			perl(ExtUtils::ParseXS)>=1.02
 		end
 	
 		files
@@ -727,9 +1011,9 @@ packages
 		end
 	end
 	
-	package %{name}-Module-CoreList
+	package perl-Module-CoreList
 		epoch = 0
-		version = 2.29
+		version = 2.49_01
 		arch = noarch
 	
 		summary = Perl core modules indexed by perl versions.
@@ -740,7 +1024,7 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 	
 		files
@@ -751,9 +1035,9 @@ packages
 		end
 	end
 	
-	package %{name}-Module-Load
+	package perl-Module-Load
 		epoch = 0
-		version = 0.16
+		version = 0.18
 		arch = noarch
 	
 		summary = Runtime require of both modules and files.
@@ -763,7 +1047,7 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 	
 		files
@@ -772,9 +1056,9 @@ packages
 		end
 	end
 	
-	package %{name}-Module-Load-Conditional
+	package perl-Module-Load-Conditional
 		epoch = 0
-		version = 0.34
+		version = 0.44
 		arch = noarch
 	
 		summary = Looking up module information / loading at runtime.
@@ -784,7 +1068,7 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 	
 		files
@@ -793,7 +1077,7 @@ packages
 		end
 	end
 	
-	package %{name}-Module-Loaded
+	package perl-Module-Loaded
 		epoch = 0
 		version = 0.06
 		arch = noarch
@@ -808,7 +1092,7 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 	
 		files
@@ -816,8 +1100,28 @@ packages
 			/usr/share/man/man3/Module::Loaded*
 		end
 	end
-	
-	package %{name}-Module-Plugable
+
+	package perl-Module-Metadata
+		epoch = 0
+		version = 1.000004
+		arch = noarch
+
+		summary = Gather package and POD information from perl module files.
+		description
+			Gather package and POD information from perl module files.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			/usr/share/perl5/Module/Metadata.pm
+			/usr/share/man/man3/Module::Metadata.3pm*
+		end
+	end
+
+	package perl-Module-Plugable
 		epoch = 0
 		version = 3.90
 		arch = noarch
@@ -829,7 +1133,7 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 	
 		files
@@ -841,9 +1145,9 @@ packages
 		end
 	end
 
-	package %{name}-Object-Accessor
+	package perl-Object-Accessor
 		epoch = 0
-		version = 0.36
+		version = 0.38
 		arch = noarch
 	
 		summary = Perl module that allows per object accessors.
@@ -853,7 +1157,7 @@ packages
 		end
 
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 	
 		files
@@ -862,7 +1166,7 @@ packages
 		end
 	end
 	
-	package %{name}-Package-Constants
+	package perl-Package-Constants
 		epoch = 0
 		version = 0.02
 		arch = noarch
@@ -875,7 +1179,7 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 
 		files
@@ -884,9 +1188,9 @@ packages
 		end
 	end
 	
-	package %{name}-Params-Check
+	package perl-Params-Check
 		epoch = 0
-		version = 0.26
+		version = 0.28
 		arch = noarch
 	
 		summary = Generic input parsing/checking mechanism.
@@ -895,11 +1199,11 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 
 		provides
-			%{name}(Params::Check)
+			perl(Params::Check)
 		end
 	
 		files
@@ -908,9 +1212,9 @@ packages
 		end
 	end
 	
-	package %{name}-Parse-CPAN-Meta
+	package perl-Parse-CPAN-Meta
 		epoch = 0
-		version = 1.40
+		version = 1.4401
 		arch = noarch
 
 		summary = Parse META.yml and other similar CPAN metadata files.
@@ -920,7 +1224,7 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 
 		files
@@ -929,9 +1233,9 @@ packages
 		end
 	end
 	
-	package %{name}-Path-Tools
+	package perl-Path-Tools
 		epoch = 0
-		version = 3.31
+		version = 3.33
 		license = (GPL+ or Artistic) and BSD
 	
 		summary = PathTools Perl module (Cwd, File::Spec).
@@ -940,7 +1244,11 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
+		end
+
+		filter_requires
+			perl\(VMS\:\:Filespec\)
 		end
 	
 		files
@@ -950,8 +1258,34 @@ packages
 			/usr/share/man/man3/File::Spec*
 		end
 	end
+
+	package perl-Perl-OSType
+		epoch = 0
+		version = 1.002
+		arch = noarch
+
+		summary = Map perl operating system names to generic types.
+		description
+			Modules that provide OS-specific behaviors often need to know if the current
+			operating system matches a more generic type of operating systems. For example,
+			'linux' is a type of 'Unix' operating system and so is 'freebsd'.
+			This module provides a mapping between an operating system name as given by $^O
+			and a more generic type. The initial version is based on the OS type mappings
+			provided in Module::Build and ExtUtils::CBuilder (thus, Microsoft operating
+			systems are given the type 'Windows' rather than 'Win32').
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			/usr/share/perl5/Perl/OSType.pm
+			/usr/share/man/man3/Perl::OSType.3pm*
+		end
+	end
 	
-	package %{name}-Pod-Escapes
+	package perl-Pod-Escapes
 		epoch= 0
 		version = 1.04
 		arch = noarch
@@ -963,7 +1297,11 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
+		end
+
+		filter_requires
+			%{perl_filter_requires}
 		end
 	
 		files
@@ -972,9 +1310,9 @@ packages
 		end
 	end
 	
-	package %{name}-Pod-Simple
+	package perl-Pod-Simple
 		epoch = 0
-		version = 3.13
+		version = 3.16
 		arch = noarch
 	
 		summary = Framework for parsing POD documentation.
@@ -985,7 +1323,11 @@ packages
 		end
 	
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
+		end
+
+		filter_requires
+			%{perl_filter_requires}
 		end
 	
 		files
@@ -995,10 +1337,35 @@ packages
 			/usr/share/man/man3/Pod::Simple*
 		end
 	end
-	
-	package %{name}-Term-UI
+
+	package perl-Scalar-List-Utils
 		epoch = 0
-		version = 0.20
+		version = 1.22
+
+		summary = A selection of general-utility scalar and list subroutines.
+		description
+			Scalar::Util and List::Util contain a selection of subroutines that people have
+			expressed would be nice to have in the perl core, but the usage would not
+			really be high enough to warrant the use of a keyword, and the size so small
+			such that being individual extensions would be wasteful.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			/usr/lib/perl5/List
+			/usr/lib/perl5/Scalar
+			/usr/lib/perl5/auto/List
+			/usr/share/man/man3/List::Util*
+			/usr/share/man/man3/Scalar::Util*
+		end
+	end
+	
+	package perl-Term-UI
+		epoch = 0
+		version = 0.26
 		arch = noarch
 
 		summary = Term::ReadLine UI made easy.
@@ -1009,8 +1376,8 @@ packages
 		end
 
 		requires
-			%{name}=%{thisver}
-			%{name}(Log::Message::Simple)
+			%{perl_requires}
+			perl(Log::Message::Simple)
 		end
 
 		files
@@ -1020,9 +1387,9 @@ packages
 		end
 	end
 
-	package %{name}-Test-Harness
+	package perl-Test-Harness
 		epoch = 0
-		version = 3.17
+		version = 3.23
 		arch = noarch
 
 		summary = Run Perl standard test scripts with statistics.
@@ -1032,7 +1399,11 @@ packages
 		end
 
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
+		end
+
+		filter_requires
+			%{perl_filter_requires}
 		end
 
 		files
@@ -1047,9 +1418,9 @@ packages
 		end
 	end
 
-	package %{name}-Test-Simple
+	package perl-Test-Simple
 		epoch = 0
-		version = 0.94
+		version = 0.98
 		arch = noarch
 
 		summary = Basic utilities for writing tests.
@@ -1058,7 +1429,7 @@ packages
 		end
 
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 
 		files
@@ -1073,9 +1444,9 @@ packages
 		end
 	end
 
-	package %{name}-Time-Piece
+	package perl-Time-Piece
 		epoch = 0
-		version = 1.15
+		version = 1.20_01
 
 		summary = Time objects from localtime and gmtime.
 		description
@@ -1086,7 +1457,7 @@ packages
 		end
 
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 
 		files
@@ -1098,9 +1469,31 @@ packages
 		end
 	end
 
-	package %{name}-parent
+	package perl-Version-Requirements
 		epoch = 0
-		version = 0.223
+		version = 0.101020
+		arch = noarch
+
+		summary = Set of version requirements for a CPAN dist.
+		description
+			A Version::Requirements object models a set of version constraints like
+			those specified in the META.yml or META.json files in CPAN distributions.
+			It can be built up by adding more and more constraints, and it will reduce
+			them to the simplest representation.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		# No files.
+		files
+		end
+	end
+
+	package perl-parent
+		epoch = 0
+		version = 0.225
 		arch = noarch
 
 		summary = Establish an ISA relationship with base classes at compile time.
@@ -1110,7 +1503,7 @@ packages
 		end
 
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 
 		files
@@ -1119,9 +1512,9 @@ packages
 		end
 	end
 
-	package %{name}-threads
+	package perl-threads
 		epoch = 0
-		version = 1.75
+		version = 1.83
 
 		summary = Perl interpreter-based threads.
 		description
@@ -1135,7 +1528,7 @@ packages
 		end
 
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 
 		files
@@ -1145,9 +1538,9 @@ packages
 		end
 	end
 
-	package %{name}-threads-shared
+	package perl-threads-shared
 		epoch = 0
-		version = 1.32
+		version = 1.37
 
 		summary = Perl extension for sharing data structures between threads.
 		description
@@ -1160,7 +1553,7 @@ packages
 		end
 
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 
 		files
@@ -1170,9 +1563,9 @@ packages
 		end
 	end
 
-	package %{name}-version
+	package perl-version
 		epoch = 0
-		version = 0.82
+		version = 0.88
 		arch = noarch
 
 		summary = Perl extension for Version Objects.
@@ -1181,7 +1574,7 @@ packages
 		end
 
 		requires
-			%{name}=%{thisver}
+			%{perl_requires}
 		end
 
 		files
@@ -1193,7 +1586,7 @@ packages
 		end
 	end
 
-	package %{name}-core
+	package perl-core
 		epoch = 0
 
 		summary = Base perl metapackage.
@@ -1203,46 +1596,58 @@ packages
 		end
 
 		requires
-			%{name}=%{thisver}
-			%{name}-libs
-			%{name}-devel
-			%{name}-Archive-Extract
-			%{name}-Archive-Tar
-			%{name}-Compress-Raw-Zlib
-			%{name}-CPAN
-			%{name}-CPANPLUS
-			%{name}-Digest-SHA
-			%{name}-ExtUtils-CBuilder
-			%{name}-ExtUtils-Embed
-			%{name}-ExtUtils-MakeMaker
-			%{name}-ExtUtils-ParseXS
-			%{name}-File-Fetch
-			%{name}-IO-Compress
-			%{name}-IO-Zlib
-			%{name}-IPC-Cmd
-			%{name}-Locale-Maketext-Simple
-			%{name}-Log-Message
-			%{name}-Log-Message-Simple
-			%{name}-Module-Build
-			%{name}-Module-CoreList
-			%{name}-Module-Load
-			%{name}-Module-Load-Conditional
-			%{name}-Module-Loaded
-			%{name}-Module-Plugable
-			%{name}-Object-Accessor
-			%{name}-Package-Constants
-			%{name}-Params-Check
-			%{name}-Parse-CPAN-Meta
-			%{name}-Path-Tools
-			%{name}-Pod-Simple
-			%{name}-Term-UI
-			%{name}-Test-Harness
-			%{name}-Test-Simple
-			%{name}-Time-Piece
-			%{name}-parent
-			%{name}-threads
-			%{name}-threads-shared
-			%{name}-version
+			%{perl_requires}
+			perl-libs
+			perl-devel
+			perl-Archive-Extract
+			perl-Archive-Tar
+			perl-Class-ISA
+			perl-Compress-Raw-Zlib
+			perl-CGI
+			perl-CPAN
+			perl-CPAN-Meta
+			perl-CPAN-Meta-YAML
+			perl-CPANPLUS
+			perl-Carp
+			perl-Digest
+			perl-Digest-MD5
+			perl-Digest-SHA
+			perl-ExtUtils-CBuilder
+			perl-ExtUtils-Embed
+			perl-ExtUtils-MakeMaker
+			perl-ExtUtils-ParseXS
+			perl-File-Fetch
+			perl-HTTP-Tiny
+			perl-IO-Compress
+			perl-IO-Zlib
+			perl-IPC-Cmd
+			perl-JSON-PP
+			perl-Locale-Maketext-Simple
+			perl-Log-Message
+			perl-Log-Message-Simple
+			perl-Module-Build
+			perl-Module-CoreList
+			perl-Module-Load
+			perl-Module-Load-Conditional
+			perl-Module-Loaded
+			perl-Module-Metadata
+			perl-Module-Plugable
+			perl-Object-Accessor
+			perl-Package-Constants
+			perl-Params-Check
+			perl-Parse-CPAN-Meta
+			perl-Perl-OSType
+			perl-Path-Tools
+			perl-Pod-Simple
+			perl-Scalar-List-Utils
+			perl-Term-UI
+			perl-Test-Harness
+			perl-Test-Simple
+			perl-Time-Piece
+			perl-parent
+			perl-threads
+			perl-threads-shared
+			perl-version
 		end
 
 		# Nothing. Nada. Zilch. Zarro. Uh uh. Nope. Sorry.

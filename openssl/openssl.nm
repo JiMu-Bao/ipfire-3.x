@@ -5,7 +5,7 @@
 
 name       = openssl
 version    = 1.0.0e
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -26,6 +26,7 @@ build
 		bc
 		gnutls-devel
 		perl
+		util-linux
 		zlib-devel
 	end
 
@@ -96,6 +97,22 @@ build
 		mkdir -pv %{BUILDROOT}/etc/pki/tls
 		install -m 0644 %{DIR_SOURCE}/openssl.cnf %{BUILDROOT}/etc/pki/tls
 		cp -v -r certs %{BUILDROOT}/etc/pki/tls
+
+		# Rename man pages so that they don't conflict with other system man pages.
+		pushd ${BUILDROOT}/usr/share/man
+		for manpage in man*/*; do
+			if [ -L ${manpage} ]; then
+				TARGET=`ls -l ${manpage} | awk '{ print $NF }'`
+				ln -snf ${TARGET}ssl ${manpage}ssl
+				rm -f ${manpage}
+			else
+				mv ${manpage} ${manpage}ssl
+			fi
+		done
+
+		mv -v %{BUILDROOT}/usr/share/man/man1/{,ssl}passwd.1
+		mv -v %{BUILDROOT}/usr/share/man/man1/{,ssl}rand.1
+		popd
 	end
 end
 

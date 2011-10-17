@@ -5,7 +5,7 @@
 
 name       = cups
 version    = 1.4.5
-release    = 5
+release    = 7
 
 groups     = Applications/Printing
 url        = http://cups.org/software.php
@@ -17,7 +17,7 @@ description
 	by Apple Inc. for Mac OS(R) X and other UNIX(R)-like operating systems.
 end
 
-source_dl  =
+source_dl  = http://ftp.easysw.com/pub/cups/%{version}/
 sources    = %{thisapp}-source.tar.bz2
 
 build
@@ -74,11 +74,6 @@ build
 	end
 end
 
-# XXX what is this?
-# This line has to be added at the installation of cups.
-# File: /lib/udev/rules.d/99-systemd.rules
-# Line: SUBSYSTEM=="usb", ATTR{serial}=="AL01077498", TAG+="systemd", ENV{SYSTEMD_WANTS}="cups.service"
-
 packages
 	package %{name}
 		requires = ghostscript
@@ -86,6 +81,8 @@ packages
 	
 	package %{name}-devel
 		template DEVEL
+
+		requires += %{name}-libs=%{thisver}
 	end
 	
 	package %{name}-libs

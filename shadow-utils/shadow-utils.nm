@@ -5,7 +5,7 @@
 
 name       = shadow-utils
 version    = 4.1.4.3
-release    = 2
+release    = 5
 thisapp    = shadow-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -60,16 +60,23 @@ build
 	install_cmds
 		# Remove man pages in other languages
 		rm -rfv %{BUILDROOT}/usr/share/man/{cs,de,fi,fr,hu,id,it,ja,pl,pt_BR,ru,sv,tr}
+
+		# Remove duplicate man pages.
+		rm -vf %{BUILDROOT}/usr/share/man/man*/{getspnam,nologin,passwd}.*
 	end
 end
 
 packages
 	package %{name}
-		obsoletes += shadow
+		obsoletes += shadow<%{thisver}
+		provides  += shadow=%{thisver}
 
 		conflicts
-			shadow
 			pam<1.1.0-4
+		end
+
+		configfiles
+			/etc/default/useradd
 		end
 	end
 end

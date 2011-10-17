@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = gnutls
-version    = 3.0.3
-release    = 1
+version    = 3.0.4
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.gnu.org/software/gnutls/
@@ -25,7 +25,7 @@ sources    = %{thisapp}.tar.xz
 build
 	requires
 		libtasn1-devel
-		nettle-devel
+		nettle-devel>=2.4
 		p11-kit-devel>=0.4
 		zlib-devel
 	end
@@ -45,6 +45,7 @@ end
 packages
 	package %{name}
 		requires
+			nettle>=2.4
 			p11-kit>=0.4
 		end
 	end

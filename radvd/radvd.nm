@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = radvd
-version    = 1.8
-release    = 4
+version    = 1.8.3
+release    = 2
 
 groups     = System/Daemons
 url        = http://www.litech.org/radvd/
@@ -41,6 +41,41 @@ end
 
 packages
 	package %{name}
-		reuires = /lib/network/network-radvd-config
+		requires = /lib/network/network-radvd-config
+
+		prerequires += shadow-utils
+
+		script prein
+			getent group radvd >/dev/null || groupadd -r radvd
+
+			# The radvd user also needs to be in the wheel group to get access to
+			# /proc.
+			getent passwd radvd >/dev/null || \
+				useradd -r -g radvd -G wheel -d / -s /sbin/nologin \
+					-c "User for the Router Advertisement daemon." radvd
+			exit  0
+		end
+
+		# Just search for new unit files that were just installed.
+		script postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		# Disable the service that is to be removed and stop it if it is still running.
+		script preun
+			/bin/systemctl --no-reload disable radvd.service >/dev/null 2>&1 || :
+			/bin/systemctl stop radvd.service >/dev/null 2>&1 || :
+		end
+
+		# Just tell systemd that unitfiles have been removed.
+		script postun
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		# Try to restart the service if it is running.
+		script postup
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl try-restart radvd.service >/dev/null 2>&1 || :
+		end
 	end
 end

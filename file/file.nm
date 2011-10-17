@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = file
-version    = 5.07
+version    = 5.09
 release    = 1
 
 groups     = Base Build System/Tools
@@ -19,7 +19,7 @@ description
 	different graphics formats.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.astron.com/pub/file/
 
 build
 	requires

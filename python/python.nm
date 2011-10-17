@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = python
-version    = 2.7.1
-release    = 3
+version    = 2.7.2
+release    = 1
 thisapp    = Python-%{version}
 
 groups     = Development/Languages
@@ -21,8 +21,8 @@ description
 	libraries, as well as to various windowing systems.
 end
 
-source_dl  =
-sources    = %{thisapp}.tgz
+source_dl  = http://python.org/ftp/python/%{version}/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -44,7 +44,6 @@ build
 	end
 
 	export CFLAGS  += -D_GNU_SOURCE -fwrapv
-	export CPPFLAGS = $(shell pkg-config --cflags-only-I libffi)
 
 	prepare_cmds
 		sed -e "s/#*shared*/*shared*/g" -i Modules/Setup.dist
@@ -59,6 +58,8 @@ build
 	end
 
 	build
+		export CPPFLAGS=$(pkg-config --cflags-only-I libffi)
+
 		OPT="%{CFLAGS}" \
 			./configure \
 				--prefix=/usr \
@@ -78,12 +79,11 @@ end
 
 packages
 	package %{name}
-	end
-	
+
 	package %{name}-devel
 		template DEVEL
 	
-		files =+ \
+		files += \
 			!/usr/lib/python*/config/Makefile \
 			!/usr/include/python*/pyconfig.h
 	end

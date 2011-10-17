@@ -5,7 +5,7 @@
 
 name       = chrony
 version    = 1.26
-release    = 6
+release    = 7
 
 groups     = Base System/Daemons
 url        = http://chrony.tuxfamily.org
@@ -73,31 +73,32 @@ end
 
 packages
 	package %{name}
-		preprequires = shadow-utils systemd-units
-	
 		configfiles
 			/etc/chrony.conf
 			/etc/chrony.keys
 		end
 	
+		prerequires = shadow-utils systemd-units
+
 		script prein
 			%{create_user}
 		end
 	
 		script postin
-			/bin/systemctl daemon-reload &>/dev/null
-			/bin/systemctl enable cronyd.service &>/dev/null
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl --no-reload enable \
+				chrony-wait.service chronyd.service >/dev/null 2>&1 || :
 		end
 	
 		script preun
 			/bin/systemctl --no-reload disable \
-				chrony-wait.service chronyd.service &>/dev/null
-			/bin/systemctl stop chrony-wait.service chronyd.service &>/dev/null
+				chrony-wait.service chronyd.service >/dev/null 2>&1 || :
+			/bin/systemctl stop chrony-wait.service chronyd.service >/dev/null 2>&1 || :
 		end
 	
 		script postup
-			/bin/systemctl daemon-reload &>/dev/null
-			/bin/systemctl try-restart chronyd.service &>/dev/null
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl try-restart chronyd.service >/dev/null 2>&1 || :
 		end
 	end
 end

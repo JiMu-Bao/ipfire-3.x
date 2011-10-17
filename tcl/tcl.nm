@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = tcl
-version    = 8.5.8
+version    = 8.5.10
 release    = 1
 
 groups     = Development/Languages
@@ -21,16 +21,15 @@ end
 source_dl  = http://downloads.sourceforge.net/project/%{name}/%{name}/%{thisapp}
 sources    = tcl%{version}-src.tar.gz
 
-CFLAGS        += -DTCL_NO_STACK_CHECK=1
-
 build
 	requires
+		perl>=5.14.2-9.ip3
 		autoconf
 		automake
 	end
 
-
 	DIR_APP = %{DIR_SRC}/tcl%{version}/unix
+	CFLAGS += -DTCL_NO_STACK_CHECK=1
 
 	configure_options +=\
 		--enable-shared
@@ -56,5 +55,4 @@ end
 
 packages
 	package %{name}
-	end
 end

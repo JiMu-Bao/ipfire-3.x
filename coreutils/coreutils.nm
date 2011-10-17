@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = coreutils
-version    = 8.13
-release    = 2
+version    = 8.14
+release    = 1
 
 groups     = Base Build System/Base
 url        = http://www.gnu.org/software/coreutils/

@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = net-snmp
-version    = 5.7
-release    = 1
+version    = 5.7.1
+release    = 2
 
 groups     = Networking/Daemons
 url        = http://net-snmp.sourceforge.net
@@ -18,7 +18,7 @@ description
 	computer equipment and even devices like UPSs.
 end
 
-source_dl  =
+source_dl  = https://sourceforge.net/projects/net-snmp/files/net-snmp/%{version}/
 
 build
 	requires
@@ -48,6 +48,12 @@ end
 
 packages
 	package %{name}
+		# XXX Although we don't want to build perl modules,
+		# we have this requirement?!
+		filter_requires
+			perl\(NetSNMP::TrapReceiver\)
+		end
+	end
 
 	package %{name}-libs
 		template LIBS

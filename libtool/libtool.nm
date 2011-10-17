@@ -5,7 +5,7 @@
 
 name       = libtool
 version    = 2.4
-release    = 1
+release    = 2
 
 groups     = Build System/Libraries
 url        = http://www.gnu.org/software/libtool/
@@ -19,25 +19,19 @@ description
 	interface which simplifies the process of using shared libraries.
 end
 
-source_dl  =
+source_dl  = http://ftp.gnu.org/gnu/libtool/
 
 packages
 	package %{name}
-	
+
+	package %{name}-libs
+		template LIBS
+	end
+
 	package %{name}-devel
 		template DEVEL
 
-		requires = libtool=%{thisver}	
-
-		# Overwrite filelist that /usr/share/aclocal will be in main package
-		files
-			/usr/include
-			/usr/lib*/lib*.so
-			/usr/share/libtool/libltdl
-		end
-	end
-	
-	package %{name}-libs
-		template LIBS
+		# /usr/share/aclocal must be in main package.
+		files += !/usr/share/aclocal
 	end
 end

@@ -6,7 +6,7 @@
 name       = initscripts
 epoch      = 1
 version    = 2.99
-release    = 6
+release    = 8
 
 groups     = Base System/Boot
 url        =
@@ -75,6 +75,19 @@ packages
 			system-release
 			udev
 			util-linux
+		end
+
+		prerequires = coreutils shadow-utils
+
+		script prein
+			groupadd -g 22 -r -f utmp
+		end
+
+		script postin
+			touch /var/log/{b,w}tmp /var/run/utmp
+			chown root:utmp /var/log/{b,w}tmp /var/run/utmp
+			chmod 664 /var/log/wtmp /var/run/utmp
+			chmod 600 /var/log/btmp
 		end
 	end
 end

@@ -5,7 +5,7 @@
 
 name       = bash
 version    = 4.2
-release    = 2
+release    = 4
 
 groups     = Base Build System/Tools
 url        = http://www.gnu.org/software/bash/
@@ -67,6 +67,47 @@ end
 
 packages
 	package %{name}
+		prerequires = coreutils
 		requires = /etc/bashrc /etc/profile
+
+		script postin
+			# Create /etc/shells, if it does not exist.
+			[ -f "/etc/shells" ] || touch /etc/shells
+
+			found_sh=0
+			found_bash=0
+			while read line; do
+				if [ "/bin/bash" = "${line}" ]; then
+					found_bash=1
+				elif [ "/bin/sh" = "${line}" ]; then
+					found_sh=1
+				fi
+			done < /etc/shells
+
+			if [ "${found_bash}" = "0" ]; then
+				echo "/bin/bash" >> /etc/shells
+			fi
+
+			if [ "${found_sh}" = "0" ]; then
+				echo "/bin/sh" >> /etc/shells
+			fi
+		end
+
+		script postun
+			[ -e "/etc/shells" ] || exit 0
+
+			# Remove /bin/bash and /bin/sh from /etc/shells.
+			while read line; do
+				if [ "/bin/bash" = "${line}" ]; then
+					continue
+				elif [ "/bin/sh" = "${line}" ]; then
+					continue
+				fi
+
+				echo "${line}"
+			done < /etc/shells > /etc/shells.$$
+
+			mv -f /etc/shells{.$$,}
+		end
 	end
 end

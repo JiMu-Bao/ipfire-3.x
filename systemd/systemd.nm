@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = systemd
-version    = 33
+version    = 36
 release    = 3
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -18,8 +18,6 @@ description
 	SysV and LSB init scripts.
 end
 
-conflicts += upstart
-
 source_dl  = http://cgit.freedesktop.org/systemd/snapshot/
 
 build
@@ -31,6 +29,7 @@ build
 		dbus-devel
 		gperf
 		intltool
+		libacl-devel
 		libcap-devel
 		libselinux-devel
 		libtool
@@ -110,9 +109,13 @@ packages
 			dbus
 			python-cairo
 			python-dbus
+			%{name}-units=%{thisver}
 			udev>=172
 			util-linux>=2.19
 		end
+
+		prerequires += authconfig
+		conflicts += upstart
 
 		script postin
 			# Generate Machine ID.

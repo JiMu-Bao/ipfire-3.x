@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = newt
-version    = 0.52.10
+version    = 0.52.13
 release    = 1
 
 groups     = System/Libraries
@@ -22,7 +22,7 @@ description
 	slang library.
 end
 
-source_dl  =
+source_dl  = %{url}
 
 build
 	requires
@@ -60,5 +60,9 @@ packages
 		files
 			/usr/lib/python*/site-packages/*snack*
 		end
+	end
+
+	package %{name}-devel
+		template DEVEL
 	end
 end

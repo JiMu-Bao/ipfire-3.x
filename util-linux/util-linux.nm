@@ -6,7 +6,7 @@
 name       = util-linux
 version    = 2.19
 major_ver  = 2.19
-release    = 3
+release    = 7
 
 groups     = System/Base
 url        = http://kernel.org/~kzak/util-linux/
@@ -76,22 +76,17 @@ build
 
 		# Remove deprecated commands
 		rm -fv %{BUILDROOT}/{sbin,usr/share/man/man*}/{fsck,mkfs}.{bfs,minix}* \
-			%{BUILDROOT}/usr/bin/chkdupexe %{BUILDROOT}/usr/bin/vi{gr,pw} \
-			%{BUILDROOT}/sbin/{sln,shutdown} %{BUILDROOT}/bin/{line,newgrp,pg}
+			%{BUILDROOT}/usr/{,s}bin/{chkdupexe,newgrp,vi{gr,pw}} \
+			%{BUILDROOT}/sbin/{sln,shutdown} %{BUILDROOT}/bin/{line,pg}
+		rm -fv %{BUILDROOT}/usr/share/man/man1/{chkdupexe,line,pg,newgrp}.* \
+			%{BUILDROOT}/usr/share/man/man8/{vipw,vigr}.*
 		rm -fv %{BUILDROOT}/usr/share/getopt/*.tcsh
 
-		# Create /etc/mtab symlink
-		mkdir -pv %{BUILDROOT}/etc
-		ln -svf /proc/mounts %{BUILDROOT}/etc/mtab
-	end
-
-	export PKG_REQUIRES_FILTER = /proc/.*/mounts
-end
-
-# This symlink is allowed to be absolute.
-quality-agent
-	whitelist_symlink
-		/etc/mtab
+		# Set capabilities
+		chmod -v -s %{BUILDROOT}/bin/mount
+		setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep %{BUILDROOT}/bin/mount
+		chmod -v -s %{BUILDROOT}/bin/umount
+		setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep %{BUILDROOT}/bin/umount
 	end
 end
 
@@ -109,8 +104,18 @@ packages
 			setup<3.0-2
 			util-linux-ng
 		end
+
+		preprequires += coreutils
+
+		script postin
+			touch /var/log/lastlog
+
+			# mtab symlink
+			rm -f /etc/mtab
+			ln -s /proc/mounts /etc/mtab
+		end
 	end
-	
+
 	# Package information for libblkid
 	package libblkid
 		summary =  Block device ID library.
@@ -123,9 +128,9 @@ packages
 			/lib/libblkid.*
 		end
 	end
-	
+
 	# Package information for libblkid-devel
-	package libblikid-devel
+	package libblkid-devel
 		summary =  Development library and header of libblkid.
 		description = %{summary}
 	
@@ -136,7 +141,7 @@ packages
 			/usr/share/man/man3/*blkid*
 		end
 	end
-	
+
 	# Package information for libuuid
 	package libuuid
 		summary =  Universally unique ID library.
@@ -149,7 +154,7 @@ packages
 			/lib/libuuid.*
 		end
 	end
-	
+
 	# Package information for libuuid-devel
 	package libuuid-devel
 		summary =  Development library and header of libuuid.
@@ -162,7 +167,7 @@ packages
 			/usr/share/man/man3/*uuid*
 		end
 	end
-	
+
 	# Package information for libmount
 	package libmount
 		summary =  Device mounting library.
@@ -175,7 +180,7 @@ packages
 			/lib/libmount.*
 		end
 	end
-	
+
 	# Package information for libmount-devel
 	package libmount-devel
 		summary =  Development library and header of libmount.

@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = pakfire
-version    = 0.9.10
-release    = 1
+version    = 0.9.16
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Packaging
@@ -22,6 +22,8 @@ source_dl  = http://source.ipfire.org/releases/pakfire/
 
 build
 	requires
+		gettext
+		libcap-devel
 		libsolv-devel
 		python-devel
 	end
@@ -46,7 +48,6 @@ packages
 			pyliblzma
 			python-progressbar
 			python-urlgrabber
-			pyxattr
 			system-release
 		end
 
@@ -57,7 +58,7 @@ packages
 		end
 	end
 	
-	package %{name}-build
+	package %{name}-builder
 		summary = The pakfire builder.
 		description
 			The tools that are needed to build new pakfire packages.
@@ -68,6 +69,8 @@ packages
 			%{name}=%{thisver}
 			quality-agent=%{thisver}
 		end
+		provides = pakfire-build=%{thisver}
+		obsoletes = pakfire-build<%{thisver}
 		conflicts = build-essentials
 
 		files

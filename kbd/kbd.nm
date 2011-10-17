@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = kbd
-version    = 1.15
+version    = 1.15.3
 release    = 1
 epoch      = 1
 
@@ -14,8 +14,8 @@ license    = GPLv2+
 summary    = Tools for configuring the console (keyboard, virtual terminals, etc.).
 
 description
-	The kbd package contains tools for managing a Linux \
-	system's console's behavior, including the keyboard, the screen \
+	The kbd package contains tools for managing a Linux
+	system's console's behavior, including the keyboard, the screen
 	fonts, the virtual terminals and font files.
 end
 
@@ -24,13 +24,43 @@ sources   += kbd-latarcyrheb-16-fixed.tar.bz2
 sources   += kbd-latsun-fonts.tar.bz2
 
 build
+	requires
+		bison
+		flex
+		gettext
+	end
+
 	configure_options += \
-		--datadir=/lib/kbd
-	
-	# Adding our own fonts
+		--datadir=/lib/kbd \
+		--disable-rpath \
+		--enable-nls
+
 	prepare_cmds
+		# Adding our own fonts.
+		cd %{DIR_APP}
 		%{MACRO_EXTRACT} %{DIR_DL}/kbd-latarcyrheb-16-fixed.tar.bz2
 		%{MACRO_EXTRACT} %{DIR_DL}/kbd-latsun-fonts.tar.bz2
+
+		# 7-bit maps are obsolete; so are non-euro maps
+		cd %{DIR_APP}/data/keymaps/i386
+		mv qwerty/fi.map qwerty/fi-old.map
+		cp qwerty/fi-latin9.map qwerty/fi.map
+		cp qwerty/pt-latin9.map qwerty/pt.map
+		cp qwerty/sv-latin1.map qwerty/se-latin1.map
+		mv azerty/fr.map azerty/fr-old.map
+		cp azerty/fr-latin9.map azerty/fr.map
+		cp azerty/fr-latin9.map azerty/fr-latin0.map
+
+		# Rename conflicting keymaps
+		mv dvorak/no.map dvorak/no-dvorak.map
+		mv fgGIod/trf.map fgGIod/trf-fgGIod.map
+		mv olpc/es.map olpc/es-olpc.map
+		mv olpc/pt.map olpc/pt-olpc.map
+		mv qwerty/cz.map qwerty/cz-qwerty.map
+
+		# remove obsolete "gr" translation
+		cd %{DIR_APP}/po
+		rm -f gr.po gr.gmo
 	end
 
 	install_cmds
