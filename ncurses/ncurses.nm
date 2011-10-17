@@ -5,7 +5,7 @@
 
 name       = ncurses
 version    = 5.9
-release    = 2
+release    = 3
 
 groups     = System/Base
 url        = http://invisible-island.net/ncurses/ncurses.html
@@ -72,6 +72,8 @@ packages
 			the ncurses-base package.
 		end
 
+		provides += /usr/share/terminfo
+
 		files
 			/usr/share/terminfo
 		end
@@ -83,6 +85,8 @@ packages
 			This package contains descriptions of common terminals. Other terminal
 			descriptions are included in the ncurses-term package.
 		end
+
+		conflicts = ncurses<=5.9-1
 
 		files
 			/usr/share/terminfo/*/Eterm*
