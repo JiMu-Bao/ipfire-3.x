@@ -1,0 +1,84 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = docbook-xsl
+version    = 1.76.1
+release    = 1
+arch       = noarch
+
+groups     = Applications/Text
+url        = http://docbook.sourceforge.net/projects/xsl/
+license    = GPLv2+
+summary    = Norman Walsh's XSL stylesheets for DocBook XML.
+
+description
+	hese XSL stylesheets allow you to transform any DocBook XML document to
+	other formats, such as HTML, FO, and XHMTL.  They are highly customizable.
+end
+
+source_dl = http://prdownloads.sourceforge.net/docbook/
+
+sources =\
+	%{thisapp}.tar.bz2 \
+	%{name}-doc-%{version}.tar.bz2
+
+build
+	prepare_cmds
+		cp -av %{DIR_SOURCE}/Makefile %{DIR_APP}/Makefile
+	end
+
+	build = # empty
+
+	make_install_targets +=\
+		BINDIR=%{BUILDROOT}/usr/bin \
+		DESTDIR=%{BUILDROOT}/usr/share/sgml/docbook/xsl-stylesheets-%{version}
+
+	install_cmds
+		# Remove buggy extensions.
+		rm -rfv %{BUILDROOT}/usr/share/sgml/docbook/xsl-stylesheets-%{version}/extensions/*
+
+		# Remove unneeded tool for .epub formats.
+		rm -rvf %{BUILDROOT}/usr/share/sgml/docbook/xsl-stylesheets-%{version}/epub
+	end
+end
+
+packages
+	package %{name}
+		requires
+			docbook-dtds
+			sgml-common
+		end
+
+		prerequires +=\
+			docbook-dtds \
+			libxml2 \
+			sgml-common
+
+		script postin
+			# Install catalog files.
+			/usr/bin/xmlcatalog --noout --add "rewriteSystem" \
+				"http://docbook.sourceforge.net/release/xsl/%{version}" \
+				"file:///usr/share/sgml/docbook/xsl-stylesheets-%{version}" /etc/xml/catalog
+
+			/usr/bin/xmlcatalog --noout --add "rewriteURI" \
+				"http://docbook.sourceforge.net/release/xsl/%{version}" \
+				"file:///usr/share/sgml/docbook/xsl-stylesheets-%{version}" /etc/xml/catalog
+
+			/usr/bin/xmlcatalog --noout --add "rewriteSystem" \
+				"http://docbook.sourceforge.net/release/xsl/current" \
+				"file:///usr/share/sgml/docbook/xsl-stylesheets-%{version}" /etc/xml/catalog
+
+			/usr/bin/xmlcatalog --noout --add "rewriteURI" \
+				"http://docbook.sourceforge.net/release/xsl/current" \
+				"file:///usr/share/sgml/docbook/xsl-stylesheets-%{version}" /etc/xml/catalog
+		end
+
+		script preun
+			# Uninstall catalog files.
+			/usr/bin/xmlcatalog --noout --del \
+				"file:///usr/share/sgml/docbook/xsl-stylesheets-%{version}" /etc/xml/catalog
+		end
+	end
+end
