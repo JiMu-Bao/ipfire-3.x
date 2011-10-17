@@ -5,7 +5,7 @@
 
 name       = docbook-dtds
 version    = 1.0
-release    = 2
+release    = 3
 arch       = noarch
 
 groups     = Applications/Text
@@ -19,9 +19,6 @@ description
 	This syntax is XML-compliant and is developed by the OASIS consortium.
 	This package contains SGML and XML versions of the DocBook DTD.
 end
-
-# Update version as runtime dependency if changes.
-version_openjade = 1.3.2
 
 sources = \
 	docbk30.zip \
@@ -121,13 +118,9 @@ end
 
 packages
 	package %{name}
-		requires
-			openjade=%{version_openjade}
-		end
 
 		prerequires += \
 			libxml2 \
-			openjade=%{version_openjade} \
 			sgml-common
 
 		script postin
@@ -141,73 +134,61 @@ packages
 						/usr/share/sgml/sgml-iso-entities-8879.1986/catalog > /dev/null 2>/dev/null
 			done
 
-			# The STYLESHEETS/catalog command is for the case in which the style sheets
-			# were installed after another DTD but before this DTD
-			for STYLESHEETS in /usr/share/sgml/docbook/dsssl-stylesheets-*; do : ; done
-				case $STYLESHEETS in
-				   *-"*") STYLESHEETS= ;;
-				esac
+			# Create XML catalog.
+			for dir in %{directories}; do
+				fmt=${dir#*-}
+				ver=${dir%%-*}
 
-				for dir in %{directories}; do
-					fmt=${dir#*-}
-					ver=${dir%%-*}
-
-					## SGML catalog
-					# Update the centralized catalog corresponding to this version of the DTD
-					for cat_dir in /usr/share/sgml/sgml-iso-entities-8879.1986 /usr/share/sgml/docbook/$fmt-dtd-$ver $STYLESHEETS; do
-						/usr/bin/xmlcatalog --sgml --noout --add /etc/sgml/$fmt-docbook-$ver.cat $cat_dir/catalog > /dev/null 2>/dev/null
-					done
-
-					## XML catalog
-					if [ $fmt = xml -a -w /usr/share/sgml/docbook/xmlcatalog ]; then
-						while read f desc; do
-						case $vers in 4.[45]) f=${f/-/} ;; esac
-							/usr/bin/xmlcatalog --add public "$desc" /usr/share/sgml/docbook/$fmt-dtd-$ver/$f /usr/share/sgml/docbook/xmlcatalog > /dev/null 2>/dev/null
-						done <<ENDENT
-					ent/iso-pub.ent	ISO 8879:1986//ENTITIES Publishing//EN
-					ent/iso-grk1.ent	ISO 8879:1986//ENTITIES Greek Letters//EN
-					dbpoolx.mod	-//OASIS//ELEMENTS DocBook XML Information Pool V$vers//EN
-					ent/iso-box.ent	ISO 8879:1986//ENTITIES Box and Line Drawing//EN
-					docbookx.dtd	-//OASIS//DTD DocBook XML V$vers//EN
-					ent/iso-grk3.ent	ISO 8879:1986//ENTITIES Greek Symbols//EN
-					ent/iso-amsn.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Negated Relations//EN
-					ent/iso-num.ent	ISO 8879:1986//ENTITIES Numeric and Special Graphic//EN
-					dbcentx.mod	-//OASIS//ENTITIES DocBook XML Character Entities V$vers//EN
-					ent/iso-grk4.ent	ISO 8879:1986//ENTITIES Alternative Greek Symbols//EN
-					dbnotnx.mod	-//OASIS//ENTITIES DocBook XML Notations V$vers//EN
-					ent/iso-dia.ent	ISO 8879:1986//ENTITIES Diacritical Marks//EN
-					ent/iso-grk2.ent	ISO 8879:1986//ENTITIES Monotoniko Greek//EN
-					dbgenent.mod	-//OASIS//ENTITIES DocBook XML Additional General Entities V$vers//EN
-					dbhierx.mod	-//OASIS//ELEMENTS DocBook XML Document Hierarchy V$vers//EN
-					ent/iso-amsa.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Arrow Relations//EN
-					ent/iso-amso.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Ordinary//EN
-					ent/iso-cyr1.ent	ISO 8879:1986//ENTITIES Russian Cyrillic//EN
-					ent/iso-tech.ent	ISO 8879:1986//ENTITIES General Technical//EN
-					ent/iso-amsc.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Delimiters//EN
-					soextblx.dtd	-//OASIS//DTD XML Exchange Table Model 19990315//EN
-					calstblx.dtd	-//OASIS//DTD DocBook XML CALS Table Model V$vers//EN
-					ent/iso-lat1.ent	ISO 8879:1986//ENTITIES Added Latin 1//EN
-					ent/iso-amsb.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Binary Operators//EN
-					ent/iso-lat2.ent	ISO 8879:1986//ENTITIES Added Latin 2//EN
-					ent/iso-amsr.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Relations//EN
-					ent/iso-cyr2.ent	ISO 8879:1986//ENTITIES Non-Russian Cyrillic//EN
+				if [ $fmt = xml -a -w /usr/share/sgml/docbook/xmlcatalog ]; then
+					while read f desc; do
+					case $ver in 4.[45]) f={$f/-/} ;; esac
+						/usr/bin/xmlcatalog --noout --add public "$desc" /usr/share/sgml/docbook/${fmt}-dtd-${ver}/${f} \
+							/etc/sgml/docbook/xmlcatalog /dev/null 2>/dev/null
+					done <<ENDENT
+				ent/iso-pub.ent	ISO 8879:1986//ENTITIES Publishing//EN
+				ent/iso-grk1.ent	ISO 8879:1986//ENTITIES Greek Letters//EN
+				dbpoolx.mod	-//OASIS//ELEMENTS DocBook XML Information Pool V${ver}//EN
+				ent/iso-box.ent	ISO 8879:1986//ENTITIES Box and Line Drawing//EN
+				docbookx.dtd	-//OASIS//DTD DocBook XML V${ver}//EN
+				ent/iso-grk3.ent	ISO 8879:1986//ENTITIES Greek Symbols//EN
+				ent/iso-amsn.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Negated Relations//EN
+				ent/iso-num.ent	ISO 8879:1986//ENTITIES Numeric and Special Graphic//EN
+				dbcentx.mod	-//OASIS//ENTITIES DocBook XML Character Entities V${ver}//EN
+				ent/iso-grk4.ent	ISO 8879:1986//ENTITIES Alternative Greek Symbols//EN
+				dbnotnx.mod	-//OASIS//ENTITIES DocBook XML Notations V${ver}//EN
+				ent/iso-dia.ent	ISO 8879:1986//ENTITIES Diacritical Marks//EN
+				ent/iso-grk2.ent	ISO 8879:1986//ENTITIES Monotoniko Greek//EN
+				dbgenent.mod	-//OASIS//ENTITIES DocBook XML Additional General Entities V${ver}//EN
+				dbhierx.mod	-//OASIS//ELEMENTS DocBook XML Document Hierarchy V${vers}//EN
+				ent/iso-amsa.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Arrow Relations//EN
+				ent/iso-amso.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Ordinary//EN
+				ent/iso-cyr1.ent	ISO 8879:1986//ENTITIES Russian Cyrillic//EN
+				ent/iso-tech.ent	ISO 8879:1986//ENTITIES General Technical//EN
+				ent/iso-amsc.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Delimiters//EN
+				soextblx.dtd	-//OASIS//DTD XML Exchange Table Model 19990315//EN
+				calstblx.dtd	-//OASIS//DTD DocBook XML CALS Table Model V${ver}//EN
+				ent/iso-lat1.ent	ISO 8879:1986//ENTITIES Added Latin 1//EN
+				ent/iso-amsb.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Binary Operators//EN
+				ent/iso-lat2.ent	ISO 8879:1986//ENTITIES Added Latin 2//EN
+				ent/iso-amsr.ent	ISO 8879:1986//ENTITIES Added Math Symbols: Relations//EN
+				ent/iso-cyr2.ent	ISO 8879:1986//ENTITIES Non-Russian Cyrillic//EN
 			ENDENT
 
-						for f in System URI; do
-							/usr/bin/xmlcatalog --add rewrite$f "http://www.oasis-open.org/docbook/xml/$vers" \
-							/usr/share/sgml/docbook/$fmt-dtd-$ver /usr/share/sgml/docbook/xmlcatalog > /dev/null 2>/dev/null
-						done
-					fi
-				done
+					for f in System URI; do
+						/usr/bin/xmlcatalog --noout --add rewrite${f} "http://www.oasis-open.org/docbook/xml/${ver}" \
+							/usr/share/sgml/docbook/${fmt}-dtd-${ver} /etc/sgml/docbook/xmlcatalog > /dev/null 2>/dev/null
+					done
+				fi
+			done
 
-				sed -ni '
-					/xml-docbook/ H
-					/xml-docbook/ !p
-						$ {
-							g
-							s/^\n//p
-						}
-					' /etc/sgml/catalog
+			sed -ni '
+				/xml-docbook/ H
+				/xml-docbook/ !p
+					$ {
+						g
+						s/^\n//p
+					}
+				' /etc/sgml/catalog
 
 			# Finally, make sure everything in /etc/sgml is readable!
 			chmod a+r /etc/sgml/*
