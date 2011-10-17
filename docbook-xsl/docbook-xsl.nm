@@ -5,7 +5,7 @@
 
 name       = docbook-xsl
 version    = 1.76.1
-release    = 1
+release    = 2
 arch       = noarch
 
 groups     = Applications/Text
@@ -47,6 +47,7 @@ end
 packages
 	package %{name}
 		requires
+			libxslt
 			docbook-dtds
 			sgml-common
 		end
