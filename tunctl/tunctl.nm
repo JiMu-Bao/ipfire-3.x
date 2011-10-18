@@ -5,7 +5,7 @@
 
 name       = tunctl
 version    = 1.5
-release    = 1
+release    = 2
 
 groups     = Networking/Tools
 url        = http://tunctl.sourceforge.net/
@@ -22,19 +22,15 @@ end
 
 source_dl  = http://sourceforge.net/projects/tunctl/files/tunctl/%{version}/%{sources}/download
 
-# XXX needs docbook for man page
-
 build
+	requires
+		docbook-utils
+	end
+
 	prepare_cmds
 		sed -e "s/^CFLAGS.*/CFLAGS = %{CFLAGS}/" -i Makefile
 	end
 
-	make_build_targets = tunctl CC=gcc
-
-	install
-		mkdir -pv %{BUILDROOT}/usr/sbin
-		install -m 755 tunctl %{BUILDROOT}/usr/sbin
-	end
 end
 
 packages
