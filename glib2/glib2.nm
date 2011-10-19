@@ -5,8 +5,8 @@
 
 name       = glib2
 ver_major  = 2.30
-version    = %{ver_major}.0
-release    = 2
+version    = %{ver_major}.1
+release    = 1
 thisapp    = glib-%{version}
 
 groups     = System/Libraries
@@ -22,7 +22,7 @@ description
 	object system.
 end
 
-source_dl  = http://ftp.gnome.org/pub/gnome/sources/glib/%{version_major}/
+source_dl  = http://ftp.gnome.org/pub/gnome/sources/glib/%{ver_major}/
 sources    = %{thisapp}.tar.xz
 
 build
