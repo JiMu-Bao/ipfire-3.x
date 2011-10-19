@@ -5,7 +5,7 @@
 
 name       = openssh
 version    = 5.8p1
-release    = 8
+release    = 9
 
 maintainer =
 groups     = Application/Internet
@@ -127,17 +127,31 @@ packages
 			/usr/share/man/cat8/sftp-server.8*
 			/var/lib/sshd
 		end
-	
-		script postin
+
+		prerequires = shadow-utils systemd-units
+
+		script prein
 			# Create unprivileged user and group.
 			getent group sshd || groupadd -r sshd
 			getent passwd sshd || useradd -r -g sshd \
 				-d /var/lib/sshd -s /sbin/nologin sshd
-	
-			systemctl --system daemon-reload
-			systemctl enable openssh.service
 		end
-	
-		#script postup = postin
+
+		script postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/bin/systemctl --no-reload disable openssh.service >/dev/null 2>&1 || :
+			/bin/systemctl stop openssh.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
 	end
 end
