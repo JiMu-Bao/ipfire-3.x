@@ -5,11 +5,11 @@
 
 name       = xz
 version    = 5.0.3
-release    = 2
+release    = 3
 
-groups     = Build Applications/Compression
+groups     = Applications/Compression
 url        = http://tukaani.org/xz/
-license    = GPLv2+
+license    = LGPLv2+
 summary    = LZMA Utils.
 
 description
@@ -25,6 +25,8 @@ sources    = %{thisapp}.tar.xz
 
 packages
 	package %{name}
+		groups += Build
+	end
 
 	package %{name}-libs
 		template LIBS
@@ -32,5 +34,22 @@ packages
 
 	package %{name}-devel
 		template DEVEL
+	end
+
+	package xz-lzma-compat
+		summary = Older LZMA format compatibility binaries.
+		description
+			The xz-lzma-compat package contains compatibility
+			links for older commands that deal with the older
+			LZMA format.
+		end
+		license = GPLv2+ and LGPLv2+
+
+		requires = %{name}=%{thisver}
+
+		files
+			/usr/bin/*lz*
+			/usr/share/man/man1/*lz*
+		end
 	end
 end

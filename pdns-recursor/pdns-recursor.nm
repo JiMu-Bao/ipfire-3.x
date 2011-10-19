@@ -5,7 +5,7 @@
 
 name       = pdns-recursor
 version    = 3.3
-release    = 4
+release    = 5
 
 groups     = Networking/DNS
 url        = http://powerdns.com/
@@ -50,9 +50,38 @@ build
 	end
 end
 
-# XXX Need to create user and group "pdns-recursor" at installation
-# useradd -r -g pdns-recursor pdns-recursor -d /var/lib/pdns-recursor -s /sbin/nologin
-
 packages
 	package %{name}
+		configfiles
+			/etc/%{name}/recursor.conf
+		end
+
+		prerequires = shadow-utils systemd-units
+
+		script prein
+			getent group pdns-recursor >/dev/null || groupadd -r pdns-recursor
+			getent passwd pdns-recursor >/dev/null || \
+				useradd -r -g pdns-recursor -d /var/lib/pdns-recursor -s /sbin/nologin \
+					pdns-recursor
+		end
+
+		script postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl --no-reload enable pdns-recursor.service >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/bin/systemctl --no-reload disable pdns-recursor.service >/dev/null 2>&1 || :
+			/bin/systemctl stop pdns-recursor.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl try-restart pdns-recursor.service >/dev/null 2>&1 || :
+		end
+	end
 end
