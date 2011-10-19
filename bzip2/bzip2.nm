@@ -5,9 +5,9 @@
 
 name       = bzip2
 version    = 1.0.6
-release    = 1
+release    = 2
 
-groups     = Applications/Compression Build
+groups     = Applications/Compression
 url        = http://www.bzip.org/
 license    = GPLv2+
 summary    = Bzip2 is a data compressor.
@@ -54,6 +54,7 @@ end
 
 packages
 	package %{name}
+		groups += Build
 	end
 	
 	package %{name}-devel
