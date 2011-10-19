@@ -5,7 +5,7 @@
 
 name       = module-init-tools
 version    = 3.16
-release    = 1
+release    = 2
 
 groups     = System/Base
 url        = http://ftp.kernel.org/pub/linux/utils/kernel/module-init-tools/
@@ -20,18 +20,15 @@ description
 	unloaded modules.
 end
 
-source_dl  =
+source_dl  = http://ftp.kernel.org/pub/linux/utils/kernel/module-init-tools/
 
 build
 	requires
+		docbook-utils
 		zlib-devel
 	end
 
 	CFLAGS += -DCONFIG_NO_BACKWARDS_COMPAT=1
-
-	# Set docbooktoman=true, because this package is not available
-	# in IPFire and prevents us from errors
-	export DOCBOOKTOMAN=true
 
 	configure_options += \
 		--bindir=/bin \
