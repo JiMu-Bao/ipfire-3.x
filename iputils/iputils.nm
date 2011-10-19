@@ -5,7 +5,7 @@
 
 name       = iputils
 version    = s20071127
-release    = 1
+release    = 2
 
 groups     = Base Networking/Tools
 url        = http://www.skbuff.net/iputils
@@ -13,13 +13,13 @@ license    = BSD
 summary    = Network monitoring tools including ping.
 
 description
-	The iputils package contains basic utilities for monitoring a network, \
-	including ping. The ping command sends a series of ICMP protocol \
-	ECHO_REQUEST packets to a specified network host to discover whether \
+	The iputils package contains basic utilities for monitoring a network,
+	including ping. The ping command sends a series of ICMP protocol
+	ECHO_REQUEST packets to a specified network host to discover whether
 	the target machine is alive and receiving network traffic.
 end
 
-source_dl  =
+source_dl  = http://www.skbuff.net/iputils/
 sources    = %{thisapp}.tar.bz2
 
 patches    = %{thisapp}-addrcache.patch
@@ -37,12 +37,19 @@ patches   += %{thisapp}-output.patch
 
 build
 	requires
+		docbook-utils
 		libcap-devel
 		libidn-devel
 	end
 
+	# Generate manpages with docbook.
+	build_cmds
+		make -C doc man
+	end
+
 	install
 		mkdir -pv %{BUILDROOT}/{bin,sbin} %{BUILDROOT}/usr/sbin
+		mkdir -pv %{BUILDROOT}/usr/share/man/man8
 
 		install -cp clockdiff	%{BUILDROOT}/usr/sbin/
 		install -cp arping	%{BUILDROOT}/sbin/
@@ -52,10 +59,19 @@ build
 		install -cp tracepath	%{BUILDROOT}/bin/
 		install -cp tracepath6	%{BUILDROOT}/bin/
 
+		install -cp doc/clockdiff.8 %{BUILDROOT}/usr/share/man/man8/
+		install	-cp doc/arping.8 %{BUILDROOT}/usr/share/man/man8/
+		install	-cp doc/ping.8 %{BUILDROOT}/usr/share/man/man8/
+		install	-cp doc/rdisc.8 %{BUILDROOT}/usr/share/man/man8/
+		install	-cp doc/tracepath.8 %{BUILDROOT}/usr/share/man/man8/
+
 		ln -svf ../../sbin/arping	%{BUILDROOT}/usr/sbin/arping
 		ln -svf ../../bin/ping6		%{BUILDROOT}/usr/sbin/
 		ln -svf ../../bin/tracepath	%{BUILDROOT}/usr/sbin/
 		ln -svf ../../bin/tracepath6	%{BUILDROOT}/usr/sbin/
+
+		ln -s ping.8 %{BUILDROOT}/usr/share/man/man8/ping6.8
+		ln -s tracepath.8 %{BUILDROOT}/usr/share/man/man8/tracepath6.8
 
 		setcap cap_net_admin=ep %{BUILDROOT}/bin/ping
 		setcap cap_net_admin=ep %{BUILDROOT}/bin/ping6

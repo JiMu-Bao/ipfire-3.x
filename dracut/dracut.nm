@@ -5,7 +5,7 @@
 
 name       = dracut
 version    = 010
-release    = 3
+release    = 4
 arch       = noarch
 
 groups     = System/Boot
@@ -21,12 +21,9 @@ source_dl  =
 sources    = %{thisapp}.tar.bz2
 
 build
-	prepare_cmds
-		# Remove all man pages.
-		# XXX requires docbook
-		cd %{DIR_APP} && sed -i Makefile \
-			-e "s/^all:.*/all: \$%{targets}/" \
-			-e "/.*man.*/d"
+	requires
+		docbook-utils
+		docbook-xsl
 	end
 
 	install
