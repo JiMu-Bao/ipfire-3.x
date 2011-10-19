@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 3.0.4
-release    = 4
+release    = 5
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -22,20 +22,37 @@ description
 end
 
 # Version helper variables.
-localversion = -%{release}.%{DISTRO_DISTTAG}.%{DISTRO_ARCH}
-fullver      = %{version}%{localversion}
+localversion = %{release}.%{DISTRO_DISTTAG}.%{DISTRO_ARCH}
+fullver      = %{version}-%{localversion}
 
 sources      = %{thisapp}.tar.gz
 
 build
 	requires
+		binutils-devel
+		elfutils-devel
 		module-init-tools
 		ncurses-devel
+		newt-devel
+		iputils
 		perl
+		python-devel
+		xz-lzma-compat
+	end
+
+	# A list of kernels to build.
+	kernels = default
+
+	if "%{DISTRO_ARCH}" == "i686"
+		# Build a PAE-enabled kernel for the i686 architecture.
+		kernels += PAE
+
+		kernel_arch  = x86
+		kernel_image = arch/%{kernel_arch}/boot/bzImage
+		kernel_target = bzImage
 	end
 
 	prepare_cmds
-		echo "%{localversion}" > localversion-%{DISTRO_SNAME}
 		rm -f %{DIR_APP}/localversion-grsec
 
 		sed -e "s/^HOSTCFLAGS.*=.*/& -fPIC/g" -i Makefile
@@ -43,32 +60,137 @@ build
 		cp -vf %{DIR_SOURCE}/%{DISTRO_SNAME}_logo.ppm \
 			drivers/video/logo/logo_linux_clut224.ppm
 
-		make mrproper
+		# Get rid of unwanted files resulting from patch fuzz.
+		find . \( -name "*.orig" -o -name "*~" \) -exec rm -f {} \; >/dev/null
 
-		# Install configuration file
-		cp -f %{DIR_SOURCE}/config %{DIR_APP}/.config
+		# Remove unnecessary SCM files.
+		find . -name .gitignore -exec rm -f {} \; >/dev/null
+
+		mkdir -pv configs
+		configure_kernel() {
+			local flavour=${1}
+			local suffix
+			if [ "${flavour}" != "default" ]; then
+				suffix="-${flavour}"
+			fi
+
+			# This is the place, where the configuration files
+			# should be dynamically generated.
+			# For now, we just copy pregenerated ones.
+			cp %{DIR_SOURCE}/config.%{arch}${suffix} .config
+
+			make ARCH=%{kernel_arch} oldnoconfig
+			mv .config configs/config.${flavour}
+		}
+
+		# Generate configuration files for all kernels we are going to
+		# build.
+		for kernel in %{kernels}; do
+			configure_kernel ${kernel}
+		done
 	end
 
 	build
-		yes "" | make oldconfig
+		build_kernel() {
+			local flavour=${1}
+			local suffix
+			local localversion="%{localversion}"
+			local fullversion="%{fullver}"
+			if [ "${flavour}" != "default" ]; then
+				suffix="-${flavour}"
+				localversion="${localversion}.${flavour}"
+				fullversion="${fullversion}.${flavour}"
+			fi
 
-		# Check headers
-		make ARCH=x86 headers_check
+			# Clean up the source tree.
+			make mrproper
 
-		make CC="gcc -nopie" %{PARALLELISMFLAGS}
+			# Install configuration file.
+			cp configs/config.${flavour} .config
+
+			# Label the build.
+			sed -i Makefile \
+				-e "s/^EXTRAVERSION = .*/EXTRAVERSION = -${localversion}/g"
+
+			# Run the build.
+			make ARCH=%{kernel_arch} CC="gcc -fno-PIE" %{kernel_target} modules %{PARALLELISMFLAGS}
+
+			# Install the results.
+			mkdir -pv %{BUILDROOT}/boot %{BUILDROOT}/lib/modules/${fullversion}
+			install -m 755 %{kernel_image} %{BUILDROOT}/boot/vmlinuz-${fullversion}
+			install -m 644 .config %{BUILDROOT}/boot/config-${fullversion}
+			install -m 644 System.map %{BUILDROOT}/boot/System.map-${fullversion}
+
+			# Create empty initramfs (20M).
+			dd if=/dev/zero of=%{BUILDROOT}/boot/initramfs-${fullversion}.img bs=1M count=20
+
+			# Install modules.
+			make ARCH=%{kernel_arch} INSTALL_MOD_PATH=%{BUILDROOT} mod-fw= \
+				KERNELRELEASE=${fullversion} modules_install
+			#make ARCH=%{kernel_arch} INSTALL_MOD_PATH=%{BUILDROOT} \
+			#	KERNELRELEASE=${fullversion} vdso_install
+
+			# Create an empty settings file for dracut
+			mkdir -pv %{BUILDROOT}/etc/ld.so.conf.d
+			echo "# Placeholder file, no vDSO hwcap entries used in this kernel." \
+				> %{BUILDROOT}/etc/ld.so.conf.d/kernel-${fullversion}.conf
+
+			# And now the scary looking part.
+			#
+			# Recreate source and build links.
+			rm -vf %{BUILDROOT}/lib/modules/${fullversion}/{build,source}
+			mkdir -pv %{BUILDROOT}/lib/modules/${fullversion}/build
+			ln -svf build %{BUILDROOT}/lib/modules/${fullversion}/source
+
+			# Create dirs for extra modules.
+			mkdir -pv %{BUILDROOT}/lib/modules/${fullversion}/extra
+
+			cp -v --parents $(find -type f -name "Makefile*" -o -name "Kconfig*") \
+				%{BUILDROOT}/lib/modules/${fullversion}/build
+			cp -v Module.symvers System.map \
+				%{BUILDROOT}/lib/modules/${fullversion}/build
+			rm -vrf %{BUILDROOT}/lib/modules/${fullversion}/build/{Documentation,scripts,include}
+
+			cp -v .config %{BUILDROOT}/lib/modules/${fullversion}/build
+			cp -va scripts %{BUILDROOT}/lib/modules/${fullversion}/build
+			find %{BUILDROOT}/lib/modules/${fullversion}/build/scripts -name "*.o" \
+				-exec rm -vf {} \;
+
+			cp -va --parents arch/%{kernel_arch}/include \
+				%{BUILDROOT}/lib/modules/${fullversion}/build
+			cp -va include %{BUILDROOT}/lib/modules/${fullversion}/build/include
+
+			# Make sure we can build external modules.
+			touch -r %{BUILDROOT}/lib/modules/${fullversion}/build/Makefile \
+				%{BUILDROOT}/lib/modules/${fullversion}/build/include/linux/version.h
+			touch -r %{BUILDROOT}/lib/modules/${fullversion}/build/.config \
+				%{BUILDROOT}/lib/modules/${fullversion}/build/autoconf.h
+			cp -v %{BUILDROOT}/lib/modules/${fullversion}/build/.config \
+				%{BUILDROOT}/lib/modules/${fullversion}/build/include/config/auto.conf
+
+			find %{BUILDROOT}/lib/modules/${fullversion} -name "*.ko" -type f | \
+				xargs chmod u+x
+
+			for i in alias alias.bin builtin.bin ccwmap dep dep.bin ieee1394map inputmap isapnpmap ofmap pcimap seriomap symbols symbols.bin usbmap; do
+				rm -vf %{BUILDROOT}/lib/modules/${fullversion}/modules.${i}
+			done
+
+			# Move all development files to /usr/src.
+			mkdir -pv %{BUILDROOT}/usr/src/kernels
+			mv -v %{BUILDROOT}/lib/modules/${fullversion}/build \
+				%{BUILDROOT}/usr/src/kernels/${fullversion}
+			ln -svf ../../../usr/src/kernels/${fullversion} \
+				%{BUILDROOT}/lib/modules/${fullversion}/build
+
+			find %{BUILDROOT}/usr/src/kernels -name ".*.cmd" -exec rm -f {} \;
+		}
+
+		for kernel in %{kernels}; do
+			build_kernel ${kernel}
+		done
 	end
 
 	install
-		make modules_install INSTALL_MOD_PATH=%{BUILDROOT}
-
-		mkdir -pv %{BUILDROOT}/boot
-		cp -v arch/x86/boot/bzImage %{BUILDROOT}/boot/vmlinuz-%{fullver}
-		cp -v System.map %{BUILDROOT}/boot/System.map-%{fullver}
-
-		mkdir -pv %{BUILDROOT}/lib/modules/%{fullver}/extra
-
-		rm -vf %{BUILDROOT}/lib/modules/%{fullver}/{build,source}
-
 		# Install the header files
 		make ARCH=x86 INSTALL_HDR_PATH=dest headers_install
 		mkdir -pv %{BUILDROOT}/usr/include
@@ -81,30 +203,86 @@ build
 			%{BUILDROOT}/usr/include/asm*/io.h \
 			%{BUILDROOT}/usr/include/asm*/irq.h
 
-		# Create an empty settings file for dracut
-		mkdir -vp %{BUILDROOT}/etc/ld.so.conf.d/
-		echo "# Placeholder file, no vDSO hwcap entries used in this kernel." \
-		> %{BUILDROOT}/etc/ld.so.conf.d/kernel-%{fullver}.conf
-
 		# Remove all firmware files which are distributed by linux-firmware
 		rm -rfv %{BUILDROOT}/lib/firmware
+
+		# Install tools.
+		# XXX cannot install this because of #263.
+		#make -C tools/perf DESTDIR=%{BUILDROOT} \
+		#	HAVE_CPLUS_DEMANGLE=1 prefix=/usr install install-man
 	end
 end
 
 packages
-	package kernel
+	template KERNEL
+		kernel_release = %{fullver}
+
+		summary = The Linux kernel %{kernel_release}.
+
+		prerequires = module-init-tools
+		provides = kernel
 		requires
 			dracut
 			linux-firmware
 		end
 
-		script posttransin
-			dracut /boot/initramfs-%{fullver}.img %{fullver}
+		files
+			/boot/System.map-%{kernel_release}
+			/boot/vmlinuz-%{kernel_release}
+			/boot/initramfs-%{kernel_release}.img
+			/etc/ld.so.conf.d/kernel-%{kernel_release}.conf
+			/lib/modules/%{kernel_release}
 		end
 
-		script preun
-			rm -f /boot/initramfs-%{fullver}.img
+		script postin
+			depmod -a %{kernel_release} || :
 		end
+
+		script posttransin
+			dracut --force /boot/initramfs-%{kernel_release}.img %{kernel_release}
+		end
+	end
+
+	template KERNELDEVEL
+		kernel_release = %{fullver}
+
+		summary = Development files of kernel-%{kernel_release}.
+		description
+			%{summary}
+
+			Install this package in order to compile modules for
+			kernel release %{kernel_release}.
+		end
+
+		filter_requires
+			perl>=[0-9]\:.*
+		end
+
+		files
+			/lib/modules/%{kernel_release}/build
+			/lib/modules/%{kernel_release}/source
+			/usr/src/kernels/%{kernel_release}
+		end
+	end
+
+	package kernel
+		template KERNEL
+	end
+
+	package kernel-devel
+		template KERNELDEVEL
+	end
+
+	package kernel-PAE
+		template KERNEL
+
+		kernel_release = %{fullver}.PAE
+	end
+
+	package kernel-PAE-devel
+		template KERNELDEVEL
+
+		kernel_release = %{fullver}.PAE
 	end
 	
 	package kernel-headers
@@ -115,5 +293,14 @@ packages
 			/usr/include
 		end
 	end
-	
+
+	#package kernel-tools
+	#	summary = Assortment of tools for the Linux kernel.
+	#	description = %{summary}
+	#
+	#	files
+	#		/usr/bin
+	#		/usr/lib
+	#	end
+	#end
 end
