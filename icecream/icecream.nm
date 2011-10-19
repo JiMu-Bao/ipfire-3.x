@@ -3,12 +3,11 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-# XXX man pages are missing
 # XXX initscripts for daemons are missing
 
 name       = icecream
 version    = 0.9.6
-release    = 3
+release    = 4
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -16,19 +15,20 @@ url        = http://en.opensuse.org/Icecream
 license    = GPLv2+
 summary    = Distributed compiler.
 
-
 description
-	Icecream is a distributed compile system. It allows parallel compiling by \
-	distributing the compile jobs to several nodes of a compile network running the \
-	icecc daemon. The icecc scheduler routes the jobs and provides status and \
-	statistics information to the icecc monitor. Each compile node can accept one \
-	or more compile jobs depending on the number of processors and the settings of \
-	the daemon. Link jobs and other jobs which cannot be distributed are executed \
+	Icecream is a distributed compile system. It allows parallel compiling by
+	distributing the compile jobs to several nodes of a compile network running the
+	icecc daemon. The icecc scheduler routes the jobs and provides status and
+	statistics information to the icecc monitor. Each compile node can accept one
+	or more compile jobs depending on the number of processors and the settings of
+	the daemon. Link jobs and other jobs which cannot be distributed are executed
 	locally on the node where the compilation is started.
 end
 
-source_dl  =
-sources    = icecc-%{version}.tar.bz2
+source_dl  = ftp://ftp.suse.com/pub/projects/icecream/
+sources    = \
+	icecc-%{version}.tar.bz2 \
+	icecream-manpages.tar.bz2
 
 build
 	requires
@@ -40,6 +40,13 @@ build
 	configure_options += \
 		--disable-static \
 		--enable-shared
+
+	prepare
+		cd %{DIR_SRC} && %{MACRO_EXTRACT} %{DIR_DL}/icecc-%{version}.tar.bz2
+		cd %{DIR_APP} && %{MACRO_EXTRACT} %{DIR_DL}/icecream-manpages.tar.bz2
+
+		%{MACRO_PATCHES}
+	end
 
 	install_cmds
 		ICECREAM_TARGET_PLATFORM=$(echo %{DISTRO_MACHINE} | sed -e "s/-gnu//g")
@@ -57,12 +64,28 @@ build
 
 		# create default working dir
 		mkdir -pv %{BUILDROOT}/var/cache/icecream
+
+		# install manpages
+		mkdir -pv %{BUILDROOT}/usr/share/man/man{1,7,8}
+		mv mans/scheduler.1 mans/icecc-scheduler.1
+		for i in mans/*.1 mans/*.7; do
+			install -m 644 $i %{BUILDROOT}/usr/share/man/man${i##*.}
+		done
+
+		# Remove unwanted symlinks.
+		rm -rvf %{BUILDROOT}/usr/bin/c++
+		rm -rvf %{BUILDROOT}/usr/bin/cc
+		rm -rvf %{BUILDROOT}/usr/bin/g++
+		rm -rvf %{BUILDROOT}/usr/bin/gcc
 	end
 end
 
 packages
 	package %{name}
-		requires = gcc-c++ /usr/bin/ldd
+		requires
+			gcc-c++
+			/usr/bin/ldd
+		end
 	end
 	
 	package %{name}-devel
