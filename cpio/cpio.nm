@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = cpio
-version    = 2.10
+version    = 2.11
 release    = 1
 
 groups     = System/Packaging
@@ -36,5 +36,4 @@ end
 
 packages
 	package %{name}
-	end
 end
