@@ -6,8 +6,8 @@
 # XXX initscripts for daemons are missing
 
 name       = icecream
-version    = 0.9.6
-release    = 4
+version    = 0.9.7
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
