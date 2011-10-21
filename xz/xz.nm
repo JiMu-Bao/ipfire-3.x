@@ -5,7 +5,7 @@
 
 name       = xz
 version    = 5.0.3
-release    = 3
+release    = 4
 
 groups     = Applications/Compression
 url        = http://tukaani.org/xz/
@@ -44,8 +44,10 @@ packages
 			LZMA format.
 		end
 		license = GPLv2+ and LGPLv2+
+		groups += Build
 
 		requires = %{name}=%{thisver}
+		provides = lzma
 
 		files
 			/usr/bin/*lz*
