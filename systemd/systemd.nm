@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 36
-release    = 4
+release    = 5
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -37,6 +37,7 @@ build
 		libtool
 		libudev-devel>=172
 		pam-devel
+		vala
 	end
 
 	configure_options += \
