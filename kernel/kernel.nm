@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 3.0.4
-release    = 5
+release    = 6
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -28,15 +28,21 @@ fullver      = %{version}-%{localversion}
 sources      = %{thisapp}.tar.gz
 
 build
+	# icecream cannot be used to compile the kernel.
+	# Because the PaX patch does use GCC plugins to harden the kernel which
+	# are not available on the remote compilers, we need to disable it here.
+	export ICECC=no
+
 	requires
 		binutils-devel
 		elfutils-devel
 		module-init-tools
 		ncurses-devel
+		net-tools
 		newt-devel
-		iputils
 		perl
 		python-devel
+		slang-devel
 		xz-lzma-compat
 	end
 
@@ -65,6 +71,9 @@ build
 
 		# Remove unnecessary SCM files.
 		find . -name .gitignore -exec rm -f {} \; >/dev/null
+
+		# This prevents scripts/setlocalversion from mucking with our version numbers.
+		touch .scmversion
 
 		mkdir -pv configs
 		configure_kernel() {
@@ -102,17 +111,18 @@ build
 				fullversion="${fullversion}.${flavour}"
 			fi
 
+			# Label the build.
+			sed -i Makefile \
+				-e "s/^EXTRAVERSION.*/EXTRAVERSION = -${localversion}/"
+
 			# Clean up the source tree.
 			make mrproper
 
 			# Install configuration file.
 			cp configs/config.${flavour} .config
 
-			# Label the build.
-			sed -i Makefile \
-				-e "s/^EXTRAVERSION = .*/EXTRAVERSION = -${localversion}/g"
-
 			# Run the build.
+			make ARCH=%{kernel_arch} oldnoconfig >/dev/null
 			make ARCH=%{kernel_arch} CC="gcc -fno-PIE" %{kernel_target} modules %{PARALLELISMFLAGS}
 
 			# Install the results.
@@ -207,9 +217,10 @@ build
 		rm -rfv %{BUILDROOT}/lib/firmware
 
 		# Install tools.
-		# XXX cannot install this because of #263.
-		#make -C tools/perf DESTDIR=%{BUILDROOT} \
-		#	HAVE_CPLUS_DEMANGLE=1 prefix=/usr install install-man
+		# XXX Man pages cannot be created because they need asciidoc.
+		make -C tools/perf DESTDIR=%{BUILDROOT} \
+			HAVE_CPLUS_DEMANGLE=1 prefix=/usr perfexecdir=lib/perf-core \
+			install #install-man
 	end
 end
 
@@ -284,7 +295,7 @@ packages
 
 		kernel_release = %{fullver}.PAE
 	end
-	
+
 	package kernel-headers
 		summary = Header files of the kernel release %{fullver}.
 		desciption = %{summary}
@@ -294,13 +305,20 @@ packages
 		end
 	end
 
-	#package kernel-tools
-	#	summary = Assortment of tools for the Linux kernel.
-	#	description = %{summary}
-	#
-	#	files
-	#		/usr/bin
-	#		/usr/lib
-	#	end
-	#end
+	package kernel-tools
+		summary = Assortment of tools for the Linux kernel.
+		description = %{summary}
+
+		filter_requires
+			perl>=[0-9]\:.*
+		end
+
+		files
+			/
+			!/boot
+			!/lib/modules
+			!/usr/include
+			!/usr/src
+		end
+	end
 end
