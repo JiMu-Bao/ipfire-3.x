@@ -5,7 +5,7 @@
 
 name       = sysvinit
 version    = 2.86
-release    = 1
+release    = 2
 
 groups     = System/Base
 url        = https://alioth.debian.org/projects/pkg-sysvinit/
@@ -40,5 +40,6 @@ end
 
 packages
 	package %{name}
+		groups += Base
 	end
 end
