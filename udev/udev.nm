@@ -5,9 +5,9 @@
 
 name       = udev
 version    = 172
-release    = 3
+release    = 4
 
-groups     = Base System/Base
+groups     = System/Base
 url        = ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug/
 license    = GPLv2+
 summary    = A userspace implementation of devfs.
@@ -62,6 +62,8 @@ end
 
 packages
 	package %{name}
+		groups += Base
+	end
 
 	package lib%{name}
 		template LIBS
