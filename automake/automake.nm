@@ -5,7 +5,7 @@
 
 name       = automake
 version    = 1.11.1
-release    = 1
+release    = 2
 arch       = noarch
 
 groups     = Development/Tools
@@ -31,5 +31,9 @@ end
 packages
 	package %{name}
 		requires = autoconf
+
+		filter_requires
+			perl>=[0-9]\:.*
+		end
 	end
 end
