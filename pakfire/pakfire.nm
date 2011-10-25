@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = pakfire
-version    = 0.9.16
-release    = 2
+version    = 0.9.17
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Packaging
