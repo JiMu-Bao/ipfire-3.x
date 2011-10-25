@@ -5,7 +5,7 @@
 
 name       = autoconf
 version    = 2.68
-release    = 1
+release    = 2
 arch       = noarch
 
 groups     = Development/Tools
@@ -33,5 +33,9 @@ end
 packages
 	package %{name}
 		requires = m4
+
+		filter_requires
+			perl>=[0-9]\:.*
+		end
 	end
 end
