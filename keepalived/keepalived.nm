@@ -1,0 +1,75 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = keepalived
+version    = 1.2.2
+release    = 1
+
+groups     = Applications/System
+url        = http://www.keepalived.org/
+license    = GPLv2+
+summary    = High Availability monitor built upon LVS, VRRP and service pollers.
+
+description
+	The main goal of the keepalived project is to add a strong & robust keepalive
+	facility to the Linux Virtual Server project. This project is written in C with
+	multilayer TCP/IP stack checks. Keepalived implements a framework based on
+	three family checks : Layer3, Layer4 & Layer5/7. This framework gives the
+	daemon the ability to check the state of an LVS server pool. When one of the
+	servers of the LVS server pool is down, keepalived informs the linux kernel via
+	a setsockopt call to remove this server entry from the LVS topology. In
+	addition keepalived implements an independent VRRPv2 stack to handle director
+	failover. So in short keepalived is a userspace daemon for LVS cluster nodes
+	healthchecks and LVS directors failover.
+end
+
+source_dl  = http://www.keepalived.org/software/
+
+build
+	requires
+		libnl-devel
+		openssl-devel
+		popt-devel
+	end
+
+	configure_options += \
+		--sysconfdir=/etc
+
+#		--with-kernel-dir=$(ls -1d --sort t /lib/modules/*/build | head 1)
+
+	make_targets += STRIP=/bin/true
+
+	test
+		# A build could silently have LVS support disabled if the kernel includes can't
+		# be properly found, we need to avoid that.
+		if ! grep -q "IPVS_SUPPORT='_WITH_LVS_'" config.log; then
+			echo "ERROR: We do not want keeepalived lacking LVS support."
+			exit 1
+		fi
+	end
+
+	install_cmds
+		rm -rvf %{BUILDROOT}/etc/rc.d \
+			%{BUILDROOT}/etc/keepalived/samples
+	end
+end
+
+packages
+	package %{name}
+		postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		postun
+			/bin/systemctl --no-reload disabled keepalived.service >/dev/null 2>&1 || :
+			/bin/systemctl stop keepalived.service >/dev/null 2>&1 || :
+		end
+
+		postup
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl try-restart keepalived.service >/dev/null 2>&1 || :
+		end
+	end
+end
