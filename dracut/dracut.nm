@@ -5,7 +5,7 @@
 
 name       = dracut
 version    = 010
-release    = 4
+release    = 5
 arch       = noarch
 
 groups     = System/Boot
@@ -53,6 +53,7 @@ packages
 			libselinux
 			lvm2
 			mdadm
+			multipath-tools
 			sysvinit
 			udev
 			util-linux
@@ -70,7 +71,7 @@ packages
 		requires
 			bridge-utils
 			dhclient
-			iproute
+			iproute2
 			nfs-utils
 		end
 	
