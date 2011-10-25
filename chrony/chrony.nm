@@ -5,9 +5,9 @@
 
 name       = chrony
 version    = 1.26
-release    = 7
+release    = 8
 
-groups     = Base System/Daemons
+groups     = System/Daemons
 url        = http://chrony.tuxfamily.org
 license    = GPLv2
 summary    = An NTP client/server.
@@ -73,6 +73,8 @@ end
 
 packages
 	package %{name}
+		groups += Base
+
 		configfiles
 			/etc/chrony.conf
 			/etc/chrony.keys
