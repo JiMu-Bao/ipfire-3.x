@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = pcre
-version    = 8.13
+version    = 8.20
 release    = 1
 
 groups     = System/Libraries
@@ -30,6 +30,7 @@ build
 	end
 
 	configure_options += \
+		--disable-static \
 		--docdir=/usr/share/doc/pcre-%{version} \
 		--enable-utf8 \
 		--enable-pcregrep-libz \
