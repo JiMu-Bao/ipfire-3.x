@@ -5,7 +5,7 @@
 
 name       = xorg-x11-server
 version    = 1.8.2
-release    = 3
+release    = 4
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = X/Server
@@ -137,6 +137,10 @@ packages
 			pixman
 			udev
 			xkeyboard-config
+			xorg-x11-drv-evdev
+			xorg-x11-drv-keyboard
+			xorg-x11-drv-mouse
+			xorg-x11-drv-vesa
 			xorg-x11-fonts
 			xorg-x11-font-utils
 			xorg-x11-xkb-utils
