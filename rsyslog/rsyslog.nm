@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = rsyslog
-version    = 5.8.0
-release    = 3
+version    = 5.8.6
+release    = 1
 
 groups     = Base System/Daemons
 url        = http://www.rsyslog.com/
