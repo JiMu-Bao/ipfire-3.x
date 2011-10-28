@@ -5,7 +5,7 @@
 
 name       = squid
 major_ver  = 3.1
-version    = %{major_ver}.12
+version    = %{major_ver}.16
 release    = 2
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
@@ -36,6 +36,7 @@ build
 		pam-devel
 		libcap-devel
 		/usr/bin/smbclient
+		shadow-utils
 	end
 
 	CFLAGS += -Wno-error
@@ -45,6 +46,7 @@ build
 		--libexecdir=/usr/lib/squid \
 		--localstatedir=/var \
 		--sysconfdir=/etc/squid \
+		--with-logdir=/var/log/squid \
 		--enable-storeio="aufs,diskd,ufs" \
 		--enable-removal-policies="heap,lru" \
 		--enable-icmp \
@@ -82,24 +84,41 @@ build
 		--with-dl \
 		--with-large-files
 
+	prepare_cmds
+		%{create_user}
+	end
+
 	install_cmds
 		rm -vf %{BUILDROOT}/etc/squid/errors
-		rmdir  %{BUILDROOT}/var/logs
 
 		mkdir -pv %{BUILDROOT}/var/log/cache %{BUILDROOT}/var/log/squid
 		touch %{BUILDROOT}/var/log/squid/access.log
+		touch %{BUILDROOT}/var/log/squid/cache.log
 		mkdir -pv %{BUILDROOT}/var/cache/squid
 
-		# What is this?????
-		#groupadd -r squid && useradd -r -g squid -d %{BUILDROOT}/var/cache/squid -s /bin/false -p '*' squid
-		#chown -Rv squid:squid %{BUILDROOT}/var/log/squid %{BUILDROOT}/var/log/cache %{BUILDROOT}/var/cache/squid
-		#chmod 600 %{BUILDROOT}/var/cache/squid
-		#chown squid:squid %{BUILDROOT}/var/log/squid
+		echo "visible_hostname %{DISTRO_NAME}" >> %{BUILDROOT}/etc/squid/squid.conf
+		echo "cache_effective_user squid" >> %{BUILDROOT}/etc/squid/squid.conf
+		echo "cache_effective_group squid" >> %{BUILDROOT}/etc/squid/squid.conf
+
+		chown -Rv squid:squid %{BUILDROOT}/var/log/squid %{BUILDROOT}/var/log/cache %{BUILDROOT}/var/cache/squid
+		chmod 600 %{BUILDROOT}/var/cache/squid
 	end
+end
+
+create_user
+	getent group squid >/dev/null || /usr/sbin/groupadd -r squid
+	getent passwd squid >/dev/null || /usr/sbin/useradd -r -g squid \
+		-d /var/cache/squid -s /sbin/nologin squid
 end
 
 packages
 	package %{name}
+		prerequires = shadow-utils
+
+		script prein
+			%{create_user}
+		end
+	
 		requires = /usr/bin/smbclient
 
 		filter_requires = perl\(Authen::Smb\)
