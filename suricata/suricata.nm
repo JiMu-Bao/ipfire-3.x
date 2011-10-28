@@ -5,7 +5,7 @@
 
 name       = suricata
 version    = 1.1beta3
-release    = 2
+release    = 3
 
 groups     = Networking/IDS
 url        = http://www.openinfosecfoundation.org/
@@ -36,11 +36,14 @@ build
 	configure_options += \
 		--enable-gccprotect \
 		--enable-nfqueue \
+		--disable-gccmarch-native \
 		--disable-static
 
 	install_cmds
 		mkdir -pv %{BUILDROOT}/etc
-		cp -vf %{DIR_SOURCE}/%{name}.conf %{BUILDROOT}/etc/
+		mkdir -pv %{BUILDROOT}/etc/suricata
+		mkdir -pv %{BUILDROOT}/etc/suricata/rules
+		cp -vf %{DIR_SOURCE}/%{name}.conf %{BUILDROOT}/etc/suricata
 	end
 
 end
