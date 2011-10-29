@@ -6,7 +6,7 @@
 name       = squid
 major_ver  = 3.1
 version    = %{major_ver}.16
-release    = 2
+release    = 3
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
@@ -99,9 +99,14 @@ build
 		echo "visible_hostname %{DISTRO_NAME}" >> %{BUILDROOT}/etc/squid/squid.conf
 		echo "cache_effective_user squid" >> %{BUILDROOT}/etc/squid/squid.conf
 		echo "cache_effective_group squid" >> %{BUILDROOT}/etc/squid/squid.conf
-
+		
 		chown -Rv squid:squid %{BUILDROOT}/var/log/squid %{BUILDROOT}/var/log/cache %{BUILDROOT}/var/cache/squid
 		chmod 600 %{BUILDROOT}/var/cache/squid
+		mkdir -pv %{BUILDROOT}/etc/sysconfig
+		cp -vf %{DIR_SOURCE}/squid.sysconfig %{BUILDROOT}/etc/sysconfig/squid
+		cp -vf %{DIR_SOURCE}/cache_swap.sh %{BUILDROOT}/usr/lib/squid/
+		chmod 755 %{BUILDROOT}/usr/lib/squid/cache_swap.sh
+		chown -Rv squid:squid %{BUILDROOT}/usr/lib/squid/cache_swap.sh
 	end
 end
 
@@ -113,12 +118,35 @@ end
 
 packages
 	package %{name}
-		prerequires = shadow-utils
+		prerequires = shadow-utils systemd-units
+
+		configfiles
+			/etc/squid.conf
+			/etc/sysconfig/squid
+		end
 
 		script prein
 			%{create_user}
 		end
-	
+
+		script postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/bin/systemctl --no-reload disable squid.service >/dev/null 2>&1 || :
+			/bin/systemctl stop squid.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl try-restart squid.service >/dev/null 2>&1 || :
+		end
+
 		requires = /usr/bin/smbclient
 
 		filter_requires = perl\(Authen::Smb\)
