@@ -4,27 +4,28 @@
 ###############################################################################
 
 name       = openssh
-version    = 5.8p1
-release    = 9
+version    = 5.9p1
+release    = 1
 
-maintainer =
 groups     = Application/Internet
 url        = http://www.openssh.com/portable.html
 license    = MIT
 summary    = An open source implementation of SSH protocol versions 1 and 2.
 
 description
-	SSH (Secure SHell) is a program for logging into and executing \
-	commands on a remote machine. SSH is intended to replace rlogin and \
-	rsh, and to provide secure encrypted communications between two \
+	SSH (Secure SHell) is a program for logging into and executing
+	commands on a remote machine. SSH is intended to replace rlogin and
+	rsh, and to provide secure encrypted communications between two
 	untrusted hosts over an insecure network.
 end
 
-source_dl  =
+source_dl  = http://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/
 
 build
 	requires
 		audit-devel
+		autoconf
+		automake
 		libselinux-devel
 		nss-devel
 		openssl-devel>=1.0.0d-2
@@ -34,22 +35,35 @@ build
 
 	# Apply patches in a special order
 	patches
-		openssh-5.6p1-redhat.patch
+		openssh-5.9p1-coverity.patch
 		openssh-5.8p1-fingerprint.patch
-		openssh-5.8p1-authorized-keys-command.patch
-		openssh-5.8p1-selinux.patch
-		openssh-5.8p1-selinux-role.patch
-		openssh-5.8p1-mls.patch
-		openssh-5.6p1-keygen.patch
+		openssh-5.8p1-getaddrinfo.patch
+		openssh-5.8p1-packet.patch
+		openssh-5.9p1-2auth.patch
+		openssh-5.9p1-role.patch
+		openssh-5.9p1-mls.patch
+		openssh-5.9p1-sftp-chroot.patch
+		openssh-5.9p1-akc.patch
+		openssh-5.9p1-keygen.patch
 		openssh-5.2p1-allow-ip-opts.patch
-		openssh-5.8p1-randclean.patch
-		openssh-5.8p1-kuserok.patch
+		openssh-5.9p1-randclean.patch
+		openssh-5.8p1-keyperm.patch
+		openssh-5.8p2-remove-stale-control-socket.patch
+		openssh-5.9p1-ipv6man.patch
+		openssh-5.8p2-sigpipe.patch
+		openssh-5.8p2-askpass-ld.patch
 		openssh-5.5p1-x11.patch
 		openssh-5.6p1-exit-deadlock.patch
 		openssh-5.1p1-askpass-progress.patch
 		openssh-4.3p2-askpass-grab-info.patch
-		openssh-5.2p1-edns.patch
+		openssh-5.9p1-edns.patch
 		openssh-5.1p1-scp-manpage.patch
+		openssh-5.8p1-localdomain.patch
+		openssh-5.9p1-ipfire.patch
+		openssh-5.9p1-entropy.patch
+		openssh-5.9p1-vendor.patch
+		openssh-5.8p2-force_krb.patch
+		openssh-5.9p1-kuserok.patch
 	end
 
 	configure_options += \
@@ -60,8 +74,11 @@ build
 		--with-privsep-path=/var/lib/sshd \
 		--with-pam \
 		--with-selinux \
-		--with-nss \
 		--with-audit=linux
+
+	prepare_cmds
+		autoreconf
+	end
 
 	install_cmds
 		mkdir -pv %{BUILDROOT}/etc/ssh

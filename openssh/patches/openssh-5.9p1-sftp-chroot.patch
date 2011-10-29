@@ -1,0 +1,63 @@
+diff -up openssh-5.9p0/openbsd-compat/port-linux.c.sftp-chroot openssh-5.9p0/openbsd-compat/port-linux.c
+--- openssh-5.9p0/openbsd-compat/port-linux.c.sftp-chroot	2011-09-01 04:12:22.743024608 +0200
++++ openssh-5.9p0/openbsd-compat/port-linux.c	2011-09-01 04:12:23.069088065 +0200
+@@ -503,6 +503,23 @@ ssh_selinux_change_context(const char *n
+ 	xfree(newctx);
+ }
+ 
++void
++ssh_selinux_copy_context(void)
++{
++	char *ctx;
++
++	if (!ssh_selinux_enabled())
++		return;
++
++	if (getexeccon((security_context_t *)&ctx) < 0) {
++		logit("%s: getcon failed with %s", __func__, strerror (errno));
++		return;
++	}
++	if (setcon(ctx) < 0)
++		logit("%s: setcon failed with %s", __func__, strerror (errno));
++	xfree(ctx);
++}
++
+ #endif /* WITH_SELINUX */
+ 
+ #ifdef LINUX_OOM_ADJUST
+diff -up openssh-5.9p0/openbsd-compat/port-linux.h.sftp-chroot openssh-5.9p0/openbsd-compat/port-linux.h
+--- openssh-5.9p0/openbsd-compat/port-linux.h.sftp-chroot	2011-01-25 02:16:18.000000000 +0100
++++ openssh-5.9p0/openbsd-compat/port-linux.h	2011-09-01 04:12:23.163088777 +0200
+@@ -24,6 +24,7 @@ int ssh_selinux_enabled(void);
+ void ssh_selinux_setup_pty(char *, const char *);
+ void ssh_selinux_setup_exec_context(char *);
+ void ssh_selinux_change_context(const char *);
++void ssh_selinux_chopy_context(void);
+ void ssh_selinux_setfscreatecon(const char *);
+ #endif
+ 
+diff -up openssh-5.9p0/session.c.sftp-chroot openssh-5.9p0/session.c
+--- openssh-5.9p0/session.c.sftp-chroot	2011-09-01 04:12:19.698049195 +0200
++++ openssh-5.9p0/session.c	2011-09-01 04:40:03.598148719 +0200
+@@ -1519,6 +1519,9 @@ do_setusercontext(struct passwd *pw)
+ 			    pw->pw_uid);
+ 			chroot_path = percent_expand(tmp, "h", pw->pw_dir,
+ 			    "u", pw->pw_name, (char *)NULL);
++#ifdef WITH_SELINUX
++			ssh_selinux_change_context("chroot_user_t");
++#endif
+ 			safely_chroot(chroot_path, pw->pw_uid);
+ 			free(tmp);
+ 			free(chroot_path);
+@@ -1788,7 +1791,10 @@ do_child(Session *s, const char *command
+ 		optind = optreset = 1;
+ 		__progname = argv[0];
+ #ifdef WITH_SELINUX
+-		ssh_selinux_change_context("sftpd_t");
++		if (options.chroot_directory == NULL ||
++		    strcasecmp(options.chroot_directory, "none") == 0) {
++			ssh_selinux_copy_context();
++		}
+ #endif
+ 		exit(sftp_server_main(i, argv, s->pw));
+ 	}
