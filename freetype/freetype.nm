@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = freetype
-version    = 2.3.9
+version    = 2.4.7
 release    = 1
 
 groups     = System/Graphics
@@ -13,26 +13,20 @@ license    = FTL GPLv2+
 summary    = A free and portable font rendering engine.
 
 description
-	The FreeType engine is a free and portable font rendering \
-	engine, developed to provide advanced font support for a variety of \
-	platforms and environments. FreeType is a library which can open and \
-	manages font files as well as efficiently load, hint and render \
-	individual glyphs. FreeType is not a font server or a complete \
+	The FreeType engine is a free and portable font rendering
+	engine, developed to provide advanced font support for a variety of
+	platforms and environments. FreeType is a library which can open and
+	manages font files as well as efficiently load, hint and render
+	individual glyphs. FreeType is not a font server or a complete
 	text-rendering library.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+source_dl  = http://download.savannah.gnu.org/releases/freetype/
 
 build
 	requires
+		pkg-config
 		zlib-devel
-	end
-
-	prepare_cmds
-		sed -i -r -e 's:.*(#.*BYTE.*) .*:\1:' \
-			-e 's:.*(#.*SUBPIX.*) .*:\1:' \
-			include/freetype/config/ftoption.h
 	end
 end
 
