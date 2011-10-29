@@ -5,7 +5,7 @@
 
 name       = suricata
 version    = 1.1beta3
-release    = 3
+release    = 4
 
 groups     = Networking/IDS
 url        = http://www.openinfosecfoundation.org/
@@ -51,6 +51,31 @@ end
 
 packages
 	package %{name}
+
+		prerquires = systemd-units
+
+		configfiles
+			/etc/suricata/suricata.conf
+		end
+
+		script postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/bin/systemctl --no-reload disable suricata.service >/dev/null 2>&1 || :
+			/bin/systemctl stop suricata.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl try-restart suricata.service >/dev/null 2>&1 || :
+		end
+
 	end
 	
 	package %{name}-devel

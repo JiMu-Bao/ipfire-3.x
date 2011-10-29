@@ -1,0 +1,14 @@
+[Unit]
+Description=Open Source Next Generation Intrusion Detection and Prevention Engine
+After=syslog.target network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/suricata -c /etc/suricata/suricata.conf -q 0 -q 1 -D
+ExecStartPost=/sbin/iptables -I INPUT -j NFQUEUE -–queue-balance 0:1
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStopPre=/sbin/iptables -D INPUT -j NFQUEUE -–queue-balance 0:1
+ExecStop=/bin/kill $MAINPID
+
+[Install]
+WantedBy=multi-user.target
