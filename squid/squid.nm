@@ -6,7 +6,7 @@
 name       = squid
 major_ver  = 3.1
 version    = %{major_ver}.16
-release    = 3
+release    = 4
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
@@ -52,11 +52,11 @@ build
 		--enable-icmp \
 		--enable-delay-pools \
 		--disable-esi \
-		--disable-icap-client \
+		--enable-icap-client \
 		--enable-useragent-log \
 		--enable-referrer-log \
-		--disable-wccp \
-		--disable-wccpv2 \
+		--enable-wccp \
+		--enable-wccpv2 \
 		--enable-kill-parent-hack \
 		--enable-snmp \
 		--enable-arp-acl \
