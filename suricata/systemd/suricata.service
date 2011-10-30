@@ -7,8 +7,8 @@ Type=forking
 ExecStart=/usr/bin/suricata -c /etc/suricata/suricata.conf -q 0 -q 1 -D
 ExecStartPost=/sbin/iptables -I INPUT -j NFQUEUE -–queue-balance 0:1
 ExecReload=/bin/kill -HUP $MAINPID
-ExecStopPre=/sbin/iptables -D INPUT -j NFQUEUE -–queue-balance 0:1
-ExecStop=/bin/kill $MAINPID
+ExecStop=/sbin/iptables -D INPUT -j NFQUEUE -–queue-balance 0:1
+ExecStopPost=/bin/kill $MAINPID
 
 [Install]
 WantedBy=multi-user.target
