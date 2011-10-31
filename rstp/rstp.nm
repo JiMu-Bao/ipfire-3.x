@@ -5,7 +5,7 @@
 
 name       = rstp
 version    = 0.21
-release    = 6
+release    = 7
 
 groups     = Networking/Tools
 url        = http://git.ipfire.org/?p=thirdparty/rstp.git;a=summary
