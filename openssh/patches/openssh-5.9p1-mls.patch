@@ -1,6 +1,6 @@
-diff -up openssh-5.8p1/misc.c.mls openssh-5.8p1/misc.c
---- openssh-5.8p1/misc.c.mls	2011-01-13 02:21:36.000000000 +0100
-+++ openssh-5.8p1/misc.c	2011-02-12 15:05:06.000000000 +0100
+diff -up openssh-5.9p0/misc.c.mls openssh-5.9p0/misc.c
+--- openssh-5.9p0/misc.c.mls	2011-05-05 06:14:34.000000000 +0200
++++ openssh-5.9p0/misc.c	2011-08-30 12:29:29.157087474 +0200
 @@ -427,6 +427,7 @@ char *
  colon(char *cp)
  {
@@ -23,10 +23,10 @@ diff -up openssh-5.8p1/misc.c.mls openssh-5.8p1/misc.c
  	}
  	return NULL;
  }
-diff -up openssh-5.8p1/openbsd-compat/port-linux.c.mls openssh-5.8p1/openbsd-compat/port-linux.c
---- openssh-5.8p1/openbsd-compat/port-linux.c.mls	2011-02-12 15:05:06.000000000 +0100
-+++ openssh-5.8p1/openbsd-compat/port-linux.c	2011-02-12 15:09:23.000000000 +0100
-@@ -40,13 +40,164 @@
+diff -up openssh-5.9p0/openbsd-compat/port-linux.c.mls openssh-5.9p0/openbsd-compat/port-linux.c
+--- openssh-5.9p0/openbsd-compat/port-linux.c.mls	2011-08-30 12:29:28.873086987 +0200
++++ openssh-5.9p0/openbsd-compat/port-linux.c	2011-08-30 13:28:12.584149668 +0200
+@@ -40,7 +40,15 @@
  #ifdef WITH_SELINUX
  #include <selinux/selinux.h>
  #include <selinux/flask.h>
@@ -40,8 +40,9 @@ diff -up openssh-5.8p1/openbsd-compat/port-linux.c.mls openssh-5.8p1/openbsd-com
 +#include <unistd.h>
 +#endif
  
- extern ServerOptions options;
- extern Authctxt *the_authctxt;
+ #ifndef SSH_SELINUX_UNCONFINED_TYPE
+ # define SSH_SELINUX_UNCONFINED_TYPE ":unconfined_t:"
+@@ -51,6 +59,149 @@ extern Authctxt *the_authctxt;
  extern int inetd_flag;
  extern int rexeced_flag;
  
@@ -191,7 +192,7 @@ diff -up openssh-5.8p1/openbsd-compat/port-linux.c.mls openssh-5.8p1/openbsd-com
  static void
  ssh_selinux_get_role_level(char **role, const char **level)
  {
-@@ -65,14 +216,16 @@ ssh_selinux_get_role_level(char **role, 
+@@ -69,14 +220,15 @@ ssh_selinux_get_role_level(char **role,
  }
  
  /* Return the default security context for the given username */
@@ -201,16 +202,16 @@ diff -up openssh-5.8p1/openbsd-compat/port-linux.c.mls openssh-5.8p1/openbsd-com
 +ssh_selinux_getctxbyname(char *pwname,
 +	security_context_t *default_sc, security_context_t *user_sc)
  {
- 	security_context_t sc = NULL;
+-	security_context_t sc = NULL;
  	char *sename, *lvl;
  	char *role;
  	const char *reqlvl;
  	int r = 0;
-+	context_t con;
- 
++	context_t con = NULL;
+  
  	ssh_selinux_get_role_level(&role, &reqlvl);
- #ifdef HAVE_GETSEUSERBYNAME
-@@ -82,38 +235,63 @@ ssh_selinux_getctxbyname(char *pwname)
+ 
+@@ -87,37 +239,62 @@ ssh_selinux_getctxbyname(char *pwname)
  	}
  #else
  	sename = pwname;
@@ -264,7 +265,7 @@ diff -up openssh-5.8p1/openbsd-compat/port-linux.c.mls openssh-5.8p1/openbsd-com
 +			    reqlvl = "";
 +
 +			debug("%s: current connection level '%s'", __func__, reqlvl);
-+		}
+ 		}
 +		
 +		if ((reqlvl != NULL && reqlvl[0]) || (role != NULL && role[0])) {
 +			r = get_user_context(sename, role, reqlvl, user_sc);
@@ -287,16 +288,15 @@ diff -up openssh-5.8p1/openbsd-compat/port-linux.c.mls openssh-5.8p1/openbsd-com
 +			}
 +		} else {
 +			*user_sc = *default_sc;
- 		}
- 	}
++		}
++	}
 +	if (r != 0) {
 +		error("%s: Failed to get default SELinux security "
 +		    "context for %s", __func__, pwname);
-+	}
+ 	}
  
  #ifdef HAVE_GETSEUSERBYNAME
- 	if (sename != NULL)
-@@ -121,8 +299,12 @@ ssh_selinux_getctxbyname(char *pwname)
+@@ -126,8 +303,12 @@ ssh_selinux_getctxbyname(char *pwname)
  	if (lvl != NULL)
  		xfree(lvl);
  #endif
@@ -311,7 +311,7 @@ diff -up openssh-5.8p1/openbsd-compat/port-linux.c.mls openssh-5.8p1/openbsd-com
  }
  
  /* Setup environment variables for pam_selinux */
-@@ -160,6 +342,8 @@ void
+@@ -165,6 +346,8 @@ void
  ssh_selinux_setup_exec_context(char *pwname)
  {
  	security_context_t user_ctx = NULL;
@@ -320,7 +320,7 @@ diff -up openssh-5.8p1/openbsd-compat/port-linux.c.mls openssh-5.8p1/openbsd-com
  
  	if (!ssh_selinux_enabled())
  		return;
-@@ -184,22 +368,45 @@ ssh_selinux_setup_exec_context(char *pwn
+@@ -189,22 +372,45 @@ ssh_selinux_setup_exec_context(char *pwn
  
  	debug3("%s: setting execution context", __func__);
  
@@ -373,7 +373,7 @@ diff -up openssh-5.8p1/openbsd-compat/port-linux.c.mls openssh-5.8p1/openbsd-com
  
  	debug3("%s: done", __func__);
  }
-@@ -217,7 +424,10 @@ ssh_selinux_setup_pty(char *pwname, cons
+@@ -222,7 +428,10 @@ ssh_selinux_setup_pty(char *pwname, cons
  
  	debug3("%s: setting TTY context on %s", __func__, tty);
  
@@ -385,10 +385,10 @@ diff -up openssh-5.8p1/openbsd-compat/port-linux.c.mls openssh-5.8p1/openbsd-com
  
  	/* XXX: should these calls fatal() upon failure in enforcing mode? */
  
-diff -up openssh-5.8p1/sshd.c.mls openssh-5.8p1/sshd.c
---- openssh-5.8p1/sshd.c.mls	2011-02-12 15:05:05.000000000 +0100
-+++ openssh-5.8p1/sshd.c	2011-02-12 15:05:06.000000000 +0100
-@@ -2011,6 +2011,9 @@ main(int ac, char **av)
+diff -up openssh-5.9p0/sshd.c.mls openssh-5.9p0/sshd.c
+--- openssh-5.9p0/sshd.c.mls	2011-08-30 12:29:22.663149706 +0200
++++ openssh-5.9p0/sshd.c	2011-08-30 12:29:29.524024777 +0200
+@@ -2082,6 +2082,9 @@ main(int ac, char **av)
  		restore_uid();
  	}
  #endif
