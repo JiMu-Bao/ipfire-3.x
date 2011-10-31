@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = hostapd
-version    = 0.6.9
+version    = 0.7.3
 release    = 1
 
 groups     = Networking/Tools
@@ -19,7 +19,7 @@ description
 	RADIUS authentication server.
 end
 
-source_dl  =
+source_dl  = http://hostap.epitest.fi/releases/
 
 build
 	requires
