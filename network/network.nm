@@ -5,7 +5,7 @@
 
 name       = network
 epoch      = 1
-version    = 002
+version    = 003
 release    = 1
 arch       = noarch
 

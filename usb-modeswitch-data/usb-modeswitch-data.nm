@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = usb-modeswitch
-version    = 1.2.0
+name       = usb-modeswitch-data
+version    = 20111023
 release    = 1
+arch       = noarch
 
 groups     = Applications/System
 url        = http://www.draisberghof.de/usb_modeswitch
@@ -21,13 +22,24 @@ source_dl  = http://www.draisberghof.de/usb_modeswitch/
 sources    = %{thisapp}.tar.bz2
 
 build
-	requires
-		libusb-compat-devel
+	build
+		# Nothing to do here.
+	end
+
+	install
+		mkdir -pv %{BUILDROOT}/etc/usb_modeswitch.d/
+		mkdir -pv %{BUILDROOT}/lib/udev/rules.d/
+
+		install -p -m 644 usb_modeswitch.d/* %{BUILDROOT}/etc/usb_modeswitch.d/
+		install -p -m 644 40-usb_modeswitch.rules %{BUILDROOT}/lib/udev/rules.d/
 	end
 end
 
 packages
 	package %{name}
-		requires += usb-modeswitch-data
+		requires
+			udev
+			usb-modeswitch
+		end
 	end
 end

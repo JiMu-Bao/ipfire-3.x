@@ -1,0 +1,33 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = iperf
+version    = 2.0.5
+release    = 1
+
+maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
+groups     = Applications/Internet
+url        = http://www..sourceforge.net/projects/iperf/files/
+license    = GPLv3+ and LGPLv3+
+summary    = Measurement tool for TCP/UDP bandwidth performance
+
+description
+	Iperf is a tool to measure maximum TCP bandwidth, allowing the tuning of
+	various parameters and UDP characteristics. Iperf reports bandwidth, delay
+	jitter, datagram loss.
+end
+
+source_dl = http://sourceforge.net/projects/iperf/files
+
+build
+	requires
+		gcc-c++
+	end
+end
+
+packages
+	package %{name}
+	end
+end

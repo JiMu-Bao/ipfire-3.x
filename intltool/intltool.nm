@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = intltool
-version    = 0.40.5
-release    = 2
+version    = 0.40.6
+release    = 1
 arch       = noarch
 
 groups     = Localization/Tools
@@ -19,7 +19,7 @@ description
 	them in the po files.
 end
 
-source_dl  =
+source_dl  = http://ftp.gnome.org/pub/gnome/sources/intltool/0.40/
 sources    = %{thisapp}.tar.bz2
 
 build

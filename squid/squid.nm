@@ -5,8 +5,8 @@
 
 name       = squid
 major_ver  = 3.1
-version    = %{major_ver}.12
-release    = 2
+version    = %{major_ver}.16
+release    = 4
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
@@ -36,6 +36,7 @@ build
 		pam-devel
 		libcap-devel
 		/usr/bin/smbclient
+		shadow-utils
 	end
 
 	CFLAGS += -Wno-error
@@ -45,16 +46,17 @@ build
 		--libexecdir=/usr/lib/squid \
 		--localstatedir=/var \
 		--sysconfdir=/etc/squid \
+		--with-logdir=/var/log/squid \
 		--enable-storeio="aufs,diskd,ufs" \
 		--enable-removal-policies="heap,lru" \
 		--enable-icmp \
 		--enable-delay-pools \
 		--disable-esi \
-		--disable-icap-client \
+		--enable-icap-client \
 		--enable-useragent-log \
 		--enable-referrer-log \
-		--disable-wccp \
-		--disable-wccpv2 \
+		--enable-wccp \
+		--enable-wccpv2 \
 		--enable-kill-parent-hack \
 		--enable-snmp \
 		--enable-arp-acl \
@@ -82,24 +84,69 @@ build
 		--with-dl \
 		--with-large-files
 
+	prepare_cmds
+		%{create_user}
+	end
+
 	install_cmds
 		rm -vf %{BUILDROOT}/etc/squid/errors
-		rmdir  %{BUILDROOT}/var/logs
 
 		mkdir -pv %{BUILDROOT}/var/log/cache %{BUILDROOT}/var/log/squid
 		touch %{BUILDROOT}/var/log/squid/access.log
+		touch %{BUILDROOT}/var/log/squid/cache.log
 		mkdir -pv %{BUILDROOT}/var/cache/squid
 
-		# What is this?????
-		#groupadd -r squid && useradd -r -g squid -d %{BUILDROOT}/var/cache/squid -s /bin/false -p '*' squid
-		#chown -Rv squid:squid %{BUILDROOT}/var/log/squid %{BUILDROOT}/var/log/cache %{BUILDROOT}/var/cache/squid
-		#chmod 600 %{BUILDROOT}/var/cache/squid
-		#chown squid:squid %{BUILDROOT}/var/log/squid
+		echo "visible_hostname %{DISTRO_NAME}" >> %{BUILDROOT}/etc/squid/squid.conf
+		echo "cache_effective_user squid" >> %{BUILDROOT}/etc/squid/squid.conf
+		echo "cache_effective_group squid" >> %{BUILDROOT}/etc/squid/squid.conf
+		
+		chown -Rv squid:squid %{BUILDROOT}/var/log/squid %{BUILDROOT}/var/log/cache %{BUILDROOT}/var/cache/squid
+		chmod 600 %{BUILDROOT}/var/cache/squid
+		mkdir -pv %{BUILDROOT}/etc/sysconfig
+		cp -vf %{DIR_SOURCE}/squid.sysconfig %{BUILDROOT}/etc/sysconfig/squid
+		cp -vf %{DIR_SOURCE}/cache_swap.sh %{BUILDROOT}/usr/lib/squid/
+		chmod 755 %{BUILDROOT}/usr/lib/squid/cache_swap.sh
+		chown -Rv squid:squid %{BUILDROOT}/usr/lib/squid/cache_swap.sh
 	end
+end
+
+create_user
+	getent group squid >/dev/null || /usr/sbin/groupadd -r squid
+	getent passwd squid >/dev/null || /usr/sbin/useradd -r -g squid \
+		-d /var/cache/squid -s /sbin/nologin squid
 end
 
 packages
 	package %{name}
+		prerequires = shadow-utils systemd-units
+
+		configfiles
+			/etc/squid.conf
+			/etc/sysconfig/squid
+		end
+
+		script prein
+			%{create_user}
+		end
+
+		script postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/bin/systemctl --no-reload disable squid.service >/dev/null 2>&1 || :
+			/bin/systemctl stop squid.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl try-restart squid.service >/dev/null 2>&1 || :
+		end
+
 		requires = /usr/bin/smbclient
 
 		filter_requires = perl\(Authen::Smb\)

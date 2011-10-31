@@ -9,8 +9,8 @@
 build_cloog_ppl = 0
 
 name       = gcc
-version    = 4.6.1
-release    = 4
+version    = 4.6.2
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -26,7 +26,7 @@ end
 # This is the at least required version of binutils.
 required_binutils_version = 2.21.51.0.8-1
 
-source_dl  = http://ftp.gnu.org/gnu/gcc/
+source_dl  = http://ftp.gnu.org/gnu/gcc/%{thisapp}/
 sources    = %{thisapp}.tar.gz
 
 patches
