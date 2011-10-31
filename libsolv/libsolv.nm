@@ -6,7 +6,7 @@
 name       = libsolv
 version    = 0.0.0
 git_ver    = 0db9d7f
-release    = 1
+release    = 2.git%{git_ver}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
