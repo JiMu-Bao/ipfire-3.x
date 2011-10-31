@@ -1,0 +1,52 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = open-vm-tools
+version    = 2011.09.23-491607
+release    = 1
+
+groups     = Virtualization/Applications
+url        = http://open-vm-tools.sourceforge.net/
+license    = GPLv2
+summary    = Open source implementation of VMware Tools.
+
+description
+	The open Virtual Machine Tools (open-vm-tools) are the open \
+	source implementation of VMware Tools. They are a set of guest \
+	operation system virtualization components that enhance \
+	performance and user experience of virtual machines.
+end
+
+source_dl = http://sourceforge.net/projects/open-vm-tools/files/open-vm-tools/2011.09.23/
+
+build
+	requires
+		glib2-devel
+	end
+
+	configure_options += \
+		--sysconfdir=/etc \
+		--without-kernel-modules \
+		--without-x \
+		--without-procps \
+		--without-dnet \
+		--without-icu \
+		--without-pam \
+
+	prepare_cmds
+		sed -e "s/-Werror//g" -i configure
+	end
+
+	install_cmds
+		rm -vf %{BUILDROOT}/sbin/mount.vmhgfs
+		rm -vf %{BUILDROOT}/usr/sbin/mount.vmhgfs
+	end
+
+end
+
+packages
+	package %{name}
+	end
+end
