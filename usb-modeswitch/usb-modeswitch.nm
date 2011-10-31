@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = usb-modeswitch
-version    = 1.1.9
-release    = 2
+version    = 1.2.0
+release    = 1
 
 groups     = Applications/System
 url        = http://www.draisberghof.de/usb_modeswitch
