@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = samba
-version    = 3.6.0
-release    = 2
+version    = 3.6.1
+release    = 1
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
@@ -88,16 +88,14 @@ end
 
 packages
 	package %{name}
-	end
-	
+
 	package %{name}-libs
 		template LIBS
 	end
-	
+
 	package %{name}-devel
 		template DEVEL
 
 		requires += %{name}-libs=%{thisver}
 	end
 end
-
