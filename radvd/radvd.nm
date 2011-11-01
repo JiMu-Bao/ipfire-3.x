@@ -5,7 +5,7 @@
 
 name       = radvd
 version    = 1.8.3
-release    = 3
+release    = 4
 
 groups     = System/Daemons
 url        = http://www.litech.org/radvd/
@@ -28,6 +28,7 @@ build
 		flex
 		flex-devel
 		bison
+		shadow-utils
 	end
 
 	configure_options += \
@@ -35,8 +36,25 @@ build
 		--with-pidfile=/run/radvd/radvd.pid
 
 	prepare_cmds
+		%{create_user}
+
 		sed -e "s/-lfl/-lfl_pic/g" -i Makefile.*
 	end
+
+	install_cmds
+		mkdir -pv -m 750 %{BUILDROOT}/run/radvd
+		chown -v radvd.radvd %{BUILDROOT}/run/radvd
+	end
+end
+
+create_user
+	getent group radvd >/dev/null || groupadd -r radvd
+
+	# The radvd user also needs to be in the wheel group to get access to
+	# /proc.
+	getent passwd radvd >/dev/null || \
+		useradd -r -g radvd -G wheel -d / -s /sbin/nologin \
+			-c "User for the Router Advertisement daemon." radvd
 end
 
 packages
@@ -46,14 +64,7 @@ packages
 		prerequires += shadow-utils
 
 		script prein
-			getent group radvd >/dev/null || groupadd -r radvd
-
-			# The radvd user also needs to be in the wheel group to get access to
-			# /proc.
-			getent passwd radvd >/dev/null || \
-				useradd -r -g radvd -G wheel -d / -s /sbin/nologin \
-					-c "User for the Router Advertisement daemon." radvd
-			exit  0
+			%{create_user}
 		end
 
 		# Just search for new unit files that were just installed.

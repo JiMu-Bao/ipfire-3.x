@@ -1,2 +1,2 @@
-d /var/run/radvd 0750 radvd radvd -
+d /run/radvd 0750 radvd radvd -
 
