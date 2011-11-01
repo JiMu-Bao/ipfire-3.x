@@ -5,7 +5,7 @@
 
 name       = openssh
 version    = 5.9p1
-release    = 1
+release    = 2
 
 groups     = Application/Internet
 url        = http://www.openssh.com/portable.html
@@ -81,8 +81,8 @@ build
 	end
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/etc/ssh
-		cp -vf %{DIR_SOURCE}/sshd_config %{BUILDROOT}/etc/ssh/sshd_config
+		# Disable GSS API authentication because KRB5 is required for that.
+		sed -e "s/^.*GSSAPIAuthentication/#&/" -i %{BUILDROOT}/etc/ssh/ssh_config
 
 		# Install scriptfile for key generation
 		install -m 754 %{DIR_SOURCE}/ssh-keygen %{BUILDROOT}/usr/lib/openssh/
@@ -121,6 +121,10 @@ packages
 			/usr/share/man/cat5/ssh_config.5
 			/usr/share/man/cat8/ssh-pkcs11-helper.8
 		end
+
+		configfiles
+			/etc/ssh/ssh_config
+		end
 	end
 	
 	package openssh-server
@@ -143,6 +147,10 @@ packages
 			/usr/share/man/cat8/sshd.8*
 			/usr/share/man/cat8/sftp-server.8*
 			/var/lib/sshd
+		end
+
+		configfiles
+			/etc/ssh/sshd_config
 		end
 
 		prerequires = shadow-utils systemd-units
