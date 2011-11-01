@@ -6,7 +6,7 @@
 name       = initscripts
 epoch      = 1
 version    = 2.99
-release    = 8
+release    = 9
 
 groups     = Base System/Boot
 url        =
@@ -43,15 +43,6 @@ build
 
 	install
 		cd src && make install clean DESTDIR=%{BUILDROOT}
-
-		mkdir -pv %{BUILDROOT}/etc/{init,sysconfig}
-
-		cp -vf %{DIR_SOURCE}/functions %{BUILDROOT}/etc/init/
-
-		for i in %{DIR_SOURCE}/sysconfig/*; do
-			install -v -m 644 $i %{BUILDROOT}/etc/sysconfig/
-		done
-		chmod -v 755 %{BUILDROOT}/etc/sysconfig/rc.local
 
 		cp -vf %{DIR_SOURCE}/sysctl.conf %{BUILDROOT}/etc
 
