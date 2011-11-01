@@ -5,7 +5,7 @@
 
 name       = bind
 version    = 9.8.1
-release    = 2
+release    = 3
 
 groups     = Networking/Tools
 url        = http://www.isc.org/products/BIND/
@@ -62,6 +62,7 @@ build
 		libidn-devel
 		pkg-config
 		openssl-devel
+		shadow-utils
 	end
 
 	configure_options += \
@@ -97,6 +98,9 @@ build
 		libtoolize -c -f
 		aclocal -I m4 --force
 		autoconf -f
+
+		# Create user and group for /run directory.
+		%{create_user}
 	end
 
 	install
@@ -150,7 +154,17 @@ build
 		ln -svf ../../lib/libirs-export.so.80 %{BUILDROOT}/usr/lib/libirs-export.so
 		ln -svf ../../lib/libisccfg-export.so.82 %{BUILDROOT}/usr/lib/libisccfg-export.so
 		ln -svf ../../lib/libisc-export.so.83 %{BUILDROOT}/usr/lib/libisc-export.so
+
+		# Create /run/named.
+		mkdir -pv %{BUILDROOT}/run/named
+		chown -Rv named.named %{BUILDROOT}/run/named/
 	end
+end
+
+create_user
+	getent group named >/dev/null || /usr/sbin/groupadd -r named
+	getent passwd named >/dev/null || /usr/sbin/useradd -r -g named \
+		-d /var/named -c "User for bind DNS server" -s /sbin/nologin named
 end
 
 packages
@@ -163,12 +177,7 @@ packages
 		prerequires += shadow-utils
 
 		script prein
-			# Create unprivileged user and group.
-			getent group named > /dev/null || groupadd -r named
-			getent passwd named > /dev/null || \
-				useradd -r -g named -d /var/named -s /sbin/nologin \
-				-c "User for bind DNS server" named
-			exit 0
+			%{create_user}
 		end
 
 		# XXX Add systemd scriptlet if a service file becomes available
