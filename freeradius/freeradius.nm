@@ -5,7 +5,7 @@
 
 name       = freeradius-server
 version    = 2.1.12
-release    = 1
+release    = 2
 
 groups     = System/Daemons
 url        = http://www.freeradius.org
@@ -30,6 +30,7 @@ build
 		libtool-devel
 		openssl-devel
 		perl
+		shadow-utils
 	end
 
 	PARALLELISMFLAGS = # Disabled
@@ -50,14 +51,45 @@ build
 		--without-rlm_sql_db2 \
 		--without-rlm_sql_oracle
 
+	prepare_cmds
+		%{create_user}
+	end
+
 	make_build_targets = LINK_MODE=-pie
 
 	install
 		make install R=%{BUILDROOT}
 
-		mkdir -pv %{BUILDROOT}/etc/logrotate.d/
-		cp -vf %{DIR_SOURCE}/logrotate/freeradius %{BUILDROOT}/etc/logrotate.d/
+		# Change freeradius user and group.
+		perl -i -pe 's/^#user =.*$/user = radiusd/' %{BUILDROOT}/etc/raddb/radiusd.conf
+		perl -i -pe 's/^#group =.*$/group = radiusd/' %{BUILDROOT}/etc/raddb/radiusd.conf
+
+		# Create emty logfiles.
+		mkdir -pv %{BUILDROOT}/var/log/radius/radacct
+		touch %{BUILDROOT}/var/log/radius/{radutmp,radius.log}
+		chown -Rv radiusd.radiusd %{BUILDROOT}/var/log/radius/
+
+		# Create tmpfiles folder.
+		mkdir -pv %{BUILDROOT}/run/radiusd
+		chown -Rv radiusd.radiusd %{BUILDROOT}/run/radiusd/
+
+		# Remove unneeded stuff.
+		rm -vf %{BUILDROOT}/usr/sbin/rc.radiusd
+		rm -rvf %{BUILDROOT}/etc/raddb/sql/
+		rm -rvf %{BUILDROOT}/var/run/
+
+		# Remove header files, we don't ship a devel package.
+		rm -rvf %{BUILDROOT}/usr/include/
+
+		# remove unsupported config file.
+		rm -vf %{BUILDROOT}/etc/raddb/experimental.conf
 	end
+end
+
+create_user
+	getent group radiusd >/dev/null || /usr/sbin/groupadd -r radiusd
+	getent passwd radiusd >/dev/null || /usr/sbin/useradd -r -g radiusd \
+		-d /var/lib/radiusd -s /sbin/nologin radiusd
 end
 
 quality-agent
