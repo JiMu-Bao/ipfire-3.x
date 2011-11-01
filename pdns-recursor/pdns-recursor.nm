@@ -5,7 +5,7 @@
 
 name       = pdns-recursor
 version    = 3.3
-release    = 5
+release    = 6
 
 groups     = Networking/DNS
 url        = http://powerdns.com/
@@ -17,7 +17,7 @@ description
 	package if you need a dns cache for your network.
 end
 
-source_dl  =
+source_dl  = http://downloads.powerdns.com/releases/
 sources    = %{thisapp}.tar.bz2
 
 build
@@ -25,6 +25,11 @@ build
 		gcc-c++
 		boost-devel
 		lua-devel
+		shadow-utils
+	end
+
+	prepare_cmds
+		%{create_user}
 	end
 
 	build
@@ -47,7 +52,18 @@ build
 
 		# Create folder for chroot
 		mkdir -pv %{BUILDROOT}/var/lib/pdns-recursor
+
+		# Create directory for socket and stuff.
+		mkdir -pv %{BUILDROOT}/run/pdns-recursor
+		chown -v pdns-recursor.pdns-recursor %{BUILDROOT}/run/pdns-recursor
 	end
+end
+
+create_user
+	getent group pdns-recursor >/dev/null || groupadd -r pdns-recursor
+	getent passwd pdns-recursor >/dev/null || \
+		useradd -r -g pdns-recursor -d /var/lib/pdns-recursor -s /sbin/nologin \
+			pdns-recursor
 end
 
 packages
@@ -59,10 +75,7 @@ packages
 		prerequires = shadow-utils systemd-units
 
 		script prein
-			getent group pdns-recursor >/dev/null || groupadd -r pdns-recursor
-			getent passwd pdns-recursor >/dev/null || \
-				useradd -r -g pdns-recursor -d /var/lib/pdns-recursor -s /sbin/nologin \
-					pdns-recursor
+			%{create_user}
 		end
 
 		script postin
