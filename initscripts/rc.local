@@ -1,0 +1,4 @@
+#!/bin/sh
+#
+# This script will be executed at the end of the boot process.
+# You can put your own initialization stuff in here.
