@@ -1,1 +1,1 @@
-d /var/run/lldpd 0700 lldpd lldpd -
+d /run/lldpd 0700 lldpd lldpd -

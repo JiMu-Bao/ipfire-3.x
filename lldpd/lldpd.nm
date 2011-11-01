@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = lldpd
-version    = 0.5.2
-release    = 5
+version    = 0.5.4
+release    = 1
 
 groups     = Networking/Tools
 url        = https://trac.luffy.cx/lldpd/
@@ -13,7 +13,7 @@ license    = GPL
 summary    = Utilities for the Link Layer Discovery Protocol.
 
 description
-	The LLDPD project aims to provide a comprehensive implementation of \
+	The LLDPD project aims to provide a comprehensive implementation of
 	the IEEE standard 802.1AB Link Layer Discovery Protocol.
 end
 
@@ -23,6 +23,7 @@ build
 	requires
 		libxml2-devel
 		pkg-config
+		shadow-utils
 		zlib-devel
 	end
 
@@ -30,9 +31,48 @@ build
 		--with-xml \
 		--with-privsep-user=lldpd \
 		--with-privsep-group=lldpd
+
+	prepare_cmds
+		%{create_user}
+	end
+
+	install_cmds
+		# Create tmp directory.
+		mkdir -pv -m 700 %{BUILDROOT}/run/lldpd
+		chown -v lldpd.lldpd %{BUILDROOT}/run/lldpd
+	end
+end
+
+create_user
+	getent group lldpd >/dev/null || groupadd -r lldpd
+	getent passwd lldpd >/dev/null || \
+		useradd -r -g lldpd -d / -s /sbin/nologin lldpd
 end
 
 packages
 	package %{name}
+		prerequires = shadow-utils systemd-units
+
+		script prein
+			%{create_user}
+		end
+
+		script postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/bin/systemctl --no-reload disable lldpd.service >/dev/null 2>&1 || :
+			/bin/systemctl stop lldpd.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl try-restart lldpd.service >/dev/null 2>&1 || :
+		end
 	end
 end
