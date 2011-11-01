@@ -6,7 +6,7 @@
 name       = initscripts
 epoch      = 1
 version    = 2.99
-release    = 9
+release    = 10
 
 groups     = Base System/Boot
 url        =
@@ -43,8 +43,6 @@ build
 
 	install
 		cd src && make install clean DESTDIR=%{BUILDROOT}
-
-		cp -vf %{DIR_SOURCE}/sysctl.conf %{BUILDROOT}/etc
 
 		# Install udev rules
 		mkdir -pv %{BUILDROOT}/lib/udev/rules.d/
