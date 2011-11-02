@@ -4,8 +4,9 @@
 ###############################################################################
 
 name       = python
-version    = 2.7.2
-release    = 1
+major_ver  = 2.7
+version    = %{major_ver}.2
+release    = 2
 thisapp    = Python-%{version}
 
 groups     = Development/Languages
@@ -74,6 +75,9 @@ build
 	install_cmds
 		# All *.py files don't need to be executeable...
 		find %{BUILDROOT}/usr/lib/python*/ -name "*.py" | xargs chmod a-x -v
+
+		# Create symlink for shared lib.
+		ln -svf ../../libpython%{major_ver}.so %{BUILDROOT}/usr/lib/python%{major_ver}/config/
 	end
 end
 
