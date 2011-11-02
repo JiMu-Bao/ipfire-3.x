@@ -10,7 +10,7 @@ build_cloog_ppl = 0
 
 name       = gcc
 version    = 4.6.2
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -193,6 +193,11 @@ build
 
 		# Remove some GNU debugger stuff.
 		rm -vf %{BUILDROOT}/usr/lib/lib*.py
+	end
+
+	keep_libraries
+		/usr/lib/gcc/%{DISTRO_BUILDTARGET}/%{version}/libgcc.a
+		/usr/lib/gcc/%{DISTRO_BUILDTARGET}/%{version}/libgcc_eh.a
 	end
 end
 
