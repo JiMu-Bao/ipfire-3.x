@@ -7,7 +7,7 @@
 
 name       = glibc
 version    = 2.14
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -214,6 +214,11 @@ build
 
 		# Move some libs to correct place
 		mv -v %{BUILDROOT}/lib/lib{memusage,pcprofile}.so %{BUILDROOT}/usr/lib/
+	end
+
+	keep_libraries
+		/usr/lib/libc_nonshared.a
+		/usr/lib/libpthread_nonshared.a
 	end
 end
 
