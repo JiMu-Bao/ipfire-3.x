@@ -5,7 +5,7 @@
 
 name       = flex
 version    = 2.5.35
-release    = 2
+release    = 3
 
 groups     = Development/Tools
 url        = http://flex.sourceforge.net/
@@ -33,6 +33,8 @@ build
 		gcc-c++
 		m4
 	end
+
+	keep_libraries = /usr/lib/libfl_pic.a
 
 	configure_options += \
 		--mandir=/usr/share/man
