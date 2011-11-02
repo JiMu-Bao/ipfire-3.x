@@ -5,7 +5,7 @@
 
 name       = binutils
 version    = 2.21.51.0.8
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Tools
@@ -45,19 +45,19 @@ build
 	build
 		BINUTILS_TARGET_PLATFORM=$(echo "%{DISTRO_MACHINE}" | sed -e "s/-gnu//")
 
-		cd %{DIR_SRC}/binutils-build && \
-			../%{thisapp}/configure \
-				--host=${BINUTILS_TARGET_PLATFORM} \
-				--build=${BINUTILS_TARGET_PLATFORM} \
-				--target=${BINUTILS_TARGET_PLATFORM} \
-				--prefix=/usr \
-				--mandir=/usr/share/man \
-				--enable-shared \
-				--disable-nls \
-				--disable-werror \
-				--disable-static
+		cd %{DIR_SRC}/binutils-build
+		../%{thisapp}/configure \
+			--host=${BINUTILS_TARGET_PLATFORM} \
+			--build=${BINUTILS_TARGET_PLATFORM} \
+			--target=${BINUTILS_TARGET_PLATFORM} \
+			--prefix=/usr \
+			--mandir=/usr/share/man \
+			--enable-shared \
+			--disable-nls \
+			--disable-werror \
+			--disable-static
 
-		cd %{DIR_SRC}/binutils-build && make tooldir=/usr %{PARALLELISMFLAGS}
+		make tooldir=/usr %{PARALLELISMFLAGS}
 	end
 
 	#def test
@@ -70,6 +70,11 @@ build
 		cd %{DIR_SRC}/binutils-build && make tooldir=/usr install DESTDIR=%{BUILDROOT}
 
 		cp -fv %{DIR_APP}/include/libiberty.h %{BUILDROOT}/usr/include
+	end
+
+	# Keep static version of libiberty.
+	keep_libraries
+		/usr/lib/libiberty.a
 	end
 end
 
