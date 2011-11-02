@@ -3,11 +3,9 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-# XXX initscripts for daemons are missing
-
 name       = icecream
 version    = 0.9.7
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -77,6 +75,10 @@ build
 		rm -rvf %{BUILDROOT}/usr/bin/cc
 		rm -rvf %{BUILDROOT}/usr/bin/g++
 		rm -rvf %{BUILDROOT}/usr/bin/gcc
+
+		# Create Logfiles.
+		mkdir -pv %{BUILDROOT}/var/log
+		touch %{BUILDROOT}/var/log/icecc{d,-scheduler}.log
 	end
 end
 
@@ -85,6 +87,29 @@ packages
 		requires
 			gcc-c++
 			/usr/bin/ldd
+		end
+
+		prerequires += systemd-units
+
+		script postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/bin/systemctl --no-reload disable iceccd.service \
+				icecc-scheduler.service >/dev/null 2>&1 || :
+			/bin/systemctl stop iceccd.service \
+				icecc-scheduler.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl try-restart iceccd.service \
+				icecc-scheduler.service >/dev/null 2>&1 || :
 		end
 	end
 	
