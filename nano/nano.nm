@@ -5,7 +5,7 @@
 
 name       = nano
 version    = 2.3.0
-release    = 1
+release    = 2
 
 groups     = Application/Editors
 url        = http://www.nano-editor.org/
@@ -25,7 +25,6 @@ build
 	end
 
 	configure_options += \
-		--bindir=/bin \
 		--sysconfdir=/etc/nano \
 		--enable-color \
 		--enable-multibuffer \
