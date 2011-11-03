@@ -1,0 +1,46 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = librsvg2
+version    = 2.34.1
+major_ver  = 2.34
+release    = 1
+
+groups     = System/Libraries
+url        = 
+license    = LGPLv2+
+summary    = A SVG library based on cairo.
+
+description
+	librsvg is a SVG library based on cairo.
+end
+
+thisapp    = librsvg-%{version}
+
+source_dl  = http://download.gnome.org/sources/librsvg/%{major_ver}/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		cairo-devel
+		gdk-pixbuf2-devel
+		glib2-devel
+		libcroco-devel
+		libxml2-devel
+		pango-devel
+	end
+
+	configure_options += \
+		--disable-static \
+		--disable-gtk-theme
+end
+
+packages
+	package %{name}
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end

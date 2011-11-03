@@ -1,0 +1,45 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = gdk-pixbuf2
+version    = 2.24.0
+major_ver  = 2.24
+release    = 1
+
+groups     = System/Libraries
+url        = http://www.gtk.org/
+license    = LGPLv2+
+summary    = An image loading library.
+
+description
+	gdk-pixbuf is an image loading library that can be extended by loadable
+	modules for new image formats.
+end
+
+thisapp    = gdk-pixbuf-%{version}
+
+source_dl  = http://download.gnome.org/sources/gdk-pixbuf/%{major_ver}/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		glib2-devel
+		libpng-devel
+		libjpeg-devel
+		libtiff-devel
+	end
+
+	configure_options += \
+		--disable-rpath
+end
+
+packages
+	package %{name}
+	end
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end
