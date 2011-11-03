@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libpng
-version    = 1.5.4
+version    = 1.5.6
 release    = 1
 
 groups     = System/Libraries
@@ -20,7 +20,7 @@ description
 	data compression algorithm.
 end
 
-source_dl  =
+source_dl  = http://downloads.sourceforge.net/project/libpng/libpng15/%{version}/
 sources    = %{thisapp}.tar.xz
 
 build
@@ -32,8 +32,7 @@ end
 
 packages
 	package %{name}
-	end
-	
+
 	package %{name}-devel
 		template DEVEL
 	
