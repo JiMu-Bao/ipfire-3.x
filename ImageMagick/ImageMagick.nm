@@ -1,0 +1,49 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = ImageMagick
+version    = 6.7.3
+release    = 1
+patchlevel = 3
+
+groups     = Application/Multimedia
+url        = http://www.imagemagick.org/
+license    = ImageMagick
+summary    = Command line programm to create and convert several image formats.
+
+description
+	ImageMagick also includes command line programs for creating
+	animated or transparent .gifs, creating composite images, creating
+	thumbnail images, and more.
+end
+
+thisapp    = %{name}-%{version}-%{patchlevel}
+
+source_dl  = ftp://ftp.ImageMagick.org/pub/%{name}/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		libjpeg-devel
+		libpng-devel
+		librsvg2-devel
+		libtiff-devel
+		libxml2-devel
+	end
+
+	configure_options += \
+		--sysconfdir=/etc \
+		--enable-shared \
+		--disable-static \
+		--with-threads
+end
+
+packages
+	package %{name}
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end
