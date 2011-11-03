@@ -5,7 +5,7 @@
 
 name       = binutils
 version    = 2.21.51.0.8
-release    = 3
+release    = 4
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Tools
@@ -83,5 +83,13 @@ packages
 
 	package %{name}-devel
 		template DEVEL
+
+		# Don't package libbfd and libopcodes in the -devel package.
+		files
+			/usr/include
+			/usr/lib/*.a
+			/usr/lib/libbfd.so
+			/usr/lib/libopcodes.so
+		end
 	end
 end
