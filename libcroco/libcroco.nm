@@ -1,0 +1,41 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libcroco
+version    = 0.6.2
+major_ver  = 0.6
+release    = 1
+
+groups     = System/Libraries
+url        = 
+license    = LGPLv2+
+summary    = A CSS2 parsing library.
+
+description
+	libcroco is a CSS2 parsing and manipulation library.
+end
+
+source_dl  = http://download.gnome.org/sources/%{name}/%{major_ver}/
+
+build
+	requires
+		glib2-devel
+		libxml2-devel
+	end
+
+	configure_options += \
+		--disable-static
+	test
+		make check
+	end
+end
+
+packages
+	package %{name}
+	
+	package %{name}-devel
+		template DEVEL
+	end
+end
