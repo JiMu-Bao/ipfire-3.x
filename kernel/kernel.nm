@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 3.0.4
-release    = 6
+release    = 7
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -181,10 +181,6 @@ build
 			find %{BUILDROOT}/lib/modules/${fullversion} -name "*.ko" -type f | \
 				xargs chmod u+x
 
-			for i in alias alias.bin builtin.bin ccwmap dep dep.bin ieee1394map inputmap isapnpmap ofmap pcimap seriomap symbols symbols.bin usbmap; do
-				rm -vf %{BUILDROOT}/lib/modules/${fullversion}/modules.${i}
-			done
-
 			# Move all development files to /usr/src.
 			mkdir -pv %{BUILDROOT}/usr/src/kernels
 			mv -v %{BUILDROOT}/lib/modules/${fullversion}/build \
@@ -245,10 +241,6 @@ packages
 			/lib/modules/%{kernel_release}
 		end
 
-		script postin
-			depmod -a %{kernel_release} || :
-		end
-
 		script posttransin
 			dracut --force /boot/initramfs-%{kernel_release}.img %{kernel_release}
 		end
@@ -278,10 +270,14 @@ packages
 
 	package kernel
 		template KERNEL
+
+		kernel_release = %{fullver}
 	end
 
 	package kernel-devel
 		template KERNELDEVEL
+
+		kernel_release = %{fullver}
 	end
 
 	package kernel-PAE
