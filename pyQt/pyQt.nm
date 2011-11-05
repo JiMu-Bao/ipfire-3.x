@@ -5,7 +5,7 @@
 
 name       = pyQt
 version    = 4.8.1
-release    = 1
+release    = 2
 epoch      = 0
 
 groups     = Development/Languages
@@ -23,6 +23,7 @@ sources    = PyQt-x11-gpl-%{version}.tar.gz
 build
 	requires
 		gcc-c++
+		libX11-devel
 		libXext-devel
 		python-devel
 		qt-devel
