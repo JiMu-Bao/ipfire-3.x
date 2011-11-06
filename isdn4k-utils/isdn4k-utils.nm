@@ -1,0 +1,82 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = isdn4k-utils
+version    = 3.2
+devel_ver  = CVS-2010-05-01
+release    = 1
+thisapp    = %{name}-%{devel_ver}-patched
+
+groups     = Networking/Tools
+url        =
+license    = GPLv2+ and GPL+ and MIT and BSD and zlib
+summary    = Utilities for configuring an ISDN subsystem.
+
+description
+	The isdn4k-utils package contains a collection of utilities needed \
+	for configuring and running an ISDN subsystem. 
+end
+
+source_dl  = ftp://ftp.isdn4linux.de/pub/isdn4linux/utils/
+sources    = %{thisapp}.tar.bz2
+
+build
+	requires
+		autoconf
+		automake
+		libpcap-devel
+		libtool
+		ncurses-devel
+		ppp-devel
+	end
+
+	CFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
+
+	prepare_cmds
+		# remove useless files 
+		find -type d -name CVS | xargs rm -rf
+
+		# enable capi20.new
+		rm -rf capi20 && mv capi20.new capi20
+
+		# Reconfigure the whole package
+		for i in */configure; do
+			cd `dirname $i`
+			autoreconf --force --install || exit 1
+			cd ..
+		done
+
+		# Set configuration
+		mv .config.rpm .config
+		sed -e "s/^CONFIG_BUILDX11=.*/#&/" -i .config
+		sed -e "s/^CONFIG_VBOX=.*/#&/" -i .config
+		sed -e "s/^CONFIG_XMONISDN=.*/#&/" -i .config
+		sed -e "s/^CONFIG_XISDNLOAD=.*/#&/" -i .config
+		echo "CONFIG_GENMAN=y" >> .config
+		echo "CONFIG_FAQ=y" >> .config
+		echo "CONFIG_FAQDIR='/usr/share/doc/isdn4k-utils'" >> .config
+		echo "CONFIG_DATADIR='/usr/share/isdn'" >> .config
+		echo "LIBDIR='/usr/lib'" >> .config 
+		echo "CONFIG_FIRMWAREDIR='/usr/share/isdn'" >> .config 
+		echo "CONFIG_CARD_SBINDIR='/sbin'" >> .config 
+		sed -e "s,',,g" .config > .config.h
+	end
+
+	build
+		make subconfig
+
+		make CFLAGS="%{CFLAGS}"
+	end
+
+	install
+		mkdir -pv %{BUILDROOT}/usr/sbin
+		make install CFLAGS="%{CFLAGS}" DESTDIR="%{BUILDROOT}"
+	end
+end
+
+packages
+	package %{name}
+	end
+end

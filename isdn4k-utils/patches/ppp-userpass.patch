@@ -1,0 +1,11 @@
+--- a/pppdcapiplugin/Rules.make.orig	2009-10-20 11:07:28.000000000 +0200
++++ b/pppdcapiplugin/Rules.make	2010-07-22 20:17:24.000000000 +0200
+@@ -24,7 +24,7 @@
+ 	$(CC) -o $@ $(LDFLAGS) capiplugin.o capiconn.o -lcapi20dyn
+ 
+ userpass.so: userpass.o
+-	$(CC) -o $@ $(LDFLAGS) $(CFLAGS) $(MYCFLAGS) -nostdlib userpass.o
++	$(CC) -o $@ $(LDFLAGS) $(CFLAGS) $(MYCFLAGS) userpass.o
+ 
+ %.o: %.c
+ 	$(CC) $(CFLAGS) $(MYCFLAGS) -c -o $@ $<
