@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = gnutls
-version    = 3.0.4
-release    = 2
+version    = 3.0.7
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.gnu.org/software/gnutls/
