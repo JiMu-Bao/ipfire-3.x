@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = strongswan
-version    = 4.5.3
+version    = 4.6.0
 release    = 1
 
 groups     = Networking/VPN
@@ -63,5 +63,4 @@ end
 
 packages
 	package %{name}
-	end
 end
