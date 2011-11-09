@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = pyQt
-version    = 4.8.1
-release    = 1
+version    = 4.8.6
+release    = 2
 epoch      = 0
 
 groups     = Development/Languages
@@ -17,16 +17,17 @@ description
 	 Python bindings for Qt4
 end
 
-source_dl  =
+source_dl  = http://www.riverbankcomputing.co.uk/static/Downloads/PyQt4/
 sources    = PyQt-x11-gpl-%{version}.tar.gz
 
 build
 	requires
 		gcc-c++
+		libX11-devel
 		libXext-devel
 		python-devel
 		qt-devel
-		sip-devel
+		sip-devel>=4.13
 	end
 
 	DIR_APP = %{DIR_SRC}/PyQt-x11-gpl-%{version}

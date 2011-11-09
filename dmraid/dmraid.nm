@@ -5,7 +5,7 @@
 
 name       = dmraid
 version    = 1.0.0.rc15
-release    = 1
+release    = 2
 
 groups     = System/Filesystems
 url        = http://people.redhat.com/heinzm/sw/dmraid
@@ -13,12 +13,12 @@ license    = GPLv2+
 summary    = Device-mapper RAID tool and library.
 
 description
-	DMRAID supports RAID device discovery, RAID set activation, creation, \
-	removal, rebuild and display of properties for ATARAID/DDF1 metadata on \
+	DMRAID supports RAID device discovery, RAID set activation, creation,
+	removal, rebuild and display of properties for ATARAID/DDF1 metadata on
 	Linux >= 2.4 using device-mapper.
 end
 
-source_dl  =
+source_dl  = http://people.redhat.com/heinzm/sw/dmraid/src/old/
 sources    = %{thisapp}.tar.bz2
 
 build
@@ -48,6 +48,9 @@ build
 		install -v -m 755 lib/libdmraid.so \
 			%{BUILDROOT}/lib/libdmraid.so.%{version}
 		ln -svf ../../lib/libdmraid.so.%{version} %{BUILDROOT}/usr/lib/libdmraid.so
+
+		# Install development headers.
+		install -m 644 include/dmraid/*.h %{BUILDROOT}/usr/include/dmraid/
 	end
 end
 

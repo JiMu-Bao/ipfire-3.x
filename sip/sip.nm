@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = sip
-version    = 4.12-snapshot-12acbffd0085
+version    = %{major_ver}.13
 major_ver  = 4
 release    = 1
 epoch      = 1

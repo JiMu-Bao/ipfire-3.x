@@ -20,7 +20,7 @@ end
 source_dl  =
 
 build
-	reqires
+	requires
 		python-devel
 	end
 

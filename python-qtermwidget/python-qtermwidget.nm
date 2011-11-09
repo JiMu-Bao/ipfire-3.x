@@ -5,7 +5,7 @@
 
 name       = python-qtermwidget
 version    = 0.1.2
-release    = 1
+release    = 2
 
 groups     = Development/Languages
 url        = http://code.google.com/p/pyqt4-extrawidgets/downloads/list
@@ -22,6 +22,8 @@ sources    = qtermwidget-%{version}.tar.gz
 build
 	requires
 		gcc-c++
+		libX11-devel
+		libXext-devel
 		pyQt
 		pyQt-devel
 		python-devel
