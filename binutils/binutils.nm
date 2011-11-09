@@ -5,7 +5,7 @@
 
 name       = binutils
 version    = 2.21.51.0.8
-release    = 4
+release    = 5
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Tools
@@ -70,6 +70,10 @@ build
 		cd %{DIR_SRC}/binutils-build && make tooldir=/usr install DESTDIR=%{BUILDROOT}
 
 		cp -fv %{DIR_APP}/include/libiberty.h %{BUILDROOT}/usr/include
+
+		# Prevent packages from linking against libbfd and libopcodes,
+		# because they change too often.
+		rm -rfv %{BUILDROOT}/usr/lib/lib{bfd,opcodes}.so
 	end
 
 	# Keep static version of libiberty.
@@ -88,8 +92,6 @@ packages
 		files
 			/usr/include
 			/usr/lib/*.a
-			/usr/lib/libbfd.so
-			/usr/lib/libopcodes.so
 		end
 	end
 end
