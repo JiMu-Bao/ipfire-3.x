@@ -5,7 +5,7 @@
 
 name       = sysvinit
 version    = 2.86
-release    = 2
+release    = 3
 
 groups     = System/Base
 url        = https://alioth.debian.org/projects/pkg-sysvinit/
@@ -35,6 +35,10 @@ build
 		mkdir -pv %{BUILDROOT}/{bin,sbin,usr/{bin,include}}
 		mkdir -pv %{BUILDROOT}/usr/share/man/man{1,5,8}
 		make -C src install ROOT=%{BUILDROOT}
+
+		# /bin/mountpoint is part of util-linux >= 2.20
+		rm -vf %{BUILDROOT}/bin/mountpoint \
+			%{BUILDROOT}/usr/share/man/man1/mountpoint.1
 	end
 end
 
