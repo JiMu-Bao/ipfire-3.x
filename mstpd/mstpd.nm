@@ -1,0 +1,52 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = mstpd
+version    = 0.01
+git_ver    = 0d06abf
+release    = 0.1-git%{git_ver}.1
+thisapp    = %{name}-%{version}-git%{git_ver}
+
+groups     = Networking/Tools
+url        = http://git.ipfire.org/?p=thirdparty/mstpd.git;a=summary
+license    = GPLv2+
+summary    = The Multiple Spanning Tree Protocol Daemon.
+
+description
+	A daemon that implements the Multiple Spanning Tree Protocol
+	running upon the Linux ethernet bridge.
+end
+
+build
+	prepare_cmds
+		# Please do not ship code with -Werror enabled.
+		sed -i Makefile \
+			-e "s/-Werror//"
+	end
+
+	install_cmds
+		install -v -m 755 %{DIR_SOURCE}/bridge-stp \
+			%{BUILDROOT}/sbin/bridge-stp
+	end
+end
+
+packages
+	package %{name}
+		script postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl --no-reload enable mstpd.service >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/bin/systemctl --no-reload disable mstpd.service >/dev/null 2>&1 || :
+			/bin/systemctl stop rstp.service >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/bin/systemctl try-restart mstpd.service >/dev/null 2>&1 || :
+		end
+	end
+end
