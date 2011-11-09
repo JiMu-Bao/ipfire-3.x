@@ -6,7 +6,7 @@
 name       = isdn4k-utils
 version    = 3.2
 devel_ver  = CVS-2010-05-01
-release    = 2
+release    = 3
 thisapp    = %{name}-%{devel_ver}-patched
 
 groups     = Networking/Tools
@@ -98,7 +98,7 @@ packages
 
 		script preun
 			/bin/systemctl --no-reload disable capi.service isdn.service >/dev/null 2>&1 || :
-			/bin/systemctl stop capi.service isdn-service >/dev/null 2>&1 || :
+			/bin/systemctl stop capi.service isdn.service >/dev/null 2>&1 || :
 		end
 
 		script postun
