@@ -4,9 +4,9 @@
 ###############################################################################
 
 name       = util-linux
-version    = 2.19
-major_ver  = 2.19
-release    = 7
+major_ver  = 2.20
+version    = %{major_ver}
+release    = 1
 
 groups     = System/Base
 url        = http://kernel.org/~kzak/util-linux/
@@ -103,6 +103,7 @@ packages
 		conflicts
 			setup<3.0-2
 			util-linux-ng
+			sysvinit<=2.86-2
 		end
 
 		preprequires += coreutils
