@@ -1,0 +1,63 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = MAKEDEV
+version    = 3.24
+release    = 1
+
+groups     = System/Base
+url        = 
+license    = GPLv2
+summary    = A program used for creating device files in /dev.
+
+description
+	This package contains the MAKEDEV program, which makes it easier to create
+	and maintain the files in the /dev directory.  /dev directory files
+	correspond to a particular device supported by Linux (serial or printer
+	ports, scanners, sound cards, tape drives, CD-ROM drives, hard drives,
+	etc.) and interface with the drivers in the kernel.
+
+	You should install the MAKEDEV package because the MAKEDEV utility makes
+	it easy to manage the /dev directory device files.
+end
+
+sources    = %{thisapp}-1.tar.gz
+
+build
+	requires
+		libselinux-devel
+	end
+
+	make_build_targets += OPTFLAGS="%{CFLAGS}" SELINUX=1
+	make_install_targets += devdir=/dev makedevdir=/sbin
+
+	install_cmds
+		rm -f %{BUILDROOT}/dev/MAKEDEV
+		mkdir -pv %{BUILDROOT}/usr/share/man/man5
+		install -m 644 -p %{DIR_SOURCE}/makedev.d.5 \
+			%{BUILDROOT}/usr/share/man/man5
+		mkdir -pv %{BUILDROOT}/lib/udev/devices
+		ln -svf ../../../sbin/MAKEDEV \
+			%{BUILDROOT}/lib/udev/devices/MAKEDEV
+	end
+end
+
+packages
+	package %{name}
+		groups += Base
+
+		prerequires = shadow-utils
+		requires += udev
+
+		script prein
+			# Add the floopy group and the vcsa user.
+			getent group floppy >/dev/null || groupadd -g 19 -r -f floppy
+			getent group vcsa >/dev/null || groupadd -g 69 -r -f vcsa
+			getent passwd vcsa >/dev/null || \
+				useradd -r -g vcsa -d /dev -s /sbin/nologin -u 69 \
+				-c "virtual console memory owner" vcsa 2>/dev/null
+		end
+	end
+end
