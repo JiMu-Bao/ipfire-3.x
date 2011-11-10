@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = openvpn
-version    = 2.2-RC2
+version    = 2.2.1
 release    = 1
 
 groups     = Networking/VPN
@@ -20,7 +20,7 @@ description
 	for compression.
 end
 
-source_dl  =
+source_dl  = http://swupdate.openvpn.org/community/releases/
 
 PLUGINS    = auth-pam down-root
 
