@@ -5,7 +5,7 @@
 
 name       = module-init-tools
 version    = 3.16
-release    = 2
+release    = 3
 
 groups     = System/Base
 url        = http://ftp.kernel.org/pub/linux/utils/kernel/module-init-tools/
