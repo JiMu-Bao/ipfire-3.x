@@ -5,9 +5,7 @@
 
 name      = suricata
 version   = 1.1
-devel_ver = rc1
-release   = 0.1-%{devel_ver}
-thisapp   = %{name}-%{version}%{devel_ver}
+release   = 1
 
 groups     = Networking/IDS
 url        = http://www.openinfosecfoundation.org/
