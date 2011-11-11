@@ -5,7 +5,7 @@
 
 name       = ibod
 version    = 1.4
-release    = 1
+release    = 2
 
 groups     = Networking/Tools
 url        = http://www.datenwelt.net/oss/ibod/
@@ -39,6 +39,24 @@ packages
 	package %{name}
 		configfiles
 			/etc/isdn/ibod.cf
+		end
+
+		prerequires += systemd-units
+
+		# There isn't any chance at the moment to determine the names of
+		# spawned instances by a systemd service file.
+		#
+		# So we aren't able to stop any ibod process before uninstalling the package. 
+		script postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postun
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
 		end
 	end
 end

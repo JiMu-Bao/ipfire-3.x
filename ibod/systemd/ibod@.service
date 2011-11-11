@@ -1,0 +1,10 @@
+[Unit]
+Description=ibod on %I
+BindTo=dev-%I.device
+After=dev-%I.device network.service
+Requires=network.service
+
+[Service]
+ExecStart=/usr/bin/ibod /run/network/isdn/%I/ibod.cf
+UtmpIdentifier=%I
+KillMode=process
