@@ -5,7 +5,8 @@
 
 name       = oinkmaster
 version    = 2.0
-release    = 1
+release    = 2
+arch       = noarch
 
 groups     = Development/Libraries
 url        = http://oinkmaster.sourceforge.net
@@ -24,12 +25,15 @@ build
 	end
 
 	build
-		# Nothing to do here.
+		echo "url = http://rules.emergingthreats.net/open/suricata/emerging.rules.tar.gz" >> oinkmaster.conf
+		echo "tmpdir = /var/tmp/" >> oinkmaster.conf
 	end
 
 	install
 		mkdir -pv %{BUILDROOT}/usr/sbin
 		install -m 755 oinkmaster.pl %{BUILDROOT}/usr/sbin
+		mkdir -pv %{BUILDROOT}/etc
+		install -m 644 oinkmaster.conf %{BUILDROOT}/etc
 	end
 end
 

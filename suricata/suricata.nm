@@ -3,9 +3,9 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = suricata
-version    = 1.1beta3
-release    = 5
+name      = suricata
+version   = 1.1
+release   = 1
 
 groups     = Networking/IDS
 url        = http://www.openinfosecfoundation.org/
