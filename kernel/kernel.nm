@@ -25,7 +25,8 @@ end
 localversion = %{release}.%{DISTRO_DISTTAG}.%{DISTRO_ARCH}
 fullver      = %{version}-%{localversion}
 
-sources      = %{thisapp}.tar.gz
+source_dl    = http://www.kernel.org/pub/linux/kernel/v3.x/
+sources      = %{thisapp}.tar.xz
 
 build
 	# icecream cannot be used to compile the kernel.
