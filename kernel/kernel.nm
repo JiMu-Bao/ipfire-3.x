@@ -222,14 +222,14 @@ end
 
 packages
 	template KERNEL
+		kernel_name = kernel
 		kernel_release = %{fullver}
 
 		summary = The Linux kernel %{kernel_release}.
 
-		prerequires = module-init-tools
+		prerequires = dracut grubby module-init-tools
 		provides = kernel
 		requires
-			dracut
 			linux-firmware
 		end
 
@@ -241,8 +241,29 @@ packages
 			/lib/modules/%{kernel_release}
 		end
 
+		_posttrans
+			/sbin/new-kernel-pkg --package %{kernel_name} --mkinitrd --dracut --depmod --update %{kernel_release} || exit $?
+			/sbin/new-kernel-pkg --package %{kernel_name} --rpmposttrans %{kernel_release} || exit $?
+		end
+
 		script posttransin
-			dracut --force /boot/initramfs-%{kernel_release}.img %{kernel_release}
+			%{_posttrans}
+		end
+
+		script posttransup
+			%{_posttrans}
+		end
+
+		script postin
+			/sbin/new-kernel-pkg --package kernel%{?-v:-%{-v*}} --install %{KVERREL}%{?-v:.%{-v*}}
+		end
+
+		script postup
+			/sbin/new-kernel-pkg --package %{kernel_name} --install %{kernel_release}
+		end
+
+		script preun
+			/sbin/new-kernel-pkg --rminitrd --rmmoddep --remove %{kernel_release}
 		end
 	end
 
@@ -271,24 +292,28 @@ packages
 	package kernel
 		template KERNEL
 
+		kernel_name = kernel
 		kernel_release = %{fullver}
 	end
 
 	package kernel-devel
 		template KERNELDEVEL
 
+		kernel_name = kernel
 		kernel_release = %{fullver}
 	end
 
 	package kernel-PAE
 		template KERNEL
 
+		kernel_name = kernel-PAE
 		kernel_release = %{fullver}.PAE
 	end
 
 	package kernel-PAE-devel
 		template KERNELDEVEL
 
+		kernel_name = kernel-PAE
 		kernel_release = %{fullver}.PAE
 	end
 

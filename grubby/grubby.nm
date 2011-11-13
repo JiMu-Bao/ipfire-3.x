@@ -1,0 +1,42 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = grubby
+version    = 8.3
+release    = 1
+
+groups     = System/Base
+url        = http://git.fedorahosted.org/git/grubby.git
+license    = GPLv2+
+summary    = Command line tool for updating bootloader configs.
+
+description
+	grubby  is  a command line tool for updating and displaying information about 
+	the configuration files for the grub, lilo, elilo (ia64), yaboot (powerpc)  
+	and zipl (s390) boot loaders. It is primarily designed to be used from scripts
+	which install new kernels and need to find information about the current boot 
+	environment.
+end
+
+sources = %{thisapp}.tar.bz2
+
+build
+	requires
+		glib2-devel
+		libblkid-devel
+		popt-devel
+		util-linux
+	end
+
+	test
+		make test
+	end
+
+	make_install_targets += mandir=/usr/share/man
+end
+
+packages
+	package %{name}
+end
