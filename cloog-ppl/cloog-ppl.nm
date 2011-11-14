@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = cloog-ppl
-version    = 0.15.9
-release    = 3
+version    = 0.15.11
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -19,6 +19,8 @@ description
 	parametrized polyhedron or parametrized polyhedra union is reached. CLooG is \
 	designed to avoid control overhead and to produce a very efficient code.
 end
+
+source_dl += ftp://gcc.gnu.org/pub/gcc/infrastructure/
 
 build
 	requires
@@ -44,8 +46,7 @@ end
 
 packages
 	package %{name}
-	end
-	
+
 	package %{name}-devel
 		template DEVEL
 	end
