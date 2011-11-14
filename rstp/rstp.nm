@@ -5,7 +5,7 @@
 
 name       = rstp
 version    = 0.21
-release    = 7
+release    = 8
 
 groups     = Networking/Tools
 url        = http://git.ipfire.org/?p=thirdparty/rstp.git;a=summary
@@ -25,12 +25,15 @@ build
 
 	install
 		make install INSTALLPREFIX=%{BUILDROOT}
-		install -v -m 755 %{DIR_SOURCE}/bridge-stp %{BUILDROOT}/sbin/bridge-stp
+
+		rm -vf %{BUILDROOT}/sbin/bridge-stp
 	end
 end
 
 packages
 	package %{name}
+		requires = network
+
 		script postin
 			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
 			/bin/systemctl --no-reload enable rstp.service >/dev/null 2>&1 || :

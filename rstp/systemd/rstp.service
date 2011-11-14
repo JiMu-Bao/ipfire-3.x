@@ -4,7 +4,6 @@ Before=network.service
 
 [Service]
 RemainAfterExit=yes
-ExecStartPre=/sbin/modprobe net_pf_17
 ExecStart=/sbin/rstpd -d
 
 [Install]
