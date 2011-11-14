@@ -102,12 +102,20 @@
  	$(LINKER) $(LINKERFLAGS) $(LDFLAGS) -o $@ \
 --- gcc/graphite-cloog-compat.h.jj	2011-01-03 12:53:05.000000000 +0100
 +++ gcc/graphite-cloog-compat.h	2011-01-04 17:34:09.857757544 +0100
-@@ -272,4 +272,263 @@ static inline int cloog_matrix_nrows (Cl
+@@ -272,4 +272,277 @@ static inline int cloog_matrix_nrows (Cl
     return m->NbRows;
  }
  #endif /* CLOOG_ORG  */
 +
 +#include <dlfcn.h>
++#if PPL_VERSION_MAJOR == 0 && PPL_VERSION_MINOR < 11
++#define DYNSYMS_PPL11
++#else
++#define DYNSYMS_PPL11 \
++  DYNSYM (ppl_new_PIP_Problem_from_constraints); \
++  DYNSYM (ppl_PIP_Problem_is_satisfiable); \
++  DYNSYM (ppl_delete_PIP_Problem);
++#endif
 +#define DYNSYMS \
 +  DYNSYM (cloog_block_alloc); \
 +  DYNSYM (cloog_block_list_free); \
@@ -217,7 +225,8 @@
 +  DYNSYM (ppl_new_Constraint_System_from_Constraint); \
 +  DYNSYM (ppl_new_C_Polyhedron_from_Constraint_System); \
 +  DYNSYM (ppl_Polyhedron_affine_image); \
-+  DYNSYM (ppl_io_fprint_Pointset_Powerset_C_Polyhedron);
++  DYNSYM (ppl_io_fprint_Pointset_Powerset_C_Polyhedron); \
++  DYNSYMS_PPL11
 +extern struct
 +{
 +  bool inited;
@@ -360,7 +369,12 @@
 +#define ppl_new_Constraint_System_from_Constraint (*cloog_pointers__.p_ppl_new_Constraint_System_from_Constraint)
 +#define ppl_new_C_Polyhedron_from_Constraint_System (*cloog_pointers__.p_ppl_new_C_Polyhedron_from_Constraint_System)
 +#define ppl_Polyhedron_affine_image (*cloog_pointers__.p_ppl_Polyhedron_affine_image)
-+#define ppl_io_fprint_Pointset_Powerset_C_Polyhedron (cloog_pointers__.p_ppl_io_fprint_Pointset_Powerset_C_Polyhedron)
++#define ppl_io_fprint_Pointset_Powerset_C_Polyhedron (*cloog_pointers__.p_ppl_io_fprint_Pointset_Powerset_C_Polyhedron)
++#if !(PPL_VERSION_MAJOR == 0 && PPL_VERSION_MINOR < 11)
++#define ppl_new_PIP_Problem_from_constraints (*cloog_pointers__.p_ppl_new_PIP_Problem_from_constraints)
++#define ppl_PIP_Problem_is_satisfiable (*cloog_pointers__.p_ppl_PIP_Problem_is_satisfiable)
++#define ppl_delete_PIP_Problem (*cloog_pointers__.p_ppl_delete_PIP_Problem)
++#endif
 +
 +#define cloog_finalize (*cloog_pointers__.p_ppl_finalize)
 +
@@ -368,9 +382,9 @@
  #endif /* GRAPHITE_CLOOG_COMPAT_H  */
 --- gcc/graphite.c.jj	2011-01-03 12:53:05.194056513 +0100
 +++ gcc/graphite.c	2011-01-04 16:18:32.385007767 +0100
-@@ -54,6 +54,35 @@ along with GCC; see the file COPYING3.  
- #include "graphite-clast-to-gimple.h"
- #include "graphite-sese-to-poly.h"
+@@ -56,6 +56,35 @@ along with GCC; see the file COPYING3.  
+ 
+ CloogState *cloog_state;
  
 +__typeof (cloog_pointers__) cloog_pointers__;
 +
@@ -404,7 +418,7 @@
  /* Print global statistics to FILE.  */
  
  static void
-@@ -199,6 +228,12 @@ graphite_initialize (void)
+@@ -201,6 +230,12 @@ graphite_initialize (void)
        return false;
      }
  

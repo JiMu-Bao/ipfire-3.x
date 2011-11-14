@@ -4,13 +4,11 @@
 ###############################################################################
 
 # Configure build to compile with cloog and ppl.
-# XXX THIS PACKAGE DOES CURRENTLY NOT BUILD WITH CLOOG AND PPL WHICH
-# NEEDS TO BE FIXED SOON.
-build_cloog_ppl = 0
+build_cloog_ppl = 1
 
 name       = gcc
 version    = 4.6.2
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
