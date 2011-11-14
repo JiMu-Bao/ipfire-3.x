@@ -3,7 +3,6 @@ Description=Multiple Spanning Tree Protocol Daemon
 Before=network.service
 
 [Service]
-ExecStartPre=/sbin/modprobe net_pf_17
 ExecStart=/sbin/mstpd -d
 Restart=always
 

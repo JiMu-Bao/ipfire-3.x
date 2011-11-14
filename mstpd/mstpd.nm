@@ -5,12 +5,12 @@
 
 name       = mstpd
 version    = 0.01
-git_ver    = 0d06abf
-release    = 0.1-git%{git_ver}.1
-thisapp    = %{name}-%{version}-git%{git_ver}
+svn_ver    = 16
+release    = 0.2-svn%{svn_ver}.1
+thisapp    = %{name}-%{version}-svn%{svn_ver}
 
 groups     = Networking/Tools
-url        = http://git.ipfire.org/?p=thirdparty/mstpd.git;a=summary
+url        = http://sourceforge.net/projects/mstpd/
 license    = GPLv2+
 summary    = The Multiple Spanning Tree Protocol Daemon.
 
@@ -19,21 +19,27 @@ description
 	running upon the Linux ethernet bridge.
 end
 
+# Tarballs are created as follows:
+# svn export http://svn.code.sf.net/p/mstpd/code/trunk mstpd-%{version}-svn%{svn_ver}
+# tar cvfz mstpd-%{version}-svn%{svn_ver}.tar.gz mstpd-%{version}-svn%{svn_ver}
+
 build
-	prepare_cmds
-		# Please do not ship code with -Werror enabled.
-		sed -i Makefile \
-			-e "s/-Werror//"
-	end
+	# Compile for release.
+	make_build_targets += MODE=release
 
 	install_cmds
-		install -v -m 755 %{DIR_SOURCE}/bridge-stp \
-			%{BUILDROOT}/sbin/bridge-stp
+		rm -vf %{BUILDROOT}/sbin/bridge-stp
 	end
 end
 
 packages
 	package %{name}
+		requires = network
+
+		# A regression in the Linux kernel causes that no port
+		# was brought up. It was fixed in 3.0.4-11.
+		requires += kernel>=3.0.4-11
+
 		script postin
 			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
 			/bin/systemctl --no-reload enable mstpd.service >/dev/null 2>&1 || :
