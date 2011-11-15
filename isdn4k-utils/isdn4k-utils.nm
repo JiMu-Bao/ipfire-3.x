@@ -6,7 +6,7 @@
 name       = isdn4k-utils
 version    = 3.2
 devel_ver  = CVS-2010-05-01
-release    = 3
+release    = 4
 thisapp    = %{name}-%{devel_ver}-patched
 
 groups     = Networking/Tools
