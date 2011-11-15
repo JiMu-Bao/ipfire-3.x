@@ -5,7 +5,7 @@
 
 name       = audit
 version    = 2.1.3
-release    = 1
+release    = 2
 
 groups     = System/Daemons
 url        = http://people.redhat.com/sgrubb/audit/
@@ -42,6 +42,10 @@ build
 
 	prepare_cmds
 		autoreconf -fvi
+	end
+
+	test
+		make check
 	end
 
 	install_cmds
