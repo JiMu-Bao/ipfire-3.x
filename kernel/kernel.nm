@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kernel
-version    = 3.0.4
-release    = 11
+version    = 3.1.1
+release    = 1
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -37,10 +37,12 @@ build
 	requires
 		binutils-devel
 		elfutils-devel
+		gettext
 		module-init-tools
 		ncurses-devel
 		net-tools
 		newt-devel
+		pciutils-devel
 		perl
 		python-devel
 		slang-devel
@@ -138,8 +140,8 @@ build
 			# Install modules.
 			make ARCH=%{kernel_arch} INSTALL_MOD_PATH=%{BUILDROOT} mod-fw= \
 				KERNELRELEASE=${fullversion} modules_install
-			#make ARCH=%{kernel_arch} INSTALL_MOD_PATH=%{BUILDROOT} \
-			#	KERNELRELEASE=${fullversion} vdso_install
+			make ARCH=%{kernel_arch} INSTALL_MOD_PATH=%{BUILDROOT} \
+				KERNELRELEASE=${fullversion} vdso_install
 
 			# Create an empty settings file for dracut
 			mkdir -pv %{BUILDROOT}/etc/ld.so.conf.d
@@ -195,6 +197,15 @@ build
 		for kernel in %{kernels}; do
 			build_kernel ${kernel}
 		done
+
+		# Build tools.
+		# cpupower
+		chmod +x tools/power/cpupower/utils/version-gen.sh
+		make -C tools/power/cpupower CPUFREQ_BENCH=false %{PARALLELISMFLAGS}
+
+		cd tools/power/cpupower/debug/i386
+		make %{PARALLELISMFLAGS} centrino-decode powernow-k8-decode
+		cd -
 	end
 
 	install
@@ -218,6 +229,15 @@ build
 		make -C tools/perf DESTDIR=%{BUILDROOT} \
 			HAVE_CPLUS_DEMANGLE=1 prefix=/usr perfexecdir=lib/perf-core \
 			install #install-man
+
+		# cpupower
+		make -C tools/power/cpupower DESTDIR=%{BUILDROOT} libdir=/usr/lib \
+			mandir=/usr/share/man CPUFREQ_BENCH=false install
+		cd tools/power/cpupower/debug/i386
+		install -m 755 centrino-decode %{BUILDROOT}/usr/bin/centrino-decode
+		install -m 755 powernow-k8-decode %{BUILDROOT}/usr/bin/powernow-k8-decode
+		cd -
+		chmod 0755 %{BUILDROOT}/usr/lib/libcpupower.so*
 	end
 end
 
