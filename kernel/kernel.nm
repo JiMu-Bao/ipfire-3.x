@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 3.1.1
-release    = 1
+release    = 2
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -50,15 +50,47 @@ build
 	end
 
 	# A list of kernels to build.
-	kernels = default
+	kernels =
 
+	# Should we build cpupower?
+	build_cpupower = 1
+
+	kernel_target = bzImage
 	if "%{DISTRO_ARCH}" == "i686"
-		# Build a PAE-enabled kernel for the i686 architecture.
-		kernels += PAE
+		# Build a default and PAE-enabled kernel for the
+		# i686 architecture.
+		build_kernel_default = 1
+		build_kernel_pae = 1
 
 		kernel_arch  = x86
 		kernel_image = arch/%{kernel_arch}/boot/bzImage
-		kernel_target = bzImage
+
+	end
+
+	if "%{DISTRO_ARCH}" == "armv5tel"
+		# Build versatile kernel.
+		build_kernel_versatile = 1
+
+		kernel_arch  = arm
+		kernel_image = arch/%{kernel_arch}/boot/zImage
+
+		# ARM does not support cpupower.
+		build_cpupower = 0
+	end
+
+	# Build default kernel.
+	if "%{build_kernel_default}" == "1"
+		kernels += default
+	end
+
+	# Build PAE-enabled kernel.
+	if "%{build_kernel_pae}" == "1"
+		kernels += PAE
+	end
+
+	# Build ARM versatile kernel.
+	if "%{build_kernel_versatile}" == "1"
+		kernels += versatile
 	end
 
 	prepare_cmds
@@ -200,12 +232,14 @@ build
 
 		# Build tools.
 		# cpupower
-		chmod +x tools/power/cpupower/utils/version-gen.sh
-		make -C tools/power/cpupower CPUFREQ_BENCH=false %{PARALLELISMFLAGS}
+		if [ "%{build_cpupower}" = "1" ]; then
+			chmod +x tools/power/cpupower/utils/version-gen.sh
+			make -C tools/power/cpupower CPUFREQ_BENCH=false %{PARALLELISMFLAGS}
 
-		cd tools/power/cpupower/debug/i386
-		make %{PARALLELISMFLAGS} centrino-decode powernow-k8-decode
-		cd -
+			cd tools/power/cpupower/debug/i386
+			make %{PARALLELISMFLAGS} centrino-decode powernow-k8-decode
+			cd -
+		fi
 	end
 
 	install
@@ -231,13 +265,15 @@ build
 			install #install-man
 
 		# cpupower
-		make -C tools/power/cpupower DESTDIR=%{BUILDROOT} libdir=/usr/lib \
-			mandir=/usr/share/man CPUFREQ_BENCH=false install
-		cd tools/power/cpupower/debug/i386
-		install -m 755 centrino-decode %{BUILDROOT}/usr/bin/centrino-decode
-		install -m 755 powernow-k8-decode %{BUILDROOT}/usr/bin/powernow-k8-decode
-		cd -
-		chmod 0755 %{BUILDROOT}/usr/lib/libcpupower.so*
+		if [ "%{build_cpupower}" = "1" ]; then
+			make -C tools/power/cpupower DESTDIR=%{BUILDROOT} libdir=/usr/lib \
+				mandir=/usr/share/man CPUFREQ_BENCH=false install
+			cd tools/power/cpupower/debug/i386
+			install -m 755 centrino-decode %{BUILDROOT}/usr/bin/centrino-decode
+			install -m 755 powernow-k8-decode %{BUILDROOT}/usr/bin/powernow-k8-decode
+			cd -
+			chmod 0755 %{BUILDROOT}/usr/lib/libcpupower.so*
+		fi
 	end
 end
 
@@ -311,32 +347,52 @@ packages
 		end
 	end
 
-	package kernel
-		template KERNEL
+	if "%{build_kernel_default}" == "1"
+		package kernel
+			template KERNEL
 
-		kernel_name = kernel
-		kernel_release = %{fullver}
+			kernel_name = kernel
+			kernel_release = %{fullver}
+		end
+
+		package kernel-devel
+			template KERNELDEVEL
+
+			kernel_name = kernel
+			kernel_release = %{fullver}
+		end
 	end
 
-	package kernel-devel
-		template KERNELDEVEL
+	if "%{build_kernel_pae}" == "1"
+		package kernel-PAE
+			template KERNEL
 
-		kernel_name = kernel
-		kernel_release = %{fullver}
+			kernel_name = kernel-PAE
+			kernel_release = %{fullver}.PAE
+		end
+
+		package kernel-PAE-devel
+			template KERNELDEVEL
+
+			kernel_name = kernel-PAE
+			kernel_release = %{fullver}.PAE
+		end
 	end
 
-	package kernel-PAE
-		template KERNEL
+	if "%{build_kernel_versatile}" == "1"
+		package kernel-versatile
+			template KERNEL
 
-		kernel_name = kernel-PAE
-		kernel_release = %{fullver}.PAE
-	end
+			kernel_name = kernel-versatile
+			kernel_release = %{fullver}.versatile
+		end
 
-	package kernel-PAE-devel
-		template KERNELDEVEL
+		package kernel-versatile-devel
+			kernel KERNELDEVEL
 
-		kernel_name = kernel-PAE
-		kernel_release = %{fullver}.PAE
+			kernel_name = kernel-versatile
+			kernel_release = %{fullver}.versatile
+		end
 	end
 
 	package kernel-headers
