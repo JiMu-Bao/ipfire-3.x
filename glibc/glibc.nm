@@ -7,7 +7,7 @@
 
 name       = glibc
 version    = 2.14
-release    = 3
+release    = 4
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -25,8 +25,11 @@ description
 	Linux system will not function.
 end
 
+# The version of the ports addon.
+ports_version = %{version}
+
 source_dl  = http://ftp.gnu.org/gnu/glibc/
-sources    = %{thisapp}.tar.xz
+sources    = %{thisapp}.tar.xz glibc-ports-%{ports_version}.tar.xz
 
 build
 	# Optimize glibc for kernel
@@ -58,6 +61,8 @@ build
 	export QUALITY_AGENT_RPATH_ALLOW_ORIGIN=yes
 
 	prepare_cmds
+		ln -svf ../glibc-ports-%{ports_version} ports
+
 		# In the vi_VN.TCVN locale, bash enters an infinite loop at startup. It is
 		# unknown whether this is a bash bug or a Glibc problem. Disable
 		# installation of this locale in order to avoid the problem.
@@ -132,27 +137,36 @@ build
 			-e "s/tst-sigset2//g"
 	end
 
+	configure_options = \
+		--build=%{DISTRO_BUILDTARGET} \
+		--host=%{DISTRO_BUILDTARGET} \
+		--prefix=/usr \
+		--libexecdir=/usr/lib/glibc \
+		--disable-profile \
+		--enable-add-ons \
+		--enable-kernel=%{OPTIMIZED_KERNEL} \
+		--with-selinux \
+		--disable-werror \
+		--enable-bind-now \
+		--enable-__thread \
+		--enable-tls \
+		--enable-experimental-malloc \
+		--with-gd \
+		--with-nss-crypt
+
+	if "%{DISTRO_ARCH}" == "armv5tel"
+		# Disable hardware FP for ARM.
+		configure_options += \
+			--without-fp
+	end
+
 	build
-		mkdir %{DIR_SRC}/glibc-build
+		mkdir -p %{DIR_SRC}/glibc-build
 		cd %{DIR_SRC}/glibc-build
 
 		CFLAGS="${CFLAGS} -fno-asynchronous-unwind-tables" \
 		../%{thisapp}/configure \
-			--build=%{DISTRO_BUILDTARGET} \
-			--host=%{DISTRO_BUILDTARGET} \
-			--prefix=/usr \
-			--libexecdir=/usr/lib/glibc \
-			--disable-profile \
-			--enable-add-ons \
-			--enable-kernel=%{OPTIMIZED_KERNEL} \
-			--with-selinux \
-			--disable-werror \
-			--enable-bind-now \
-			--enable-__thread \
-			--enable-tls \
-			--enable-experimental-malloc \
-			--with-gd \
-			--with-nss-crypt
+			%{configure_options}
 
 		sed -i config.make \
 			-e "s/^build-pic-default=.*/build-pic-default=yes/"
