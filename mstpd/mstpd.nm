@@ -6,7 +6,7 @@
 name       = mstpd
 version    = 0.01
 svn_ver    = 16
-release    = 0.2-svn%{svn_ver}.2
+release    = 0.2-svn%{svn_ver}.3
 thisapp    = %{name}-%{version}-svn%{svn_ver}
 
 groups     = Networking/Tools
@@ -38,7 +38,7 @@ packages
 
 		# A regression in the Linux kernel causes that no port
 		# was brought up. It was fixed in 3.0.4-11.
-		requires += kernel>=3.0.4-11
+		conflicts += kernel<3.0.4-11
 
 		script postin
 			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
