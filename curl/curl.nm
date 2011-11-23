@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = curl
-version    = 7.21.7
+version    = 7.23.1
 release    = 1
 
 groups     = Application/Internet
@@ -20,7 +20,7 @@ description
 	user authentication, FTP upload, HTTP post, and file transfer resume.
 end
 
-source_dl  =
+source_dl  = http://curl.haxx.se/download/
 
 build
 	requires
