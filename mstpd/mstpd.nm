@@ -6,7 +6,7 @@
 name       = mstpd
 version    = 0.01
 svn_ver    = 16
-release    = 0.2-svn%{svn_ver}.1
+release    = 0.2-svn%{svn_ver}.2
 thisapp    = %{name}-%{version}-svn%{svn_ver}
 
 groups     = Networking/Tools
