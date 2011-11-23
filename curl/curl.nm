@@ -5,7 +5,7 @@
 
 name       = curl
 version    = 7.23.1
-release    = 1
+release    = 2
 
 groups     = Application/Internet
 url        = http://www.curl.haxx.se/
@@ -53,10 +53,9 @@ build
 		autoreconf -vfi
 	end
 
-	# Doesn't work
-	#test
-	#	make check
-	#end
+	test
+		make check
+	end
 end
 
 packages
