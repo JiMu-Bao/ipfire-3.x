@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 3.1.1
-release    = 1
+release    = 2
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -249,7 +249,7 @@ packages
 		summary = The Linux kernel %{kernel_release}.
 
 		prerequires = dracut grubby module-init-tools
-		provides = kernel
+		provides = kernel=%{kernel_release}
 		requires
 			%{prerequires}
 			linux-firmware
