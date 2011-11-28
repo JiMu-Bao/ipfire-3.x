@@ -77,6 +77,10 @@ build
 		configure_options = --with-arch=%{DISTRO_ARCH} --with-tune=generic
 	end
 
+	if "%{DISTRO_ARCH}" == "armv5tel"
+		configure_options += --with-float=soft
+	end
+
 	if "%{build_cloog_ppl}" == "1"
 		configure_options += --with-cloog --with-ppl
 	end
