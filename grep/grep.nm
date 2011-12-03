@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = grep
-version    = 2.9
+version    = 2.10
 release    = 1
 
 groups     = Base Build Applications/Text
@@ -18,7 +18,7 @@ description
 	prints the matching lines. GNU's grep utilities include grep, egrep and fgrep.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.gnu.org/gnu/grep/
 sources    = %{thisapp}.tar.xz
 
 build
