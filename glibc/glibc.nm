@@ -3,11 +3,9 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-# TODO tzdata
-
 name       = glibc
 version    = 2.14
-release    = 3
+release    = 4
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -193,6 +191,7 @@ build
 		# Timezone
 		cp -v --remove-destination %{BUILDROOT}/usr/share/zoneinfo/GMT \
 			%{BUILDROOT}/etc/localtime
+		rm -rf %{BUILDROOT}/usr/share/zoneinfo
 
 		# Configuration
 		cp -vf %{DIR_SOURCE}/{ld.so.conf,nsswitch.conf} %{BUILDROOT}/etc
@@ -229,6 +228,8 @@ packages
 
 	package glibc-common
 		# XXX description and summary are missing
+
+		requires = tzdata
 
 		files
 			/usr/bin
