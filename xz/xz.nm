@@ -20,7 +20,7 @@ description
 	tools.
 end
 
-source_url = http://tukaani.org/xz/
+source_dl  = http://tukaani.org/xz/
 sources    = %{thisapp}.tar.xz
 
 packages
