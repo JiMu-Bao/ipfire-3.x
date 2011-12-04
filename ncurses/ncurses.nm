@@ -5,7 +5,7 @@
 
 name       = ncurses
 version    = 5.9
-release    = 4
+release    = 5
 
 groups     = System/Base
 url        = http://invisible-island.net/ncurses/ncurses.html
@@ -126,7 +126,7 @@ packages
 		template LIBS
 	
 		requires
-			%{name}-base
+			%{name}-base=%{thisver}
 		end
 	end
 	
