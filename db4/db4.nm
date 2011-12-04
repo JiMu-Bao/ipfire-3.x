@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = db
-version_major = 4.7
-version_minor = 25
+version_major = 4.8
+version_minor = 30
 version    = %{version_major}.%{version_minor}
 release    = 1
 epoch      = 1
