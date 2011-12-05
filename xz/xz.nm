@@ -5,7 +5,7 @@
 
 name       = xz
 version    = 5.0.3
-release    = 5
+release    = 6
 
 compat_version = 4.999.9beta
 
@@ -31,6 +31,11 @@ build
 		cd %{DIR_SRC}/%{name}-%{compat_version}
 		./configure %{configure_options}
 		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		export LD_LIBRARY_PATH=$(pwd)/src/liblzma/.libs
+		make check
 	end
 
 	install_cmds
