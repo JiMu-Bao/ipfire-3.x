@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = mpfr
-version    = 3.0.0
+version    = 3.1.0
 release    = 1
 
 groups     = System/Libraries
@@ -21,11 +21,11 @@ description
 	library.
 end
 
-source_dl  =
+source_dl  = http://mpfr.loria.fr/mpfr-%{version}/
 
 build
 	requires
-		gmp-devel
+		gmp-devel>=4.3.2
 	end
 
 	configure_options += \
@@ -34,6 +34,11 @@ build
 	test
 		make check
 	end
+
+	install_cmds
+		ln -svf libmpfr.so.4 %{BUILDROOT}/usr/lib/libmpfr.so.1
+		ln -svf libmpfr.so.4.1.0 %{BUILDROOT}/usr/lib/libmpfr.so.1.2.2
+	end
 end
 
 packages
@@ -41,5 +46,15 @@ packages
 	
 	package %{name}-devel
 		template DEVEL
+	end
+
+	package %{name}-compat
+		summary = Compat libraries of %{thisapp}.
+
+		provides = libmpfr.so.1
+
+		files
+			/usr/lib/libmpfr.so.1*
+		end
 	end
 end
