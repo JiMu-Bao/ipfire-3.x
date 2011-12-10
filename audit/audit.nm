@@ -5,7 +5,7 @@
 
 name       = audit
 version    = 2.1.3
-release    = 4
+release    = 5
 
 groups     = System/Daemons
 url        = http://people.redhat.com/sgrubb/audit/
@@ -56,13 +56,14 @@ build
 		mkdir -pv %{BUILDROOT}/usr/sbin/
 		mv -v %{BUILDROOT}/sbin/audisp*remote %{BUILDROOT}/usr/sbin/
 
+		mkdir -pv %{BUILDROOT}/var/log/audit
+
 		rm -rfv %{BUILDROOT}/etc/{rc.d,sysconfig}
 	end
 end
 
 packages
 	package %{name}
-
 		prerequires += systemd-units
 
 		script postin
