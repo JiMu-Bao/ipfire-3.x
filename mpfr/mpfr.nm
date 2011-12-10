@@ -5,7 +5,9 @@
 
 name       = mpfr
 version    = 3.1.0
-release    = 1
+release    = 2
+
+compat_version = 2.4.2
 
 groups     = System/Libraries
 url        = http://www.mpfr.org/
@@ -22,6 +24,7 @@ description
 end
 
 source_dl  = http://mpfr.loria.fr/mpfr-%{version}/
+sources   += %{name}-%{compat_version}.tar.bz2
 
 build
 	requires
@@ -29,15 +32,32 @@ build
 	end
 
 	configure_options += \
-		--enable-thread-safe
+		--enable-thread-safe \
+		--disable-assert
+
+	build_cmds
+
+		cd %{DIR_SRC}/%{name}-%{compat_version}
+		./configure \
+			%{configure_options}
+
+		export LD_LIBRARY_PATH=$(pwd)/.libs
+		make %{PARALLELISMFLAGS}
+	end
 
 	test
+		export LD_LIBRARY_PATH=$(pwd)/.libs
+		make check
+
+		cd %{DIR_SRC}/%{name}-%{compat_version}
+		export LD_LIBRARY_PATH=$(pwd)/.libs
 		make check
 	end
 
 	install_cmds
-		ln -svf libmpfr.so.4 %{BUILDROOT}/usr/lib/libmpfr.so.1
-		ln -svf libmpfr.so.4.1.0 %{BUILDROOT}/usr/lib/libmpfr.so.1.2.2
+		cd %{DIR_SRC}/%{name}-%{compat_version}
+		install -m 644 .libs/libmpfr.so.1.2.2 %{BUILDROOT}/usr/lib/
+		ln -svf libmpfr.so.1.2.2 %{BUILDROOT}/usr/lib/libmpfr.so.1
 	end
 end
 
@@ -50,8 +70,6 @@ packages
 
 	package %{name}-compat
 		summary = Compat libraries of %{thisapp}.
-
-		provides = libmpfr.so.1
 
 		files
 			/usr/lib/libmpfr.so.1*
