@@ -5,7 +5,7 @@
 
 name       = libsemanage
 version    = 2.1.5
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.selinuxproject.org
@@ -53,8 +53,8 @@ packages
 	package %{name}-devel
 		template DEVEL
 	end
-
-	package python-selinux-manage
+	
+	package python-libsemanage
 		summary =  SELinux manage python bindings.
 		description = SELinux python bindings for libsemanage.
 
