@@ -110,4 +110,8 @@ packages
 			mv -f /etc/shells{.$$,}
 		end
 	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
 end

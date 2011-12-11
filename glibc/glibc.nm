@@ -249,7 +249,7 @@ end
 
 packages
 	package glibc
-		requires = glibc-common=%{thisver}	
+		requires = glibc-common=%{thisver}
 	end
 
 	package glibc-common
@@ -338,5 +338,9 @@ packages
 			/usr/lib/libmemusage.so
 			/usr/lib/libpcprofile.so
 		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
 	end
 end

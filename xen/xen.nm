@@ -110,4 +110,8 @@ packages
 			develop applications which manage Xen virtual machines.
 		end
 	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
 end

@@ -40,12 +40,16 @@ end
 packages
 	package %{name}
 	end
-	
+
 	package %{name}-devel
 		template DEVEL
-	
+
 		requires
 			glib2-devel
 		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
 	end
 end

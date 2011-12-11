@@ -40,4 +40,8 @@ packages
 		# Say we provide an alternative spelling of the package name.
 		provides = pkgconfig
 	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
 end

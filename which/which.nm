@@ -21,4 +21,8 @@ source_dl  = http://carlo17.home.xs4all.nl/which/
 
 packages
 	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
 end

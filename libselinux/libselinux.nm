@@ -64,11 +64,11 @@ end
 packages
 	package %{name}
 	end
-	
+
 	package %{name}-devel
 		template DEVEL
 	end
-	
+
 	package %{name}-utils
 		summary = SELinux libselinux utitlities.
 		description
@@ -80,7 +80,7 @@ packages
 			/usr/share/man/man{5,8}/*
 		end
 	end
-	
+
 	#package python-selinux
 	#	summary =  SELinux python bindings.
 	#	description = SELinux python bindings for libselinux.
@@ -89,6 +89,10 @@ packages
 	#		/usr/lib/python*
 	#	end
 	#end
-	
-	
+
+
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
 end

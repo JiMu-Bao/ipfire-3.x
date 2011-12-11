@@ -103,4 +103,8 @@ packages
 			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
 		end
 	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
 end

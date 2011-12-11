@@ -54,4 +54,8 @@ packages
 			/bin/systemctl try-restart mstpd.service >/dev/null 2>&1 || :
 		end
 	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
 end

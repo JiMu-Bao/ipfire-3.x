@@ -34,4 +34,8 @@ packages
 		# /usr/share/aclocal must be in main package.
 		files += !/usr/share/aclocal
 	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
 end

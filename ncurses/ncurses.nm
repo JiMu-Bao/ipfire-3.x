@@ -121,15 +121,15 @@ end
 
 packages
 	package %{name}
-	
+
 	package %{name}-libs
 		template LIBS
-	
+
 		requires
 			%{name}-base=%{thisver}
 		end
 	end
-	
+
 	package %{name}-devel
 		template DEVEL
 	end
@@ -192,5 +192,9 @@ packages
 			/usr/share/terminfo/*/xfce
 			/usr/share/terminfo/*/xterm xterm-*
 		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
 	end
 end
