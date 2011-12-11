@@ -80,4 +80,8 @@ packages
 			/usr/share/man/man1
 		end
 	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
 end
