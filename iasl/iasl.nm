@@ -5,7 +5,7 @@
 
 name       = iasl
 version    = 20111123
-release    = 1
+release    = 2
 thisapp    = acpica-unix-%{version}
 
 maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
@@ -53,4 +53,8 @@ end
 
 packages
 	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
 end
