@@ -5,7 +5,7 @@
 
 name       = xen
 version    = 4.1.2
-release    = 2
+release    = 3
 
 maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
 groups     = Applications/Virtualization
@@ -19,7 +19,7 @@ description
 	feature set for virtualization.
 end
 
-source_dl  =
+source_dl  = http://bits.xensource.com/oss-xen/release/%{version}/
 sources    = %{thisapp}.tar.gz xen-utils-0.1.tar.bz2
 
 build
