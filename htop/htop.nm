@@ -5,9 +5,9 @@
 
 name       = htop
 version    = 1.0
-release    = 1
+release    = 2
 
-groups     = Base Applications/System
+groups     = Applications/System
 url        = http://htop.sourceforge.net/
 license    = GPL+
 summary    = Interactive process viewer.
@@ -34,6 +34,7 @@ end
 
 packages
 	package %{name}
+		groups += Base
 	end
 
 	package %{name}-debuginfo
