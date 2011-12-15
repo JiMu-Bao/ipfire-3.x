@@ -5,7 +5,7 @@
 
 name       = dev86
 version    = 0.16.18
-release    = 1
+release    = 2
 
 maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
 groups     = Development/Languages
@@ -56,5 +56,9 @@ packages
 
 	package %{name}-devel
 		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
 	end
 end
