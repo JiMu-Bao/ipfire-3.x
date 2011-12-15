@@ -5,9 +5,9 @@
 
 name       = passwd
 version    = 0.76
-release    = 1
+release    = 2
 
-groups     = Base System/Base
+groups     = System/Base
 url        = http://fedorahosted.org/passwd
 license    = BSD
 summary    = An utility for setting or changing passwords using PAM.
@@ -43,6 +43,8 @@ end
 
 packages
 	package %{name}
+		groups += Base
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
