@@ -5,7 +5,7 @@
 
 name       = beecrypt
 version    = 4.2.1
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://beecrypt.sourceforge.net/
@@ -27,8 +27,6 @@ build
 		automake
 		gcc-c++
 		libtool
-
-		perl-Carp
 	end
 
 	prepare_cmds
@@ -36,10 +34,16 @@ build
 		autoreconf
 	end
 
+	# Getting weird linking errors without --disable-threads.
 	configure_options += \
+		--disable-expert-mode \
+		--disable-threads \
+		--enable-openmp \
 		--with-cplusplus=no \
 		--with-java=no \
 		--with-python=no
+
+	make_build_targets += OPENMP_LIBS="-lgomp"
 
 	test
 		make check
