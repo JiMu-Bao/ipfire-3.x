@@ -41,12 +41,15 @@ build
 		module-init-tools
 		ncurses-devel
 		net-tools
-		newt-devel
-		pciutils-devel
 		perl
 		python-devel
-		slang-devel
 		xz-lzma-compat
+	end
+
+	tools_cpupower_requires
+		newt-devel
+		pcituils-devel
+		slang-devel
 	end
 
 	# A list of kernels to build.
@@ -78,6 +81,15 @@ build
 		build_cpupower = 0
 	end
 
+	if "%{DISTRO_ARCH}" == "armv7hl"
+		# Currently build no kernel images.
+
+		kernel_arch  = arm
+
+		# ARM does not support cpupower.
+		build_cpupower = 0
+	end
+
 	# Build default kernel.
 	if "%{build_kernel_default}" == "1"
 		kernels += default
@@ -91,6 +103,11 @@ build
 	# Build ARM versatile kernel.
 	if "%{build_kernel_versatile}" == "1"
 		kernels += versatile
+	end
+
+	# Add tools' build requirements if build is requested.
+	if "%{build_cpupower}" == "1"
+		requires += %{tools_cpupower_requires}
 	end
 
 	prepare_cmds
