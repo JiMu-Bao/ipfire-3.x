@@ -3,12 +3,13 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = db
+name       = db4
 version_major = 4.8
 version_minor = 30
 version    = %{version_major}.%{version_minor}
-release    = 1
+release    = 2
 epoch      = 1
+thisapp    = db-%{version}
 
 # Never update this to major version 5.
 
@@ -54,6 +55,9 @@ packages
 
 	package db4-devel
 		template DEVEL
+
+		# Overwrite because of epoch != 0.
+		requires = %{name}=%{epoch}:%{thisver}
 
 		files += \
 			!/usr/lib*/libdb-%{version_major}.so

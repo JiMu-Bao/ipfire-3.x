@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 3.1.4
-release    = 2
+release    = 3
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -41,12 +41,15 @@ build
 		module-init-tools
 		ncurses-devel
 		net-tools
-		newt-devel
-		pciutils-devel
 		perl
 		python-devel
-		slang-devel
 		xz-lzma-compat
+	end
+
+	tools_cpupower_requires
+		newt-devel
+		pcituils-devel
+		slang-devel
 	end
 
 	# A list of kernels to build.
@@ -78,6 +81,15 @@ build
 		build_cpupower = 0
 	end
 
+	if "%{DISTRO_ARCH}" == "armv7hl"
+		# Currently build no kernel images.
+
+		kernel_arch  = arm
+
+		# ARM does not support cpupower.
+		build_cpupower = 0
+	end
+
 	# Build default kernel.
 	if "%{build_kernel_default}" == "1"
 		kernels += default
@@ -91,6 +103,11 @@ build
 	# Build ARM versatile kernel.
 	if "%{build_kernel_versatile}" == "1"
 		kernels += versatile
+	end
+
+	# Add tools' build requirements if build is requested.
+	if "%{build_cpupower}" == "1"
+		requires += %{tools_cpupower_requires}
 	end
 
 	prepare_cmds
@@ -172,8 +189,14 @@ build
 			# Install modules.
 			make ARCH=%{kernel_arch} INSTALL_MOD_PATH=%{BUILDROOT} mod-fw= \
 				KERNELRELEASE=${fullversion} modules_install
-			make ARCH=%{kernel_arch} INSTALL_MOD_PATH=%{BUILDROOT} \
-				KERNELRELEASE=${fullversion} vdso_install
+
+			# Install vdso.
+			case "%{DISTRO_ARCH}" in
+				i686)
+					make ARCH=%{kernel_arch} INSTALL_MOD_PATH=%{BUILDROOT} \
+						KERNELRELEASE=${fullversion} vdso_install
+					;;
+			esac
 
 			# Create an empty settings file for dracut
 			mkdir -pv %{BUILDROOT}/etc/ld.so.conf.d
@@ -244,7 +267,7 @@ build
 
 	install
 		# Install the header files
-		make ARCH=x86 INSTALL_HDR_PATH=dest headers_install
+		make ARCH=%{kernel_arch} INSTALL_HDR_PATH=dest headers_install
 		mkdir -pv %{BUILDROOT}/usr/include
 		find dest/include \( -name .install -o -name ..install.cmd \) -delete
 		cp -rv dest/include/* %{BUILDROOT}/usr/include
