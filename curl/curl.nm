@@ -60,12 +60,18 @@ end
 
 packages
 	package curl
-	
+
 	package libcurl
 		template LIBS
 	end
-	
+
 	package libcurl-devel
 		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+
+		provides += libcurl-debuginfo
 	end
 end

@@ -464,4 +464,8 @@ packages
 			/usr/lib/gcc/%{DISTRO_BUILDTARGET}/%{version}/plugin
 		end
 	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
 end

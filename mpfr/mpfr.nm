@@ -63,7 +63,7 @@ end
 
 packages
 	package %{name}
-	
+
 	package %{name}-devel
 		template DEVEL
 	end
@@ -74,5 +74,9 @@ packages
 		files
 			/usr/lib/libmpfr.so.1*
 		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
 	end
 end

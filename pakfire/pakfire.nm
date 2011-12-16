@@ -98,4 +98,8 @@ packages
 
 		requires = binutils file grep
 	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
 end

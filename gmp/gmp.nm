@@ -170,4 +170,8 @@ packages
 			/usr/lib/libgmp.so.3*
 		end
 	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
 end

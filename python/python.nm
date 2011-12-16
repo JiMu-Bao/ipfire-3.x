@@ -87,9 +87,13 @@ packages
 
 	package %{name}-devel
 		template DEVEL
-	
+
 		files += \
 			!/usr/lib/python*/config/Makefile \
 			!/usr/include/python*/pyconfig.h
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
 	end
 end

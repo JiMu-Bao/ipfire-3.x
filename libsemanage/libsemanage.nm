@@ -50,17 +50,21 @@ end
 packages
 	package %{name}
 	end
-	
+
 	package %{name}-devel
 		template DEVEL
 	end
-	
+
 	package python-selinux-manage
 		summary =  SELinux manage python bindings.
 		description = SELinux python bindings for libsemanage.
-	
+
 		files
 			/usr/lib/python*
 		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
 	end
 end

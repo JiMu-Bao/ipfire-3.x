@@ -52,7 +52,7 @@ end
 
 packages
 	package db4
-	
+
 	package db4-devel
 		template DEVEL
 
@@ -62,7 +62,7 @@ packages
 		files += \
 			!/usr/lib*/libdb-%{version_major}.so
 	end
-	
+
 	package db4-utils
 		summary = Command line tools for managing Berkeley DB (version 4) databases.
 		description = %{summary}
@@ -71,7 +71,7 @@ packages
 			/usr/bin
 		end
 	end
-	
+
 	package db4-cxx
 		summary = The Berkeley DB database library (version 4) for C++.
 		description = %{summary}
@@ -79,5 +79,9 @@ packages
 		files
 			/usr/lib*/libdb_cxx-%{version_major}.so
 		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
 	end
 end
