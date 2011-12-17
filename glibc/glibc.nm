@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = glibc
-version    = 2.14
-release    = 5
+version    = 2.14.1
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -41,6 +41,7 @@ build
 		kernel-headers>=%{OPTIMIZED_KERNEL}
 		libcap-devel
 		libselinux-devel
+		nss-devel
 		texinfo
 	end
 
@@ -67,11 +68,6 @@ build
 
 		# Apply the patches.
 		%{MACRO_PATCHES}
-
-		if [ "%{DISTRO_ARCH}" = "armv5tel" ]; then
-			sed -i configure \
-				-e "s/libc_cv_gcc_static_libgcc=-static-libgcc/libc_cv_gcc_static_libgcc=/"
-		fi
 
 		# In the vi_VN.TCVN locale, bash enters an infinite loop at startup. It is
 		# unknown whether this is a bash bug or a Glibc problem. Disable
@@ -149,7 +145,6 @@ build
 
 	configure_options = \
 		--build=%{DISTRO_BUILDTARGET} \
-		--host=%{DISTRO_BUILDTARGET} \
 		--prefix=/usr \
 		--libexecdir=/usr/lib/glibc \
 		--disable-profile \
@@ -157,12 +152,9 @@ build
 		--enable-kernel=%{OPTIMIZED_KERNEL} \
 		--with-selinux \
 		--disable-werror \
-		--enable-bind-now \
-		--enable-__thread \
-		--enable-tls \
 		--enable-experimental-malloc \
-		--with-gd \
-		--with-nss-crypt
+		--enable-bind-now \
+		--enable-nss-crypt
 
 	if "%{DISTRO_ARCH}" == "armv5tel"
 		# Disable hardware FP for ARM.
