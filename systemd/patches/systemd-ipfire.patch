@@ -1,0 +1,42 @@
+diff -Nur systemd-37_orig/configure.ac systemd-37/configure.ac
+--- systemd-37_orig/configure.ac	2011-10-11 20:46:56.000000000 +0200
++++ systemd-37/configure.ac	2011-12-17 21:57:31.748682566 +0100
+@@ -355,7 +355,7 @@
+ 
+ AC_PATH_PROG([M4], [m4])
+ 
+-AC_ARG_WITH(distro, AS_HELP_STRING([--with-distro=DISTRO],[Specify the distribution to target: One of fedora, suse, debian, ubuntu, arch, gentoo, slackware, altlinux or other]))
++AC_ARG_WITH(distro, AS_HELP_STRING([--with-distro=DISTRO],[Specify the distribution to target: One of fedora, suse, debian, ubuntu, arch, gentoo, slackware, altlinux, ipfire or other]))
+ if test "z$with_distro" = "z"; then
+         if test "$cross_compiling" = yes; then
+                 AC_MSG_WARN([Target distribution cannot be reliably detected when cross-compiling. You should specify it with --with-distro (see $0 --help for recognized distros)])
+@@ -374,6 +374,7 @@
+                 if test "x`lsb_release -is 2>/dev/null`" = "xUbuntu"; then
+                         with_distro="ubuntu"
+                 fi
++		test -f "/etc/ipfire-release" && with_distro="ipfire"
+         fi
+         if test "z$with_distro" = "z"; then
+                 with_distro=`uname -s`
+@@ -458,6 +459,13 @@
+                 AC_DEFINE(TARGET_ANGSTROM, [], [Target is Ångström])
+                 M4_DEFINES=-DTARGET_ANGSTROM=1
+                 ;;
++	ipfire)
++		SYSTEM_SYSVINIT_PATH=
++		SYSTEM_SYSVRCND_PATH=
++		AC_DEFINE(TARGET_IPFIRE, [], [Target is IPFire])
++		M4_DEFINES=-DTARGET_IPFIRE=1
++		have_plymouth=yes
++		;;
+         other)
+                 ;;
+         *)
+@@ -515,6 +523,7 @@
+ AM_CONDITIONAL(TARGET_MANDRIVA, test x"$with_distro" = xmandriva)
+ AM_CONDITIONAL(TARGET_MEEGO, test x"$with_distro" = xmeego)
+ AM_CONDITIONAL(TARGET_ANGSTROM, test x"$with_distro" = xangstrom)
++AM_CONDITIONAL(TARGET_IPFIRE, test x"$with_distro" = xipfire)
+ 
+ AM_CONDITIONAL(HAVE_PLYMOUTH, test "$have_plymouth" = "yes")
+ AM_CONDITIONAL(HAVE_SYSV_COMPAT, test "$SYSTEM_SYSV_COMPAT" = "yes")
