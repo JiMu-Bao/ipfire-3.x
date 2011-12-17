@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = systemd
-version    = 36
-release    = 6
+version    = 37
+release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
