@@ -5,7 +5,7 @@
 
 name       = attr
 version    = 2.4.43
-release    = 1
+release    = 2
 
 groups     = System/Filesystems
 url        = http://oss.sgi.com/projects/xfs/
@@ -45,15 +45,18 @@ end
 
 packages
 	package lib%{name}
+		provides += attr=%{thisver}
 	end
 
 	package lib%{name}-devel
 		template DEVEL
+
+		provides += attr-devel=%{thisver}
 	end
 
-	package %{name}-debuginfo
+	package lib%{name}-debuginfo
 		template DEBUGINFO
 
-		provides += libattr-debuginfo
+		provides += attr-debuginfo
 	end
 end
