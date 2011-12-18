@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = systemd
-version    = 36
-release    = 5
+version    = 37
+release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -30,6 +30,7 @@ build
 		docbook-utils
 		docbook-xsl
 		gperf
+		gettext-devel
 		intltool
 		libacl-devel
 		libcap-devel
@@ -44,9 +45,7 @@ build
 		--sysconfdir=/etc \
 		--libexecdir=/usr/lib \
 		--with-rootdir= \
-		--with-distro=other \
-		--with-sysvinit-path= \
-		--with-sysvrcd-path= \
+		--with-distro=ipfire \
 		--with-udevrulesdir=/lib/udev/rules.d/ \
 		--with-pamlibdir=/lib/security
 
