@@ -8,7 +8,7 @@ build_cloog_ppl = 1
 
 name       = gcc
 version    = 4.6.2
-release    = 5
+release    = 7
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -221,7 +221,21 @@ build
 
 		# Move libgcc_s to /lib
 		mv -vf %{BUILDROOT}/usr/lib/libgcc_s.so.1 %{BUILDROOT}/lib/
-		ln -svf ../../lib/libgcc_s.so.1 %{BUILDROOT}/usr/lib/libgcc_s.so
+		case "%{DISTRO_ARCH}" in
+			arm*)
+				rm -f ${FULLPATH}/libgcc_s.so %{BUILDROOT}/usr/lib/libgcc_s.so
+				cat <<EOF >${FULLPATH}/libgcc_s.so
+		/* GNU ld script
+		   Use the shared library, but some functions are only in
+		   the static library, so try that secondarily.  */
+		OUTPUT_FORMAT(elf32-littlearm)
+		GROUP ( /lib/libgcc_s.so.1 libgcc.a )
+		EOF
+				;;
+			*)
+				ln -svf ../../lib/libgcc_s.so.1 ${FULLPATH}/libgcc_s.so
+				;;
+		esac
 
 		# Remove some GNU debugger stuff.
 		rm -vf %{BUILDROOT}/usr/lib/lib*.py
