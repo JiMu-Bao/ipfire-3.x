@@ -8,7 +8,7 @@ build_cloog_ppl = 1
 
 name       = gcc
 version    = 4.6.2
-release    = 4
+release    = 5
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -241,7 +241,7 @@ build
 
 		# libquadmath
 		if [ "%{build_libquadmath}" = "1" ]; then
-			ln -svf ../../../libquadmath.so.0.* ${FULLPATH}/libquadmath.so
+			ln -svf ../../../libquadmath.so.0.0.0 ${FULLPATH}/libquadmath.so
 			chmod 755 %{BUILDROOT}/usr/lib/libquadmath.so.0.*
 		fi
 	end
@@ -264,6 +264,10 @@ packages
 			libgcc=%{thisver}
 			libgomp=%{thisver}
 		end
+
+		# We do not ship libgcc-devel anymore.
+		provides += libgcc-devel=%{thisver}
+		obsoletes += libgcc-devel<%{thisver}
 
 		if "%{build_cloog_ppl}" == "1"
 			requires += cloog-ppl>=0.15
