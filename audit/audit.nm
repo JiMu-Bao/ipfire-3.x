@@ -5,7 +5,7 @@
 
 name       = audit
 version    = 2.1.3
-release    = 5
+release    = 6
 
 groups     = System/Daemons
 url        = http://people.redhat.com/sgrubb/audit/
@@ -100,5 +100,9 @@ packages
 		files
 			/usr/lib/python*/
 		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
 	end
 end
