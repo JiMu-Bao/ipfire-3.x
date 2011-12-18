@@ -5,7 +5,7 @@
 
 name       = diffutils
 version    = 3.2
-release    = 2
+release    = 3
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/diffutils/diffutils.html
@@ -23,11 +23,11 @@ source_dl  = http://ftp.gnu.org/gnu/diffutils/
 
 build
 	configure_options += \
-		--mandir=/usr/share
+		--mandir=/usr/share/man
 
-	#test
-	#	make check
-	#end
+	test
+		make check
+	end
 end
 
 packages
