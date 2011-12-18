@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = libselinux
-version    = 2.1.7
-release    = 3
+version    = 2.1.8
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.selinuxproject.org
@@ -23,6 +23,7 @@ sources    = %{thisapp}.tgz
 build
 	requires
 		libsepol-devel
+		libsepol-static
 		python-devel
 		swig
 	end
@@ -78,10 +79,6 @@ packages
 			/usr/share/man/man{5,8}/*
 		end
 	end
-
-	package %{name}-debuginfo
-		template DEBUGINFO
-	end
 	
 	package python-selinux
 		summary =  SELinux python bindings.
@@ -90,5 +87,9 @@ packages
 		def files
 			/usr/lib/python*
 		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
 	end
 end
