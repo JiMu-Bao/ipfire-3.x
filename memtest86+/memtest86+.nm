@@ -5,7 +5,7 @@
 
 name       = memtest86+
 version    = 4.20
-release    = 2
+release    = 3
 
 groups     = System/Base
 url        = http://www.memtest.org/
@@ -40,8 +40,4 @@ end
 
 packages
 	package %{name}
-
-	package %{name}-debuginfo
-		template DEBUGINFO
-	end
 end
