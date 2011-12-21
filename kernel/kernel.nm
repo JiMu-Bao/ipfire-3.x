@@ -71,6 +71,13 @@ build
 
 	end
 
+	if "%{DISTRO_ARCH}" == "x86_64"
+		build_kernel_default = 1
+
+		kernel_arch  = x86
+		kernel_image = arch/%{kernel_arch}/boot/bzImage
+	end
+
 	if "%{DISTRO_ARCH}" == "armv5tel"
 		# Build versatile kernel.
 		build_kernel_versatile = 1
