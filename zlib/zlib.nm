@@ -5,7 +5,7 @@
 
 name       = zlib
 version    = 1.2.5
-release    = 2
+release    = 3
 
 groups     = System/Libraries
 url        = http://www.gzip.org/zlib/
@@ -24,20 +24,20 @@ CFLAGS    += -fPIC -DPIC
 
 build
 	configure_options = \
-		--prefix=/usr \
-		--libdir=/lib
+		--prefix=%{prefix} \
+		--libdir=/%{lib}
 
 	test
 		make check
 	end
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/usr/{include,lib}
-		cp -pfv zconf.h zlib.h %{BUILDROOT}/usr/include
-		rm -vf %{BUILDROOT}/lib/libz.so
-		ln -sfv ../../lib/libz.so.%{version} %{BUILDROOT}/usr/lib/libz.so
+		mkdir -pv %{BUILDROOT}%{includedir} %{BUILDROOT}%{libdir}
+		cp -pfv zconf.h zlib.h %{BUILDROOT}%{includedir}
+		rm -vf %{BUILDROOT}/%{lib}/libz.so
+		ln -sfv ../../%{lib}/libz.so.%{version} %{BUILDROOT}%{libdir}/libz.so
 
-		mv -v %{BUILDROOT}/lib/pkgconfig %{BUILDROOT}/usr/lib/
+		mv -v %{BUILDROOT}/%{lib}/pkgconfig %{BUILDROOT}%{libdir}
 	end
 end
 
