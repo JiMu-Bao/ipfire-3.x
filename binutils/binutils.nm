@@ -5,7 +5,7 @@
 
 name       = binutils
 version    = 2.22
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Tools
@@ -41,21 +41,15 @@ build
 		sed -i -e 's/%''{release}/%{release}/g' bfd/Makefile{.am,.in}
 	end
 
+	configure_options += \
+		--target=%{DISTRO_BUILDTARGET} \
+		--disable-werror \
+		--disable-static
 
 	build
-		BINUTILS_TARGET_PLATFORM=$(echo "%{DISTRO_MACHINE}" | sed -e "s/-gnu//")
-
 		cd %{DIR_SRC}/binutils-build
 		../%{thisapp}/configure \
-			--host=${BINUTILS_TARGET_PLATFORM} \
-			--build=${BINUTILS_TARGET_PLATFORM} \
-			--target=${BINUTILS_TARGET_PLATFORM} \
-			--prefix=/usr \
-			--mandir=/usr/share/man \
-			--enable-shared \
-			--disable-nls \
-			--disable-werror \
-			--disable-static
+			%{configure_options}
 
 		make tooldir=/usr %{PARALLELISMFLAGS}
 	end
@@ -73,12 +67,12 @@ build
 
 		# Prevent packages from linking against libbfd and libopcodes,
 		# because they change too often.
-		rm -rfv %{BUILDROOT}/usr/lib/lib{bfd,opcodes}.so
+		rm -rfv %{BUILDROOT}%{libdir}/lib{bfd,opcodes}.so
 	end
 
 	# Keep static version of libiberty.
 	keep_libraries
-		/usr/lib/libiberty.a
+		%{libdir}/libiberty.a
 	end
 end
 
