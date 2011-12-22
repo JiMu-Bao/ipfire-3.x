@@ -56,8 +56,8 @@ build
 
 	install_cmds
 		cd %{DIR_SRC}/%{name}-%{compat_version}
-		install -m 644 .libs/libmpfr.so.1.2.2 %{BUILDROOT}/usr/lib/
-		ln -svf libmpfr.so.1.2.2 %{BUILDROOT}/usr/lib/libmpfr.so.1
+		install -m 644 .libs/libmpfr.so.1.2.2 %{BUILDROOT}%{libdir}
+		ln -svf libmpfr.so.1.2.2 %{BUILDROOT}%{libdir}/libmpfr.so.1
 	end
 end
 
@@ -72,7 +72,7 @@ packages
 		summary = Compat libraries of %{thisapp}.
 
 		files
-			/usr/lib/libmpfr.so.1*
+			%{libdir}/libmpfr.so.1*
 		end
 	end
 
