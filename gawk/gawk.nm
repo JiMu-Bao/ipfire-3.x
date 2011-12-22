@@ -5,7 +5,7 @@
 
 name       = gawk
 version    = 4.0.0
-release    = 2
+release    = 3
 
 groups     = System/Tools
 url        = http://www.gnu.org/software/gawk/gawk.html
@@ -29,7 +29,7 @@ build
 
 	configure_options += \
 		--bindir=/bin \
-		--libexecdir=/usr/lib \
+		--libexecdir=%{libdir} \
 		--with-libsigsegv-prefix=no
 
 	test
