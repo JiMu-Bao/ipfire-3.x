@@ -5,7 +5,7 @@
 
 name       = filesystem
 version    = 001
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Base Build System/Base
@@ -40,6 +40,8 @@ build
 			etc/skel \
 			etc/sysconfig \
 			home \
+			lib \
+			%{lib} \
 			lib/modules \
 			media \
 			mnt \
@@ -54,6 +56,7 @@ build
 			usr/bin \
 			usr/include \
 			usr/lib \
+			usr/%{lib} \
 			usr/lib/locale \
 			usr/sbin \
 			usr/share/{aclocal,dict,doc,empty,info,mime-info,misc} \
