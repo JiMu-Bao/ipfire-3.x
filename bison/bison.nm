@@ -5,7 +5,7 @@
 
 name       = bison
 version    = 2.5
-release    = 1
+release    = 2
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/bison/
@@ -28,18 +28,22 @@ build
 		echo '#define YYENABLE_NLS 1' >> lib/config.h
 	end
 
+	build_cmds
+		cd lib
+		gcc -shared -Wl,-soname,liby.so.%{version} \
+			-o liby.so.%{version} %{CFLAGS} main.o yyerror.o
+	end
+
 	test
 		make check
 	end
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/usr/lib
-		cd %{DIR_APP}/lib && gcc -shared -Wl,-soname,liby.so.%{version} \
-			-o liby.so.%{version} %{CFLAGS} main.o yyerror.o
-		cd %{DIR_APP}/lib && install -v liby.so.%{version} \
-			%{BUILDROOT}/usr/lib/liby.so.%{version}
-		ln -vsf liby.so.%{version} %{BUILDROOT}/usr/lib/liby.so.2
-		ln -vsf liby.so.2 %{BUILDROOT}/usr/lib/liby.so
+		mkdir -pv %{BUILDROOT}%{libdir}
+		cd lib
+		install -v liby.so.%{version} %{BUILDROOT}%{libdir}/liby.so.%{version}
+		ln -vsf liby.so.%{version} %{BUILDROOT}%{libdir}/liby.so.2
+		ln -vsf liby.so.2 %{BUILDROOT}%{libdir}/liby.so
 	end
 end
 
