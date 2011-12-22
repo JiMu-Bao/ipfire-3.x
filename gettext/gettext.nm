@@ -5,7 +5,7 @@
 
 name       = gettext
 version    = 0.18.1.1
-release    = 3
+release    = 4
 
 groups     = System/Base
 url        = http://www.gnu.org/software/gettext/
@@ -30,6 +30,7 @@ source_dl  = http://ftp.gnu.org/pub/gnu/gettext/
 build
 	requires
 		bison
+		chrpath
 		libcroco-devel
 		libxml2-devel
 	end
@@ -43,6 +44,15 @@ build
 #	test
 #		make check
 #	end
+
+	install_cmds
+		# cleanup rpaths
+		for i in $(find %{BUILDROOT}%{bindir} %{BUILDROOT}%{libdir} -type f); do
+			if file ${i} | grep "ELF 64-bit" >/dev/null; then
+				chrpath -l ${i} && chrpath --delete ${i}
+			fi
+		done
+	end
 end
 
 packages
@@ -51,18 +61,19 @@ packages
 	package %{name}-devel
 		template DEVEL
 
-		requires += \
+		requires
 			gettext-libs=%{thisver}
+		end
 	end
 
 	package %{name}-libs
 		template LIBS
 
 		files
-			/usr/lib/libgettextlib-*.so
-			/usr/lib/libgettextpo.so.*
-			/usr/lib/libgettextsrc-*.so
-			/usr/lib/preloadable_libintl.so
+			%{libdir}/libgettextlib-*.so
+			%{libdir}/libgettextpo.so.*
+			%{libdir}/libgettextsrc-*.so
+			%{libdir}/preloadable_libintl.so
 		end
 	end
 
