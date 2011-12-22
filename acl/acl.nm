@@ -5,7 +5,7 @@
 
 name       = acl
 version    = 2.2.47
-release    = 2
+release    = 3
 
 groups     = System/Filesystems
 url        = http://oss.sgi.com/projects/xfs/
@@ -29,24 +29,25 @@ build
 
 	configure_options += \
 		--bindir=/bin \
-		--disable-static \
-		--mandir=/usr/share/man
+		--disable-static
 
 	make_build_targets += LIBTOOL="libtool --tag=CC"
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/{,usr/}lib %{BUILDROOT}/usr/include/{acl,sys}
-		install -v -m0755 %{DIR_APP}/libacl/.libs/libacl.so.1.2.0 %{BUILDROOT}/lib
-		ln -vsf libacl.so.1.2.0 %{BUILDROOT}/lib/libacl.so.1
-		ln -vsf ../../lib/libacl.so.1 %{BUILDROOT}/usr/lib/libacl.so
-		cp -vf %{DIR_APP}/include/libacl.h %{BUILDROOT}/usr/include/acl/
-		cp -vf %{DIR_APP}/include/acl.h %{BUILDROOT}/usr/include/sys/
+		mkdir -pv %{BUILDROOT}/%{lib} %{BUILDROOT}%{libdir}
+		install -v -m0755 libacl/.libs/libacl.so.1.2.0 %{BUILDROOT}/%{lib}
+		ln -vsf libacl.so.1.2.0 %{BUILDROOT}/%{lib}/libacl.so.1
+		ln -vsf ../../%{lib}/libacl.so.1 %{BUILDROOT}%{libdir}/libacl.so
+
+		# Install headers.
+		mkdir -pv %{BUILDROOT}%{includedir}/{acl,sys}
+		cp -vf include/libacl.h %{BUILDROOT}%{includedir}/acl/
+		cp -vf include/acl.h %{BUILDROOT}%{includedir}/sys/
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package libacl
 		template LIBS
