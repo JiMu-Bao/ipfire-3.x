@@ -33,7 +33,7 @@ build
 	end
 
 	# libgomp was broken in earlier releases.
-	requires += gcc>=4.6.2-4 beecrypt>=4.2.1-2
+	requires += gcc>=4.6.2-4, beecrypt>=4.2.1-2
 
 	CFLAGS += -fno-strict-aliasing
 
@@ -60,7 +60,7 @@ packages
 
 		files
 			/usr/lib/pakfire/pakfire-multicall.py
-			/usr/lib*/python*/site-packages/pakfire*
+			%{libdir}/python*/site-packages/pakfire*
 			/usr/share/locale
 		end
 	end
@@ -84,7 +84,7 @@ packages
 		conflicts = build-essentials
 
 		files
-			/usr/lib/libpakfire_preload.so
+			%{libdir}/libpakfire_preload.so
 			/usr/bin/pakfire-builder
 			/usr/bin/pakfire-server
 			/usr/lib/pakfire/*
@@ -107,7 +107,11 @@ packages
 			/usr/lib/pakfire/quality-agent*
 		end
 
-		requires = binutils file grep
+		requires
+			binutils
+			file
+			grep
+		end
 	end
 
 	package %{name}-debuginfo
