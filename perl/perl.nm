@@ -34,7 +34,6 @@ build
 		gcc-c++
 		gdbm-devel
 		iana-etc
-		perl
 		procps
 		zlib-devel
 	end
@@ -122,12 +121,11 @@ end
 # of this perl package.
 perl_requires := %{name}=%{thisver}
 
-perl_filter_requires
-	perl>=[0-9]\:.*
-end
-
 packages
 	package perl
+		# Increase epoch because of automatic dependencies.
+		epoch = 2
+
 		requires
 			perl-libs=%{thisver}
 			perl(Carp)
