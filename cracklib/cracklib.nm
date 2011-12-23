@@ -5,7 +5,7 @@
 
 name       = cracklib
 version    = 2.8.12
-release    = 1
+release    = 2
 
 groups     = Security/Password
 url        = http://sourceforge.net/projects/cracklib/
@@ -44,9 +44,9 @@ build
 	end
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/{,usr/}lib
-		mv -v %{BUILDROOT}/usr/lib/libcrack.so.2* %{BUILDROOT}/lib
-		ln -vsf ../../lib/libcrack.so.2.8.0 %{BUILDROOT}/usr/lib/libcrack.so
+		mkdir -pv %{BUILDROOT}/{,usr/}%{lib}
+		mv -v %{BUILDROOT}%{libdir}/libcrack.so.2* %{BUILDROOT}/%{lib}
+		ln -vsf ../../%{lib}/libcrack.so.2.8.0 %{BUILDROOT}%{libdir}/libcrack.so
 
 		mkdir -pv %{BUILDROOT}/usr/share/dict
 		install -v -m644 -D %{DIR_DL}/cracklib-words-20080507.gz \
