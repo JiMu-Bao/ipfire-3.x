@@ -26,6 +26,7 @@ build
 	requires
 		libtasn1-devel
 		nettle-devel>=2.4
+		perl
 		p11-kit-devel>=0.4
 		zlib-devel
 	end
