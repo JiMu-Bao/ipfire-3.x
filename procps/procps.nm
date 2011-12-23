@@ -5,7 +5,7 @@
 
 name       = procps
 version    = 3.2.8
-release    = 3
+release    = 4
 
 groups     = Applications/System
 url        = http://procps.sourceforge.net/
@@ -35,7 +35,7 @@ build
 		SKIP="/bin/kill /usr/share/man/man1/kill.1"
 
 	install_cmds
-		chmod -R 755 %{BUILDROOT}/{bin,lib,sbin}
+		chmod -R 755 %{BUILDROOT}/{bin,%{lib},sbin}
 	end
 end
 
