@@ -5,7 +5,7 @@
 
 name       = expat
 version    = 2.0.1
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.libexpat.org/
@@ -25,13 +25,12 @@ source_dl  =
 
 build
 	configure_options += \
-		--libdir=/lib \
-		--mandir=/usr/share
+		--libdir=/%{lib}
 
 	install_cmds
-		rm -vf %{BUILDROOT}/lib/libexpat.so
-		mkdir -pv %{BUILDROOT}/usr/lib
-		ln -svf ../../lib/libexpat.so.1 %{BUILDROOT}/usr/lib/libexpat.so
+		rm -vf %{BUILDROOT}/%{lib}/libexpat.so
+		mkdir -pv %{BUILDROOT}%{libdir}
+		ln -svf ../../%{lib}/libexpat.so.1 %{BUILDROOT}%{libdir}/libexpat.so
 	end
 end
 
