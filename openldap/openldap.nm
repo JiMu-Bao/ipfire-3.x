@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openldap
-version    = 2.4.25
-release    = 2
+version    = 2.4.28
+release    = 1
 
 groups     = System/Daemons
 url        = http://www.openldap.org/
@@ -21,7 +21,7 @@ description
 	documentation for OpenLDAP.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/
 sources    = %{thisapp}.tgz
 
 build
