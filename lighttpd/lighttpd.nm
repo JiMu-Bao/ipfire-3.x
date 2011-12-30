@@ -4,9 +4,9 @@
 ###############################################################################
 
 name       = lighttpd
-version    = 1.4.29
+version    = 1.4.30
 ver_major  = 1.4
-release    = 2
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Networking/Webservers
@@ -73,7 +73,10 @@ packages
 			/etc/lighttpd.conf
 		end
 
-		prerequires = shadow-utils systemd-units
+		prerequires
+			shadow-utils
+			systemd-units
+		end
 
 		script prein
 			%{create_user}
