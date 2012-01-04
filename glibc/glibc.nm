@@ -4,8 +4,9 @@
 ###############################################################################
 
 name       = glibc
-version    = 2.14.1
+version    = 2.14.90
 release    = 1
+thisapp    = %{name}-2.14-16c6f99
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -24,25 +25,25 @@ description
 end
 
 # The version of the ports addon.
-ports_version = %{version}
+ports_version = 2.14-c2aeee1
 
 source_dl  = http://ftp.gnu.org/gnu/glibc/
-sources    = %{thisapp}.tar.xz glibc-ports-%{ports_version}.tar.xz
+sources    = %{thisapp}.tar.gz glibc-ports-%{ports_version}.tar.gz
 
 build
 	# Optimize glibc for kernel
 	OPTIMIZED_KERNEL = 2.6.32
 
 	requires
-		audit-devel
-		autoconf
-		automake
-		gettext
+		#audit-devel
+		#autoconf
+		#automake
+		#gettext
 		kernel-headers>=%{OPTIMIZED_KERNEL}
 		libcap-devel
 		libselinux-devel
-		nss-devel
-		texinfo
+		#nss-devel
+		#texinfo
 	end
 
 	# Build glibc with custom cflags
@@ -154,9 +155,8 @@ build
 		--enable-kernel=%{OPTIMIZED_KERNEL} \
 		--with-selinux \
 		--disable-werror \
-		--enable-experimental-malloc \
-		--enable-bind-now \
-		--enable-nss-crypt
+		--enable-bind-now
+#		--enable-nss-crypt
 
 	if "%{DISTRO_ARCH}" == "armv5tel"
 		# Disable hardware FP for ARM.
