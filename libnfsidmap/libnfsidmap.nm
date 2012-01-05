@@ -5,7 +5,7 @@
 
 name       = libnfsidmap
 version    = 0.21
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.citi.umich.edu/projects/nfsv4/linux/libnfsidmap/
@@ -24,30 +24,29 @@ build
 		gcc-c++
 	end
 
-	configure_options += --libdir=/lib
+	configure_options += --libdir=/%{lib}
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/usr/lib
+		mkdir -pv %{BUILDROOT}%{libdir}
 
-		mv -v %{BUILDROOT}/lib/pkgconfig %{BUILDROOT}/usr/lib/
+		mv -v %{BUILDROOT}/%{lib}/pkgconfig %{BUILDROOT}%{libdir}
 
-		rm -vf %{BUILDROOT}/lib/libnfsidmap.so
-		ln -svf ../../lib/libnfsidmap.so.0 \
-			%{BUILDROOT}/usr/lib/libnfsidmap.so
+		rm -vf %{BUILDROOT}/%{lib}/libnfsidmap.so
+		ln -svf ../../%{lib}/libnfsidmap.so.0 \
+			%{BUILDROOT}%{libdir}/libnfsidmap.so
 
-		rm -vf %{BUILDROOT}/lib/libnfsidmap_nsswitch.so
-		ln -svf ../../lib/libnfsidmap_nsswitch.so.0 \
-			%{BUILDROOT}/usr/lib/libnfsidmap_nsswitch.so
+		rm -vf %{BUILDROOT}/%{lib}/libnfsidmap_nsswitch.so
+		ln -svf ../../%{lib}/libnfsidmap_nsswitch.so.0 \
+			%{BUILDROOT}%{libdir}/libnfsidmap_nsswitch.so
 
-		rm -vf %{BUILDROOT}/lib/libnfsidmap_static.so
-		ln -svf ../../lib/libnfsidmap_static.so.0 \
-			%{BUILDROOT}/usr/lib/libnfsidmap_static.so
+		rm -vf %{BUILDROOT}/%{lib}/libnfsidmap_static.so
+		ln -svf ../../%{lib}/libnfsidmap_static.so.0 \
+			%{BUILDROOT}%{libdir}/libnfsidmap_static.so
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

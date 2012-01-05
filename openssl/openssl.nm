@@ -5,7 +5,7 @@
 
 name       = openssl
 version    = 1.0.0f
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -42,6 +42,9 @@ build
 		make TABLE PERL=/usr/bin/perl
 	end
 
+	# Set default ssl_arch.
+	ssl_arch = linux-%{DISTRO_ARCH}
+
 	if "%{DISTRO_ARCH}" == "i686"
 		# 386 implies no-sse2
 		ssl_arch = linux-elf no-asm 386
@@ -55,7 +58,7 @@ build
 		./Configure \
 			--prefix=/usr \
 			--openssldir=/etc/pki/tls \
-			--enginesdir=/usr/lib/openssl/engines \
+			--enginesdir=%{libdir}/openssl/engines \
 			shared \
 			zlib-dynamic \
 			enable-camellia \
@@ -84,17 +87,17 @@ build
 	install
 		make install build-shared INSTALL_PREFIX=%{BUILDROOT}
 
-		mkdir -pv %{BUILDROOT}/lib
-		mv -vf %{BUILDROOT}/usr/lib/lib{crypto,ssl}.so.* %{BUILDROOT}/lib
-		ln -svf ../../lib/libcrypto.so.10 %{BUILDROOT}/usr/lib/libcrypto.so
-		ln -svf ../../lib/libssl.so.10 %{BUILDROOT}/usr/lib/libssl.so
+		mkdir -pv %{BUILDROOT}/%{lib}
+		mv -vf %{BUILDROOT}%{libdir}/lib{crypto,ssl}.so.* %{BUILDROOT}/%{lib}
+		ln -svf ../../%{lib}/libcrypto.so.10 %{BUILDROOT}%{libdir}/libcrypto.so
+		ln -svf ../../%{lib}/libssl.so.10 %{BUILDROOT}%{libdir}/libssl.so
 
 		# Install manpages do right place
 		mkdir -pv %{BUILDROOT}/usr/share
 		mv -v %{BUILDROOT}/etc/pki/tls/man %{BUILDROOT}/usr/share/
 
-		mkdir -pv %{BUILDROOT}/usr/lib/openssl
-		mv -v %{BUILDROOT}/usr/lib/engines %{BUILDROOT}/usr/lib/openssl
+		mkdir -pv %{BUILDROOT}%{libdir}/openssl
+		mv -v %{BUILDROOT}%{libdir}/engines %{BUILDROOT}%{libdir}/openssl
 
 		mkdir -pv %{BUILDROOT}/etc/pki/CA/private
 		chmod -v 700 -R %{BUILDROOT}/etc/pki/CA

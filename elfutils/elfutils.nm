@@ -5,7 +5,7 @@
 
 name       = elfutils
 version    = 0.152
-release    = 3
+release    = 5
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Libraries
@@ -51,7 +51,7 @@ end
 
 quality-agent
 	whitelist_rpath
-		/usr/lib/elfutils
+		%{libdir}/elfutils
 	end
 end
 
@@ -61,14 +61,17 @@ packages
 	package %{name}-devel
 		template DEVEL
 
-		requires = %{name}=%{thisver} %{name}-libs=%{thisver}
+		requires
+			%{name} = %{thisver}
+			%{name}-libs = %{thisver}
+		end
 	end
 
 	package %{name}-libs
 		template LIBS
 
-		files += /usr/lib*/lib*%{version}.so
-		files += /usr/lib/elfutils
+		files += %{libdir}/lib*%{version}.so
+		files += %{libdir}/elfutils
 	end
 
 	package %{name}-debuginfo

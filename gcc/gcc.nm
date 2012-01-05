@@ -4,11 +4,11 @@
 ###############################################################################
 
 # Configure build to compile with cloog and ppl.
-build_cloog_ppl = 1
+build_cloog_ppl = 0
 
 name       = gcc
 version    = 4.6.2
-release    = 7
+release    = 8
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -178,7 +178,8 @@ build
 		../%{thisapp}/configure \
 			--build=%{DISTRO_BUILDTARGET} \
 			--prefix=/usr \
-			--libexecdir=/usr/lib \
+			--libdir=%{libdir} \
+			--libexecdir=%{libdir} \
 			--mandir=/usr/share/man \
 			--enable-esp \
 			--enable-shared \
@@ -212,38 +213,39 @@ build
 		make install DESTDIR=%{BUILDROOT}
 
 		# Check if the installation path exists.
-		FULLPATH="%{BUILDROOT}/usr/lib/gcc/%{DISTRO_BUILDTARGET}/%{version}"
+		FULLPATH="%{BUILDROOT}%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}"
 		[ -d "${FULLPATH}" ] || exit 1
 
-		mkdir -pv %{BUILDROOT}/lib
-		ln -sfv ../usr/bin/cpp %{BUILDROOT}/lib/cpp
+		mkdir -pv %{BUILDROOT}/%{lib}
+		ln -sfv ../usr/bin/cpp %{BUILDROOT}/%{lib}/cpp
 		ln -sfv gcc %{BUILDROOT}/usr/bin/cc
 
 		# Move libgcc_s to /lib
-		mv -vf %{BUILDROOT}/usr/lib/libgcc_s.so.1 %{BUILDROOT}/lib/
+		rm -f ${FULLPATH}/libgcc_s.so %{BUILDROOT}%{libdir}/libgcc_s.so
+		mkdir -pv %{BUILDROOT}/%{lib}
+		mv -vf %{BUILDROOT}%{libdir}/libgcc_s.so.1 %{BUILDROOT}/%{lib}/
 		case "%{DISTRO_ARCH}" in
 			arm*)
-				rm -f ${FULLPATH}/libgcc_s.so %{BUILDROOT}/usr/lib/libgcc_s.so
 				cat <<EOF >${FULLPATH}/libgcc_s.so
 		/* GNU ld script
 		   Use the shared library, but some functions are only in
 		   the static library, so try that secondarily.  */
 		OUTPUT_FORMAT(elf32-littlearm)
-		GROUP ( /lib/libgcc_s.so.1 libgcc.a )
+		GROUP ( /%{lib}/libgcc_s.so.1 libgcc.a )
 		EOF
 				;;
 			*)
-				ln -svf ../../lib/libgcc_s.so.1 ${FULLPATH}/libgcc_s.so
+				ln -svf ../../../../../%{lib}/libgcc_s.so.1 ${FULLPATH}/libgcc_s.so
 				;;
 		esac
 
 		# Remove some GNU debugger stuff.
-		rm -vf %{BUILDROOT}/usr/lib/lib*.py
+		rm -vf %{BUILDROOT}%{libdir}/lib*.py
 
 		# libgomp
-		mv -vf %{BUILDROOT}/usr/lib/libgomp.spec ${FULLPATH}/
+		mv -vf %{BUILDROOT}%{libdir}/libgomp.spec ${FULLPATH}/
 		ln -svf ../../../libgomp.so.1.0.0 ${FULLPATH}/libgomp.so
-		chmod 755 %{BUILDROOT}/usr/lib/libgomp.so.1.*
+		chmod 755 %{BUILDROOT}%{libdir}/libgomp.so.1.*
 
 		# libstdc++
 		ln -svf ../../../libstdc++.so.6.0.16 ${FULLPATH}/libstdc++.so
@@ -251,18 +253,18 @@ build
 		# libmudflap
 		ln -svf ../../../libmudflap.so.0.0.0 ${FULLPATH}/libmudflap.so
 		ln -svf ../../../libmudflapth.so.0.0.0 ${FULLPATH}/libmudflapth.so
-		chmod 755 %{BUILDROOT}/usr/lib/libmudflap{,th}.so.0.*
+		chmod 755 %{BUILDROOT}%{libdir}/libmudflap{,th}.so.0.*
 
 		# libquadmath
 		if [ "%{build_libquadmath}" = "1" ]; then
 			ln -svf ../../../libquadmath.so.0.0.0 ${FULLPATH}/libquadmath.so
-			chmod 755 %{BUILDROOT}/usr/lib/libquadmath.so.0.*
+			chmod 755 %{BUILDROOT}%{libdir}/libquadmath.so.0.*
 		fi
 	end
 
 	keep_libraries
-		/usr/lib/gcc/%{DISTRO_BUILDTARGET}/%{version}/libgcc.a
-		/usr/lib/gcc/%{DISTRO_BUILDTARGET}/%{version}/libgcc_eh.a
+		%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/libgcc.a
+		%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/libgcc_eh.a
 	end
 end
 
@@ -304,7 +306,7 @@ packages
 
 		files
 			/usr/bin/*++
-			/usr/lib/gcc/*/*/cc1plus
+			%{libdir}/gcc/*/*/cc1plus
 			/usr/share/man/man*/*++*
 		end
 	end
@@ -336,10 +338,10 @@ packages
 		group = Development/Languages
 
 		files
-			/lib/cpp
+			/%{lib}/cpp
 			/usr/bin/cpp
 			/usr/share/man/man1/cpp.1*
-			/usr/lib/gcc/%{DISTRO_BUILDTARGET}/%{version}/cc1
+			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/cc1
 		end
 	end
 
@@ -351,7 +353,7 @@ packages
 		end
 
 		files
-			/lib/libgcc*.so.*
+			/%{lib}/libgcc*.so.*
 		end
 	end
 
@@ -363,7 +365,7 @@ packages
 		end
 
 		files
-			/usr/lib/libstdc++*.so.*
+			%{libdir}/libstdc++*.so.*
 		end
 	end
 
@@ -380,8 +382,8 @@ packages
 		end
 
 		files
-			/usr/include/c++
-			/usr/lib/libstdc++*.so
+			%{includedir}/c++
+			%{libdir}/libstdc++*.so
 		end
 	end
 
@@ -393,7 +395,7 @@ packages
 		end
 
 		files
-			/usr/lib/libgomp*.so.*
+			%{libdir}/libgomp*.so.*
 		end
 	end
 
@@ -405,7 +407,7 @@ packages
 		end
 
 		files
-			/usr/lib/libmudflap*.so.*
+			%{libdir}/libmudflap*.so.*
 		end
 	end
 
@@ -424,9 +426,9 @@ packages
 		end
 
 		files
-			/usr/lib/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/mf-runtime.h
-			/usr/lib/gcc/%{DISTRO_BUILDTARGET}/%{version}/libmudflap.so
-			/usr/lib/gcc/%{DISTRO_BUILDTARGET}/%{version}/libmudflapth.so
+			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/mf-runtime.h
+			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/libmudflap.so
+			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/libmudflapth.so
 		end
 	end
 
@@ -439,7 +441,7 @@ packages
 			end
 
 			files
-				/usr/lib/libquadmath*.so.*
+				%{libdir}/libquadmath*.so.*
 			end
 		end
 
@@ -456,9 +458,9 @@ packages
 			end
 
 			files
-				/usr/lib/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/quadmath.h
-				/usr/lib/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/quadmath_weak.h
-				/usr/lib/gcc/%{DISTRO_BUILDTARGET}/%{version}/libquadmath.so
+				%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/quadmath.h
+				%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/quadmath_weak.h
+				%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/libquadmath.so
 			end
 		end
 	end
@@ -479,7 +481,7 @@ packages
 		end
 
 		files
-			/usr/lib/gcc/%{DISTRO_BUILDTARGET}/%{version}/plugin
+			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/plugin
 		end
 	end
 

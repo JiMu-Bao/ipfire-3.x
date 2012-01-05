@@ -5,7 +5,7 @@
 
 name       = bzip2
 version    = 1.0.6
-release    = 3
+release    = 5
 
 groups     = Applications/Compression
 url        = http://www.bzip.org/
@@ -29,28 +29,40 @@ build
 
 	build
 		%{DO_FIX_LIBTOOL}
-		make -f Makefile-libbz2_so %{PARALLELISMFLAGS} \
-			CFLAGS="%{CFLAGS}"
+		make -f Makefile-libbz2_so %{PARALLELISMFLAGS} CFLAGS="%{CFLAGS}"
 
 		make clean
-		make %{PARALLELISMFLAGS} \
-			CFLAGS="%{CFLAGS}"
+		make %{PARALLELISMFLAGS} CFLAGS="%{CFLAGS}"
 	end
 
 	install
-		make PREFIX=%{BUILDROOT}/usr install
+		# Install binaries.
+		mkdir -pv %{BUILDROOT}%{bindir}
+		cp -v bzip2-shared %{BUILDROOT}%{bindir}/bzip2
+		ln -svf bzip2 %{BUILDROOT}%{bindir}/bunzip2
+		ln -svf bzip2 %{BUILDROOT}%{bindir}/bzcat
+		ln -svf bzip2 %{BUILDROOT}%{bindir}/bzcmp
+		ln -svf bzip2 %{BUILDROOT}%{bindir}/bless
 
-		mkdir -pv %{BUILDROOT}/{bin,lib}
-		cp -v bzip2-shared %{BUILDROOT}/bin/bzip2
-		cp -av libbz2.so* %{BUILDROOT}/lib
-		ln -sfv ../../lib/libbz2.so.1.0 %{BUILDROOT}/usr/lib/libbz2.so
-		rm -fv %{BUILDROOT}/usr/bin/{bunzip2,bzcat,bzip2}
-		ln -sfv bzip2 %{BUILDROOT}/bin/bunzip2
-		ln -sfv bzip2 %{BUILDROOT}/bin/bzcat
-		rm -vf %{BUILDROOT}/usr/lib/libbz2.a
+		# Install libs.
+		mkdir -pv %{BUILDROOT}%{libdir} %{BUILDROOT}/%{lib}
+		install -m 755 libbz2.so.%{version} %{BUILDROOT}/%{lib}
+		ln -svf libbz2.so.%{version} %{BUILDROOT}/%{lib}/libbz2.so.1
+		ln -svf ../../%{lib}/libbz2.so.1 %{BUILDROOT}%{libdir}/libbz2.so
 
-		mkdir -pv %{BUIDLROOT}/usr/share
-		mv -vf %{BUILDROOT}/usr/man %{BUILDROOT}/usr/share/
+		# Install headers.
+		mkdir -pv %{BUILDROOT}%{includedir}
+		install -m 644 bzlib.h %{BUILDROOT}%{includedir}
+
+		# Install man pages.
+		mkdir -pv %{BUILDROOT}%{mandir}/man1
+		cp -vp bzip2.1 bzdiff.1 bzgrep.1 bzmore.1 %{BUILDROOT}%{mandir}/man1
+		chown root.root -v %{BUILDROOT}%{mandir}/man1/*
+		ln -svf bzip2.1 %{BUILDROOT}%{mandir}/man1/bzip2recover.1
+		ln -svf bzip2.1 %{BUILDROOT}%{mandir}/man1/bunzip2.1
+		ln -svf bzip2.1 %{BUILDROOT}%{mandir}/man1/bzcat.1
+		ln -svf bzdiff.1 %{BUILDROOT}%{mandir}/man1/bzcmp.1
+		ln -svf bzmore.1 %{BUILDROOT}%{mandir}/man1/bzless.1
 	end
 end
 

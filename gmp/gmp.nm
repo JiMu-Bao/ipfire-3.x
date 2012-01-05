@@ -5,7 +5,7 @@
 
 name       = gmp
 version    = 5.0.2
-release    = 1
+release    = 2
 
 compat_version = 4.3.2
 
@@ -51,14 +51,13 @@ build
 	end
 
 	configure_options += \
-		--prefix=/usr \
 		--enable-cxx \
 		--enable-mpbsd \
 		--disable-static
 
 	prepare_cmds
 		for version in %{build_versions}; do
-			mkdir build-${version}
+			mkdir -p build-${version}
 
 			cd build-${version}
 			ln -svf ../configure .
@@ -151,8 +150,8 @@ build
 
 		# Install compat version of library.
 		cd %{DIR_SRC}/%{name}-%{compat_version}
-		install -m 644 .libs/libgmp.so.3.5.2 %{BUILDROOT}/usr/lib/
-		ln -svf libgmp.so.3.5.2 %{BUILDROOT}/usr/lib/libgmp.so.3
+		install -m 644 .libs/libgmp.so.3.5.2 %{BUILDROOT}%{libdir}
+		ln -svf libgmp.so.3.5.2 %{BUILDROOT}%{libdir}/libgmp.so.3
 	end
 end
 
@@ -167,7 +166,7 @@ packages
 		summary = Compatibility version of %{thisapp} (%{compat_version}).
 
 		files
-			/usr/lib/libgmp.so.3*
+			%{libdir}/libgmp.so.3*
 		end
 	end
 

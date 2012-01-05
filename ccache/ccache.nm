@@ -5,7 +5,7 @@
 
 name       = ccache
 version    = 3.1.6
-release    = 1
+release    = 3
 
 groups     = Development/Compilers
 url        = http://ccache.samba.org/
@@ -48,14 +48,14 @@ build
 	install_cmds
 		CCACHE_PLATFORM_TARGET=$(echo %{DISTRO_MACHINE} | sed -e "s/-gnu//g")
 
-		mkdir -pv %{BUILDROOT}/usr/lib/ccache
+		mkdir -pv %{BUILDROOT}%{libdir}/ccache
 		for i in gcc g++ cc c++; do \
-			ln -svf ../../bin/ccache %{BUILDROOT}/usr/lib/ccache/${i}; \
-			ln -svf ../../bin/ccache %{BUILDROOT}/usr/lib/ccache/${CCACHE_PLATFORM_TARGET}-${i}; \
+			ln -svf ../../bin/ccache %{BUILDROOT}%{libdir}/ccache/${i}; \
+			ln -svf ../../bin/ccache %{BUILDROOT}%{libdir}/ccache/${CCACHE_PLATFORM_TARGET}-${i}; \
 		done
 
 		mkdir -pv %{BUILDROOT}/etc/profile.d
-		sed -e "s|@LIBDIR@|/usr/lib|g" -e "s|@CACHEDIR@|%{CCACHE_CACHE}|g" \
+		sed -e "s|@LIBDIR@|%{libdir}|g" -e "s|@CACHEDIR@|%{CCACHE_CACHE}|g" \
 			< %{DIR_SOURCE}/ccache.sh > %{BUILDROOT}/etc/profile.d/ccache.sh
 
 		mkdir -pv -m770 %{BUILDROOT}/%{CCACHE_CACHE}

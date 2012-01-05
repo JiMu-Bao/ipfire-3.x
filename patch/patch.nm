@@ -5,7 +5,7 @@
 
 name       = patch
 version    = 2.6.1
-release    = 2
+release    = 3
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/patch/patch.html
@@ -33,10 +33,6 @@ build
 
 	test
 		make check
-	end
-
-	install
-		make install prefix=%{BUILDROOT}/usr
 	end
 end
 

@@ -46,11 +46,13 @@ build
 	end
 
 	# Build glibc with custom cflags
-	GLIBC_FLAGS = -O3 -g -fasynchronous-unwind-tables -DNDEBUG -DPIC
+	GLIBC_FLAGS = -O3 -g -fasynchronous-unwind-tables -DNDEBUG -fPIC -DPIC
 
 	if "%{DISTRO_ARCH}" == "i686"
 		GLIBC_FLAGS += -march=i686 -mtune=generic
-	elif "%{DISTRO_ARCH}" == "x86_64"
+	end
+
+	if "%{DISTRO_ARCH}" == "x86_64"
 		GLIBC_FLAGS += -mtune=generic
 	end
 
@@ -146,7 +148,7 @@ build
 	configure_options = \
 		--build=%{DISTRO_BUILDTARGET} \
 		--prefix=/usr \
-		--libexecdir=/usr/lib/glibc \
+		--libexecdir=%{libdir}/glibc \
 		--disable-profile \
 		--enable-add-ons \
 		--enable-kernel=%{OPTIMIZED_KERNEL} \
@@ -224,18 +226,18 @@ build
 		rm -vf %{BUILDROOT}/etc/ld.so.cache
 
 		# Include /usr/lib/gconv/gconv-modules.cache
-		> %{BUILDROOT}/usr/lib/gconv/gconv-modules.cache
-		chmod 644 %{BUILDROOT}/usr/lib/gconv/gconv-modules.cache
+		> %{BUILDROOT}%{libdir}/gconv/gconv-modules.cache
+		chmod 644 %{BUILDROOT}%{libdir}/gconv/gconv-modules.cache
 
-		strip -g %{BUILDROOT}/usr/lib/*.o
+		strip -g %{BUILDROOT}%{libdir}/*.o
 
 		# Move some libs to correct place
-		mv -v %{BUILDROOT}/lib/lib{memusage,pcprofile}.so %{BUILDROOT}/usr/lib/
+		mv -v %{BUILDROOT}/%{lib}/lib{memusage,pcprofile}.so %{BUILDROOT}%{libdir}
 	end
 
 	keep_libraries
-		/usr/lib/libc_nonshared.a
-		/usr/lib/libpthread_nonshared.a
+		%{libdir}/libc_nonshared.a
+		%{libdir}/libpthread_nonshared.a
 	end
 end
 
@@ -274,7 +276,7 @@ packages
 
 		requires = glibc-headers=%{thisver}
 
-		files = /usr/lib/*.a /usr/lib/*.o
+		files = %{libdir}/*.a %{libdir}/*.o
 	end
 
 	package glibc-headers
@@ -327,8 +329,8 @@ packages
 			/usr/bin/mtrace
 			/usr/bin/pcprofiledump
 			/usr/bin/xtrace
-			/usr/lib/libmemusage.so
-			/usr/lib/libpcprofile.so
+			%{libdir}/libmemusage.so
+			%{libdir}/libpcprofile.so
 		end
 	end
 

@@ -6,7 +6,7 @@
 name       = perl
 version    = 5.14.2
 # Never reset release in this package, just increase.
-release    = 9
+release    = 10
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Languages
@@ -34,7 +34,6 @@ build
 		gcc-c++
 		gdbm-devel
 		iana-etc
-		perl
 		procps
 		zlib-devel
 	end
@@ -50,7 +49,7 @@ build
 	build
 		sed -i -e "s|BUILD_ZLIB\s*= True|BUILD_ZLIB = False|" \
 			-e "s|INCLUDE\s*= ./zlib-src|INCLUDE = /usr/include|" \
-			-e "s|LIB\s*= ./zlib-src|LIB = /usr/lib|" \
+			-e "s|LIB\s*= ./zlib-src|LIB = %{libdir}|" \
 			cpan/Compress-Raw-Zlib/config.in
 
 		sh ./Configure -des \
@@ -67,8 +66,8 @@ build
 			-Dsitearch="/usr/local/lib/perl5" \
 			-Dprivlib="/usr/share/perl5" \
 			-Dvendorlib="/usr/share/perl5/vendor_perl" \
-			-Darchlib="/usr/lib/perl5" \
-			-Dvendorarch="/usr/lib/perl5/vendor_perl" \
+			-Darchlib="%{libdir}/perl5" \
+			-Dvendorarch="%{libdir}/perl5/vendor_perl" \
 			-Darchname=%{arch}-linux-thread-multi \
 			-Dpager="/usr/bin/less -isr" \
 			-Dman1dir=/usr/share/man/man1 \
@@ -112,9 +111,9 @@ end
 
 quality-agent
 	whitelist_rpath
-		/lib
-		/usr/lib
-		/usr/lib/perl5/CORE
+		/%{lib}
+		%{libdir}
+		%{libdir}/perl5/CORE
 	end
 end
 
@@ -122,12 +121,11 @@ end
 # of this perl package.
 perl_requires := %{name}=%{thisver}
 
-perl_filter_requires
-	perl>=[0-9]\:.*
-end
-
 packages
 	package perl
+		# Increase epoch because of automatic dependencies.
+		epoch = 2
+
 		requires
 			perl-libs=%{thisver}
 			perl(Carp)
@@ -220,7 +218,7 @@ packages
 		end
 
 		files
-			/usr/lib/perl5/CORE/libperl.so
+			%{libdir}/perl5/CORE/libperl.so
 		end
 	end
 
@@ -237,7 +235,7 @@ packages
 			/usr/share/man/man1/libnetcfg*
 			/usr/bin/perlivp
 			/usr/share/man/man1/perlivp*
-			/usr/lib/perl5/CORE/*.h
+			%{libdir}/perl5/CORE/*.h
 			/usr/bin/xsubpp
 			/usr/share/man/man1/xsubpp*
 			/usr/share/man/man1/perlxs*
@@ -253,7 +251,7 @@ packages
 	#	end
 	#
 	#	files
-	#		/usr/lib/perl5-tests
+	#		%{libdir}/perl5-tests
 	#	end
 	#end
 
@@ -562,8 +560,8 @@ packages
 		end
 
 		files
-			/usr/lib/perl5/Digest
-			!/usr/lib/perl5/Digest/*
+			%{libdir}/perl5/Digest
+			!%{libdir}/perl5/Digest/*
 			/usr/share/perl5/Digest.pm
 			/usr/share/perl5/Digest/base.pm
 			/usr/share/perl5/Digest/file.pm
@@ -591,8 +589,8 @@ packages
 		end
 
 		files
-			/usr/lib/perl5/Digest/MD5.pm
-			/usr/lib/perl5/auto/Digest/MD5
+			%{libdir}/perl5/Digest/MD5.pm
+			%{libdir}/perl5/auto/Digest/MD5
 			/usr/share/man/man3/Digest::MD5.3*
 		end
 	end
@@ -811,7 +809,7 @@ packages
 
 		files
 			/usr/share/perl5/Compress/Zlib.pm
-			/usr/lib/perl5/auto/Compress/Zlib/
+			%{libdir}/perl5/auto/Compress/Zlib/
 			/usr/share/man/man3/Compress::Zlib*
 			/usr/share/perl5/File/GlobMapper.pm
 			/usr/share/perl5/IO/Compress/Base/
@@ -1252,8 +1250,8 @@ packages
 		end
 
 		files
-			/usr/lib/perl5/Cwd.pm
-			/usr/lib/perl5/File/Spec*
+			%{libdir}/perl5/Cwd.pm
+			%{libdir}/perl5/File/Spec*
 			/usr/share/man/man3/Cwd*
 			/usr/share/man/man3/File::Spec*
 		end
@@ -1355,9 +1353,9 @@ packages
 		end
 
 		files
-			/usr/lib/perl5/List
-			/usr/lib/perl5/Scalar
-			/usr/lib/perl5/auto/List
+			%{libdir}/perl5/List
+			%{libdir}/perl5/Scalar
+			%{libdir}/perl5/auto/List
 			/usr/share/man/man3/List::Util*
 			/usr/share/man/man3/Scalar::Util*
 		end
@@ -1461,9 +1459,9 @@ packages
 		end
 
 		files
-			/usr/lib/perl5/Time/Piece.pm
-			/usr/lib/perl5/Time/Seconds.pm
-			/usr/lib/perl5/auto/Time/Piece/
+			%{libdir}/perl5/Time/Piece.pm
+			%{libdir}/perl5/Time/Seconds.pm
+			%{libdir}/perl5/auto/Time/Piece/
 			/usr/share/man/man3/Time::Piece.3*
 			/usr/share/man/man3/Time::Seconds.3*
 		end
@@ -1532,8 +1530,8 @@ packages
 		end
 
 		files
-			/usr/lib/perl5/auto/threads/threads*
-			/usr/lib/perl5/threads.pm
+			%{libdir}/perl5/auto/threads/threads*
+			%{libdir}/perl5/threads.pm
 			/usr/share/man/man3/threads.3*
 		end
 	end
@@ -1557,8 +1555,8 @@ packages
 		end
 
 		files
-			/usr/lib/perl5/auto/threads/shared*
-			/usr/lib/perl5/threads/shared*
+			%{libdir}/perl5/auto/threads/shared*
+			%{libdir}/perl5/threads/shared*
 			/usr/share/man/man3/threads::shared*
 		end
 	end

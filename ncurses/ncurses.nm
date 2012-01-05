@@ -5,7 +5,7 @@
 
 name       = ncurses
 version    = 5.9
-release    = 5
+release    = 6
 
 groups     = System/Base
 url        = http://invisible-island.net/ncurses/ncurses.html
@@ -41,7 +41,7 @@ build
 		--enable-pc-files \
 		--with-termlib=tinfo
 
-	export PKG_CONFIG_LIBDIR=/usr/lib/pkgconfig
+	export PKG_CONFIG_LIBDIR=%{libdir}/pkgconfig
 
 	build
 		mkdir -pv narrowc widec
@@ -63,17 +63,17 @@ build
 
 	install
 		make -C narrowc DESTDIR=%{BUILDROOT} install.{libs,progs,data}
-		rm -rvf %{BUILDROOT}/usr/lib/libtinfo.*
+		rm -rvf %{BUILDROOT}%{libdir}/libtinfo.*
 		make -C widec DESTDIR=%{BUILDROOT} install.{libs,includes,man}
 
-		chmod -v 755 %{BUILDROOT}/usr/lib/lib*.so.*.*
+		chmod -v 755 %{BUILDROOT}%{libdir}/lib*.so.*.*
 
 		# move lib{ncurses{,w},tinfo}.so.* to /lib*
-		mkdir -pv %{BUILDROOT}/lib
-		mv -v %{BUILDROOT}/usr/lib/lib{ncurses{,w},tinfo}.so.* %{BUILDROOT}/lib
-		for l in %{BUILDROOT}/usr/lib/lib{ncurses{,w},tinfo}.so; do
-			ln -sf $(echo /usr/lib | \
-				sed 's,\(^/\|\)[^/][^/]*,..,g')/lib/$(readlink $l) $l
+		mkdir -pv %{BUILDROOT}/%{lib}
+		mv -v %{BUILDROOT}%{libdir}/lib{ncurses{,w},tinfo}.so.* %{BUILDROOT}/%{lib}
+		for l in %{BUILDROOT}%{libdir}/lib{ncurses{,w},tinfo}.so; do
+			ln -sf $(echo %{libdir} | \
+				sed 's,\(^/\|\)[^/][^/]*,..,g')/%{lib}/$(readlink $l) $l
 		done
 		mkdir -pv %{BUILDROOT}/{etc,lib}/terminfo
 
@@ -103,19 +103,19 @@ build
 		#done
 
 		# don't require -ltinfo when linking with --no-add-needed
-		for l in %{BUILDROOT}/usr/lib/libncurses{,w}.so; do
+		for l in %{BUILDROOT}%{libdir}/libncurses{,w}.so; do
 			soname=$(basename $(readlink $l))
 			rm -f $l
 			echo "INPUT($soname -ltinfo)" > $l
 		done
 
-		rm -f %{BUILDROOT}/usr/lib/libcurses{,w}.so
-		echo "INPUT(-lncurses)" > %{BUILDROOT}/usr/lib/libcurses.so
-		echo "INPUT(-lncursesw)" > %{BUILDROOT}/usr/lib/libcursesw.so
-		echo "INPUT(-ltinfo)" > %{BUILDROOT}/usr/lib/libtermcap.so
+		rm -f %{BUILDROOT}%{libdir}/libcurses{,w}.so
+		echo "INPUT(-lncurses)" > %{BUILDROOT}%{libdir}/libcurses.so
+		echo "INPUT(-lncursesw)" > %{BUILDROOT}%{libdir}/libcursesw.so
+		echo "INPUT(-ltinfo)" > %{BUILDROOT}%{libdir}/libtermcap.so
 
-		rm -vf %{BUILDROOT}/usr/lib/terminfo
-		rm -vf %{BUILDROOT}/usr/lib/pkgconfig/{*_g,ncurses++*}.pc
+		rm -vf %{BUILDROOT}%{libdir}/terminfo
+		rm -vf %{BUILDROOT}%{libdir}/pkgconfig/{*_g,ncurses++*}.pc
 	end
 end
 

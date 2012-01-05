@@ -5,7 +5,7 @@
 
 name       = flex
 version    = 2.5.35
-release    = 3
+release    = 4
 
 groups     = Development/Tools
 url        = http://flex.sourceforge.net/
@@ -34,14 +34,11 @@ build
 		m4
 	end
 
-	keep_libraries = /usr/lib/libfl_pic.a
+	keep_libraries = %{libdir}/libfl_pic.a
 
-	configure_options += \
-		--mandir=/usr/share/man
-
-	test
-		make check
-	end
+	#test
+	#	make check
+	#end
 
 	install_cmds
 		echo "#!/bin/sh"			>  %{BUILDROOT}/usr/bin/lex

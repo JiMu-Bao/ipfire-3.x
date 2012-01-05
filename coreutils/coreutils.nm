@@ -5,7 +5,7 @@
 
 name       = coreutils
 version    = 8.14
-release    = 2
+release    = 3
 
 groups     = System/Base
 url        = http://www.gnu.org/software/coreutils/
@@ -39,7 +39,7 @@ build
 		-fno-strict-aliasing
 
 	configure_options += \
-		--libexecdir=/usr/lib \
+		--libexecdir=%{libdir} \
 		--enable-pam \
 		--enable-selinux \
 		--enable-largefile \

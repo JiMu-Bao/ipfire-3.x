@@ -7,7 +7,7 @@ name       = db4
 version_major = 4.8
 version_minor = 30
 version    = %{version_major}.%{version_minor}
-release    = 2
+release    = 3
 epoch      = 1
 thisapp    = db-%{version}
 
@@ -35,10 +35,12 @@ build
 		cd %{DIR_APP}/build_unix
 		CC=gcc \
 		../dist/configure \
-			--prefix=/usr \
+			%{configure_options} \
 			--enable-compat185 \
 			--enable-cxx \
 			--disable-static
+
+		%{MACRO_FIX_LIBTOOL}
 
 		make %{PARALLELISMFLAGS}
 	end
@@ -59,8 +61,7 @@ packages
 		# Overwrite because of epoch != 0.
 		requires = %{name}=%{epoch}:%{thisver}
 
-		files += \
-			!/usr/lib*/libdb-%{version_major}.so
+		files += !%{libdir}/libdb-%{version_major}.so
 	end
 
 	package db4-utils
@@ -77,7 +78,7 @@ packages
 		description = %{summary}
 
 		files
-			/usr/lib*/libdb_cxx-%{version_major}.so
+			%{libdir}/libdb_cxx-%{version_major}.so
 		end
 	end
 

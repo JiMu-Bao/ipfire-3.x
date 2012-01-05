@@ -5,7 +5,7 @@
 
 name       = pcre
 version    = 8.21
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.pcre.org/
@@ -38,9 +38,9 @@ build
 		--enable-unicode-properties
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/{,usr/}lib
-		mv -v %{BUILDROOT}/usr/lib/libpcre.so.* %{BUILDROOT}/lib/
-		ln -v -sf ../../lib/libpcre.so.0 %{BUILDROOT}/usr/lib/libpcre.so
+		mkdir -pv %{BUILDROOT}/{,usr/}%{lib}
+		mv -v %{BUILDROOT}%{libdir}/libpcre.so.* %{BUILDROOT}/%{lib}
+		ln -v -sf ../../%{lib}/libpcre.so.0 %{BUILDROOT}%{libdir}/libpcre.so
 	end
 end
 

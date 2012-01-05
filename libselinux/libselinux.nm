@@ -5,7 +5,7 @@
 
 name       = libselinux
 version    = 2.0.96
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.selinuxproject.org
@@ -30,13 +30,16 @@ build
 
 	build
 		make clean
-		make CC=gcc LIBDIR="/usr/lib" CFLAGS="-g %{CFLAGS}" swigify
-		make CC=gcc LIBDIR="/usr/lib" CFLAGS="-g %{CFLAGS}" all
-		make CC=gcc LIBDIR="/usr/lib" CFLAGS="-g %{CFLAGS}" pywrap
+		make CC=gcc LIBDIR="%{libdir}" CFLAGS="-g %{CFLAGS}" swigify
+		make CC=gcc LIBDIR="%{libdir}" CFLAGS="-g %{CFLAGS}" all
+		make CC=gcc LIBDIR="%{libdir}" CFLAGS="-g %{CFLAGS}" pywrap
 	end
 
+	make_install_targets += LIBDIR="%{BUILDROOT}%{libdir}" \
+		SHLIBDIR="%{BUILDROOT}/%{lib}"
+
 	install_cmds
-		make install-pywrap DESTDIR=%{BUILDROOT}
+		make install-pywrap DESTDIR=%{BUILDROOT} LIBDIR="%{BUILDROOT}%{libdir}"
 
 		# Remove unwanted binaries
 		rm -f %{BUILDROOT}/usr/sbin/compute_*

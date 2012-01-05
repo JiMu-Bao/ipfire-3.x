@@ -70,7 +70,10 @@ packages
 		groups += Base Build
 
 		prerequires = coreutils
-		requires = /etc/bashrc /etc/profile
+		requires
+			/etc/bashrc
+			/etc/profile
+		end
 
 		script postin
 			# Create /etc/shells, if it does not exist.

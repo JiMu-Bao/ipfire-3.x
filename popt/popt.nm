@@ -5,7 +5,7 @@
 
 name       = popt
 version    = 1.15
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.rpm5.org/
@@ -22,18 +22,17 @@ source_dl  =
 
 build
 	configure_options += \
-		--libdir=/lib \
+		--libdir=/%{lib}
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/usr/lib
-		rm -vf %{BUILDROOT}/lib/libpopt.so
-		ln -sfv ../../lib/libpopt.so.0.0.0 %{BUILDROOT}/usr/lib/libpopt.so
+		mkdir -pv %{BUILDROOT}%{libdir}
+		rm -vf %{BUILDROOT}/%{lib}/libpopt.so
+		ln -sfv ../../%{lib}/libpopt.so.0.0.0 %{BUILDROOT}%{libdir}/libpopt.so
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

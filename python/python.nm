@@ -6,7 +6,7 @@
 name       = python
 major_ver  = 2.7
 version    = %{major_ver}.2
-release    = 3
+release    = 4
 thisapp    = Python-%{version}
 
 groups     = Development/Languages
@@ -47,6 +47,12 @@ build
 	export CFLAGS  += -D_GNU_SOURCE -fwrapv
 
 	prepare_cmds
+		# Apply patches for x86_64.
+		if [ "$(uname -m)" = "x86_64" ]; then
+			patch -Np1 -i %{DIR_SOURCE}/python-2.7.1-lib64.patch
+			patch -Np1 -i %{DIR_SOURCE}/python-2.7-lib64-sysconfig.patch
+		fi
+
 		sed -e "s/#*shared*/*shared*/g" -i Modules/Setup.dist
 
 		# Remove embedded copies of expat, zlib and libffi
@@ -58,39 +64,46 @@ build
 		autoreconf --force
 	end
 
+	configure_options += \
+		--enable-ipv6 \
+		--enable-unicode=ucs4 \
+		--with-system-expat \
+		--with-system-ffi \
+		--enable-shared
+
 	build
 		export CPPFLAGS=$(pkg-config --cflags-only-I libffi)
 
 		OPT="%{CFLAGS}" \
 			./configure \
-				--prefix=/usr \
-				--enable-ipv6 \
-				--enable-unicode=ucs4 \
-				--with-system-expat \
-				--with-system-ffi \
-				--enable-shared
+				%{configure_options}
 
 		make %{PARALLELISMFLAGS}
 	end
 
 	install_cmds
 		# All *.py files don't need to be executeable...
-		find %{BUILDROOT}/usr/lib/python*/ -name "*.py" | xargs chmod a-x -v
+		find %{BUILDROOT}%{libdir}/python*/ -name "*.py" | xargs -r chmod a-x -v
 
 		# Create symlink for shared lib.
-		ln -svf ../../libpython%{major_ver}.so %{BUILDROOT}/usr/lib/python%{major_ver}/config/
+		ln -svf ../../libpython%{major_ver}.so %{BUILDROOT}%{libdir}/python%{major_ver}/config/
 	end
 end
 
 packages
 	package %{name}
+		# Define python-abi manually.
+		provides
+			python-abi = %{major_ver}
+		end
+	end
 
 	package %{name}-devel
 		template DEVEL
 
 		files += \
-			!/usr/lib/python*/config/Makefile \
-			!/usr/include/python*/pyconfig.h
+			!%{libdir}/python*/config/Makefile \
+			!%{includedir}/python*/pyconfig.h
 	end
 
 	package %{name}-debuginfo

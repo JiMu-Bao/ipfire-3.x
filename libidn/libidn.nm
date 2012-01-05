@@ -5,7 +5,7 @@
 
 name       = libidn
 version    = 1.22
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.gnu.org/software/libidn/
@@ -23,7 +23,7 @@ source_dl  =
 
 build
 	configure_options += \
-		--libdir=/lib \
+		--libdir=/%{lib} \
 		--disable-csharp \
 		--disable-static
 
@@ -33,17 +33,16 @@ build
 
 	install
 		make install DESTDIR=%{BUILDROOT} \
-			pkgconfigdir=/usr/lib/pkgconfig
+			pkgconfigdir=%{libdir}/pkgconfig
 
-		mkdir -pv %{BUILDROOT}/usr/lib
-		rm -vf %{BUILDROOT}/lib/libidn.so
-		ln -svf ../../lib/libidn.so.11.6.5 %{BUILDROOT}/usr/lib/libidn.so
+		mkdir -pv %{BUILDROOT}%{libdir}
+		rm -vf %{BUILDROOT}/%{lib}/libidn.so
+		ln -svf ../../%{lib}/libidn.so.11.6.5 %{BUILDROOT}%{libdir}/libidn.so
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
