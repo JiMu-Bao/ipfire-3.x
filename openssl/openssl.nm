@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openssl
-version    = 1.0.0e
-release    = 3
+version    = 1.0.0f
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
