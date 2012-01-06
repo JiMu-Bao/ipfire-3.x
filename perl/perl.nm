@@ -8,6 +8,9 @@ version    = 5.14.2
 # Never reset release in this package, just increase.
 release    = 10
 
+perl_epoch = 2
+thisver = %{perl_epoch}:%{version}-%{_release}
+
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Languages
 url        = http://www.perl.org/
@@ -34,6 +37,7 @@ build
 		gcc-c++
 		gdbm-devel
 		iana-etc
+		perl
 		procps
 		zlib-devel
 	end
@@ -46,55 +50,66 @@ build
 		sed -i 's/command /command[ -]/' makedepend.SH
 	end
 
+	configure_options = \
+		-des \
+		-Doptimize="%{CFLAGS}" \
+		-Dccdlflags="-Wl,--enable-new-dtags" \
+		-Dlddlflags="-shared %{CFLAGS} %{LDFLAGS}" \
+		-DDDEBUGGING=-g \
+		-Dversion=%{version} \
+		-Dmyhostname=localhost \
+		-Dperladmin=root@localhost \
+		-Dcc="gcc" \
+		-Dcf_by="%{DISTRO_VENDOR}" \
+		-Dprefix=/usr \
+		-Dvendorprefix=/usr \
+		-Dsiteprefix="/usr/local" \
+		-Dsitelib="/usr/local/share/perl5" \
+		-Dsitearch="/usr/local/lib/perl5" \
+		-Dprivlib="/usr/share/perl5" \
+		-Dvendorlib="/usr/share/perl5/vendor_perl" \
+		-Darchlib="%{libdir}/perl5" \
+		-Dvendorarch="%{libdir}/perl5/vendor_perl" \
+		-Darchname=%{arch}-linux-thread-multi \
+		-Dpager="/usr/bin/less -isr" \
+		-Dman1dir=/usr/share/man/man1 \
+		-Dman3dir=/usr/share/man/man3 \
+		-Duseshrplib \
+		-Dusethreads \
+		-Duseithreads \
+		-Duselargefiles \
+		-Dd_semctl_semun \
+		-Di_db \
+		-Ui_ndbm \
+		-Di_gdbm \
+		-Di_shadow \
+		-Di_syslog \
+		-Dman3ext=3pm \
+		-Duseperlio \
+		-Dinstallusrbinperl=n \
+		-Ubincompat5005 \
+		-Uversiononly \
+		-Dd_gethostent_r_proto \
+		-Ud_endhostent_r_proto \
+		-Ud_sethostent_r_proto \
+		-Ud_endprotoent_r_proto \
+		-Ud_setprotoent_r_proto \
+		-Ud_endservent_r_proto \
+		-Ud_setservent_r_proto \
+		-Dscriptdir="/usr/bin"
+
+	if "%{DISTRO_ARCH}" == "x86_64"
+		configure_options += \
+			-Dlibpth="/usr/local/lib64 /lib64 %{prefix}/lib64"
+	end
+
 	build
 		sed -i -e "s|BUILD_ZLIB\s*= True|BUILD_ZLIB = False|" \
 			-e "s|INCLUDE\s*= ./zlib-src|INCLUDE = /usr/include|" \
 			-e "s|LIB\s*= ./zlib-src|LIB = %{libdir}|" \
 			cpan/Compress-Raw-Zlib/config.in
 
-		sh ./Configure -des \
-			-Doptimize="%{CFLAGS}" \
-			-Dversion=%{version} \
-			-Dmyhostname=localhost \
-			-Dperladmin=root@localhost \
-			-Dcc="gcc" \
-			-Dcf_by="%{DISTRO_VENDOR}" \
-			-Dprefix=/usr \
-			-Dvendorprefix=/usr \
-			-Dsiteprefix="/usr/local" \
-			-Dsitelib="/usr/local/share/perl5" \
-			-Dsitearch="/usr/local/lib/perl5" \
-			-Dprivlib="/usr/share/perl5" \
-			-Dvendorlib="/usr/share/perl5/vendor_perl" \
-			-Darchlib="%{libdir}/perl5" \
-			-Dvendorarch="%{libdir}/perl5/vendor_perl" \
-			-Darchname=%{arch}-linux-thread-multi \
-			-Dpager="/usr/bin/less -isr" \
-			-Dman1dir=/usr/share/man/man1 \
-			-Dman3dir=/usr/share/man/man3 \
-			-Duseshrplib \
-			-Dusethreads \
-			-Duseithreads \
-			-Duselargefiles \
-			-Dd_semctl_semun \
-			-Di_db \
-			-Ui_ndbm \
-			-Di_gdbm \
-			-Di_shadow \
-			-Di_syslog \
-			-Dman3ext=3pm \
-			-Duseperlio \
-			-Dinstallusrbinperl=n \
-			-Ubincompat5005 \
-			-Uversiononly \
-			-Dd_gethostent_r_proto \
-			-Ud_endhostent_r_proto \
-			-Ud_sethostent_r_proto \
-			-Ud_endprotoent_r_proto \
-			-Ud_setprotoent_r_proto \
-			-Ud_endservent_r_proto \
-			-Ud_setservent_r_proto \
-			-Dscriptdir="/usr/bin"
+		sh ./Configure %{configure_options}
 
 		make %{PARALLELISMFLAGS}
 	end
@@ -119,7 +134,7 @@ end
 
 # This variable contains the constant version string
 # of this perl package.
-perl_requires := %{name}=%{thisver}
+perl_requires := %{name} = %{thisver}
 
 packages
 	package perl
@@ -127,8 +142,7 @@ packages
 		epoch = 2
 
 		requires
-			perl-libs=%{thisver}
-			perl(Carp)
+			perl-libs = %{version}-%{_release}
 		end
 
 		provides
@@ -189,24 +203,14 @@ packages
 			perl(constant)
 			perl(strict)
 			perl(vars)
-
-			# XXX why?
-			perl(Mac::InternetConfig)
-			perl(NDBM_File)
 		end
 
 		filter_requires
-			%{perl_filter_requires}
 			DBIx
 			InternetConfig
-			perl\(Mac
-			perl\(NDBM_File
-			perl\(VMS
-		end
-
-		filter_provides
-			Carp
-			perl\(Carp\)
+			Mac::
+			NDBM_File
+			VMS::
 		end
 	end
 
@@ -407,7 +411,7 @@ packages
 		end
 
 		filter_requires
-			perl\(Mac::BuildTools\)
+			Mac::BuildTools
 		end
 
 		files
@@ -494,10 +498,9 @@ packages
 		end
 
 		filter_requires
-			%{perl_filter_requires}
 			DBIx
 			Your::Module::Here
-			perl\(DBD::SQLite\)
+			DBD::SQLite
 		end
 
 		files
@@ -531,8 +534,13 @@ packages
 			%{perl_requires}
 		end
 
+		provides
+			perl(Carp) = %{version}
+			perl(Carp::Heavy) = %{version}
+		end
+
 		# Do not export unversioned module
-		filter_provides = ^perl\(Carp\)\s*$
+		#filter_provides = ^perl\(Carp\)\s*$
 
 		files
 			/usr/share/perl5/Carp*
@@ -565,9 +573,9 @@ packages
 			/usr/share/perl5/Digest.pm
 			/usr/share/perl5/Digest/base.pm
 			/usr/share/perl5/Digest/file.pm
-			/usr/share/man/man5/Digest.3*
-			/usr/share/man/man5/Digest::base.3*
-			/usr/share/man/man5/Digest::file.3*
+			/usr/share/man/man3/Digest.3*
+			/usr/share/man/man3/Digest::base.3*
+			/usr/share/man/man3/Digest::file.3*
 		end
 	end
 
@@ -615,6 +623,8 @@ packages
 
 		files
 			/usr/bin/shasum
+			%{libdir}/perl5/Digest/SHA*
+			%{libdir}/perl5/auto/Digest/SHA*
 			/usr/share/perl5/Digest/SHA*
 			/usr/share/man/man1/shasum.1*
 			/usr/share/man/man3/Digest::SHA.3*
@@ -680,6 +690,10 @@ packages
 			%{perl_requires}
 			perl-devel
 			perl(Test::Harness)
+		end
+
+		filter_requires
+			VMS::Filespec
 		end
 
 		files
@@ -1246,7 +1260,7 @@ packages
 		end
 
 		filter_requires
-			perl\(VMS\:\:Filespec\)
+			VMS::Filespec
 		end
 
 		files
@@ -1298,10 +1312,6 @@ packages
 			%{perl_requires}
 		end
 
-		filter_requires
-			%{perl_filter_requires}
-		end
-
 		files
 			/usr/share/perl5/Pod/Escapes.pm
 			/usr/share/man/man3/Pod::Escapes.*
@@ -1322,10 +1332,6 @@ packages
 
 		requires
 			%{perl_requires}
-		end
-
-		filter_requires
-			%{perl_filter_requires}
 		end
 
 		files
@@ -1398,10 +1404,6 @@ packages
 
 		requires
 			%{perl_requires}
-		end
-
-		filter_requires
-			%{perl_filter_requires}
 		end
 
 		files
