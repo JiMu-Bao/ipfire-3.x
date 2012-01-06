@@ -1,0 +1,49 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-FCGI
+version    = 0.74
+release    = 1
+thisapp    = FCGI-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/FCGI
+license    = OML
+summary    = FastCGI perl bindings.
+
+description
+	FastCGI perl bindings.
+end
+
+source_dl  = http://search.cpan.org/CPAN/authors/id/F/FL/FLORA/
+
+build
+	requires
+		perl(ExtUtils::MakeMaker)
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{CFLAGS}"
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make test
+	end
+
+	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+end
+
+packages
+	package %{name}
+		requires
+			perl
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
