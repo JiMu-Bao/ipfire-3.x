@@ -5,7 +5,7 @@
 
 name       = mailcap
 version    = 2.1.36
-release    = 1
+release    = 2
 arch       = noarch
 
 groups     = System/Base
@@ -26,6 +26,10 @@ source_dl  =
 sources    = %{thisapp}.tar.xz
 
 build
+	requires
+		perl
+	end
+
 	build = # Nothing to do.
 
 	test
