@@ -5,7 +5,7 @@
 
 name       = libcap-ng
 version    = 0.6.6
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://people.redhat.com/sgrubb/libcap-ng
@@ -27,11 +27,11 @@ build
 
 	install_cmds
 		# Move libraries to lib
-		mkdir -pv %{BUILDROOT}/lib
-		mv -vf %{BUILDROOT}/usr/lib/libcap-ng.so.* %{BUILDROOT}/lib/
+		mkdir -pv %{BUILDROOT}/%{lib}
+		mv -vf %{BUILDROOT}%{libdir}/libcap-ng.so.* %{BUILDROOT}/%{lib}/
 
 		# Recreate symlink
-		ln -svf ../../lib/libcap-ng.so.0 %{BUILDROOT}/usr/lib/libcap-ng.so
+		ln -svf ../../%{lib}/libcap-ng.so.0 %{BUILDROOT}%{libdir}/libcap-ng.so
 	end
 
 	# XXX Testsuite is broken by the package developers
@@ -42,7 +42,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
