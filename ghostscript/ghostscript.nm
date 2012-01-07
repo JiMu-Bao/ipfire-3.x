@@ -5,7 +5,7 @@
 
 name       = ghostscript
 version    = 9.04
-release    = 1
+release    = 2
 
 groups     = Applications/Printing
 url        = http://ghostscript.com
@@ -36,6 +36,9 @@ build
 		--without-omni
 
 	PARALLELISMFLAGS = # Disable this
+
+	# debugedit causes errors. We skip them for now.
+	debuginfo_strict_build_id = false
 end
 
 packages
