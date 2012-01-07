@@ -37,12 +37,16 @@ build
 	export PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1
 
 	export NSPR_INCLUDE_DIR=/usr/include/nspr4
-	export NSPR_LIB_DIR=/usr/lib
+	export NSPR_LIB_DIR=%{libdir}
 
 	export NSS_INCLUDE_DIR=/usr/include/nss3
-	export NSS_LIB_DIR=/usr/lib
+	export NSS_LIB_DIR=%{libdir}
 
 	export NSS_USE_SYSTEM_SQLITE=1
+
+	if "%{DISTRO_ARCH}" == "x86_64"
+		export USE_64=1
+	end
 
 	build
 		make -C ./mozilla/security/coreconf
@@ -52,34 +56,34 @@ build
 	install
 		mkdir -pv %{BUILDROOT}/usr/bin
 		mkdir -pv %{BUILDROOT}/usr/include/nss3
-		mkdir -pv %{BUILDROOT}/usr/lib/pkgconfig
+		mkdir -pv %{BUILDROOT}%{libdir}/pkgconfig
 
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/lib/libnssutil3.so \
-			%{BUILDROOT}/usr/lib
+		install -p -v -m 755 mozilla/dist/*.OBJ/lib/libnssutil3.so \
+			%{BUILDROOT}%{libdir}
 
-		sed -e "s,@libdir@,/usr/lib,g" \
+		sed -e "s,@libdir@,%{libdir},g" \
 			-e "s,@prefix@,/usr,g" \
 			-e "s,@exec_prefix@,/usr,g" \
 			-e "s,@includedir@,/usr/include/nss3,g" \
-			-e "s,@MOD_MAJOR_VERSION@,$$(grep "#define.*NSSUTIL_VMAJOR" %{DIR_APP}/mozilla/security/nss/lib/util/nssutil.h | awk '{print $3}'),g" \
-			-e "s,@MOD_MINOR_VERSION@,$$(grep "#define.*NSSUTIL_VMINOR" %{DIR_APP}/mozilla/security/nss/lib/util/nssutil.h | awk '{print $3}'),g" \
-			-e "s,@MOD_PATCH_VERSION@,$$(grep "#define.*NSSUTIL_VPATCH" %{DIR_APP}/mozilla/security/nss/lib/util/nssutil.h | awk '{print $3}'),g" \
+			-e "s,@MOD_MAJOR_VERSION@,$$(grep "#define.*NSSUTIL_VMAJOR" mozilla/security/nss/lib/util/nssutil.h | awk '{print $3}'),g" \
+			-e "s,@MOD_MINOR_VERSION@,$$(grep "#define.*NSSUTIL_VMINOR" mozilla/security/nss/lib/util/nssutil.h | awk '{print $3}'),g" \
+			-e "s,@MOD_PATCH_VERSION@,$$(grep "#define.*NSSUTIL_VPATCH" mozilla/security/nss/lib/util/nssutil.h | awk '{print $3}'),g" \
 			< %{DIR_SOURCE}/nss-util-config.in \
 			> %{BUILDROOT}/usr/bin/nss-util-config
 		chmod -v 755 %{BUILDROOT}/usr/bin/nss-util-config
 
 		sed \
-			-e "s,%libdir%,/usr/lib,g" \
+			-e "s,%libdir%,%{libdir},g" \
 			-e "s,%prefix%,/usr,g" \
 			-e "s,%exec_prefix%,/usr,g" \
 			-e "s,%includedir%,/usr/include/nss3,g" \
 			-e "s,%NSPR_VERSION%,$$(nspr-config --version),g" \
 			-e "s,%NSSUTIL_VERSION%,%{name},g" \
 			< %{DIR_SOURCE}/nss-util.pc.in \
-			> %{BUILDROOT}/usr/lib/pkgconfig/nss-util.pc
+			> %{BUILDROOT}%{libdir}/pkgconfig/nss-util.pc
 
 		# The util headers, the rest come from softokn and nss
-		cp -vf %{DIR_APP}/mozilla/dist/public/nss/*.h %{BUILDROOT}/usr/include/nss3
+		cp -vf mozilla/dist/public/nss/*.h %{BUILDROOT}/usr/include/nss3
 		chmod -v 644 %{BUILDROOT}/usr/include/nss3/*.h
 	end
 end
@@ -98,7 +102,7 @@ packages
 		files
 			/usr/bin/*-config
 			/usr/include
-			/usr/lib/pkgconfig
+			%{libdir}/pkgconfig
 		end
 	end
 
