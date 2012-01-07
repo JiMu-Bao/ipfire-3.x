@@ -5,7 +5,7 @@
 
 name       = pam_ldap
 version    = 186
-release    = 1
+release    = 2
 
 groups     = System/Base
 url        = http://www.padl.com/OSS/pam_ldap.html
@@ -34,7 +34,7 @@ build
 
 	configure_options += \
 		--sysconfdir=/etc \
-		--libdir=/lib \
+		--libdir=/%{lib} \
 		--mandir=/usr/share/man \
 		--with-ldap-conf-file=/etc/pam_ldap.conf \
 		--with-ldap-secret-file=/etc/pam_ldap.secret
@@ -64,7 +64,7 @@ build
 
 	install
 		# Create directory layout
-		mkdir -pv %{BUILDROOT}/{etc,/lib/security,/usr/lib}
+		mkdir -pv %{BUILDROOT}/{etc,%{lib}/security,%{libdir}}
 
 		# Prevent to install an ldap.conf
 		touch %{BUILDROOT}/etc/ldap.conf
