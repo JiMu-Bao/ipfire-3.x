@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = LVM2
+name       = lvm2
 version    = 2.02.54
-release    = 1
+release    = 2
+thisapp    = LVM2.%{version}
 
 groups     = System/Base
 url        = http://sources.redhat.com/lvm2/
@@ -20,8 +21,6 @@ description
 	or more physical volumes and creating one or more logical volumes \
 	(kind of logical partitions) in volume groups.
 end
-
-thisapp    = %{name}.%{version}
 
 source_dl  =
 sources    = %{thisapp}.tgz
@@ -38,20 +37,19 @@ build
 		--bindir=/bin \
 		--sbindir=/sbin \
 		--exec-prefix=/ \
-		--libdir=/lib \
+		--libdir=/%{lib} \
 		--enable-pkgconfig
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/usr/lib
-		rm -vf %{BUILDROOT}/lib/libdevmapper.so
-		ln -svf libdevmapper.so.1.02 %{BUILDROOT}/lib/libdevmapper.so.1
-		ln -svf ../../lib/libdevmapper.so.1 %{BUILDROOT}/usr/lib/libdevmapper.so
+		mkdir -pv %{BUILDROOT}%{libdir}
+		rm -vf %{BUILDROOT}/%{lib}/libdevmapper.so
+		ln -svf libdevmapper.so.1.02 %{BUILDROOT}/%{lib}/libdevmapper.so.1
+		ln -svf ../../%{lib}/libdevmapper.so.1 %{BUILDROOT}%{libdir}/libdevmapper.so
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package libdevmapper
 		template LIBS
