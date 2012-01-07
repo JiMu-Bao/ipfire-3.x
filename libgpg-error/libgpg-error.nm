@@ -5,7 +5,7 @@
 
 name       = libgpg-error
 version    = 1.9
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.gnupg.org/
@@ -27,18 +27,17 @@ build
 	end
 
 	configure_options += \
-		--libdir=/lib
+		--libdir=/%{lib}
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/usr/lib
-		rm -vf %{BUILDROOT}/lib/libgpg-error.so
-		ln -sfv ../../lib/libgpg-error.so.0 %{BUILDROOT}/usr/lib/libgpg-error.so
+		mkdir -pv %{BUILDROOT}%{libdir}
+		rm -vf %{BUILDROOT}/%{lib}/libgpg-error.so
+		ln -sfv ../../%{lib}/libgpg-error.so.0 %{BUILDROOT}%{libdir}/libgpg-error.so
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
