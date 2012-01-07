@@ -5,7 +5,7 @@
 
 name       = dev86
 version    = 0.16.18
-release    = 2
+release    = 3
 
 maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
 groups     = Development/Languages
@@ -27,6 +27,12 @@ build
 		ncurses-devel
 	end
 
+	prepare_cmds
+		if [ "$(uname -m)" = "x86_64" ]; then
+			patch -Np1 -i %{DIR_SOURCE}/dev86-64bit.patch
+		fi
+	end
+
 	build
 		make bcc86 unproto copt as86 ld86 CFLAGS="%{CFLAGS}"
 		make -C cpp CFLAGS="%{CFLAGS}" %{PARALLELISMFLAGS}
@@ -40,7 +46,7 @@ build
 	make_install_targets = \
 		DIST=%{BUILDROOT} \
 		MANDIR=/usr/share/man \
-		LIBDIR=/usr/lib/bcc \
+		LIBDIR=%{libdir}/bcc \
 		INCLDIR=/usr/include/bcc \
 		LOCLAPREFIX=/usr \
 		install install-man
