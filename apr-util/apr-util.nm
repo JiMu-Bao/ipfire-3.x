@@ -1,0 +1,71 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = apr-util
+version    = 1.4.1
+release    = 1
+
+groups     = System/Libraries
+url        = ttp://apr.apache.org/
+license    = ASL 2.0
+summary    = Apache Portable Runtime library.
+
+description
+	The mission of the Apache Portable Runtime (APR) is to provide a
+	free library of C data structures and routines, forming a system
+	portability layer to as many operating systems as possible.
+end
+
+source_dl  = http://www.apache.org/dist/apr/
+
+build
+	requires
+		autoconf
+		db4-devel
+		expat-devel
+		libapr-devel
+		libuuid-devel
+		nss-devel
+		openssl-devel
+	end
+
+	configure_options += \
+		--with-apr=/usr \
+		--with-berkeley-db \
+		--with-crypto \
+		--with-openssl \
+		--with-nss
+
+	install_cmds
+		# Remove unneeded file.
+		rm -rvf %{BUILDROOT}/usr/lib/aprutil.exp
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-nss
+		summary = APR utility library NSS crytpo support.
+		description = %{summary}
+
+		requires = apr-util=%{thisver}
+
+		files = /usr/lib/apr-util*/apr_crypto_nss*
+	end
+
+	package %{name}-openssl
+		summary = APR utility library OpenSSL crytpo support.
+		description = %{summary}
+
+		requires = apr-util=%{thisver}
+
+		files = /usr/lib/apr-util*/apr_crypto_openssl*
+	end
+
+	package %{name}-devel
+		template DEVEL
+	end
+end
