@@ -1,0 +1,48 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libapr
+version    = 1.4.5
+release    = 1
+thisapp    = apr-%{version}
+
+groups     = System/Libraries
+url        = ttp://apr.apache.org/
+license    = ASL 2.0
+summary    = Apache Portable Runtime library.
+
+description
+	The mission of the Apache Portable Runtime (APR) is to provide a
+	free library of C data structures and routines, forming a system
+	portability layer to as many operating systems as possible.
+end
+
+source_dl  = http://www.apache.org/dist/apr/
+
+build
+	requires
+		libuuid-devel
+	end
+
+	configure_options += \
+		--with-devrandom=/dev/urandom
+
+	install_cmds
+		# Remove unneded file.
+		rm -rvf %{BUILDROOT}/usr/lib/apr.exp
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+
+		files += \
+			/usr/bin \
+			/usr/share
+	end
+end
