@@ -5,7 +5,7 @@
 
 name       = nss
 version    = 3.12.8
-release    = 3
+release    = 4
 
 groups     = System/Libraries
 url        = http://www.mozilla.org/projects/security/pki/nss/
@@ -28,6 +28,7 @@ end
 
 build
 	requires
+		chrpath
 		nspr-devel
 		nss-softokn-devel
 		nss-util-devel
@@ -50,12 +51,16 @@ build
 	export PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1
 
 	export NSPR_INCLUDE_DIR=/usr/include/nspr4
-	export NSPR_LIB_DIR=/usr/lib
+	export NSPR_LIB_DIR=%{libdir}
 
 	export NSS_INCLUDE_DIR=/usr/include/nss3
-	export NSS_LIB_DIR=/usr/lib
+	export NSS_LIB_DIR=%{libdir}
 
 	export NSS_USE_SYSTEM_SQLITE=1
+
+	if "%{DISTRO_ARCH}" == "x86_64"
+		export USE_64=1
+	end
 
 	prepare
 		# Extract tarball
@@ -79,22 +84,22 @@ build
 
 	install
 		mkdir -pv %{BUILDROOT}/usr/include/nss3
-		mkdir -pv %{BUILDROOT}/usr/{bin,lib}
-		mkdir -pv %{BUILDROOT}/usr/lib/pkgconfig
-		mkdir -pv %{BUILDROOT}/usr/lib/nss/unsupported-tools
+		mkdir -pv %{BUILDROOT}/usr/{bin,%{lib}}
+		mkdir -pv %{BUILDROOT}%{libdir}/pkgconfig
+		mkdir -pv %{BUILDROOT}%{libdir}/nss/unsupported-tools
 
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/lib/libnss3.so \
-			%{BUILDROOT}/usr/lib
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/lib/libnssckbi.so \
-			%{BUILDROOT}/usr/lib
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/lib/libnsspem.so \
-			%{BUILDROOT}/usr/lib
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/lib/libnsssysinit.so \
-			%{BUILDROOT}/usr/lib
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/lib/libsmime3.so \
-			%{BUILDROOT}/usr/lib
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/lib/libssl3.so \
-			%{BUILDROOT}/usr/lib
+		install -p -v -m 755 mozilla/dist/*.OBJ/lib/libnss3.so \
+			%{BUILDROOT}%{libdir}
+		install -p -v -m 755 mozilla/dist/*.OBJ/lib/libnssckbi.so \
+			%{BUILDROOT}%{libdir}
+		install -p -v -m 755 mozilla/dist/*.OBJ/lib/libnsspem.so \
+			%{BUILDROOT}%{libdir}
+		install -p -v -m 755 mozilla/dist/*.OBJ/lib/libnsssysinit.so \
+			%{BUILDROOT}%{libdir}
+		install -p -v -m 755 mozilla/dist/*.OBJ/lib/libsmime3.so \
+			%{BUILDROOT}%{libdir}
+		install -p -v -m 755 mozilla/dist/*.OBJ/lib/libssl3.so \
+			%{BUILDROOT}%{libdir}
 
 		# Install the empty NSS db files
 		mkdir -pv %{BUILDROOT}/etc/pki/nssdb
@@ -103,35 +108,36 @@ build
 			%{BUILDROOT}/etc/pki/nssdb/pkcs11.txt
 
 		# Copy the binaries we want
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/certutil %{BUILDROOT}/usr/bin
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/cmsutil %{BUILDROOT}/usr/bin
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/crlutil %{BUILDROOT}/usr/bin
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/modutil %{BUILDROOT}/usr/bin
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/pk12util %{BUILDROOT}/usr/bin
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/signtool %{BUILDROOT}/usr/bin
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/signver %{BUILDROOT}/usr/bin
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/ssltap %{BUILDROOT}/usr/bin
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/certutil %{BUILDROOT}/usr/bin
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/cmsutil %{BUILDROOT}/usr/bin
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/crlutil %{BUILDROOT}/usr/bin
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/modutil %{BUILDROOT}/usr/bin
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/pk12util %{BUILDROOT}/usr/bin
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/signtool %{BUILDROOT}/usr/bin
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/signver %{BUILDROOT}/usr/bin
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/ssltap %{BUILDROOT}/usr/bin
+		chrpath --delete %{BUILDROOT}/usr/bin/*
 
 		# Copy the binaries we ship as unsupported
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/atob %{BUILDROOT}/usr/lib/nss/unsupported-tools
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/btoa %{BUILDROOT}/usr/lib/nss/unsupported-tools
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/derdump %{BUILDROOT}/usr/lib/nss/unsupported-tools
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/ocspclnt %{BUILDROOT}/usr/lib/nss/unsupported-tools
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/pp %{BUILDROOT}/usr/lib/nss/unsupported-tools
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/selfserv %{BUILDROOT}/usr/lib/nss/unsupported-tools
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/strsclnt %{BUILDROOT}/usr/lib/nss/unsupported-tools
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/symkeyutil %{BUILDROOT}/usr/lib/nss/unsupported-tools
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/tstclnt %{BUILDROOT}/usr/lib/nss/unsupported-tools
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/vfyserv %{BUILDROOT}/usr/lib/nss/unsupported-tools
-		install -p -v -m 755 %{DIR_APP}/mozilla/dist/*.OBJ/bin/vfychain %{BUILDROOT}/usr/lib/nss/unsupported-tools
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/atob %{BUILDROOT}%{libdir}/nss/unsupported-tools
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/btoa %{BUILDROOT}%{libdir}/nss/unsupported-tools
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/derdump %{BUILDROOT}%{libdir}/nss/unsupported-tools
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/ocspclnt %{BUILDROOT}%{libdir}/nss/unsupported-tools
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/pp %{BUILDROOT}%{libdir}/nss/unsupported-tools
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/selfserv %{BUILDROOT}%{libdir}/nss/unsupported-tools
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/strsclnt %{BUILDROOT}%{libdir}/nss/unsupported-tools
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/symkeyutil %{BUILDROOT}%{libdir}/nss/unsupported-tools
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/tstclnt %{BUILDROOT}%{libdir}/nss/unsupported-tools
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/vfyserv %{BUILDROOT}%{libdir}/nss/unsupported-tools
+		install -p -v -m 755 mozilla/dist/*.OBJ/bin/vfychain %{BUILDROOT}%{libdir}/nss/unsupported-tools
 
-		sed -e "s,@libdir@,/usr/lib,g" \
+		sed -e "s,@libdir@,%{libdir},g" \
 			-e "s,@prefix@,/usr,g" \
 			-e "s,@exec_prefix@,/usr,g" \
 			-e "s,@includedir@,/usr/include/nss3,g" \
-			-e "s,@MOD_MAJOR_VERSION@,$(grep "#define.*NSS_VMAJOR" %{DIR_APP}/mozilla/security/nss/lib/nss/nss.h | awk '{print $3}'),g" \
-			-e "s,@MOD_MINOR_VERSION@,$(grep "#define.*NSS_VMINOR" %{DIR_APP}/mozilla/security/nss/lib/nss/nss.h | awk '{print $3}'),g" \
-			-e "s,@MOD_PATCH_VERSION@,$(grep "#define.*NSS_VPATCH" %{DIR_APP}/mozilla/security/nss/lib/nss/nss.h | awk '{print $3}'),g" \
+			-e "s,@MOD_MAJOR_VERSION@,$(grep "#define.*NSS_VMAJOR" mozilla/security/nss/lib/nss/nss.h | awk '{print $3}'),g" \
+			-e "s,@MOD_MINOR_VERSION@,$(grep "#define.*NSS_VMINOR" mozilla/security/nss/lib/nss/nss.h | awk '{print $3}'),g" \
+			-e "s,@MOD_PATCH_VERSION@,$(grep "#define.*NSS_VPATCH" mozilla/security/nss/lib/nss/nss.h | awk '{print $3}'),g" \
 			< %{DIR_SOURCE}/nss-config.in \
 			> %{BUILDROOT}/usr/bin/nss-config
 		chmod -v 755 %{BUILDROOT}/usr/bin/nss-config
@@ -144,7 +150,7 @@ build
 
 		# XXX need to fix this
 		sed \
-			-e "s,%libdir%,/usr/lib,g" \
+			-e "s,%libdir%,%{libdir},g" \
 			-e "s,%prefix%,/usr,g" \
 			-e "s,%exec_prefix%,/usr,g" \
 			-e "s,%includedir%,/usr/include/nss3,g" \
@@ -153,10 +159,10 @@ build
 			-e "s,%NSSUTIL_VERSION%,$(nss-util-config --version),g" \
 			-e "s,%SOFTOKEN_VERSION%,$(nss-softokn-config --version),g" \
 			< %{DIR_SOURCE}/nss.pc.in \
-			> %{BUILDROOT}/usr/lib/pkgconfig/nss.pc
+			> %{BUILDROOT}%{libdir}/pkgconfig/nss.pc
 
 		# Copy the include files we want
-		cp -vf %{DIR_APP}/mozilla/dist/public/nss/*.h %{BUILDROOT}/usr/include/nss3
+		cp -vf mozilla/dist/public/nss/*.h %{BUILDROOT}/usr/include/nss3
 		chmod -v 644 %{BUILDROOT}/usr/include/nss3/*.h
 
 		# remove the nss-util-devel headers
@@ -199,13 +205,6 @@ build
 	end
 end
 
-# XXX need to be removed
-quality-agent
-	whitelist_rpath
-		$ORIGIN/../lib
-	end
-end
-
 packages
 	package %{name}
 
@@ -213,7 +212,7 @@ packages
 		template LIBS
 
 		files
-			/usr/lib/*.so
+			%{libdir}/*.so
 		end
 	end
 
@@ -231,7 +230,7 @@ packages
 		files
 			/usr/bin/*-config
 			/usr/include
-			/usr/lib/pkgconfig
+			%{libdir}/pkgconfig
 		end
 	end
 

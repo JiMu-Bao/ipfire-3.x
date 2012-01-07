@@ -5,7 +5,7 @@
 
 name       = pciutils
 version    = 3.1.7
-release    = 2
+release    = 3
 
 groups     = System/Base
 url        = http://atrey.karlin.mff.cuni.cz/~mj/pciutils.shtml
@@ -22,19 +22,40 @@ sources    = %{thisapp}.tar.bz2
 
 build
 	build
-		make SHARED=yes OPT="%{CFLAGS}" PREFIX=/usr \
+		make SHARED=yes OPT="%{CFLAGS}" PREFIX=/usr STRIP="" \
 			IDSDIR=/usr/share/hwdata ZLIB=no %{PARALLELISMFLAGS}
+
+		#fix lib vs. lib64 in libpci.pc (static Makefile is used)
+		sed -i "s|^libdir=.*$|libdir=/%{lib}|" lib/libpci.pc
 	end
 
 	install
-		make SHARED=yes PREFIX=/usr install DESTDIR=%{BUILDROOT} \
-			IDSDIR=/usr/share/hwdata MANDIR=/usr/share/man
+		# Install binaries.
+		mkdir -pv %{BUILDROOT}/sbin %{BUILDROOT}%{sbindir}
+		install -p lspci setpci %{BUILDROOT}/sbin
+		install -p update-pciids %{BUILDROOT}/%{sbindir}
 
-		mkdir -pv %{BUILDROOT}/usr/include/pci
-		install -v -m 644 %{DIR_APP}/lib/*.h %{BUILDROOT}/usr/include/pci
+		# Install man pages.
+		mkdir -pv %{BUILDROOT}%{mandir}/man8
+		install -p -m 644 lspci.8 setpci.8 update-pciids.8 %{BUILDROOT}%{mandir}/man8
 
-		mkdir -pv %{BUILDROOT}/usr/lib
-		ln -svf libpci.so.3 %{BUILDROOT}/usr/lib/libpci.so
+		# Install libs.
+		mkdir -pv %{BUILDROOT}/%{lib} %{BUILDROOT}%{libdir}
+		install -p lib/libpci.so.* %{BUILDROOT}/%{lib}/
+		ln -s ../../%{lib}/$(basename %{BUILDROOT}/%{lib}/*.so.*.*.*) \
+			%{BUILDROOT}%{libdir}/libpci.so
+
+		# Install headers.
+		mkdir -pv %{BUILDROOT}%{includedir}/pci
+		install -p lib/pci.h %{BUILDROOT}%{includedir}/pci
+		install -p lib/header.h %{BUILDROOT}%{includedir}/pci
+		install -p %{DIR_SOURCE}/multilibconfig.h %{BUILDROOT}%{includedir}/pci/config.h
+		install -p lib/config.h %{BUILDROOT}%{includedir}/pci/config.%{lib}.h
+		install -p lib/types.h %{BUILDROOT}%{includedir}/pci
+
+		# Install pkg-config files.
+		mkdir -pv %{BUILDROOT}%{libdir}/pkgconfig
+		install -p lib/libpci.pc %{BUILDROOT}%{libdir}/pkgconfig
 	end
 end
 
@@ -45,6 +66,10 @@ packages
 
 	package %{name}-libs
 		template LIBS
+
+		requires
+			/usr/share/hwdata/pci.ids
+		end
 	end
 
 	package %{name}-devel

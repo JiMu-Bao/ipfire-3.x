@@ -6,7 +6,7 @@
 name       = util-linux
 major_ver  = 2.20
 version    = %{major_ver}
-release    = 1
+release    = 2
 
 groups     = System/Base
 url        = http://kernel.org/~kzak/util-linux/
@@ -126,7 +126,7 @@ packages
 		end
 
 		files
-			/lib/libblkid.*
+			/%{lib}/libblkid.*
 		end
 	end
 
@@ -137,8 +137,8 @@ packages
 
 		files
 			/usr/include/blkid/
-			/usr/lib/libblkid.*
-			/usr/lib/pkgconfig/blkid.pc
+			%{libdir}/libblkid.*
+			%{libdir}/pkgconfig/blkid.pc
 			/usr/share/man/man3/*blkid*
 		end
 	end
@@ -152,7 +152,7 @@ packages
 		end
 
 		files
-			/lib/libuuid.*
+			/%{lib}/libuuid.*
 		end
 	end
 
@@ -163,8 +163,8 @@ packages
 
 		files
 			/usr/include/uuid/
-			/usr/lib/libuuid.*
-			/usr/lib/pkgconfig/uuid.pc
+			%{libdir}/libuuid.*
+			%{libdir}/pkgconfig/uuid.pc
 			/usr/share/man/man3/*uuid*
 		end
 	end
@@ -178,7 +178,7 @@ packages
 		end
 
 		files
-			/lib/libmount.*
+			/%{lib}/libmount.*
 		end
 	end
 
@@ -189,8 +189,8 @@ packages
 
 		files
 			/usr/include/mount/
-			/usr/lib/libmount.*
-			/usr/lib/pkgconfig/mount.pc
+			%{libdir}/libmount.*
+			%{libdir}/pkgconfig/mount.pc
 			/usr/share/man/man3/*mount*
 		end
 	end

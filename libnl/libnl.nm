@@ -5,7 +5,7 @@
 
 name       = libnl
 version    = 1.1
-release    = 1
+release    = 2
 
 groups     = Development/Libraries
 url        = http://people.suug.ch/~tgr/libnl/
@@ -21,20 +21,19 @@ source_dl  =
 
 build
 	configure_options += \
-		--libdir=/lib
+		--libdir=/%{lib}
 
 	install_cmds
-		rm -vf %{BUILDROOT}/lib/libnl.so
-		mkdir -pv %{BUILDROOT}/usr/lib
-		ln -svf ../../lib/libnl.so.1 %{BUILDROOT}/usr/lib/libnl.so
+		rm -vf %{BUILDROOT}/%{lib}/libnl.so
+		mkdir -pv %{BUILDROOT}%{libdir}
+		ln -svf ../../%{lib}/libnl.so.1 %{BUILDROOT}%{libdir}/libnl.so
 
-		mv -v %{BUILDROOT}/lib/pkgconfig %{BUILDROOT}/usr/lib/pkgconfig
+		mv -v %{BUILDROOT}/%{lib}/pkgconfig %{BUILDROOT}%{libdir}/pkgconfig
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

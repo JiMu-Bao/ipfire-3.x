@@ -5,7 +5,7 @@
 
 name       = docbook-dtds
 version    = 1.0
-release    = 3
+release    = 4
 arch       = noarch
 
 groups     = Applications/Text
@@ -118,10 +118,10 @@ end
 
 packages
 	package %{name}
-
-		prerequires += \
-			libxml2 \
+		prerequires
+			libxml2
 			sgml-common
+		end
 
 		script postin
 			# Install catalog files.

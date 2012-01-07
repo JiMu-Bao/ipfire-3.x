@@ -5,7 +5,7 @@
 
 name       = docbook-utils
 version    = 0.6.14
-release    = 1
+release    = 2
 
 groups     = Applications/Text
 url        = http://sources.redhat.com/docbook-tools/
@@ -38,7 +38,7 @@ build
 	end
 
 	configure_options += \
-		--libdir=/usr/lib \
+		--libdir=%{libdir} \
 		--mandir=/usr/share/man
 end
 
@@ -48,6 +48,7 @@ packages
 			docbook-dtds
 			docbook-dsssl
 			openjade
+			perl-SGMLSpm
 		end
 	end
 

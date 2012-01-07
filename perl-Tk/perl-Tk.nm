@@ -5,7 +5,7 @@
 
 name       = perl-Tk
 version    = 804.029
-release    = 1
+release    = 2
 thisapp    = Tk-%{version}
 
 groups     = Development/Libraries
@@ -43,6 +43,10 @@ build
 
 	install
 		make pure_install PERL_INSTALL_ROOT=%{BUILDROOT}
+
+		# Remove interpreter in /usr/local...
+		sed -e "s@#!.*@#!/usr/bin/perl -w@g" \
+			-i %{BUILDROOT}%{libdir}/perl5/vendor_perl/Tk/pTk/{Tcl-pTk,mkVFunc}
 	end
 end
 

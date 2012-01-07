@@ -5,7 +5,7 @@
 
 name       = udev
 version    = 172
-release    = 4
+release    = 5
 
 groups     = System/Base
 url        = ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug/
@@ -38,25 +38,22 @@ build
 		--exec-prefix="" \
 		--sbindir=/sbin \
 		--sysconfdir=/etc \
-		--libexecdir=/lib/udev \
-		--with-rootlibdir=/lib \
+		--libexecdir=/%{lib}/udev \
+		--with-rootlibdir=/%{lib} \
 		--with-selinux \
 		--disable-introspection \
 		--with-systemdsystemunitdir=/lib/systemd/system
 
 	install_cmds
-		# Install pkg-config files correctly
-		mv -v %{BUILDROOT}/lib/pkgconfig %{BUILDROOT}/usr/lib
+		rm -vf %{BUILDROOT}/%{lib}/lib{udev,gudev-1.0}.so
+		ln -svf ../../%{lib}/libudev.so.0 %{BUILDROOT}%{libdir}/libudev.so
+		ln -svf ../../%{lib}/libgudev-1.0.so.0 %{BUILDROOT}%{libdir}/libgudev-1.0.so
 
-		rm -vf %{BUILDROOT}/lib/lib{udev,gudev-1.0}.so
-		ln -svf ../../lib/libudev.so.0 %{BUILDROOT}/usr/lib/libudev.so
-		ln -svf ../../lib/libgudev-1.0.so.0 %{BUILDROOT}/usr/lib/libgudev-1.0.so
-
-		ln -svf ../../../../lib/udev/udev-acl \
-			%{BUILDROOT}/usr/lib/ConsoleKit/run-seat.d/udev-acl.ck
+		# We do not use ConsoleKit
+		rm -rf %{BUILDROOT}/usr/lib*/ConsoleKit
 
 		# Remove network rules. We have our own in the network package.
-		rm -v %{BUILDROOT}/lib/udev/{write_net_rules,rules.d/75-persistent-net-generator.rules}
+		rm -v %{BUILDROOT}/%{lib}/udev/{write_net_rules,rules.d/75-persistent-net-generator.rules}
 	end
 end
 

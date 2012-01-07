@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 37
-release    = 1
+release    = 2
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -43,11 +43,11 @@ build
 
 	configure_options += \
 		--sysconfdir=/etc \
-		--libexecdir=/usr/lib \
+		--libexecdir=%{libdir} \
 		--with-rootdir= \
 		--with-distro=ipfire \
 		--with-udevrulesdir=/lib/udev/rules.d/ \
-		--with-pamlibdir=/lib/security
+		--with-pamlibdir=/%{lib}/security
 
 	prepare_cmds
 		./autogen.sh ac
