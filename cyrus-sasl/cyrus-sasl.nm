@@ -5,7 +5,7 @@
 
 name       = cyrus-sasl
 version    = 2.1.25
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://asg.web.cmu.edu/sasl/sasl-library.html
@@ -29,15 +29,22 @@ build
 
 	configure_options += \
 		--sysconfdir=/etc \
+		--with-configdir=%{libdir}/sasl2:/etc/sasl2 \
+		--with-plugindir=%{libdir}/sasl2 \
 		--with-dbpath=/var/lib/sasl/sasldb2 \
 		--with-saslauthd=/var/run/saslauthd \
 		--mandir=/usr/share/man
 
 	PARALLELISMFLAGS = # Disabled
 
+	make_install_targets += sasldir=%{libdir}/sasl2
+
 	install_cmds
-		mkdir -pv %{BUILDROOT}/usr/lib/sasl2
-		cp -vf %{DIR_SOURCE}/smtpd.conf %{BUILDROOT}/usr/lib/sasl2/
+		# Install plugins.
+		make install DESTDIR=%{BUILDROOT} sasldir=%{libdir}/sasl2 -C plugins
+
+		mkdir -pv %{BUILDROOT}%{libdir}/sasl2
+		cp -vf %{DIR_SOURCE}/smtpd.conf %{BUILDROOT}%{libdir}/sasl2/
 
 		install -v -m700 -d %{BUILDROOT}/var/lib/sasl %{BUILDROOT}/var/run/saslauthd
 	end
@@ -45,7 +52,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-libs
 		template LIBS
