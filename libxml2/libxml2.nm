@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libxml2
-version    = 2.7.7
+version    = 2.7.8
 release    = 1
 
 groups     = System/Libraries
@@ -24,7 +24,7 @@ description
 	library.
 end
 
-source_dl  =
+source_dl  = ftp://xmlsoft.org/libxml2/
 
 build
 	requires
