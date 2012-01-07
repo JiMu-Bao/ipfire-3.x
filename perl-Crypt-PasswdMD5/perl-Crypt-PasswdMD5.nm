@@ -1,0 +1,46 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-Crypt-PasswdMD5
+version    = 1.3
+release    = 1
+arch       = noarch
+thisapp    = Crypt-PasswdMD5-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/Crypt-PasswdMD5
+license    = GPL+
+summary    = Provides interoperable MD5-based crypt() functions.
+
+description
+	This package provides MD5-based crypt() functions.
+end
+
+source_dl  = http://search.cpan.org/CPAN/authors/id/L/LU/LUISMUNOZ/
+
+build
+	requires
+		perl(ExtUtils::MakeMaker)
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor
+		make %{PARALLELISMFLAGS}
+	end
+
+	make_install_targets = pure_install PERL_INSTALL_ROOT=%{BUILDROOT}
+end
+
+packages
+	package %{name}
+		requires
+			perl
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
