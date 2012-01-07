@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = cracklib
-version    = 2.8.12
-release    = 2
+version    = 2.8.18
+release    = 1
 
 groups     = Security/Password
 url        = http://sourceforge.net/projects/cracklib/
@@ -22,13 +22,19 @@ description
 	in a dictionary.
 end
 
-source_dl  =
+source_dl  = http://prdownloads.sourceforge.net/cracklib/
 sources   += cracklib-words-20080507.gz
 
 build
 	requires
+		autoconf
+		automake
+		gettext-devel
 		python-devel
 	end
+
+	dictdir  = %{datadir}/cracklib
+	dictpath = %{dictdir}/pw_dict
 
 	configure_options += \
 		--with-default-dict=/lib/cracklib/pw_dict \
@@ -38,31 +44,58 @@ build
 	# Only extract the source tarball.
 	prepare
 		cd %{DIR_SRC} && %{MACRO_EXTRACT} %{DIR_DL}/%{thisapp}.tar.gz
+		cd %{DIR_APP}
+
+		cp lib/packer.h lib/packer.h.in
+		chmod +x util/cracklib-format
 
 		# Apply all patches.
 		%{MACRO_PATCHES}
+
+		#autoreconf -fi
+
+		mkdir cracklib-dicts
+		cp -vf %{DIR_DL}/cracklib-words-20080507.gz cracklib-dicts
+
+		# Create distribution dict.
+		echo -ne "%{DISTRO_NAME}\n%{DISTRO_SNAME}\n" >> \
+			cracklib-dicts/cracklib-distro-words
+		gzip -9 cracklib-dicts/cracklib-distro-words
 	end
 
 	install_cmds
+		# Install python bindings
+		make install DESTDIR=%{BUILDROOT} INSTALL="install -c -p" -C python
+
 		mkdir -pv %{BUILDROOT}/{,usr/}%{lib}
 		mv -v %{BUILDROOT}%{libdir}/libcrack.so.2* %{BUILDROOT}/%{lib}
-		ln -vsf ../../%{lib}/libcrack.so.2.8.0 %{BUILDROOT}%{libdir}/libcrack.so
+		ln -vsf ../../%{lib}/libcrack.so.2.8.1 %{BUILDROOT}%{libdir}/libcrack.so
 
-		mkdir -pv %{BUILDROOT}/usr/share/dict
-		install -v -m644 -D %{DIR_DL}/cracklib-words-20080507.gz \
-			%{BUILDROOT}/usr/share/dict/cracklib-words.gz
-		gunzip -v %{BUILDROOT}/usr/share/dict/cracklib-words.gz
-		ln -v -s cracklib-words %{BUILDROOT}/usr/share/dict/words
-		echo -ne "%{DISTRO_NAME}\n%{DISTRO_SNAME}\n" >> \
-			%{BUILDROOT}/usr/share/dict/cracklib-extra-words
+		mkdir -pv %{BUILDROOT}{%{dictdir},%{dictpath}}
+		util/cracklib-format cracklib-dicts/* | \
+			util/cracklib-packer %{BUILDROOT}%{dictpath}
+		util/cracklib-format %{BUILDROOT}%{dictdir}/cracklib-small | \
+			util/cracklib-packer %{BUILDROOT}%{dictdir}/cracklib-small
+		rm -f %{BUILDROOT}%{dictdir}/cracklib-small
 
-		mkdir -pv %{BUILDROOT}/lib/cracklib
-		chmod a+x util/cracklib-{format,packer}
-		util/cracklib-format \
-			%{BUILDROOT}/usr/share/dict/cracklib-words \
-			%{BUILDROOT}/usr/share/dict/cracklib-extra-words | \
-			util/cracklib-packer \
-				%{BUILDROOT}/lib/cracklib/pw_dict
+		sed -e "s@/usr/lib/cracklib_dict@%{dictpath}@g" lib/crack.h \
+			> %{BUILDROOT}%{includedir}/crack.h
+
+		ln -svf cracklib-format %{BUILDROOT}%{sbindir}/mkdict
+		ln -svf cracklib-packer %{BUILDROOT}%{sbindir}/packer
+
+		toprelpath=..
+		touch %{BUILDROOT}/top
+		while ! test -f %{BUILDROOT}%{libdir}/${toprelpath}/top; do
+			toprelpath=../${toprelpath}
+		done
+		rm -f %{BUILDROOT}/top
+
+		if [ "%{dictpath}" != "%{libdir}/cracklib_dict" ]; then
+			ln -svf ${toprelpath}%{dictpath}.hwm %{BUILDROOT}%{libdir}/cracklib_dict.hwm
+			ln -svf ${toprelpath}%{dictpath}.pwd %{BUILDROOT}%{libdir}/cracklib_dict.pwd
+			ln -svf ${toprelpath}%{dictpath}.pwi %{BUILDROOT}%{libdir}/cracklib_dict.pwi
+		fi
 	end
 end
 
@@ -81,8 +114,8 @@ packages
 		description = %{summary}
 
 		files
-			/lib/cracklib
-			/usr/share/dict*
+			%{dictdir}
+			%{dictpath}
 		end
 	end
 
