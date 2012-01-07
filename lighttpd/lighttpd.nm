@@ -6,7 +6,7 @@
 name       = lighttpd
 version    = 1.4.30
 ver_major  = 1.4
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Networking/Webservers
@@ -38,7 +38,7 @@ build
 	end
 
 	configure_options += \
-		--libdir=/usr/lib/%{name} \
+		--libdir=%{libdir}/%{name} \
 		--with-ldap \
 		--with-openssl
 
