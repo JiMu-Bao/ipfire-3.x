@@ -5,7 +5,7 @@
 
 name       = docbook-xsl
 version    = 1.76.1
-release    = 2
+release    = 3
 arch       = noarch
 
 groups     = Applications/Text
@@ -52,10 +52,11 @@ packages
 			sgml-common
 		end
 
-		prerequires +=\
-			docbook-dtds \
-			libxml2 \
+		prerequires
+			docbook-dtds
+			libxml2
 			sgml-common
+		end
 
 		script postin
 			# Install catalog files.
