@@ -5,7 +5,7 @@
 
 name       = cryptsetup-luks
 version    = 1.1.0
-release    = 1
+release    = 2
 
 groups     = System/Filesystems
 url        = http://cryptsetup.googlecode.com/
@@ -33,20 +33,19 @@ build
 
 	configure_options += \
 		--sbindir=/sbin \
-		--libdir=/lib \
+		--libdir=/%{lib} \
 		--disable-static
 
 	install_cmds
-		rm -rvf %{BUILDROOT}/lib/cryptsetup{,.la,.so}
-		mkdir -pv %{BUILDROOT}/usr/lib
-		mv -v %{BUILDROOT}/lib/pkgconfig %{BUILDROOT}/usr/lib/
-		ln -svf ../../lib/libcryptsetup.so.1 %{BUILDROOT}/usr/lib/libcryptsetup.so
+		rm -rvf %{BUILDROOT}/%{lib}/cryptsetup{,.la,.so}
+		mkdir -pv %{BUILDROOT}%{libdir}
+		mv -v %{BUILDROOT}/%{lib}/pkgconfig %{BUILDROOT}%{libdir}
+		ln -svf ../../%{lib}/libcryptsetup.so.1 %{BUILDROOT}%{libdir}/libcryptsetup.so
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
