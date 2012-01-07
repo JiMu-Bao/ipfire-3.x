@@ -5,7 +5,7 @@
 
 name       = libtiff
 version    = 4.0.0beta7
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.libtiff.org
@@ -28,7 +28,7 @@ build
 		libjpeg-devel
 	end
 
-	DIR_APP = /usr/src/tiff-%{version}
+	DIR_APP = %{DIR_SRC}/tiff-%{version}
 
 	configure_options += \
 		--enable-defer-strile-load \
@@ -37,7 +37,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
