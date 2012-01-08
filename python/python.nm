@@ -6,7 +6,7 @@
 name       = python
 major_ver  = 2.7
 version    = %{major_ver}.2
-release    = 4
+release    = 5
 thisapp    = Python-%{version}
 
 groups     = Development/Languages
@@ -32,7 +32,6 @@ build
 		bzip2-devel
 		db4-devel
 		expat-devel
-		gdbm-devel
 		libffi-devel
 		libselinux-devel
 		ncurses-devel
@@ -52,8 +51,6 @@ build
 			patch -Np1 -i %{DIR_SOURCE}/python-2.7.1-lib64.patch
 			patch -Np1 -i %{DIR_SOURCE}/python-2.7-lib64-sysconfig.patch
 		fi
-
-		sed -e "s/#*shared*/*shared*/g" -i Modules/Setup.dist
 
 		# Remove embedded copies of expat, zlib and libffi
 		rm -rf Modules/{expat,zlib}

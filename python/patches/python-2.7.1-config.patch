@@ -159,42 +159,6 @@ diff -up Python-2.7.1/Modules/Setup.dist.rhconfig Python-2.7.1/Modules/Setup.dis
  
  
  # The _tkinter module.
-@@ -322,7 +322,7 @@ GLHACK=-Dclear=__GLclear
- # every system.
- 
- # *** Always uncomment this (leave the leading underscore in!):
--# _tkinter _tkinter.c tkappinit.c -DWITH_APPINIT \
-+_tkinter _tkinter.c tkappinit.c -DWITH_APPINIT \
- # *** Uncomment and edit to reflect where your Tcl/Tk libraries are:
- #	-L/usr/local/lib \
- # *** Uncomment and edit to reflect where your Tcl/Tk headers are:
-@@ -332,7 +332,7 @@ GLHACK=-Dclear=__GLclear
- # *** Or uncomment this for Solaris:
- #	-I/usr/openwin/include \
- # *** Uncomment and edit for Tix extension only:
--#	-DWITH_TIX -ltix8.1.8.2 \
-+	-DWITH_TIX -ltix \
- # *** Uncomment and edit for BLT extension only:
- #	-DWITH_BLT -I/usr/local/blt/blt8.0-unoff/include -lBLT8.0 \
- # *** Uncomment and edit for PIL (TkImaging) extension only:
-@@ -341,7 +341,7 @@ GLHACK=-Dclear=__GLclear
- # *** Uncomment and edit for TOGL extension only:
- #	-DWITH_TOGL togl.c \
- # *** Uncomment and edit to reflect your Tcl/Tk versions:
--#	-ltk8.2 -ltcl8.2 \
-+	-ltk -ltcl \
- # *** Uncomment and edit to reflect where your X11 libraries are:
- #	-L/usr/X11R6/lib \
- # *** Or uncomment this for Solaris:
-@@ -351,7 +351,7 @@ GLHACK=-Dclear=__GLclear
- # *** Uncomment for AIX:
- #	-lld \
- # *** Always uncomment this; X11 libraries to link with:
--#	-lX11
-+	-lX11
- 
- # Lance Ellinghaus's syslog module
- #syslog syslogmodule.c		# syslog daemon interface
 @@ -373,7 +373,7 @@ GLHACK=-Dclear=__GLclear
  # it is a highly experimental and dangerous device for calling
  # *arbitrary* C functions in *arbitrary* shared libraries:
@@ -204,15 +168,6 @@ diff -up Python-2.7.1/Modules/Setup.dist.rhconfig Python-2.7.1/Modules/Setup.dis
  
  
  # Modules that provide persistent dictionary-like semantics.  You will
-@@ -396,7 +396,7 @@ GLHACK=-Dclear=__GLclear
- #
- # First, look at Setup.config; configure may have set this for you.
- 
--#gdbm gdbmmodule.c -I/usr/local/include -L/usr/local/lib -lgdbm
-+gdbm gdbmmodule.c -lgdbm
- 
- 
- # Sleepycat Berkeley DB interface.
 @@ -411,11 +411,10 @@ GLHACK=-Dclear=__GLclear
  #
  # Edit the variables DB and DBLIBVERto point to the db top directory
