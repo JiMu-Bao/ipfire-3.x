@@ -5,7 +5,7 @@
 
 name       = syslinux
 version    = 4.02
-release    = 1
+release    = 2
 
 groups     = System/Boot
 url        = http://syslinux.zytor.com/
@@ -24,10 +24,13 @@ source_dl  = http://www.kernel.org/pub/linux/utils/boot/syslinux/
 build
 	requires
 		nasm
+		perl
 		python-devel
 	end
 
 	CFLAGS = -Werror -Wno-unused -finline-limit=2000
+
+	CC = gcc -std=gnu99 -fgnu89-inline
 
 	prepare_cmds
 		cd %{DIR_APP} && make clean
@@ -36,24 +39,14 @@ build
 	build
 		make installer \
 			%{PARALLELISMFLAGS} \
-			CC="gcc \
-			-std=gnu99 \
-			-fgnu89-inline \
-			-fno-pic \
-			-fno-pie \
-			-nopie"
+			CC="%{CC}"
 		make -C sample tidy
 	end
 
 	install
 		make install-all \
 			INSTALLROOT=%{BUILDROOT} \
-			CC="gcc \
-			-std=gnu99 \
-			-fgnu89-inline \
-			-fno-pic \
-			-fno-pie \
-			-nopie" \
+			CC="%{CC}" \
 			MANDIR=/usr/share/man
 
 		rm -rvf %{BUILDROOT}/{boot,tftpboot}
@@ -62,6 +55,25 @@ end
 
 packages
 	package %{name}
+
+	package %{name}-perl
+		summary = Syslinux tools written in perl.
+		description = %{summary}
+
+		files
+			%{bindir}/keytab-lilo
+			%{bindir}/lss16toppm
+			%{bindir}/md5pass
+			%{bindir}/mkdiskimage
+			%{bindir}/ppmtolss16
+			%{bindir}/pxelinux-options
+			%{bindir}/sha1pass
+			%{bindir}/syslinux2ansi
+			%{bindir}/isohybrid.pl
+			%{mandir}/man1/lss16toppm*
+			%{mandir}/man1/ppmtolss16*
+			%{mandir}/man1/syslinux2ansi*
+		end
 	end
 
 	package %{name}-debuginfo
