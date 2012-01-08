@@ -4,11 +4,11 @@
 ###############################################################################
 
 # Configure build to compile with cloog and ppl.
-build_cloog_ppl = 0
+build_cloog_ppl = 1
 
 name       = gcc
 version    = 4.6.2
-release    = 8
+release    = 9
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -71,6 +71,8 @@ build
 	# configuration.
 	configure_options =
 
+	make_bootstrap = profiledbootstrap
+
 	if "%{DISTRO_ARCH}" == "x86_64"
 		configure_options = --disable-multilib
 
@@ -84,8 +86,9 @@ build
 	end
 
 	if "%{DISTRO_ARCH}" == "armv5tel"
-		configure_options += --disable-sjlj-exceptions
+		make_bootstrap = bootstrap
 
+		configure_options += --disable-sjlj-exceptions
 		configure_options += --with-float=soft
 	end
 
@@ -200,7 +203,7 @@ build
 			%{configure_options}
 
 		# GCC does not support a parallel build.
-		make profiledbootstrap BOOT_CFLAGS="${CFLAGS}"
+		make %{make_bootstrap} BOOT_CFLAGS="${CFLAGS}"
 	end
 
 	#test
