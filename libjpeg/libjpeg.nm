@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = libjpeg-turbo
-version    = 1.0.0
+name       = libjpeg
+version    = 1.1.1
 release    = 1
+thisapp    = libjpeg-turbo-%{version}
 
 groups     = System/Libraries
 url        = http://sourceforge.net/projects/libjpeg-turbo
@@ -22,8 +23,7 @@ description
 	text comments into a JPEG file.
 end
 
-source_dl  =
-sources    = %{name}-%{version}.tar.gz
+source_dl  = http://sourceforge.net/projects/libjpeg-turbo/files/%{version}/
 
 build
 	requires
@@ -40,20 +40,15 @@ build
 	prepare_cmds
 		autoreconf -vfi
 	end
-
-	install_cmds
-		# Remove non-versioned libjpegturbo.
-		rm -vf %{BUILDROOT}/usr/include/turbojpeg.h
-		rm -vf %{BUILDROOT}/usr/lib/libturbojpeg.so
-	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
+
+		files += !/usr/lib/libturbojpeg.so
 	end
 
 	package %{name}-debuginfo

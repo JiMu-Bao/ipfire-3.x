@@ -5,7 +5,7 @@
 
 name       = libaio
 version    = 0.3.109
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = ftp://ftp.kernel.org/pub/linux/libs/aio/
@@ -31,19 +31,20 @@ build
 
 	build
 		make %{PARALLELISMFLAGS} \
-			CFLAGS="%{CFLAGS} -I." CC="gcc"
+			CFLAGS="%{CFLAGS} -I. -fPIC" CC="gcc"
 	end
+
+	make_install_targets += prefix=/ libdir=%{libdir} usrlibdir=%{libdir}
 
 	install_cmds
 		# Modify links to be relative
-		ln -svf libaio.so.1 %{BUILDROOT}/usr/lib/libaio.so
-		ln -svf libaio.so.1.0.1 %{BUILDROOT}/usr/lib/libaio.so.1
+		ln -svf libaio.so.1 %{BUILDROOT}%{libdir}/libaio.so
+		ln -svf libaio.so.1.0.1 %{BUILDROOT}%{libdir}/libaio.so.1
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

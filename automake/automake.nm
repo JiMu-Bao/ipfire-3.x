@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = automake
-version    = 1.11.1
-release    = 2
+version    = 1.11.2
+release    = 1
 arch       = noarch
 
 groups     = Development/Tools
@@ -14,7 +14,7 @@ license    = GPLv2+
 summary    = A GNU tool for automatically configuring source code.
 
 description
-	Automake is a tool for automatically generating Makefile.in \
+	Automake is a tool for automatically generating Makefile.in
 	files compliant with the GNU Coding Standards.
 end
 

@@ -5,7 +5,7 @@
 
 name       = dbus-glib
 version    = 0.94
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.freedesktop.org/software/dbus/
@@ -30,8 +30,8 @@ build
 
 	configure_options += \
 		--sysconfdir=/etc \
-		--libdir=/lib \
-		--libexecdir=/usr/lib \
+		--libdir=/%{lib} \
+		--libexecdir=%{libdir} \
 		--mandir=/usr/share/man
 
 	test
@@ -39,10 +39,10 @@ build
 	end
 
 	install_cmds
-		mv -v %{BUILDROOT}/lib/pkgconfig %{BUILDROOT}/usr/lib/
+		mv -v %{BUILDROOT}/%{lib}/pkgconfig %{BUILDROOT}%{libdir}
 
-		rm -vf %{BUILDROOT}/lib/libdbus-glib-1.so
-		ln -svf ../../lib/libdbus-glib-1.so.2 %{BUILDROOT}/usr/lib/libdbus-glib-1.so
+		rm -vf %{BUILDROOT}/%{lib}/libdbus-glib-1.so
+		ln -svf ../../%{lib}/libdbus-glib-1.so.2 %{BUILDROOT}%{libdir}/libdbus-glib-1.so
 	end
 end
 

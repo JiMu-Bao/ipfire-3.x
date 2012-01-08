@@ -6,7 +6,7 @@
 name       = perl
 version    = 5.14.2
 # Never reset release in this package, just increase.
-release    = 10
+release    = 11
 
 perl_epoch = 2
 thisver = %{perl_epoch}:%{version}-%{_release}
@@ -210,6 +210,7 @@ packages
 			InternetConfig
 			Mac::
 			NDBM_File
+			Tk
 			VMS::
 		end
 	end

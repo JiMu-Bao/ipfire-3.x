@@ -5,7 +5,7 @@
 
 name       = gettext
 version    = 0.18.1.1
-release    = 4
+release    = 6
 
 groups     = System/Base
 url        = http://www.gnu.org/software/gettext/
@@ -40,10 +40,9 @@ build
 		--enable-shared \
 		--disable-rpath
 
-# Disable testsuite - it's broken ( readlink test )
-#	test
-#		make check
-#	end
+	test
+		make check
+	end
 
 	install_cmds
 		# cleanup rpaths
@@ -58,12 +57,27 @@ end
 packages
 	package %{name}
 
+	package %{name}-common-devel
+		summary = Common development files for gettext.
+		description = %{summary}
+		arch = noarch
+
+		files
+			/usr/share/gettext/
+		end
+	end
+
 	package %{name}-devel
 		template DEVEL
 
 		requires
+			gettext-common-devel=%{thisver}
 			gettext-libs=%{thisver}
 		end
+
+		files += \
+			/usr/bin/autopoint \
+			/usr/share/man/man1/autopoint.1
 	end
 
 	package %{name}-libs

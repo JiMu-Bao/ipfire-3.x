@@ -67,18 +67,16 @@ build
 
 	configure_options += \
 		--with-libtool \
-		--sysconfdir=/etc \
-		--localstatedir=/var \
 		--enable-threads \
 		--enable-ipv6 \
 		--with-pic \
 		--disable-static \
 		--disable-openssl-version-check \
 		--enable-exportlib \
-		--with-export-libdir=/lib/ \
+		--with-export-libdir=/%{lib}/ \
 		--with-export-includedir=/usr/include/ \
 		--includedir=/usr/include/bind9/ \
-		--with-pkcs11=/usr/lib/pkcs11/PKCS11_API.so \
+		--with-pkcs11=%{libdir}/pkcs11/PKCS11_API.so \
 		--with-gssapi=yes \
 		--disable-isc-spnego
 
@@ -108,7 +106,7 @@ build
 		gzip -9 doc/rfc/*
 
 		# Create directory layout.
-		mkdir -pv %{BUILDROOT}/usr/lib/bind
+		mkdir -pv %{BUILDROOT}%{libdir}/bind
 		mkdir -pv %{BUILDROOT}/var/named/{slaves,data,dynamic}
 		mkdir -pv %{BUILDROOT}/usr/share/man/{man1,man5,man8}
 		mkdir -pv %{BUILDROOT}/run/named
@@ -148,12 +146,12 @@ build
 		install -m 644 %{DIR_SOURCE}/trusted-key.key %{BUILDROOT}/etc/trusted-key.key
 
 		# Recreate symlinks for export libraries
-		rm -rf %{BUILDROOT}/lib/lib*-export.so
+		rm -rf %{BUILDROOT}/%{lib}/lib*-export.so
 
-		ln -svf ../../lib/libdns-export.so.81 %{BUILDROOT}/usr/lib/libdns-export.so
-		ln -svf ../../lib/libirs-export.so.80 %{BUILDROOT}/usr/lib/libirs-export.so
-		ln -svf ../../lib/libisccfg-export.so.82 %{BUILDROOT}/usr/lib/libisccfg-export.so
-		ln -svf ../../lib/libisc-export.so.83 %{BUILDROOT}/usr/lib/libisc-export.so
+		ln -svf ../../%{lib}/libdns-export.so.81 %{BUILDROOT}%{libdir}/libdns-export.so
+		ln -svf ../../%{lib}/libirs-export.so.80 %{BUILDROOT}%{libdir}/libirs-export.so
+		ln -svf ../../%{lib}/libisccfg-export.so.82 %{BUILDROOT}%{libdir}/libisccfg-export.so
+		ln -svf ../../%{lib}/libisc-export.so.83 %{BUILDROOT}%{libdir}/libisc-export.so
 
 		# Create /run/named.
 		mkdir -pv %{BUILDROOT}/run/named

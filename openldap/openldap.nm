@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = openldap
-version    = 2.4.25
+version    = 2.4.28
 release    = 2
 
 groups     = System/Daemons
@@ -21,7 +21,7 @@ description
 	documentation for OpenLDAP.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/
 sources    = %{thisapp}.tgz
 
 build
@@ -36,7 +36,7 @@ build
 	end
 
 	configure_options += \
-		--libexecdir=/usr/lib \
+		--libexecdir=%{libdir} \
 		--sysconfdir=/etc \
 		--localstatedir=/var \
 		--with-threads=posix \
@@ -57,7 +57,7 @@ build
 #endef
 
 	install_cmds
-		mv -v %{BUILDROOT}/usr/lib/slapd %{BUILDROOT}/usr/sbin/slapd
+		mv -v %{BUILDROOT}%{libdir}/slapd %{BUILDROOT}/usr/sbin/slapd
 		ln -svf slapd %{BUILDROOT}/usr/sbin/slapacl
 		ln -svf	slapd %{BUILDROOT}/usr/sbin/slapadd
 		ln -svf	slapd %{BUILDROOT}/usr/sbin/slapauth
@@ -71,7 +71,7 @@ build
 		rm -rvf %{BUILDROOT}/var/openldap-data
 
 		for LINK in lber ldap ldap_r; do
-			chmod -v 0755 %{BUILDROOT}/usr/lib/$(readlink %{BUILDROOT}/usr/lib/lib${LINK}.so)
+			chmod -v 0755 %{BUILDROOT}%{libdir}/$(readlink %{BUILDROOT}%{libdir}/lib${LINK}.so)
 		done
 
 		# Install configuration

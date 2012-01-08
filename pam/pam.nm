@@ -5,7 +5,7 @@
 
 name       = pam
 version    = 1.1.0
-release    = 4
+release    = 5
 thisapp    = Linux-PAM-%{version}
 
 groups     = System/Base
@@ -24,7 +24,7 @@ sources    = %{thisapp}.tar.bz2
 
 build
 	requires
-		audit-devel
+		#audit-devel
 		bison
 		cracklib-devel
 		flex
@@ -32,28 +32,24 @@ build
 	end
 
 	configure_options += \
-		--libdir=/lib \
-		--sbindir=/lib/security \
-		--enable-securedir=/lib/security \
+		--libdir=/%{lib} \
+		--includedir=%{includedir}/security \
 		--docdir=/usr/share/doc/Linux-PAM-%{version} \
 		--enable-read-both-confs
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/sbin
-		chmod -v 4755 %{BUILDROOT}/lib/security/unix_chkpwd
-		mv -v %{BUILDROOT}/lib/security/pam_tally %{BUILDROOT}/sbin
-
-		mkdir -pv %{BUILDROOT}/usr/lib
-		for LINK in libpam{,c,_misc}.so; do \
-			ln -v -sf ../../lib/$(readlink %{BUILDROOT}/lib/${LINK}) \
-				%{BUILDROOT}/usr/lib/${LINK} && \
-			rm -v %{BUILDROOT}/lib/${LINK}; \
+		mkdir -pv %{BUILDROOT}%{libdir}
+		for LINK in libpam{,c,_misc}.so; do
+			ln -v -sf ../../%{lib}/$(readlink %{BUILDROOT}/%{lib}/${LINK}) \
+				%{BUILDROOT}%{libdir}/${LINK}
+			rm -v %{BUILDROOT}/%{lib}/${LINK}
 		done
 
 		#useradd -D -b /home
 		#sed -i 's/yes/no/' %{BUILDROOT}/etc/default/useradd
 		mkdir -pv %{BUILDROOT}/etc/security
-		install -v -m644 %{DIR_SOURCE}/pam_env.conf %{BUILDROOT}/etc/security/pam_env.conf
+		install -v -m644 %{DIR_SOURCE}/pam_env.conf \
+			%{BUILDROOT}/etc/security/pam_env.conf
 
 		# Included in setup package
 		rm -f %{BUILDROOT}/etc/environment
@@ -62,9 +58,9 @@ end
 
 packages
 	package %{name}
-		requires
-			pam_ldap
-		end
+		#requires
+		#	pam_ldap
+		#end
 	end
 
 	package %{name}-devel

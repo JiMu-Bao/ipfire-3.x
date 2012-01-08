@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = git
-version    = 1.7.3.2
+version    = 1.7.8.2
 release    = 1
 
 groups     = Development/Tools
@@ -18,8 +18,7 @@ description
 	and full access to internals.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+source_dl  = http://git-core.googlecode.com/files/
 
 build
 	requires

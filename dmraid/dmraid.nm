@@ -5,7 +5,7 @@
 
 name       = dmraid
 version    = 1.0.0.rc15
-release    = 2
+release    = 3
 
 groups     = System/Filesystems
 url        = http://people.redhat.com/heinzm/sw/dmraid
@@ -34,7 +34,7 @@ build
 
 	configure_options += \
 		--sbindir=/sbin \
-		--libdir=/lib \
+		--libdir=/%{lib} \
 		--disable-static \
 		--disable-static_link \
 		--enable-libselinux
@@ -44,19 +44,19 @@ build
 	end
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/{,usr}/lib
+		mkdir -pv %{BUILDROOT}/{,usr}/%{lib}
 		install -v -m 755 lib/libdmraid.so \
-			%{BUILDROOT}/lib/libdmraid.so.%{version}
-		ln -svf ../../lib/libdmraid.so.%{version} %{BUILDROOT}/usr/lib/libdmraid.so
+			%{BUILDROOT}/%{lib}/libdmraid.so.%{version}
+		ln -svf ../../%{lib}/libdmraid.so.%{version} %{BUILDROOT}%{libdir}/libdmraid.so
 
 		# Install development headers.
-		install -m 644 include/dmraid/*.h %{BUILDROOT}/usr/include/dmraid/
+		mkdir -pv %{BUILDROOT}%{includedir}/dmraid
+		install -m 644 include/dmraid/*.h %{BUILDROOT}%{includedir}/dmraid/
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

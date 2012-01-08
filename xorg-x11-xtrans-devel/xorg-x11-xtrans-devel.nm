@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = xorg-xtrans
+name       = xorg-x11-xtrans-devel
 version    = 1.2.5
-release    = 1
+release    = 2
+thisapp    = xorg-xtrans-%{version}
 arch       = noarch
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>

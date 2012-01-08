@@ -5,7 +5,7 @@
 
 name       = nspr
 version    = 4.8.6
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.mozilla.org/projects/nspr/
@@ -45,40 +45,52 @@ build
 		%{MACRO_PATCHES}
 	end
 
+	if "%{DISTRO_ARCH}" == "x86_64"
+		configure_options += \
+			--enable-64bit
+	end
+
+	if "%{DISTRO_ARCH}" == "armv7hl"
+		configure_options += \
+			--enable-thumb2
+	end
+
+	configure_options += \
+		--libdir=/%{lib} \
+		--includedir=/usr/include/nspr4 \
+		--enable-optimize="%{CFLAGS}" \
+		--disable-debug
+
 	build
 		%{DIR_APP}/mozilla/nsprpub/configure \
-			%{configure_options} \
-			--libdir=/lib \
-			--includedir=/usr/include/nspr4 \
-			--enable-optimize="%{CFLAGS}" \
-			--disable-debug
+			%{configure_options}
 
 		make
 	end
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/usr/{bin,lib}
-		mkdir -pv %{BUILDROOT}/lib
-		mkdir -pv %{BUILDROOT}/usr/lib/pkgconfig
+		mkdir -pv %{BUILDROOT}/usr/{bin,%{lib}}
+		mkdir -pv %{BUILDROOT}/%{lib}
+		mkdir -pv %{BUILDROOT}%{libdir}/pkgconfig
 
 		cp -vf %{DIR_APP}/config/nspr-config-pc \
 			%{BUILDROOT}/usr/bin/nspr-config
 
 		sed \
-			-e "s,%libdir%,/usr/lib,g" \
+			-e "s,%libdir%,%{libdir},g" \
 			-e "s,%prefix%,/usr,g" \
 			-e "s,%exec_prefix%,/usr,g" \
 			-e "s,%includedir%,/usr/include/nspr4,g" \
 			-e "s,%NSPR_VERSION%,%{version},g" \
-			-e "s,%FULL_NSPR_LIBS%,-L/usr/lib -lnspr4 -lplc4 -lplds4 -ldl -lpthread,g" \
+			-e "s,%FULL_NSPR_LIBS%,-L%{libdir} -lnspr4 -lplc4 -lplds4 -ldl -lpthread,g" \
 			-e "s,%FULL_NSPR_CFLAGS%,-I/usr/include/nspr4,g" \
 			< %{DIR_SOURCE}/nspr.pc.in \
-			> %{BUILDROOT}/usr/lib/pkgconfig/nspr.pc
+			> %{BUILDROOT}%{libdir}/pkgconfig/nspr.pc
 
 		#mv -v %{BUILDROOT}/usr/lib/lib{nspr,plc.plds}4.so %{BUILDROOT}/lib/
-		ln -svf ../../lib/libnspr4.so %{BUILDROOT}/usr/lib/libnspr4.so
-		ln -svf ../../lib/libplc4.so %{BUILDROOT}/usr/lib/libplc4.so
-		ln -svf ../../lib/libplds4.so %{BUILDROOT}/usr/lib/libplds4.so
+		ln -svf ../../%{lib}/libnspr4.so %{BUILDROOT}%{libdir}/libnspr4.so
+		ln -svf ../../%{lib}/libplc4.so %{BUILDROOT}%{libdir}/libplc4.so
+		ln -svf ../../%{lib}/libplds4.so %{BUILDROOT}%{libdir}/libplds4.so
 
 		# Remove unneeded stuff
 		rm -rfv \

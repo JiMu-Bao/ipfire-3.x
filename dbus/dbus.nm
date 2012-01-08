@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = dbus
-version    = 1.4.14
+version    = 1.4.16
 release    = 2
 
 groups     = System/Daemons
@@ -24,32 +24,33 @@ build
 	requires
 		audit-devel
 		expat-devel
+		libcap-ng-devel
 		libselinux-devel
 	end
 
 	configure_options += \
 		--sysconfdir=/etc \
 		--localstatedir=/var \
-		--libdir=/lib \
-		--libexecdir=/lib \
+		--libdir=/%{lib} \
+		--libexecdir=/%{lib} \
 		--enable-libaudit \
 		--enable-selinux=yes \
 		--with-systemdsystemunitdir=/lib/systemd/system/ \
 		--with-dbus-user=dbus
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/usr/lib
-		mv -v %{BUILDROOT}/lib/pkgconfig %{BUILDROOT}/usr/lib/
+		mkdir -pv %{BUILDROOT}%{libdir}
+		mv -v %{BUILDROOT}/%{lib}/pkgconfig %{BUILDROOT}%{libdir}
 
 		#change the arch-deps.h include directory to /usr/lib instead of /lib
-		sed -e 's@-I${libdir}@-I${prefix}/lib@' -i %{BUILDROOT}/usr/lib/pkgconfig/dbus-1.pc
+		sed -e 's@-I${libdir}@-I${prefix}/%{lib}@' -i %{BUILDROOT}%{libdir}/pkgconfig/dbus-1.pc
 
-		mkdir -pv %{BUILDROOT}/usr/lib/dbus-1.0/include
-		mv -v %{BUILDROOT}/lib/dbus-1.0/include/* %{BUILDROOT}/usr/lib/dbus-1.0/include
-		rm -rvf %{BUILDROOT}/lib/dbus-1.0
+		mkdir -pv %{BUILDROOT}%{libdir}/dbus-1.0/include
+		mv -v %{BUILDROOT}/%{lib}/dbus-1.0/include/* %{BUILDROOT}%{libdir}/dbus-1.0/include
+		rm -rvf %{BUILDROOT}/%{lib}/dbus-1.0
 
-		rm -vf %{BUILDROOT}/lib/libdbus-1.so
-		ln -svf ../../lib/libdbus-1.so.3 %{BUILDROOT}/usr/lib/libdbus-1.so
+		rm -vf %{BUILDROOT}/%{lib}/libdbus-1.so
+		ln -svf ../../%{lib}/libdbus-1.so.3 %{BUILDROOT}%{libdir}/libdbus-1.so
 	end
 end
 

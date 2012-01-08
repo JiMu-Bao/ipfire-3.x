@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = libusb
+name       = libusb-compat
 version    = 0.1.12
-release    = 1
+release    = 2
+thisapp    = libusb-%{version}
 
 groups     = System/Libraries
 url        = http://sourceforge.net/projects/libusb/
@@ -25,27 +26,26 @@ build
 	end
 
 	configure_options += \
-		--libdir=/lib \
+		--libdir=/%{lib} \
 		--disable-build-docs \
 		--disable-static
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/usr/lib
-		mv -v %{BUILDROOT}/lib/pkgconfig %{BUILDROOT}/usr/lib/
+		mkdir -pv %{BUILDROOT}%{libdir}
+		mv -v %{BUILDROOT}/%{lib}/pkgconfig %{BUILDROOT}%{libdir}
 
-		rm -vf %{BUILDROOT}/usr/lib/libusb{,pp}-0.1.so
-		ln -svf ../../lib/libusb-0.1.so.4 %{BUILDROOT}/usr/lib/libusb.so
-		ln -svf ../../lib/libusb-0.1.so.4 %{BUILDROOT}/usr/lib/libusb-0.1.so
-		ln -svf ../../lib/libusbpp-0.1.so.4 %{BUILDROOT}/usr/lib/libusbpp.so
-		ln -svf ../../lib/libusbpp-0.1.so.4 %{BUILDROOT}/usr/lib/libusbpp-0.1.so
+		rm -vf %{BUILDROOT}%{libdir}/libusb{,pp}-0.1.so
+		ln -svf ../../%{lib}/libusb-0.1.so.4 %{BUILDROOT}%{libdir}/libusb.so
+		ln -svf ../../%{lib}/libusb-0.1.so.4 %{BUILDROOT}%{libdir}/libusb-0.1.so
+		ln -svf ../../%{lib}/libusbpp-0.1.so.4 %{BUILDROOT}%{libdir}/libusbpp.so
+		ln -svf ../../%{lib}/libusbpp-0.1.so.4 %{BUILDROOT}%{libdir}/libusbpp-0.1.so
 	end
 end
 
 packages
-	package %{name}-compat
-	end
+	package %{name}
 
-	package %{name}-compat-devel
+	package %{name}-devel
 		template DEVEL
 	end
 

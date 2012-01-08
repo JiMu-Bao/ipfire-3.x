@@ -5,7 +5,7 @@
 
 name       = e2fsprogs
 version    = 1.41.11
-release    = 1
+release    = 2
 
 groups     = System/Filesystems
 url        = http://e2fsprogs.sourceforge.net/
@@ -68,11 +68,6 @@ build
 	install
 		cd build
 		make install install-libs DESTDIR=%{BUILDROOT}
-
-		ln -svf ../../lib/libcom_err.so.2 %{BUILDROOT}/usr/lib/libcom_err.so
-		ln -svf ../../lib/libe2p.so.2 %{BUILDROOT}/usr/lib/libe2p.so
-		ln -svf ../../lib/libext2fs.so.2 %{BUILDROOT}/usr/lib/libext2fs.so
-		ln -svf ../../lib/libss.so.2 %{BUILDROOT}/usr/lib/libss.so
 	end
 end
 

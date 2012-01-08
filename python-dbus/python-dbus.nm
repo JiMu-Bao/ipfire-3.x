@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = dbus-python
+name       = python-dbus
 version    = 0.82.4
-release    = 1
+release    = 2
+thisapp    = dbus-python-%{version}
 
 groups     = System/Libraries
 url        = http://www.freedesktop.org/software/dbus/
