@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = pam
-version    = 1.1.0
-release    = 5
+version    = 1.1.5
+release    = 1
 thisapp    = Linux-PAM-%{version}
 
 groups     = System/Base
@@ -19,12 +19,14 @@ description
 	having to recompile programs that handle authentication.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+# This is the old location that might be revived in future
+# source_dl = http://ftp.us.kernel.org/pub/linux/libs/pam/library/
+
+source_dl  = https://fedorahosted.org/releases/l/i/linux-pam/
 
 build
 	requires
-		#audit-devel
+		audit-devel
 		bison
 		cracklib-devel
 		flex
@@ -35,7 +37,8 @@ build
 		--libdir=/%{lib} \
 		--includedir=%{includedir}/security \
 		--docdir=/usr/share/doc/Linux-PAM-%{version} \
-		--enable-read-both-confs
+		--enable-read-both-confs \
+		--disable-rpath
 
 	install_cmds
 		mkdir -pv %{BUILDROOT}%{libdir}
