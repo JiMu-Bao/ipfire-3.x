@@ -4,12 +4,12 @@
 ###############################################################################
 
 name       = libidn
-version    = 1.22
-release    = 2
+version    = 1.24
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.gnu.org/software/libidn/
-license    = LGPLv2+ GPLv3+
+license    = GPLv2+ LGPLv3+
 summary    = Internationalized Domain Name support library.
 
 description
@@ -19,7 +19,7 @@ description
 	names.
 end
 
-source_dl  =
+source_dl  = http://ftp.gnu.org/gnu/libidn/
 
 build
 	configure_options += \
@@ -28,6 +28,7 @@ build
 		--disable-static
 
 	test
+		export LD_LIBRARY_PATH=$(pwd)/lib/.libs
 		make -C tests check
 	end
 
@@ -37,7 +38,7 @@ build
 
 		mkdir -pv %{BUILDROOT}%{libdir}
 		rm -vf %{BUILDROOT}/%{lib}/libidn.so
-		ln -svf ../../%{lib}/libidn.so.11.6.5 %{BUILDROOT}%{libdir}/libidn.so
+		ln -svf ../../%{lib}/libidn.so.11.6.7 %{BUILDROOT}%{libdir}/libidn.so
 	end
 end
 
