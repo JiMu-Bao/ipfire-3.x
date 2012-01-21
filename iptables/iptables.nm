@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = iptables
-version    = 1.4.12.1
-release    = 2
+version    = 1.4.12.2
+release    = 1
 
 groups     = Networking/Tools
 url        = http://www.netfilter.org/
