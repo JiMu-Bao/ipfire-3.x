@@ -4,22 +4,22 @@
 ###############################################################################
 
 name       = libnetfilter_queue
-version    = 0.0.17
+version    = 1.0.1
 release    = 1
 
 groups     = System/Libraries
-url        = http://www.netfilter.org/projects/libnetfilter_queue/downloads.html
+url        = http://www.netfilter.org/projects/libnetfilter_queue/index.html
 license    = GPL
 summary    = The libnetfilter_queue userspace library.
 
 description
-	libnetfilter_queue is a userspace library that provides an API \
-	for manipulating packets that have been queued by the kernel \
-	packet filter. It is is part of a system that deprecates the old \
+	libnetfilter_queue is a userspace library that provides an API
+	for manipulating packets that have been queued by the kernel
+	packet filter. It is is part of a system that deprecates the old
 	ip_queue/libipq mechanism.
 end
 
-source_dl  =
+source_dl  = http://www.netfilter.org/projects/libnetfilter_queue/files/
 sources    = %{thisapp}.tar.bz2
 
 build
@@ -31,7 +31,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
