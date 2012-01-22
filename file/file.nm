@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = file
-version    = 5.09
-release    = 2
+version    = 5.10
+release    = 1
 
 groups     = System/Tools
 url        = http://www.darwinsys.com/file/
@@ -13,9 +13,9 @@ license    = BSD
 summary    = A utility for determining file types.
 
 description
-	The file command is used to identify a particular file according to the \
-	type of data contained by the file.  File can identify many different \
-	file types, including ELF binaries, system libraries, RPM packages, and \
+	The file command is used to identify a particular file according to the
+	type of data contained by the file.  File can identify many different
+	file types, including ELF binaries, system libraries, RPM packages, and
 	different graphics formats.
 end
 
