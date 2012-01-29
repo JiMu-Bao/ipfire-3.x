@@ -4,9 +4,9 @@
 ###############################################################################
 
 name       = glibc
-version    = 2.14.90
+version    = 2.15
 release    = 1
-thisapp    = %{name}-2.14-16c6f99
+thisapp    = %{name}-2.15-a316c1f
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -25,7 +25,7 @@ description
 end
 
 # The version of the ports addon.
-ports_version = 2.14-c2aeee1
+ports_version = 2.15-8a70b2d
 
 source_dl  = http://ftp.gnu.org/gnu/glibc/
 sources    = %{thisapp}.tar.gz glibc-ports-%{ports_version}.tar.gz
@@ -36,14 +36,14 @@ build
 
 	requires
 		#audit-devel
-		#autoconf
-		#automake
+		autoconf
+		automake
 		#gettext
 		kernel-headers>=%{OPTIMIZED_KERNEL}
 		libcap-devel
 		libselinux-devel
 		#nss-devel
-		#texinfo
+		texinfo
 	end
 
 	# Build glibc with custom cflags

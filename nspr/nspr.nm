@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = nspr
-version    = 4.8.6
-release    = 2
+version    = 4.8.9
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.mozilla.org/projects/nspr/
@@ -19,7 +19,7 @@ description
 	memory management (malloc and free) and shared library linking.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.mozilla.org/pub/mozilla.org/nspr/releases/v%{version}/src/
 
 build
 	requires

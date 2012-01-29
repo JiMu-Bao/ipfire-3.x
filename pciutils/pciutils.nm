@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = pciutils
-version    = 3.1.7
-release    = 3
+version    = 3.1.9
+release    = 1
 
 groups     = System/Base
 url        = http://atrey.karlin.mff.cuni.cz/~mj/pciutils.shtml
@@ -17,8 +17,8 @@ description
 	and setting devices connected to the PCI bus.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+source_dl  = ftp://atrey.karlin.mff.cuni.cz/pub/linux/pci/
+sources    = %{thisapp}.tar.gz
 
 build
 	build

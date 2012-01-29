@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = ebtables
-version    = v2.0.10-3
+version    = v2.0.10-4
 release    = 1
 
 groups     = Networking/Tools
@@ -13,8 +13,8 @@ license    = GPLv2+
 summary    = Ethernet Bridge frame table administration tool.
 
 description
-	Ethernet bridge tables is a firewalling tool to transparently filter network \
-	traffic passing a bridge. The filtering possibilities are limited to link \
+	Ethernet bridge tables is a firewalling tool to transparently filter network
+	traffic passing a bridge. The filtering possibilities are limited to link
 	layer filtering and some basic filtering on higher network layers.
 end
 

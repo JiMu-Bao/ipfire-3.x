@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 3.1.5
-release    = 1
+release    = 3
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -61,10 +61,10 @@ build
 
 	kernel_target = bzImage
 	if "%{DISTRO_ARCH}" == "i686"
-		# Build a default and PAE-enabled kernel for the
+		# Build a default and legacy kernel for the
 		# i686 architecture.
 		build_kernel_default = 1
-		build_kernel_pae = 1
+		build_kernel_legacy = 1
 
 		kernel_arch  = x86
 		kernel_image = arch/%{kernel_arch}/boot/bzImage
@@ -103,9 +103,9 @@ build
 		kernels += default
 	end
 
-	# Build PAE-enabled kernel.
-	if "%{build_kernel_pae}" == "1"
-		kernels += PAE
+	# Build legacy kernel.
+	if "%{build_kernel_legacy}" == "1"
+		kernels += legacy
 	end
 
 	# Build ARM versatile kernel.
@@ -297,13 +297,13 @@ build
 
 		# cpupower
 		if [ "%{build_cpupower}" = "1" ]; then
-			make -C tools/power/cpupower DESTDIR=%{BUILDROOT} libdir=/usr/lib \
-				mandir=/usr/share/man CPUFREQ_BENCH=false install
+			make -C tools/power/cpupower DESTDIR=%{BUILDROOT} libdir=%{libdir} \
+				mandir=%{mandir} CPUFREQ_BENCH=false install
 			cd tools/power/cpupower/debug/i386
 			install -m 755 centrino-decode %{BUILDROOT}/usr/bin/centrino-decode
 			install -m 755 powernow-k8-decode %{BUILDROOT}/usr/bin/powernow-k8-decode
 			cd -
-			chmod 0755 %{BUILDROOT}/usr/lib/libcpupower.so*
+			chmod 0755 %{BUILDROOT}%{libdir}/libcpupower.so*
 		fi
 	end
 end
@@ -315,8 +315,16 @@ packages
 
 		summary = The Linux kernel %{kernel_release}.
 
-		prerequires = dracut grubby module-init-tools
-		provides = kernel=%{kernel_release}
+		prerequires
+			dracut
+			grubby
+			module-init-tools
+		end
+
+		provides
+			kernel=%{kernel_release}
+		end
+
 		requires
 			%{prerequires}
 			linux-firmware
@@ -394,19 +402,19 @@ packages
 		end
 	end
 
-	if "%{build_kernel_pae}" == "1"
-		package kernel-PAE
+	if "%{build_kernel_legacy}" == "1"
+		package kernel-legacy
 			template KERNEL
 
-			kernel_name = kernel-PAE
-			kernel_release = %{fullver}.PAE
+			kernel_name = kernel-legacy
+			kernel_release = %{fullver}.legacy
 		end
 
-		package kernel-PAE-devel
+		package kernel-legacy-devel
 			template KERNELDEVEL
 
-			kernel_name = kernel-PAE
-			kernel_release = %{fullver}.PAE
+			kernel_name = kernel-legacy
+			kernel_release = %{fullver}.legacy
 		end
 	end
 

@@ -1,0 +1,51 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-Digest-SHA1
+version    = 2.13
+release    = 1
+thisapp    = Digest-SHA1-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/Digest-SHA1
+license    = GPL+ or Artistic
+summary    = Digest-SHA1 Perl module.
+
+description
+	The Digest::SHA1 module allows you to use the NIST SHA-1 message
+	digest algorithm from within Perl programs. The algorithm takes as
+	input a message of arbitrary length and produces as output a 160-bit
+	"fingerprint" or "message digest" of the input.
+
+	The Digest::SHA1 module provide a procedural interface for simple use,
+	as well as an object oriented interface that can handle messages of
+	arbitrary length and which can read files directly.
+
+	A binary digest will be 20 bytes long. A hex digest will be 40
+	characters long. A base64 digest will be 27 characters long.
+end
+
+source_dl  = http://search.cpan.org/CPAN/authors/id/G/GA/GAAS/
+
+build
+	requires
+		perl(ExtUtils::MakeMaker)
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{CFLAGS}"
+		make %{PARALLELISMFLAGS}
+	end
+
+	make_install_targets = pure_install PERL_INSTALL_ROOT=%{BUILDROOT}
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

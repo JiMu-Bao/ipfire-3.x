@@ -1,0 +1,47 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-WWW-Curl
+version    = 4.15
+release    = 1
+thisapp    = WWW-Curl-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/WWW-Curl
+license    = GPL+
+summary    = Perl extension interface for libcurl.
+
+description
+	WWW::Curl is a Perl extension interface for libcurl..
+end
+
+source_dl  = http://search.cpan.org/CPAN/authors/id/S/SZ/SZBALINT/
+
+build
+	requires
+		perl(ExtUtils::MakeMaker)
+		perl(ExtUtils::ParseXS)
+		libcurl-devel
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{CFLAGS}"
+		make %{PARALLELISMFLAGS}
+	end
+
+	make_install_targets = pure_install PERL_INSTALL_ROOT=%{BUILDROOT}
+end
+
+packages
+	package %{name}
+		requires
+			perl
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = hdparm
-version    = 9.37
-release    = 2
+version    = 9.38
+release    = 1
 
 groups     = Applications/Hardware
 url        = http://sourceforge.net/projects/hdparm/
@@ -13,12 +13,12 @@ license    = BSD
 summary    = A utility for displaying and/or setting hard disk parameters.
 
 description
-	Hdparm is a useful system utility for setting (E)IDE hard drive \
-	parameters. For example, hdparm can be used to tweak hard drive \
+	Hdparm is a useful system utility for setting (E)IDE hard drive
+	parameters. For example, hdparm can be used to tweak hard drive
 	performance and to spin down hard drives for power conservation.
 end
 
-source_dl  =
+source_dl  = http://sourceforge.net/projects/%{name}/files/%{name}/
 
 build
 	build
