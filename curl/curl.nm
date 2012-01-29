@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = curl
-version    = 7.23.1
-release    = 2
+version    = 7.24.0
+release    = 1
 
 groups     = Application/Internet
 url        = http://www.curl.haxx.se/
