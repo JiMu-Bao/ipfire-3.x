@@ -4,21 +4,21 @@
 ###############################################################################
 
 name       = libnetfilter_conntrack
-version    = 0.9.1
+version    = 1.0.0
 release    = 1
 
 groups     = System/Libraries
-url        = http://www.netfilter.org/projects/libnetfilter_conntrack/downloads.html
+url        = http://www.netfilter.org/projects/libnetfilter_conntrack/index.html
 license    = GPL
 summary    = libnetfilter_conntrack is a userspace library.
 
 description
-	libnetfilter_conntrack is a library that allows user-space \
-	programs to interface the kernel connection tracking table of \
+	libnetfilter_conntrack is a library that allows user-space
+	programs to interface the kernel connection tracking table of
 	the netfilter subsystem in the Linux kernel.
 end
 
-source_dl  =
+source_dl  = http://www.netfilter.org/projects/libnetfilter_conntrack/files/
 sources    = %{thisapp}.tar.bz2
 
 build
@@ -30,7 +30,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
