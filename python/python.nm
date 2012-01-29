@@ -6,7 +6,7 @@
 name       = python
 major_ver  = 2.7
 version    = %{major_ver}.2
-release    = 5
+release    = 6
 thisapp    = Python-%{version}
 
 groups     = Development/Languages
@@ -30,7 +30,7 @@ build
 		autoconf
 		automake
 		bzip2-devel
-		db4-devel
+		db4-devel >= 4.8
 		expat-devel
 		libffi-devel
 		libselinux-devel
