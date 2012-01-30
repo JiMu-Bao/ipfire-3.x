@@ -1,0 +1,70 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = kmod
+version    = 4
+release    = 1
+
+groups     = System/Kernel
+url        = http://modules.wiki.kernel.org/
+license    = GPLv2+
+summary    = Linux kernel module management utilities.
+
+description
+	The kmod package provides various programs needed for automatic
+	loading and unloading of modules under 2.6, 3.x, and later kernels,
+	as well	as other module management programs. Device drivers and
+	filesystems are two examples of loaded and unloaded modules.
+end
+
+# Will eventually move to kernel.org.
+source_dl  = http://packages.profusion.mobi/kmod/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		chrpath
+		xz-devel
+		zlib-devel
+	end
+
+	configure_options += \
+		--bindir=/bin \
+		--with-rootprefix= \
+		--with-rootlibdir=/%{lib} \
+		--with-xz \
+		--with-zlib
+
+	install_cmds
+		# Remove RPATH from /bin/kmod
+		chrpath --delete %{BUILDROOT}/bin/kmod
+
+		# Remove all man pages (because there are not corresponding
+		# binaries, yet).
+		rm -rvf %{BUILDROOT}%{mandir}
+
+		mkdir -pv %{BUILDROOT}/lib/modprobe.d
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/modprobe.d
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/depmod.d
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-libs
+		template LIBS
+	end
+
+	package %{name}-devel
+		template DEVEL
+
+		requires += %{name}-libs = %{thisver}
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
