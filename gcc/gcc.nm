@@ -8,7 +8,7 @@ build_cloog_ppl = 1
 
 name       = gcc
 version    = 4.6.2
-release    = 10
+release    = 11
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -61,7 +61,8 @@ build
 
 	# If cloog support is enabled, we require the devel packages for build.
 	if "%{build_cloog_ppl}" == "1"
-		requires += cloog-ppl-devel ppl-devel
+		requires += cloog-ppl-devel
+		requires += ppl-devel
 	end
 
 	# Build libquadmath (only on x86).
