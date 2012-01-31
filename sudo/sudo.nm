@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = sudo
-version    = 1.8.3
-release    = 2
+version    = 1.8.3p2
+release    = 1
 
 groups     = Applications/System
 url        = http://www.sudo.ws/sudo/download.html
@@ -36,7 +36,7 @@ build
 	end
 
 	configure_options += \
-		--libexecdir=/usr/lib \
+		--libexecdir=%{libdir} \
 		--with-logging=syslog \
 		--with-logfac=authpriv \
 		--with-pam \
