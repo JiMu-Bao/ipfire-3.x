@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = zlib
-version    = 1.2.5
-release    = 3
+version    = 1.2.6
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.gzip.org/zlib/
@@ -43,7 +43,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
