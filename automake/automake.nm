@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = automake
-version    = 1.11.2
+version    = 1.11.3
 release    = 1
 arch       = noarch
 
@@ -19,7 +19,7 @@ description
 end
 
 source_dl  = http://ftp.gnu.org/gnu/automake/
-sources    = %{thisapp}.tar.bz2
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -31,9 +31,5 @@ end
 packages
 	package %{name}
 		requires = autoconf
-
-		filter_requires
-			perl>=[0-9]\:.*
-		end
 	end
 end
