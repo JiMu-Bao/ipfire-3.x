@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = gmp
-version    = 5.0.2
-release    = 2
+version    = 5.0.3
+release    = 1
 
 compat_version = 4.3.2
 
@@ -24,7 +24,7 @@ description
 	emphasizes speed over simplicity/elegance in its operations.
 end
 
-source_dl += ftp://ftp.gmplib.org/pub/%{thisapp}/ ftp://ftp.gmplib.org/pub/%{name}-%{compat_version}/
+source_dl += ftp://ftp.gnu.org/gnu/gmp/
 sources    = %{thisapp}.tar.bz2 %{name}-%{compat_version}.tar.bz2
 
 build
