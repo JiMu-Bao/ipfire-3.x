@@ -5,7 +5,7 @@
 
 name       = openssl
 version    = 1.0.0g
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -51,6 +51,10 @@ build
 	end
 
 	if "%{DISTRO_ARCH}" == "armv5tel"
+		ssl_arch = linux-generic32
+	end
+
+	if "%{DISTRO_ARCH}" == "armv7hl"
 		ssl_arch = linux-generic32
 	end
 
