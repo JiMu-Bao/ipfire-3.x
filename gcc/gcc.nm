@@ -8,7 +8,7 @@ build_cloog_ppl = 1
 
 name       = gcc
 version    = 4.6.2
-release    = 11
+release    = 12
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -93,7 +93,7 @@ build
 		configure_options += --with-float=soft
 	end
 
-	if "${DISTRO_ARCH}" == "armv7hl"
+	if "%{DISTRO_ARCH}" == "armv7hl"
 		make_bootstrap = bootstrap
 
 		configure_options += --disable-sjlj-exceptions
