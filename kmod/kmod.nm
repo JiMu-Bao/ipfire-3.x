@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = kmod
-version    = 4
+version    = 5
 release    = 1
 
 groups     = System/Kernel
@@ -36,6 +36,8 @@ build
 		--with-rootlibdir=/%{lib} \
 		--with-xz \
 		--with-zlib
+
+	# The testsuite does generate lots of errors.
 
 	install_cmds
 		# Remove RPATH from /bin/kmod
