@@ -1,0 +1,39 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = bash-completion
+version    = 1.99
+release    = 1
+arch       = noarch
+
+groups     = Development/Languages
+url        = http://bash-completion.alioth.debian.org/
+license    = GPLv2+
+summary    = Programmable completion for Bash.
+
+description
+	bash-completion is a collection of shell functions that take advantage
+	of the programmable completion feature of bash.
+end
+
+source_dl  = http://bash-completion.alioth.debian.org/files/
+sources    = %{thisapp}.tar.bz2
+
+build
+	install_cmds
+		rm -rvf %{BUILDROOT}%{datadir}/bash-completion/completions/{cawsay,cowthink}
+
+		install -Dpm 644 %{DIR_SOURCE}/bash-completion-1.99-redefine_filedir.bash \
+			%{BUILDROOT}%{sysconfdir}/bash_completion.d/redefine_filedir
+	end
+end
+
+packages
+	package %{name}
+
+	requires
+		bash >= 4.1
+	end
+end
