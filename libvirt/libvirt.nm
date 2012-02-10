@@ -5,8 +5,9 @@
 
 name       = libvirt
 version    = 0.9.6
-release    = 1
+release    = 2
 
+maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
 groups     = Applications/Virtualization
 url        = http://www.libvirt.org/
 license    = LGPLv2.1+
