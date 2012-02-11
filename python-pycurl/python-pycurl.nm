@@ -5,7 +5,7 @@
 
 name       = python-pycurl
 version    = 7.19.0
-release    = 3
+release    = 4
 thisapp    = pycurl-%{version}
 
 groups     = Development/Languages
@@ -28,7 +28,7 @@ description
 	of features.
 end
 
-source_dl  =
+source_dl  = http://pycurl.sourceforge.net/download/
 
 build
 	requires
