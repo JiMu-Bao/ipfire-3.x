@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = pdns
-version    = 3.0
+version    = 3.0.1
 release    = 1
 
 groups     = Networking/DNS
@@ -19,7 +19,7 @@ description
 	Furthermore, PowerDNS interfaces with almost any database.
 end
 
-source_dl  =
+source_dl  = http://downloads.powerdns.com/releases/
 
 build
 	requires
@@ -38,7 +38,7 @@ build
 
 	configure_options += \
 		--sysconfdir=/etc/pdns \
-		--libdir=/usr/lib/powerdns \
+		--libdir=%{libdir}/powerdns \
 		--with-modules="" \
 		--with-dynmodules="pipe geo ldap gsqlite3" \
 		--with-lua \
@@ -49,9 +49,9 @@ build
 		chrpath --delete %{BUILDROOT}/usr/bin/zone2ldap
 		chrpath --delete %{BUILDROOT}/usr/bin/zone2sql
 		chrpath --delete %{BUILDROOT}/usr/sbin/pdns_server
-		chrpath --delete %{BUILDROOT}/usr/lib/powerdns/*.so
+		chrpath --delete %{BUILDROOT}%{libdir}/powerdns/*.so
 		chrpath --delete %{BUILDROOT}/usr/bin/dnsreplay
-		chrpath --delete %{BUILDROOT}//usr/bin/pdnssec
+		chrpath --delete %{BUILDROOT}/usr/bin/pdnssec
 	end
 end
 
