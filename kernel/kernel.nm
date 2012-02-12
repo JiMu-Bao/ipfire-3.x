@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 3.1.5
-release    = 3
+release    = 4
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -35,6 +35,7 @@ build
 	export ICECC=no
 
 	requires
+		asciidoc
 		binutils-devel
 		elfutils-devel
 		gcc-plugin-devel
@@ -44,6 +45,7 @@ build
 		net-tools
 		perl
 		python-devel
+		xmlto
 		xz-lzma-compat
 	end
 
@@ -290,10 +292,9 @@ build
 		rm -rfv %{BUILDROOT}/lib/firmware
 
 		# Install tools.
-		# XXX Man pages cannot be created because they need asciidoc.
 		make -C tools/perf DESTDIR=%{BUILDROOT} \
 			HAVE_CPLUS_DEMANGLE=1 prefix=/usr perfexecdir=lib/perf-core \
-			install #install-man
+			install install-man
 
 		# cpupower
 		if [ "%{build_cpupower}" = "1" ]; then
