@@ -5,7 +5,7 @@
 
 name       = parted
 version    = 2.1
-release    = 2
+release    = 3
 
 groups     = Applications/System
 url        = http://www.gnu.org/software/parted
@@ -33,21 +33,21 @@ build
 	end
 
 	configure_options += \
-		--libdir=/lib \
-		--enable-selinux
+		--libdir=/%{lib} \
+		--enable-selinux \
+		--disable-Werror
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/usr/lib
-		mv -v %{BUILDROOT}/lib/pkgconfig %{BUILDROOT}/usr/lib/
-		rm -rf %{BUILDROOT}/lib/libparted{,-2.1}.so
-		ln -svf ../../lib/libparted-%{version}.so.0 %{BUILDROOT}/usr/lib/libparted-%{version}.so
-		ln -svf libparted-%{version}.so %{BUILDROOT}/usr/lib/libparted.so
+		mkdir -pv %{BUILDROOT}%{libdir}
+		mv -v %{BUILDROOT}/%{lib}/pkgconfig %{BUILDROOT}%{libdir}
+		rm -rf %{BUILDROOT}/%{lib}/libparted{,-2.1}.so
+		ln -svf ../../%{lib}/libparted-%{version}.so.0 %{BUILDROOT}%{libdir}/libparted-%{version}.so
+		ln -svf libparted-%{version}.so %{BUILDROOT}%{libdir}/libparted.so
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

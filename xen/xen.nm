@@ -5,7 +5,7 @@
 
 name       = xen
 version    = 4.1.2
-release    = 3
+release    = 4
 
 maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
 groups     = Applications/Virtualization
@@ -20,7 +20,7 @@ description
 end
 
 source_dl  = http://bits.xensource.com/oss-xen/release/%{version}/
-sources    = %{thisapp}.tar.gz xen-utils-0.1.tar.bz2
+sources    = %{thisapp}.tar.gz xen-utils-0.2.tar.bz2
 
 build
 	requires
@@ -28,13 +28,12 @@ build
 		dev86
 		gettext-devel
 		iasl
-		kernel-headers
 		libuuid-devel
 		ncurses-devel
 		openssl-devel
-		python
+		pciutils-devel
+		perl
 		python-devel
-		SDL
 		SDL-devel
 		texinfo
 		xorg-x11-proto-devel
@@ -43,21 +42,57 @@ build
 	end
 
 	prepare_cmds
-		tar -xvf %{DIR_DL}/xen-utils-0.1.tar.bz2
-		mv tools/firmware/etherboot/ipxe-git-v1.0.0.tar.gz tools/firmware/etherboot/ipxe.tar.gz
-		mv extras/mini-os/newlib-1.16.0.tar.gz stubdom/
+		mv ../xen-utils/ipxe.tar.gz tools/firmware/etherboot/
+		mv ../xen-utils/newlib-1.16.0.tar.gz stubdom/
+		mv ../xen-utils/grub-0.97.tar.gz stubdom/
+		mv ../xen-utils/lwip-1.3.0.tar.gz stubdom/
+		mv ../xen-utils/pciutils-2.2.9.tar.bz2 stubdom/
+		mv ../xen-utils/zlib-1.2.3.tar.gz stubdom/
 		rm -f Config.mk~
+
+		if [ "${DISTRO_ARCH}" = "x86_64" ]; then
+			# Dirty ugly workaround for stub-32.h error (is missing).
+			ln -s /usr/include/gnu/stubs-64.h /usr/include/gnu/stubs-32.h
+		fi
 	end
 
-	make_build_targets += \
-		xen tools
+	build
+		# Have to build it this way, else parts of the xen stubdom \
+		# would get build too.
+		make dist-xen %{PARALELLISMFLAGS}
+		make dist-tools %{PARALELLISMFLAGS}
+	end
 
-	make_install_targets +=\
-		install-xen install-tools
+	# Only install xen and tools
+	make_install_targets = \
+		DESTDIR=%{BUILDROOT} \
+		prefix=/usr \
+		install-xen \
+		install-tools
 
 	install_cmds
-		rm -R %{BUILDROOT}/etc/init.d
+		# Remove unneeded files:
+		# hypervisor symlinks
+		rm -Rf %{BUILDROOT}/boot/xen-syms*
+		rm -Rf %{BUILDROOT}/boot/xen-4.1.gz
+		rm -Rf %{BUILDROOT}/boot/xen-4.gz
+		# init.d file
+		rm -Rf %{BUILDROOT}/etc/init.d
 		chrpath --delete %{BUILDROOT}/usr/lib/xen/bin/qemu-dm
+		# silly doc dir fun		
+		rm -Rf %{BUILDROOT}/usr/share/doc/xen
+		rm -Rf %{BUILDROOT}/usr/share/doc/qemu
+		# Pointless helper
+		rm -Rf %{BUILDROOT}/usr/sbin/xen-python-path
+		# qemu stuff (unused or available from upstream)
+		rm -Rf %{BUILDROOT}/usr/share/xen/man
+
+		# create dirs in /var
+		mkdir -p %{BUILDROOT}/var/lib/xen/xend-db/domain
+		mkdir -p %{BUILDROOT}/var/lib/xen/xend-db/vnet
+		mkdir -p %{BUILDROOT}/var/lib/xen/xend-db/migrate
+		mkdir -p %{BUILDROOT}/var/lib/xen/images
+		mkdir -p %{BUILDROOT}/var/log/xen/console
 	end
 end
 
@@ -78,7 +113,17 @@ packages
 			run applications which manage Xen virtual machines
 		end
 
-		files += /usr/lib/fs
+		# Very hacky workaround for an improper name of libfsimage.
+		if "%{DISTRO_ARCH}" == "x86_64"
+			provides
+				libfsimage.so.1.0(libfsimage.so.1.0)(64bit)
+			end
+		else
+			provides
+				libfsimage.so.1.0(libfsimage.so.1.0)
+			end
+		end
+		files += %{libdir}/fs
 	end
 
 	package %{name}-hypervisor
@@ -101,6 +146,7 @@ packages
 
 		files
 			/usr/bin/*
+			/usr/sbin/*
 		end
 	end
 
@@ -117,3 +163,5 @@ packages
 		template DEBUGINFO
 	end
 end
+
+

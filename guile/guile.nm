@@ -5,7 +5,7 @@
 
 name       = guile
 version    = 1.8.8
-release    = 1
+release    = 2
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/guile/
@@ -48,7 +48,10 @@ packages
 	package %{name}-devel
 		template DEVEL
 
-		requires = gmp-devel libtool-devel
+		requires
+			gmp-devel
+			libtool-devel
+		end
 	end
 
 	package %{name}-debuginfo
