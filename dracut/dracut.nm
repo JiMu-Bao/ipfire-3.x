@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = dracut
-version    = 010
-release    = 5
+version    = 015
+release    = 1
 arch       = noarch
 
 groups     = System/Boot
@@ -17,8 +17,8 @@ description
 	dracut is a new, event-driven initramfs infrastructure based around udev.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+source_dl  = http://www.kernel.org/pub/linux/utils/boot/dracut/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
