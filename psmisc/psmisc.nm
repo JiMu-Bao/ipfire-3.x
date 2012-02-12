@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = psmisc
-version    = 22.10
-release    = 2
+version    = 22.15
+release    = 1
 
 groups     = Applications/System
 url        = http://sourceforge.net/projects/psmisc
@@ -22,7 +22,7 @@ description
 	filesystems.
 end
 
-source_dl  =
+source_dl  = http://downloads.sourceforge.net/project/psmisc/psmisc/
 
 build
 	requires
