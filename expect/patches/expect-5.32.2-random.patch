@@ -1,12 +1,12 @@
-diff -up expect-5.43/example/mkpasswd.random expect-5.43/example/mkpasswd
---- expect-5.43/example/mkpasswd.random	2004-12-07 00:38:21.000000000 +0100
-+++ expect-5.43/example/mkpasswd	2008-09-25 12:27:19.000000000 +0200
+diff -up expect-5.44.1.15/example/mkpasswd.orig expect-5.44.1.15/example/mkpasswd
+--- expect-5.44.1.15/example/mkpasswd.orig	2010-03-08 16:01:05.518378075 +0100
++++ expect-5.44.1.15/example/mkpasswd	2010-03-08 16:01:27.408388162 +0100
 @@ -92,7 +92,14 @@ proc insert {pvar char} {
  }
  
  proc rand {m} {
 -    expr {int($m*rand())}
-+    set device /dev/urandom		;# /dev/random can block
++    set device /dev/urandom            ;# /dev/random can block
 +    set fileId [open $device r]
 +    binary scan [read $fileId 4] i1 number
 +    set clipped [expr $number % $m]
