@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = ghostscript
-version    = 9.04
-release    = 3
+version    = 9.05
+release    = 1
 
 groups     = Applications/Printing
 url        = http://ghostscript.com
@@ -13,33 +13,56 @@ license    = GPL
 summary    = An interpreter for the PostScript language and for PDF.
 
 description
-	Ghostscript is a package of software that provides:\
-	\
-	* An interpreter for the PostScript (TM) language, with the ability to \
-	  convert PostScript language files to many raster formats, view them \
-	  on displays, and print them on printers that don't have PostScript \
-	  language capability built in; \
-	* An interpreter for Portable Document Format (PDF) files, with the \
-	  same abilities; \
-	* The ability to convert PostScript language files to PDF (with some \
-	  limitations) and vice versa; and \
-	* A set of C procedures (the Ghostscript library) that implement the \
-	  graphics and filtering (data compression / decompression \
-	  / conversion) capabilities that appear as primitive operations in \
-	  the PostScript language and in PDF.
+	Ghostscript is a package of software that provides an interpreter
+	for the PostScript (TM) language, with the ability to convert PostScript
+	language files to many raster formats, view them on displays, and print
+	them on printers that don't have PostScript  language capability built in.
+	It also contains an interpreter for Portable Document Format (PDF) files,
+	with the same abilities and has the ability to convert PostScript
+	language files to PDF (with some limitations) and vice versa.
+	A set of C procedures (the Ghostscript library) implements the
+	graphics and filtering (data compression / decompression / conversion)
+	capabilities that appear as primitive operations in the PostScript
+	language and in PDF.
 end
 
-source_dl  =
+source_dl  = http://downloads.ghostscript.com/public/
 
 build
+	requires
+		cups-devel
+		dbus-devel
+		glib2-devel
+		libjpeg-devel
+		libtiff-devel
+		libtool
+		libxml2-devel
+		unzip
+		zlib-devel
+	end
+
+	prepare_cmds
+		rm -rvf libpng zlib jpeg jasper expat
+	end
+
+	CFLAGS += -fno-strict-aliasing
+
 	configure_options += \
-		--without-omni
+		--with-ijs \
+		--enable-dynamic \
+		--with-drivers=ALL \
+		--disable-compile-inits \
+		--with-system-libtiff \
+		--with-install-cups
 
 	PARALLELISMFLAGS = # Disable this
 end
 
 packages
 	package %{name}
+
+	package %{name}-devel
+		template DEVEL
 	end
 
 	package %{name}-debuginfo
