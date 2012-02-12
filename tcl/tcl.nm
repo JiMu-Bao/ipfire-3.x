@@ -4,8 +4,10 @@
 ###############################################################################
 
 name       = tcl
-version    = 8.5.10
-release    = 2
+major_ver  = 8.5
+version    = %{major_ver}.11
+release    = 1
+thisapp    = tcl%{version}
 
 groups     = Development/Languages
 url        = http://tcl.sourceforge.net/
@@ -18,46 +20,77 @@ description
 	applications, protocols, devices, and frameworks.
 end
 
-source_dl  = http://downloads.sourceforge.net/project/%{name}/%{name}/%{thisapp}
+source_dl  = http://downloads.sourceforge.net/project/%{name}/Tcl/%{version}/
 sources    = tcl%{version}-src.tar.gz
 
 build
 	requires
-		perl>=5.14.2-9.ip3
 		autoconf
 		automake
+		perl >= 5.14.2-9.ip3
 	end
 
-	DIR_APP = %{DIR_SRC}/tcl%{version}/unix
 	CFLAGS += -DTCL_NO_STACK_CHECK=1
+	make_extra = TCL_LIBRARY=%{datadir}/%{name}%{major_ver}
 
-	configure_options +=\
+	configure_options += \
+		--disable-threads \
+		--enable-symbols \
 		--enable-shared
 
-	prepare
-		cd %{DIR_SRC} && %{MACRO_EXTRACT} %{DIR_DL}/${source}/%{sources}
-		cd %{DIR_APP} && cd ..
-
-		%{MACRO_PATCHES}
-
-		cd %{DIR_APP} && autoconf
+	prepare_cmds
+		cd unix && autoconf
 	end
 
-	test
-		# Skip remote tests http, httpold and socket.
-		# Also skip unixInit-1.1. This test fails because "kill -PIPE"
-		# will be executed and we don't support that.
-		make test TESTFLAGS="-skip 'http* socket* unixInit-1.1'"
+	build
+		cd unix
+		./configure \
+			%{configure_options}
+
+		make %{PARALLELISMFLAGS} %{make_extra}
 	end
 
-	install_cmds
-		cd %{DIR_APP} && make install-private-headers DESTDIR=%{BUILDROOT}
-		ln -sf tclsh8.5 %{BUILDROOT}/usr/bin/tclsh
+	install
+		cd unix
+		make install %{make_extra} INSTALL_ROOT=%{BUILDROOT}
+		cd ..
+
+		ln -svf tclsh%{major_ver} %{BUILDROOT}/usr/bin/tclsh
+
+		# for linking with -lib%{name}
+		ln -svf lib%{name}%{major_ver}.so %{BUILDROOT}%{libdir}/lib%{name}.so
+
+		# paths don't look at /usr/lib for efficiency, so we symlink into tcl8.5 for now
+		mkdir -pv %{BUILDROOT}%{libdir}/%{name}%{major_ver}
+		ln -svf ../%{name}Config.sh %{BUILDROOT}%{libdir}/%{name}%{major_ver}/%{name}Config.sh
+
+		mkdir -pv %{BUILDROOT}%{includedir}/%{name}-private/{generic,unix}
+		find generic unix -name "*.h" -exec cp -p '{}' %{BUILDROOT}%{includedir}/%{name}-private/'{}' ';'
+		(
+			cd %{BUILDROOT}%{includedir}
+			for i in *.h; do
+				[ -f %{BUILDROOT}%{includedir}/%{name}-private/generic/${i} ] && ln -sf ../../${i} \
+					%{BUILDROOT}%{includedir}/%{name}-private/generic;
+			done
+		)
+
+		# remove buildroot traces
+		sed -i -e "s|$PWD/unix|%{libdir}|; s|$PWD|%{includedir}/%{name}-private|" %{BUILDROOT}%{libdir}/%{name}Config.sh
+		rm -rf %{BUILDROOT}%{datadir}/%{name}%{major_ver}/ldAix
+	end
+
+	# Keep libtclstub*.a.
+	keep_libraries
+		%{libdir}/lib%{name}stub%{major_ver}.a
 	end
 end
 
 packages
 	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
