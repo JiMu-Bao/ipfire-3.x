@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = libvirt
-version    = 0.9.6
-release    = 2
+version    = 0.9.9
+release    = 1
 
 maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
 groups     = Applications/Virtualization
