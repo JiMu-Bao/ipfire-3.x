@@ -5,8 +5,9 @@
 
 name       = kmod
 version    = 5
-release    = 1
+release    = 2
 
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Kernel
 url        = http://modules.wiki.kernel.org/
 license    = GPLv2+
@@ -25,7 +26,6 @@ sources    = %{thisapp}.tar.xz
 
 build
 	requires
-		chrpath
 		xz-devel
 		zlib-devel
 	end
@@ -40,9 +40,6 @@ build
 	# The testsuite does generate lots of errors.
 
 	install_cmds
-		# Remove RPATH from /bin/kmod
-		chrpath --delete %{BUILDROOT}/bin/kmod
-
 		# Remove all man pages (because there are not corresponding
 		# binaries, yet).
 		rm -rvf %{BUILDROOT}%{mandir}
@@ -50,11 +47,23 @@ build
 		mkdir -pv %{BUILDROOT}/lib/modprobe.d
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/modprobe.d
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/depmod.d
+
+		mkdir -pv %{BUILDROOT}/sbin
+		ln -svf ../bin/kmod %{BUILDROOT}/sbin/modprobe
+		ln -svf ../bin/kmod %{BUILDROOT}/sbin/modinfo
+		ln -svf ../bin/kmod %{BUILDROOT}/sbin/insmod
+		ln -svf ../bin/kmod %{BUILDROOT}/sbin/rmmod
+		ln -svf ../bin/kmod %{BUILDROOT}/sbin/depmod
+		ln -svf ../bin/kmod %{BUILDROOT}/sbin/lsmod
+		ln -svf kmod %{BUILDROOT}/bin/lsmod
 	end
 end
 
 packages
 	package %{name}
+		provides = module-init-tools = 4.0-1
+		obsoletes = module-init-tools < 4.0-1
+	end
 
 	package %{name}-libs
 		template LIBS
