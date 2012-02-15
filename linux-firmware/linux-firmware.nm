@@ -5,7 +5,8 @@
 
 name       = linux-firmware
 version    = 20110311
-release    = 1
+release    = 2
+arch       = noarch
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
 groups     = System/Libraries
@@ -35,9 +36,4 @@ end
 
 packages
 	package %{name}
-	end
-
-	package %{name}-debuginfo
-		template DEBUGINFO
-	end
 end
