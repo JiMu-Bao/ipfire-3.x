@@ -5,7 +5,7 @@
 
 name       = pth
 version    = 2.0.7
-release    = 2
+release    = 3
 
 groups     = System/Libraries
 url        = http://www.gnu.org/software/pth
@@ -31,6 +31,13 @@ build
 		--mandir=/usr/share/man
 
 	if "%{DISTRO_ARCH}" == "armv5tel"
+		configure_options += \
+			--with-mctx-mth=sjlj \
+			--with-mctx-dsp=ssjlj \
+			--with-mctx-stk=sas
+	end
+
+	if "%{DISTRO_ARCH}" == "armv7hl"
 		configure_options += \
 			--with-mctx-mth=sjlj \
 			--with-mctx-dsp=ssjlj \
