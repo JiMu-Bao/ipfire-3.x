@@ -5,7 +5,7 @@
 
 name       = binutils
 version    = 2.22
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Tools
@@ -42,9 +42,14 @@ build
 	end
 
 	configure_options += \
+		--build=%{DISTRO_BUILDTARGET} \
+		--host=%{DISTRO_BUILDTARGET} \
 		--target=%{DISTRO_BUILDTARGET} \
 		--disable-werror \
-		--disable-static
+		--disable-static \
+		--enable-64-bit-bfd \
+		--enable-plugins \
+		--with-bugurl="http://bugzilla.ipfire.org/"
 
 	build
 		cd %{DIR_SRC}/binutils-build
