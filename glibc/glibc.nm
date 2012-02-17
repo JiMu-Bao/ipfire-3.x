@@ -5,7 +5,7 @@
 
 name       = glibc
 version    = 2.15
-release    = 1
+release    = 2
 thisapp    = %{name}-2.15-a316c1f
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -35,14 +35,14 @@ build
 	OPTIMIZED_KERNEL = 2.6.32
 
 	requires
-		#audit-devel
+		audit-devel
 		autoconf
 		automake
-		#gettext
+		gettext
 		kernel-headers>=%{OPTIMIZED_KERNEL}
 		libcap-devel
 		libselinux-devel
-		#nss-devel
+		nss-devel
 		texinfo
 	end
 
@@ -155,8 +155,8 @@ build
 		--enable-kernel=%{OPTIMIZED_KERNEL} \
 		--with-selinux \
 		--disable-werror \
-		--enable-bind-now
-#		--enable-nss-crypt
+		--enable-bind-now \
+		--enable-nss-crypt
 
 	if "%{DISTRO_ARCH}" == "armv5tel"
 		# Disable hardware FP for ARM.
