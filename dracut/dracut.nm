@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = dracut
-version    = 015
+version    = 016
 release    = 1
 arch       = noarch
 
@@ -26,13 +26,31 @@ build
 		docbook-xsl
 	end
 
+	dracutlibdir = %{prefix}/lib/dracut
+
 	install
 		make install DESTDIR=%{BUILDROOT} \
-			sbindir=/sbin sysconfdir=/etc mandir=/usr/share/man
+			sysconfdir=/etc mandir=/usr/share/man
 
 		# Install local configuration.
 		mkdir -pv %{BUILDROOT}/etc/dracut.conf.d
 		cp -vf %{DIR_SOURCE}/ipfire.conf %{BUILDROOT}/etc/dracut.conf.d/ipfire.conf
+
+		# Save package version.
+		echo "%{name}-%{version}-%{release}" > \
+			%{BUILDROOT}%{dracutlibdir}/modules.d/10rpmversion/dracut-version
+
+		# Remove Gentoo specific module.
+		rm -rvf %{BUILDROOT}%{dracutlibdir}/modules.d/50gensplash
+
+		mkdir -pv %{BUILDROOT}/boot/dracut
+		mkdir -pv %{BUILDROOT}/var/lib/dracut/overlay
+		mkdir -pv %{BUILDROOT}/var/lib/initramfs
+		mkdir -pv %{BUILDROOT}%{localstatedir}/log
+		touch %{BUILDROOT}%{localstatedir}/log/dracut.log
+
+		mkdir -pv %{BUILDROOT}/etc/logrotate.d
+		install -m 0644 dracut.logrotate %{BUILDROOT}/etc/logrotate.d/dracut_log
 	end
 end
 
@@ -76,24 +94,25 @@ packages
 		end
 
 		files
-			/usr/share/dracut/modules.d/40network
-			/usr/share/dracut/modules.d/95fcoe
-			/usr/share/dracut/modules.d/95iscsi
-			/usr/share/dracut/modules.d/95nbd
-			/usr/share/dracut/modules.d/95nfs
-			/usr/share/dracut/modules.d/45ifcfg
-			/usr/share/dracut/modules.d/95znet
+			/usr/lib/dracut/modules.d/40network
+			/usr/lib/dracut/modules.d/95fcoe
+			/usr/lib/dracut/modules.d/95iscsi
+			/usr/lib/dracut/modules.d/95nbd
+			/usr/lib/dracut/modules.d/95nfs
+			/usr/lib/dracut/modules.d/45ifcfg
+			/usr/lib/dracut/modules.d/95znet
 		end
 	end
-
 
 	package %{name}-utils
 		summary = Command line utils for dracut.
 		description = %{summary}
 
 		files
-			/sbin/dracut-*
-			/sbin/*initrd
+			/boot/dracut
+			/usr/bin/dracut-*
+			/usr/share/man/man8/dracut-*
+			/var/lib/dracut
 		end
 	end
 end
