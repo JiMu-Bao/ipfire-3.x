@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = htop
-version    = 1.0
-release    = 2
+version    = 1.0.1
+release    = 1
 
 groups     = Applications/System
 url        = http://htop.sourceforge.net/
@@ -13,7 +13,7 @@ license    = GPL+
 summary    = Interactive process viewer.
 
 description
-	htop is an interactive text-mode process viewer for Linux, similar to \
+	htop is an interactive text-mode process viewer for Linux, similar to
 	top(1).
 end
 
