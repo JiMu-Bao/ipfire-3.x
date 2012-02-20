@@ -5,7 +5,8 @@
 
 name       = dev86
 version    = 0.16.18
-release    = 3
+release    = 4
+sup_arches = i686 x86_64
 
 maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
 groups     = Development/Languages

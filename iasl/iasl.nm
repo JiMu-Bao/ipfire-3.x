@@ -5,7 +5,8 @@
 
 name       = iasl
 version    = 20111123
-release    = 2
+release    = 3
+sup_arches = i686 x86_64
 thisapp    = acpica-unix-%{version}
 
 maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
