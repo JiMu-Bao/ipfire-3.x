@@ -4,8 +4,9 @@
 ###############################################################################
 
 name       = expect
-version    = 5.43
+version    = 5.45
 release    = 1
+thisapp    = %{name}%{version}
 
 groups     = Development/Languages
 url        = http://expect.nist.gov/
@@ -13,36 +14,40 @@ license    = Public Domain
 summary    = A program-script interaction and testing utility.
 
 description
-	xpect is a tcl application for automating and testing \
-	interactive applications such as telnet, ftp, passwd, fsck, \
-	rlogin, tip, etc. Expect makes it easy for a script to \
+	expect is a tcl application for automating and testing
+	interactive applications such as telnet, ftp, passwd, fsck,
+	rlogin, tip, etc. Expect makes it easy for a script to
 	control another program and interact with it.
 end
 
-source_dl  =
-sources    = %{thisapp}.0.tar.gz
+source_dl  = http://downloads.sourceforge.net/project/expect/Expect/%{version}/
 
 build
 	requires
 		autoconf
 		automake
-		tcl
+		tcl-devel
 	end
 
-	configure_options = \
-		--mandir=/usr/share/man \
-		--with-tcl=/usr/lib \
-		--with-tclinclude=/usr/include/ \
-		--with-x=no \
+	prepare_cmds
+		aclocal
+		autoconf
+
+		cd testsuite
+		autoconf -I..
+	end
+
+	configure_options += \
+		--mandir=%{mandir} \
+		--with-tcl=%{libdir} \
+		--with-tclinclude=%{includedir} \
 		--enable-shared
 
 	test
 		make test
 	end
 
-	install
-		make install INSTALL_ROOT=%{BUILDROOT}
-
+	install_cmds
 		# remove cryptdir/decryptdir, as Linux has no crypt command
 		rm -f %{BUILDROOT}/usr/bin/{cryptdir,decryptdir}
 		rm -f %{BUILDROOT}/usr/share/man1/{cryptdir,decryptdir}.1*
@@ -52,6 +57,9 @@ end
 
 packages
 	package %{name}
+
+	package %{name}-devel
+		template DEVEL
 	end
 
 	package %{name}-debuginfo

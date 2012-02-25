@@ -1,0 +1,13 @@
+diff -up expect5.45/expect.man.orig expect5.45/expect.man
+--- expect5.45/expect.man.orig	2011-09-06 13:15:57.081827720 +0200
++++ expect5.45/expect.man	2011-09-06 13:16:19.463826364 +0200
+@@ -173,7 +173,8 @@ way, use the
+ .B \-b
+ flag.
+ (When using Expectk, this option is specified as
+-.BR \-buffer .)  Note that stdio-buffering may still take place however this shouldn't cause problems when reading from a fifo or stdin.
++.BR \-buffer .)
++Note that stdio-buffering may still take place however this shouldn't cause problems when reading from a fifo or stdin.
+ .PP
+ If the string "\-" is supplied as a filename, standard input is read instead.
+ (Use "./\-" to read from a file actually named "\-".)

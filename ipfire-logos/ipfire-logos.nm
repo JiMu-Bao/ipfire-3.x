@@ -1,0 +1,35 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = ipfire-logos
+version    = 1
+release    = 1
+arch       = noarch
+
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = Base System/Base
+url        = http://www.ipfire.org
+license    =
+summary    = IPFire logos and images.
+
+description
+	This package contains several logos, fonts and artwork of the
+	IPFire distribution.
+end
+
+source_dl  = http://source.ipfire.org/releases/%{name}/
+
+build
+	requires
+		ImageMagick
+		ghostscript
+	end
+end
+
+packages
+	package %{name}
+		provides = system-logos
+	end
+end
