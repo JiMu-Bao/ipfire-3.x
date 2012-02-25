@@ -5,7 +5,7 @@
 
 name       = xorg-x11-server
 version    = 1.8.2
-release    = 4
+release    = 5
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = X/Server
@@ -76,8 +76,8 @@ build
 		--enable-xselinux \
 		--with-int10=x86emu \
 		--with-default-font-path="catalogue:/etc/X11/fontpath.d,built-ins" \
-		--with-module-dir=/usr/lib/xorg/modules \
-		--with-builderstring="Build ID: $(PKG_NAME) $(PKG_VER)-$(PKG_REL)" \
+		--with-module-dir=%{libdir}/xorg/modules \
+		--with-builderstring="Build ID: %{name} %{version}-%{release}" \
 		--with-os-name="$(hostname -s) $(uname -r)" \
 		--with-vendor-name="$(DISTRO_NAME) Project" \
 		--with-vendor-web="http://www.ipfire.org" \
@@ -114,11 +114,11 @@ build
 	end
 
 	make_install_targets += \
-		moduledir=/usr/lib/xorg/modules
+		moduledir=%{libdir}/xorg/modules
 
 	install_cmds
-		rm -vf $(BUILDROOT)/usr/lib/xorg/modules/libxf8_16bpp.so
-		rm -vrf $(BUILDROOT)/var/log
+		rm -vf %{BUILDROOT}%{libdir}/xorg/modules/libxf8_16bpp.so
+		rm -vrf %{BUILDROOT}/var/log
 
 		mkdir -pv %{BUILDROOT}/etc/X11/xorg.conf.d %{BUILDROOT}/usr/share/xorg
 		install -m 0444 hw/xfree86/common/{vesa,extra}modes %{BUILDROOT}/usr/share/xorg/
