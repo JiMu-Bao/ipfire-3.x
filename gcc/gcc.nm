@@ -8,7 +8,7 @@ build_cloog_ppl = 1
 
 name       = gcc
 version    = 4.6.2
-release    = 12
+release    = 13
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -247,6 +247,16 @@ build
 
 		# Remove some GNU debugger stuff.
 		rm -vf %{BUILDROOT}%{libdir}/lib*.py
+
+		# Install missing header file(s) on ARM.
+		case "%{DISTRO_ARCH}" in
+			arm*)
+				cp -vf %{DIR_APP}/gcc/config/vxworks-dummy.h \
+					${FULLPATH}/plugin/include/config/
+				cp -vf %{DIR_APP}/gcc/config/arm/arm-cores.def \
+					${FULLPATH}/plugin/include/config/arm/
+				;;
+		esac
 
 		# libgomp
 		mv -vf %{BUILDROOT}%{libdir}/libgomp.spec ${FULLPATH}/
