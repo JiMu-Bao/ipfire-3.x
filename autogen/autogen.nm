@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = autogen
-version    = 5.9.4
+version    = 5.14
 release    = 1
 
 groups     = Development/Tools
@@ -19,17 +19,36 @@ description
 	synchronised.
 end
 
-source_dl  = http://ftp.gnu.org/gnu/autogen/
+source_dl  = ftp://ftp.gnu.org/gnu/autogen/rel%{version}/
 
 build
 	requires
 		guile-devel
+		libtool
 		libxml2-devel
+	end
+
+	LDFLAGS += -lguile
+
+	prepare_cmds
+		rm -vf libtool
+		cp -vf $(which libtool) libtool
+
+		# Omit unused direct shared library dependencies.
+		sed --in-place --expression 's! -shared ! -Wl,--as-needed\0!g' ./libtool
+	end
+
+	install_cmds
+		rm -vf %{BUILDROOT}%{datadir}/%{name}/autoopts.m4
+		rm -vf %{BUILDROOT}%{datadir}/%{name}/libopts-31.0.6.tar.gz
 	end
 end
 
 packages
 	package %{name}
+
+	package %{name}-libs
+		template LIBS
 	end
 
 	package %{name}-debuginfo
