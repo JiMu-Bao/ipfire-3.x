@@ -4,8 +4,10 @@
 ###############################################################################
 
 name       = pcre
-version    = 8.21
-release    = 2
+version    = 8.30
+release    = 1
+
+compat_version = 8.21
 
 groups     = System/Libraries
 url        = http://www.pcre.org/
@@ -19,12 +21,12 @@ description
 end
 
 source_dl  = ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
+sources   += %{name}-%{compat_version}.tar.gz
 
 build
 	requires
 		bzip2-devel
 		gcc-c++
-		pkg-config
 		readline-devel
 		zlib-devel
 	end
@@ -33,14 +35,23 @@ build
 		--disable-static \
 		--docdir=/usr/share/doc/pcre-%{version} \
 		--enable-utf8 \
+		--enable-jit \
 		--enable-pcregrep-libz \
 		--enable-pcregrep-libbz2 \
 		--enable-unicode-properties
 
+	build_cmds
+		cd %{DIR_SRC}/%{name}-%{compat_version}
+		./configure \
+			%{configure_options}
+
+		make %{PARALLELISMFLAGS}
+	end
+
 	install_cmds
-		mkdir -pv %{BUILDROOT}/{,usr/}%{lib}
-		mv -v %{BUILDROOT}%{libdir}/libpcre.so.* %{BUILDROOT}/%{lib}
-		ln -v -sf ../../%{lib}/libpcre.so.0 %{BUILDROOT}%{libdir}/libpcre.so
+		cd %{DIR_SRC}/%{name}-%{compat_version}
+		install -m 644 .libs/libpcre.so.0.0.1 %{BUILDROOT}%{libdir}
+		ln -svf libpcre.so.0.0.1 %{BUILDROOT}%{libdir}/libprce.so.0
 	end
 end
 
@@ -49,6 +60,14 @@ packages
 
 	package %{name}-devel
 		template DEVEL
+	end
+
+	package %{name}-compat
+		summary = Compat libraries of %{thisapp}.
+
+		files
+			%{libdir}/libpcre.so.0*
+		end
 	end
 
 	package %{name}-debuginfo
