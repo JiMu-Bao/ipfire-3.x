@@ -5,7 +5,7 @@
 
 name       = boost
 version    = 1.41.0
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.boost.org/
@@ -50,6 +50,7 @@ build
 				-DWITH_MPI=OFF \
 				-DENABLE_STATIC=OFF \
 				-DENABLE_DEBUG=OFF \
+				-DBOOST_LIB_INSTALL_DIR=%{libdir} \
 				..
 
 		make VERBOSE=1 #%{PARALLELISMFLAGS}
@@ -59,16 +60,15 @@ build
 		cd %{DIR_APP}/serial && make install DESTDIR=%{BUILDROOT}
 
 		# Kill any debug library versions that may show up un-invited.
-		rm -f %{BUILDROOT}/usr/lib/*-d.*
+		rm -f %{BUILDROOT}%{libdir}/*-d.*
 
 		# Remove cmake configuration files used to build the Boost libraries
-		find %{BUILDROOT}/usr/lib -name '*.cmake' -exec rm -f {} \;
+		find %{BUILDROOT}%{libdir} -name '*.cmake' -exec rm -f {} \;
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
