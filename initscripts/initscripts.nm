@@ -6,7 +6,7 @@
 name       = initscripts
 epoch      = 1
 version    = 2.99
-release    = 12
+release    = 13
 
 groups     = System/Boot
 url        =
@@ -75,7 +75,10 @@ packages
 			/etc/rc.local
 		end
 
-		prerequires = coreutils shadow-utils
+		prerequires
+			coreutils
+			shadow-utils
+		end
 
 		script prein
 			groupadd -g 22 -r -f utmp
