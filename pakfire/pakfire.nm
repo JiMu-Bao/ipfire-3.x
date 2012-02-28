@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = pakfire
-version    = 0.9.19
-release    = 2
+version    = 0.9.20
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Packaging
@@ -33,7 +33,8 @@ build
 	end
 
 	# libgomp was broken in earlier releases.
-	requires += gcc>=4.6.2-4, beecrypt>=4.2.1-2
+	requires += gcc >= 4.6.2-4
+	requires += beecrypt >= 4.2.1-2
 
 	CFLAGS += -fno-strict-aliasing
 
@@ -48,7 +49,7 @@ packages
 	package %{name}
 		groups += Base
 
-		requires = pakfire-common=%{thisver}
+		requires = pakfire-common = %{thisver}
 	end
 
 	package %{name}-common
@@ -73,14 +74,13 @@ packages
 		groups += Build
 
 		requires
-			%{name}=%{thisver}
-			quality-agent=%{thisver}
-
+			%{name} = %{thisver}
+			quality-agent = %{thisver}
 			cpio
 			elfutils
 		end
-		provides = pakfire-build=%{thisver}
-		obsoletes = pakfire-build<%{thisver}
+		provides = pakfire-build = %{thisver}
+		obsoletes = pakfire-build < %{thisver}
 		conflicts = build-essentials
 
 		files
@@ -108,9 +108,13 @@ packages
 		end
 
 		requires
+			gawk
 			binutils
+			coreutils
+			findutils
 			file
 			grep
+			sed
 		end
 	end
 
