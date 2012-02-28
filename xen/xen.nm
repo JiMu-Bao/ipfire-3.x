@@ -5,7 +5,8 @@
 
 name       = xen
 version    = 4.1.2
-release    = 4
+release    = 5
+sup_arches = i686 x86_64
 
 maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
 groups     = Applications/Virtualization
@@ -17,6 +18,7 @@ description
 	The Xen hypervisor, the powerful open source industry standard
 	for virtualization, offers a powerful, efficient, and secure
 	feature set for virtualization.
+	It is possible to use a i686 host, but it is not supported.
 end
 
 source_dl  = http://bits.xensource.com/oss-xen/release/%{version}/

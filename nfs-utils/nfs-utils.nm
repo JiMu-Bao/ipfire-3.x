@@ -5,7 +5,7 @@
 
 name       = nfs-utils
 version    = 1.2.2
-release    = 1
+release    = 2
 
 groups     = Networking/Tools
 url        = http://nfs.sourceforge.net/
@@ -34,8 +34,6 @@ build
 	end
 
 	configure_options += \
-		--mandir=/usr/share/man \
-		--sysconfdir=/etc \
 		--without-tcp-wrappers \
 		--disable-static \
 		--enable-tirpc=no \

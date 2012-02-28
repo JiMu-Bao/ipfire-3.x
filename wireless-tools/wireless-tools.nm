@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = wireless_tools
+name       = wireless-tools
 version    = 29
-release    = 1
+release    = 2
+thisapp    = wireless_tools.%{version}
 
 groups     = Networking/Wireless
 url        = http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html
@@ -19,8 +20,6 @@ description
 	specific stats for wireless networking equipment.
 end
 
-thisapp    = %{name}.%{version}
-
 source_dl  = http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/
 
 build
@@ -32,13 +31,13 @@ build
 	make_install_targets += \
 		PREFIX=%{BUILDROOT}/usr \
 		INSTALL_DIR=%{BUILDROOT}/sbin \
-		INSTALL_LIB=%{BUILDROOT}/lib \
-		INSTALL_MAN=%{BUILDROOT}/usr/share/man
+		INSTALL_LIB=%{BUILDROOT}/%{lib} \
+		INSTALL_MAN=%{BUILDROOT}%{mandir}
 
 	install_cmds
-		rm -vf %{BUILDROOT}/lib/libiw.{a,so}
-		mkdir -pv %{BUILDROOT}/usr/lib
-		ln -svf ../../lib/libiw.so.%{version} %{BUILDROOT}/usr/lib/libiw.so
+		rm -vf %{BUILDROOT}/%{lib}/libiw.{a,so}
+		mkdir -pv %{BUILDROOT}%{libdir}
+		ln -svf ../../%{lib}/libiw.so.%{version} %{BUILDROOT}%{libdir}/libiw.so
 	end
 end
 

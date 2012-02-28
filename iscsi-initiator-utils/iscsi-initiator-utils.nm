@@ -5,7 +5,7 @@
 
 name       = iscsi-initiator-utils
 version    = 6.2.0.872
-release    = 1
+release    = 2
 
 groups     = Networking/Tools
 url        = http://bridge.sourceforge.net/
@@ -52,9 +52,9 @@ build
 		mkdir -pv %{BUILDROOT}/etc/NetworkManager/dispatcher.d
 		mkdir -pv %{BUILDROOT}/var/lib/iscsi/{nodes,send_targets,static,isns,slp,ifaces}
 		mkdir -pv %{BUILDROOT}/var/lock/iscsi
-		mkdir -pv %{BUILDROOT}/usr/lib
 		mkdir -pv %{BUILDROOT}/usr/include
-		mkdir -pv %{BUILDROOT}/usr/lib/python2.7/site-packages
+		mkdir -pv %{BUILDROOT}%{libdir}
+		mkdir -pv %{BUILDROOT}%{libdir}/python2.7/site-packages
 
 		install -p -m 755 usr/iscsid usr/iscsiadm utils/iscsi-iname usr/iscsistart \
 			%{BUILDROOT}/sbin
@@ -66,24 +66,23 @@ build
 
 		install -p -m 755 %{DIR_SOURCE}/04-iscsi %{BUILDROOT}/etc/NetworkManager/dispatcher.d
 
-		install -p -m 755 libiscsi/libiscsi.so.0 %{BUILDROOT}/usr/lib
-		ln -svf libiscsi.so.0 %{BUILDROOT}/usr/lib/libiscsi.so
+		install -p -m 755 libiscsi/libiscsi.so.0 %{BUILDROOT}%{libdir}
+		ln -svf libiscsi.so.0 %{BUILDROOT}%{libdir}/libiscsi.so
 		install -p -m 644 libiscsi/libiscsi.h %{BUILDROOT}/usr/include
 
 		install -p -m 755 libiscsi/build/lib.linux-*/libiscsimodule.so \
-			%{BUILDROOT}/usr/lib/python2.7/site-packages
+			%{BUILDROOT}%{libdir}/python2.7/site-packages
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package libiscsi
 		template LIBS
 
 		files
-			/usr/lib*/libiscsi.so.*
+			%{libdir}/libiscsi.so.*
 		end
 	end
 
@@ -91,7 +90,7 @@ packages
 		template DEVEL
 
 		files
-			/usr/lib/libiscsi.so
+			%{libdir}/libiscsi.so
 			/usr/include
 		end
 	end

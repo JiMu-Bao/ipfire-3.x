@@ -90,7 +90,7 @@ packages
 		# Don't package libbfd and libopcodes in the -devel package.
 		files
 			/usr/include
-			/usr/lib/*.a
+			%{libdir}/*.a
 		end
 	end
 
