@@ -1,0 +1,63 @@
+From 8fe602a7c5b3de4c4531d05c0dc1cf4d6bb9fb06 Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Wed, 29 Feb 2012 11:10:33 +0100
+Subject: [PATCH] Update repositories only when they are actually enabled.
+
+---
+ python/pakfire/cli.py                 |    8 +++++++-
+ python/pakfire/repository/__init__.py |    4 ++++
+ python/pakfire/repository/base.py     |    3 ++-
+ 3 files changed, 13 insertions(+), 2 deletions(-)
+
+diff --git a/python/pakfire/cli.py b/python/pakfire/cli.py
+index 8bab886..7a94900 100644
+--- a/python/pakfire/cli.py
++++ b/python/pakfire/cli.py
+@@ -768,8 +768,14 @@ class CliBuilderIntern(Cli):
+ 
+ 		conf = config.ConfigBuilder()
+ 
++		if self.args.nodeps:
++			disable_repos = ["*"]
++		else:
++			disable_repos = None
++
+ 		pakfire._build(pkg, builder_mode=self.args.mode, config=conf,
+-			arch=self.args.arch, resultdir=self.args.resultdir)
++			disable_repos=disable_repos, arch=self.args.arch,
++			resultdir=self.args.resultdir)
+ 
+ 
+ class CliClient(Cli):
+diff --git a/python/pakfire/repository/__init__.py b/python/pakfire/repository/__init__.py
+index f6b2f6e..39872da 100644
+--- a/python/pakfire/repository/__init__.py
++++ b/python/pakfire/repository/__init__.py
+@@ -68,6 +68,10 @@ class Repositories(object):
+ 
+ 		# Disable all repositories here as demanded on commandline
+ 		if disable_repos:
++			# * is magic to disable all repositories.
++			if "*" in disable_repos:
++				disable_repos = [r.name for r in self]
++
+ 			for repo in disable_repos:
+ 				self.disable_repo(repo)
+ 
+diff --git a/python/pakfire/repository/base.py b/python/pakfire/repository/base.py
+index 7fb8362..59d8615 100644
+--- a/python/pakfire/repository/base.py
++++ b/python/pakfire/repository/base.py
+@@ -115,7 +115,8 @@ class RepositoryFactory(object):
+ 		"""
+ 		assert self.index
+ 
+-		self.index.update(force, offline=offline)
++		if force or self.enabled:
++			self.index.update(force, offline=offline)
+ 
+ 	def clean(self):
+ 		"""
+-- 
+1.7.3.4
+
