@@ -5,7 +5,7 @@
 
 name       = tar
 version    = 1.26
-release    = 2
+release    = 3
 
 groups     = System/Packaging
 url        = http://www.gnu.org/software/tar/
@@ -32,6 +32,7 @@ build
 		autoconf
 		automake
 		gettext
+		gettext-devel
 		libacl-devel
 		libattr-devel
 		libselinux-devel
