@@ -3,27 +3,30 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = lm_sensors
+name       = lm-sensors
 version    = 3.3.1
-release    = 1
+release    = 2
+thisapp    = lm_sensors-%{version}
 
 groups     = Applications/Statistics
-url        = http://www.lm-sensors.org/
+url        = http://www.lm-sensors.org
 license    = GPLv2+
 summary    = Hardware monitoring tools.
 
 description
-	The lm_sensors package includes a collection of modules for general SMBus \
+	The lm_sensors package includes a collection of modules for general SMBus
 	access and hardware monitoring.
 end
 
-source_dl  =
+source_dl  = http://dl.lm-sensors.org/lm-sensors/releases/
 sources    = %{thisapp}.tar.bz2
 
 build
 	requires
 		bison
+		chrpath
 		flex
+		rrdtool-devel
 		sysfsutils-devel
 	end
 
@@ -33,14 +36,24 @@ build
 			-e "s/^MANDIR.*/MANDIR=\/usr\/share\/man/g" -i Makefile
 	end
 
-	build
-		make %{PARALLELISMFLAGS} EXLDFLAGS=
+	common_flags = PREFIX=%{prefix} LIBDIR=%{libdir} MANDIR=%{mandir} \
+		PROG_EXTRA=sensord
+
+	make_build_target += %{common_flags} user
+	make_install_target += %{common_flags} user_install
+
+	install_cmds
+		# Remove RPATH from binary.
+		chrpath --delete %{BUILDROOT}/usr/bin/sensors
 	end
 end
 
 packages
 	package %{name}
-		requires = perl rrdtool
+		requires
+			perl
+			rrdtool
+		end
 	end
 
 	package %{name}-debuginfo
