@@ -5,7 +5,7 @@
 
 name       = tcpdump
 version    = 4.1.1
-release    = 1
+release    = 2
 
 groups     = Networking/Sniffer
 url        = http://www.tcpdump.org/
@@ -25,6 +25,7 @@ CFLAGS    += -fno-strict-aliasing
 
 build
 	requires
+		chrpath
 		libpcap-devel
 		openssl-devel
 	end
@@ -32,11 +33,18 @@ build
 	configure_options += \
 		--with-crypto \
 		--without-smi
+
+	install_cmds
+		# Remove duplicated binary.
+		rm -vf %{BUILDROOT}%{sbindir}/tcpdump.%{version}
+
+		# Remove RPATH.
+		chrpath --delete %{BUILDROOT}%{sbindir}/tcpdump
+	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
