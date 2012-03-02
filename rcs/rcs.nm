@@ -1,0 +1,63 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = rcs
+version    = 5.8
+release    = 1
+
+groups     = Development/Tools
+url        = http://www.gnu.org/software/rcs/
+license    = GPLv3+
+summary    = Revision Control System (RCS) file version management tools.
+
+description
+	The Revision Control System (RCS) is a system for managing multiple
+	versions of files.  RCS automates the storage, retrieval, logging,
+	identification and merging of file revisions.  RCS is useful for text
+	files that are revised frequently (for example, programs,
+	documentation, graphics, papers and form letters).
+
+	The rcs package should be installed if you need a system for managing
+	different versions of files.
+end
+
+source_dl  = ftp://ftp.gnu.org/gnu/rcs/
+
+build
+	requires
+		autoconf
+		ed
+		ghostscript
+		groff
+	end
+
+	prepare_cmds
+		autoconf
+	end
+
+	configure_options += \
+		--with-diffutils
+
+	#test
+	#	make check
+	#end
+
+	install_cmds
+		# Install the rcsfreeze command.
+		install -m 755 src/rcsfreeze %{BUILDROOT}%{bindir}
+	end
+end
+
+packages
+	package %{name}
+		requires
+			diffutils
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
