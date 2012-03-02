@@ -5,7 +5,7 @@
 
 name       = paxtest
 version    = 0.9.9
-release    = 3
+release    = 4
 
 groups     = Security/Tools
 url        = http://pax.grsecurity.org/
@@ -22,20 +22,24 @@ sources    = %{thisapp}.tgz
 
 build
 	build
-		make -f Makefile.psm RUNDIR=/usr/lib/paxtest \
+		make -f Makefile.psm RUNDIR=%{libdir}/paxtest \
 			%{PARALLELISMFLAGS}
 	end
 
 	install
 		make -f Makefile.psm install DESTDIR=%{BUILDROOT} \
-			RUNDIR=/usr/lib/paxtest BINDIR=/usr/bin
+			RUNDIR=%{libdir}/paxtest BINDIR=%{bindir}
 	end
 
+	# Ignore errors on extract-debuginfo, because this
+	# package contains wrong/broken/unoptimized files by
+	# intention.
+	debuginfo_options = || :
 end
 
 quality-agent
 	whitelist_execstack
-		/usr/lib/paxtest
+		%{libdir}/paxtest
 	end
 end
 
