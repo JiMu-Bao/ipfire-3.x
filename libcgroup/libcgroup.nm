@@ -5,7 +5,7 @@
 
 name       = libcgroup
 version    = 0.35.1
-release    = 1
+release    = 2
 
 groups     = Development/Libraries
 url        = http://libcg.sourceforge.net/
@@ -29,27 +29,20 @@ build
 	end
 
 	configure_options += \
-		--libdir=/lib \
 		--disable-pam \
 		--disable-tools \
 		--disable-daemon
 
-	#define test
-	#	make check
-	#endef
+	# The testsuite is disabled because it does not
+	# run very smoothly in PBS.
 
 	install_cmds
 		rm -rf %{BUILDROOT}/etc
-
-		mkdir -pv %{BUILDROOT}/usr/lib
-		rm -vf %{BUILDROOT}/lib/libcgroup.so
-		ln -svf ../../lib/libcgroup.so.1 %{BUILDROOT}/usr/lib/libcgroup.so
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
