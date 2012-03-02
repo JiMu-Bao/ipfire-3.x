@@ -5,7 +5,7 @@
 
 name       = openvpn
 version    = 2.2.1
-release    = 1
+release    = 2
 
 groups     = Networking/VPN
 url        = http://openvpn.net/
@@ -43,10 +43,10 @@ build
 	end
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/usr/lib/%{name}/plugin/lib
+		mkdir -pv %{BUILDROOT}%{libdir}/%{name}/plugin/lib
 		for plugin in %{PLUGINS}; do
 			install -m 0755 plugin/$plugin/openvpn-$plugin.so \
-				%{BUILDROOT}/usr/lib/%{name}/plugin/lib/openvpn-$plugin.so
+				%{BUILDROOT}%{libdir}/%{name}/plugin/lib/openvpn-$plugin.so
 		done
 	end
 end
