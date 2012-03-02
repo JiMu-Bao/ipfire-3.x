@@ -5,7 +5,7 @@
 
 name       = upower
 version    = 0.9.2
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://upower.freedesktop.org/
@@ -25,7 +25,8 @@ build
 		dbus-devel
 		dbus-glib-devel
 		glib2-devel
-		gettext intltool
+		gettext
+		intltool
 		perl-XML-Parser
 		pkg-config
 		polkit-devel
@@ -39,7 +40,10 @@ end
 
 packages
 	package %{name}
-		requires = udev util-linux
+		requires
+			udev
+			util-linux
+		end
 	end
 
 	package %{name}-libs
