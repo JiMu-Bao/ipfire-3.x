@@ -5,7 +5,7 @@
 
 name       = net-snmp
 version    = 5.7.1
-release    = 2
+release    = 3
 
 groups     = Networking/Daemons
 url        = http://net-snmp.sourceforge.net
@@ -29,9 +29,6 @@ build
 	PARALLELISMFLAGS = # No parallel build
 
 	configure_options += \
-		--sysconfdir=/etc \
-		--libdir=/usr/lib \
-		--mandir=/usr/share/man \
 		--with-default-snmp-version=2 \
 		--with-sys-contact=root@ \
 		--with-sys-location=localhost \
@@ -51,7 +48,7 @@ packages
 		# XXX Although we don't want to build perl modules,
 		# we have this requirement?!
 		filter_requires
-			perl\(NetSNMP::TrapReceiver\)
+			^perl
 		end
 	end
 
