@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = sg3_utils
+name       = sg3-utils
 version    = 1.32
-release    = 1
+release    = 2
+thisapp    = sg3_utils-%{version}
 
 groups     = Applications/System
 url        = http://sg.danny.cz/sg/sg3_utils.html
