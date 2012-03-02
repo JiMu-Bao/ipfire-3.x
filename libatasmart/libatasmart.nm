@@ -13,7 +13,7 @@ license    = LGPLv2+
 summary    = ATA S.M.A.R.T. Disk Health Monitoring Library.
 
 description
-	A scmall and lightweight parser library for ATA S.M.A.R.T. hard disk \
+	A scmall and lightweight parser library for ATA S.M.A.R.T. hard disk
 	health monitoring.
 end
 
@@ -23,24 +23,11 @@ sources    = %{thisapp}.tar.gz
 build
 	requires
 		libudev-devel
-		pkg-config
-	end
-
-	configure_options += \
-		--libdir=/lib
-
-	install_cmds
-		-mkdir -pv %{BUILDROOT}/usr/lib
-		mv -v %{BUILDROOT}/lib/pkgconfig %{BUILDROOT}/usr/lib/
-
-		rm -vf %{BUILDROOT}/lib/libatasmart.so
-		ln -svf ../../lib/libatasmart.so.4 %{BUILDROOT}/usr/lib/libatasmart.so
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
