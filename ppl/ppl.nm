@@ -5,7 +5,7 @@
 
 name       = ppl
 version    = 0.11.2
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Libraries
@@ -32,8 +32,6 @@ sources    = %{thisapp}.tar.lzma
 
 build
 	requires
-		autoconf
-		automake
 		gcc-c++
 		gmp-devel
 		m4
@@ -44,10 +42,6 @@ build
 		--disable-debugging
 
 	PARALLELISMFLAGS =
-
-	prepare_cmds
-		cd %{DIR_APP} && autoreconf -f
-	end
 
 	test
 		make check
