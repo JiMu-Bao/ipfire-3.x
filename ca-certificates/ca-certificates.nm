@@ -1,0 +1,112 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = ca-certificates
+version    = 2012.81
+release    = 1
+arch       = noarch
+
+groups     = System/Base
+url        = http://www.mozilla.org
+license    = Public Domain
+summary    = The Mozilla CA root certificate bundle.
+
+description
+	This package contains the set of CA certificates chosen by the
+	Mozilla Foundation for use with the Internet PKI.
+end
+
+# This package has no tarball.
+sources    =
+
+build
+	requires
+		openssl
+		perl
+		rcs
+	end
+
+	DIR_APP = %{DIR_SOURCE}
+
+	build
+		# Create file layout.
+		mkdir -pv certs
+		cp certdata.txt blacklist.txt certs
+		cd certs
+
+		python %{DIR_SOURCE}/certdata2pem.py
+
+		cd ..
+		(cat <<EOF
+		# This is a bundle of X.509 certificates of public Certificate
+		# Authorities.  It was generated from the Mozilla root CA list.
+		# 
+		# Source: mozilla/security/nss/lib/ckfw/builtins/certdata.txt
+		#
+		# Generated from:
+		EOF
+		ident -q certdata.txt | sed '1d;s/^/#/';
+
+		echo '#' ) > ca-bundle.crt
+
+		(cat <<EOF
+		# This is a bundle of X.509 certificates of public Certificate
+		# Authorities.  It was generated from the Mozilla root CA list.
+		# These certificates are in the OpenSSL "TRUSTED CERTIFICATE"
+		# format and have trust bits set accordingly.
+		#
+		# Source: mozilla/security/nss/lib/ckfw/builtins/certdata.txt
+		#
+		# Generated from:
+		EOF
+		ident -q certdata.txt | sed '1d;s/^/#/';
+		echo '#' ) > ca-bundle.trust.crt
+
+		for f in certs/*.crt; do 
+			[ -z "${f}" ] && continue
+
+			tbits=$(sed -n '/^# openssl-trust/{s/^.*=//;p;}' ${f})
+			case "${tbits}" in
+				*serverAuth*)
+					openssl x509 -text -in "${f}" >> ca-bundle.crt
+					;;
+			esac
+
+			if [ -n "$tbits" ]; then
+				targs=""
+				for t in ${tbits}; do
+					targs="${targs} -addtrust ${t}"
+				done
+
+				openssl x509 -text -in "${f}" -trustout $targs >> ca-bundle.trust.crt
+			fi
+		done
+
+		perl generate-cacerts.pl /usr/bin/keytool ../ca-bundle.crt
+		touch -r certdata.txt cacerts
+	end
+
+	install
+		# Create folder layout.
+		mkdir -p %{BUILDROOT}/etc/pki/tls/certs/
+
+		# Install files.
+		install -p -m 644 ca-bundle.crt %{BUILDROOT}%{sysconfdir}/pki/tls/certs/ca-bundle.crt
+		install -p -m 644 ca-bundle.trust.crt %{BUILDROOT}%{sysconfdir}/pki/tls/certs/ca-bundle.trust.crt
+
+		ln -s certs/ca-bundle.crt %{BUILDROOT}%{sysconfdir}/pki/tls/cert.pem
+
+		touch -r certdata.txt %{BUILDROOT}%{sysconfdir}/pki/tls/certs/ca-bundle.crt
+		touch -r certdata.txt %{BUILDROOT}%{sysconfdir}/pki/tls/certs/ca-bundle.trust.crt
+
+		# /etc/ssl/certs symlink for 3rd-party tools
+		mkdir -pv -m 755 %{BUILDROOT}%{sysconfdir}/ssl
+		ln -s ../pki/tls/certs %{BUILDROOT}%{sysconfdir}/ssl/certs
+	end
+end
+
+packages
+	package %{name}
+end
