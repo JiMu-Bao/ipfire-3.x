@@ -6,7 +6,7 @@
 name       = util-linux
 major_ver  = 2.20
 version    = %{major_ver}
-release    = 2
+release    = 3
 
 groups     = System/Base
 url        = http://kernel.org/~kzak/util-linux/
@@ -101,9 +101,9 @@ packages
 		obsoletes = util-linux-ng
 
 		conflicts
-			setup<3.0-2
+			setup < 3.0-2
 			util-linux-ng
-			sysvinit<=2.86-2
+			sysvinit <= 2.86-2
 		end
 
 		preprequires += coreutils
@@ -126,7 +126,7 @@ packages
 		end
 
 		files
-			/%{lib}/libblkid.*
+			%{libdir}/libblkid.*
 		end
 	end
 
@@ -136,10 +136,10 @@ packages
 		description = %{summary}
 
 		files
-			/usr/include/blkid/
-			%{libdir}/libblkid.*
+			%{includedir}/blkid/
+			%{libdir}/libblkid.so
 			%{libdir}/pkgconfig/blkid.pc
-			/usr/share/man/man3/*blkid*
+			%{mandir}/man3/*blkid*
 		end
 	end
 
@@ -152,7 +152,7 @@ packages
 		end
 
 		files
-			/%{lib}/libuuid.*
+			%{libdir}/libuuid.*
 		end
 	end
 
@@ -162,10 +162,10 @@ packages
 		description = %{summary}
 
 		files
-			/usr/include/uuid/
-			%{libdir}/libuuid.*
+			%{includedir}/uuid/
+			%{libdir}/libuuid.so
 			%{libdir}/pkgconfig/uuid.pc
-			/usr/share/man/man3/*uuid*
+			%{mandir}/man3/*uuid*
 		end
 	end
 
@@ -178,7 +178,7 @@ packages
 		end
 
 		files
-			/%{lib}/libmount.*
+			%{libdir}/libmount.*
 		end
 	end
 
@@ -188,10 +188,10 @@ packages
 		description = %{summary}
 
 		files
-			/usr/include/mount/
-			%{libdir}/libmount.*
+			%{includedir}/mount/
+			%{libdir}/libmount.so
 			%{libdir}/pkgconfig/mount.pc
-			/usr/share/man/man3/*mount*
+			%{mandir}/man3/*mount*
 		end
 	end
 
