@@ -5,7 +5,7 @@
 
 name       = net-tools
 version    = 1.60
-release    = 2
+release    = 3
 
 groups     = System/Base
 url        = http://net-tools.berlios.de/
@@ -123,6 +123,9 @@ build
 
 	make_build_targets += \
 		 CC=gcc
+
+	# Compiling in parallel mode is unsafe for this pkg.
+	PARALLELISMFLAGS =
 
 	build_cmds
 		# Compile ether-wake
