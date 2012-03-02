@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = gnutls
-version    = 3.0.9
+version    = 3.0.13
 release    = 1
 
 groups     = System/Libraries
@@ -25,9 +25,9 @@ sources    = %{thisapp}.tar.xz
 build
 	requires
 		libtasn1-devel
-		nettle-devel>=2.4
+		nettle-devel >= 2.4
 		perl
-		p11-kit-devel>=0.4
+		p11-kit-devel >= 0.4
 		zlib-devel
 	end
 
@@ -36,9 +36,11 @@ build
 
 	configure_options += \
 		--with-included-libcfg \
-		--disable-srp-authentication
+		--disable-srp-authentication \
+		--disable-openssl-compatibility
 
 	test
+		export LD_LIBRARY_PATH=$(pwd)/lib/.libs
 		make check
 	end
 end
@@ -46,8 +48,8 @@ end
 packages
 	package %{name}
 		requires
-			nettle>=2.4
-			p11-kit>=0.4
+			nettle >= 2.4
+			p11-kit >= 0.4
 		end
 	end
 
