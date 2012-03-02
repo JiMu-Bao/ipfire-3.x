@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = l7-protocols
-version    = 2007-11-22
+version    = 2009-05-28
 release    = 1
 arch       = noarch
 
@@ -20,7 +20,7 @@ description
 	of port.
 end
 
-source_dl  =
+source_dl  = http://sourceforge.net/projects/l7-filter/files/Protocol%20definitions/%{version}/
 
 build
 	build
