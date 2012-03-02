@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = ulogd
+name       = ulogd2
 version    = 2.0.0beta3
-release    = 2
+release    = 3
+thisapp    = ulogd-%{version}
 
 groups     = Networking/Statistics
 url        = http://netfilter.org/projects/ulogd/index.html
@@ -29,7 +30,6 @@ build
 		libnetfilter_conntrack-devel
 		libnetfilter_log-devel
 		libpcap-devel
-		pkg-config
 		sqlite-devel
 	end
 
@@ -47,7 +47,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
