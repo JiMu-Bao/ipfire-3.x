@@ -201,7 +201,7 @@ diff -urNp docbook-dtds-1.0-orig/4.5-xml/docbook.cat docbook-dtds-1.0/4.5-xml/do
    -- ...................................................................... --
 +  -- SYSTEM rewrite of web URL .............. ............................. --
 +
-+SYSTEM "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"
++SYSTEM "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
 +       "docbookx.dtd"
 +
 +  -- ...................................................................... --
