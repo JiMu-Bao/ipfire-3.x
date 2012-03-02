@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = xinit
+name       = xorg-x11-xinit
 version    = 1.2.1
 release    = 1
+thisapp    = xinit-%{version}
 
 groups     = X/Server
 url        = http://www.x.org
@@ -20,10 +21,8 @@ source_dl = http://ftp.x.org/pub/individual/app/
 
 build
 	requires
-		autoconf
-		automake
 		libX11-devel
-		pkg-config
+		xorg-x11-util-macros
 	end
 end
 
