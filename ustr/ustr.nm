@@ -5,7 +5,7 @@
 
 name       = ustr
 version    = 1.0.4
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.and.org/ustr/
@@ -28,27 +28,23 @@ build
 		make check
 	end
 
+	make_install_targets += libdir=%{libdir}
+
 	install_cmds
 		rm -rf %{BUILDROOT}/usr/share
-		rm -rf %{BUILDROOT}/usr/lib/pkgconfig/*debug*
+		rm -rf %{BUILDROOT}/usr/lib*/pkgconfig/*debug*
 		rm -rf %{BUILDROOT}/lib/*debug*
-		rm -rf %{BUILDROOT}/usr/lib/*debug*
+		rm -rf %{BUILDROOT}/usr/lib*/*debug*
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
 
-		files
-			/usr/bin/
-			/usr/include/
-			/usr/lib/pkgconfig/
-			*/lib/*.so
-		end
+		files += %{bindir}
 	end
 
 	package %{name}-debuginfo
