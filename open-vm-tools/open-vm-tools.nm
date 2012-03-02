@@ -5,7 +5,8 @@
 
 name       = open-vm-tools
 version    = 2011.09.23-491607
-release    = 1
+release    = 2
+sup_arches = x86_64 i686
 
 groups     = Virtualization/Applications
 url        = http://open-vm-tools.sourceforge.net/
@@ -48,7 +49,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
