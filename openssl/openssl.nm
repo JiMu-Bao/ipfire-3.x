@@ -5,7 +5,7 @@
 
 name       = openssl
 version    = 1.0.0g
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -34,7 +34,7 @@ build
 		find crypto/ -name Makefile -exec \
 			sed 's/^ASFLAGS=/&-Wa,--noexecstack /' -i {} \;
 
-		# # Modify the various perl scripts to reference perl in the right location.
+		# Modify the various perl scripts to reference perl in the right location.
 		perl util/perlpath.pl /usr/bin
 
 		# Generate a table with the compile settings for my perusal.
@@ -130,6 +130,12 @@ end
 
 packages
 	package %{name}
+
+	package %{name}-libs
+		template LIBS
+
+		requires += ca-certificates
+	end
 
 	package %{name}-devel
 		template DEVEL
