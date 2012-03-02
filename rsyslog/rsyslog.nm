@@ -5,7 +5,7 @@
 
 name       = rsyslog
 version    = 5.8.6
-release    = 2
+release    = 3
 
 groups     = System/Daemons
 url        = http://www.rsyslog.com/
@@ -35,8 +35,6 @@ build
 		-DSYSLOGD_PIDNAME=\"syslogd.pid\"
 
 	configure_options += \
-		--exec-prefix= \
-		--libdir=/lib \
 		--with-systemdsystemunitdir=/lib/systemd/system \
 		--disable-static \
 		--disable-testbench \
