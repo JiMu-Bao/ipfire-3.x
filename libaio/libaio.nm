@@ -5,7 +5,7 @@
 
 name       = libaio
 version    = 0.3.109
-release    = 2
+release    = 3
 
 groups     = System/Libraries
 url        = ftp://ftp.kernel.org/pub/linux/libs/aio/
@@ -34,7 +34,7 @@ build
 			CFLAGS="%{CFLAGS} -I. -fPIC" CC="gcc"
 	end
 
-	make_install_targets += prefix=/ libdir=%{libdir} usrlibdir=%{libdir}
+	make_install_targets += prefix=%{prefix} libdir=%{libdir} usrlibdir=%{libdir}
 
 	install_cmds
 		# Modify links to be relative
