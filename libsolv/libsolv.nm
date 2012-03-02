@@ -6,7 +6,7 @@
 name       = libsolv
 version    = 0.0.0
 git_ver    = 0db9d7f
-release    = 2.git%{git_ver}
+release    = 3.git%{git_ver}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -33,6 +33,9 @@ build
 	end
 
 	prepare_cmds
+		# Remove -Werror from gcc command line.
+		find . -name CMakeLists.txt | xargs sed -e "s/-Werror//g" -i
+
 		# Do not build bindings, examples and tools.
 		sed "/bindings/d" -i CMakeLists.txt
 		sed "/examples/d" -i CMakeLists.txt
