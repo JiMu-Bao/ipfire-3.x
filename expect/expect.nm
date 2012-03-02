@@ -5,7 +5,7 @@
 
 name       = expect
 version    = 5.45
-release    = 1
+release    = 2
 thisapp    = %{name}%{version}
 
 groups     = Development/Languages
@@ -26,6 +26,7 @@ build
 	requires
 		autoconf
 		automake
+		chrpath
 		tcl-devel
 	end
 
@@ -48,6 +49,15 @@ build
 	end
 
 	install_cmds
+		# Install lib to right location.
+		mkdir -pv %{BUILDROOT}%{libdir}
+		mv -v %{BUILDROOT}/%{libdir}/tcl*/expect%{version}/libexpect%{version}.so \
+			%{BUILDROOT}%{libdir}
+		ln -svf libexpect%{version}.so %{BUILDROOT}%{libdir}/libexpect.so
+
+		# Remove rpath.
+		chrpath --delete %{BUILDROOT}%{libdir}/libexpect%{version}.so
+
 		# remove cryptdir/decryptdir, as Linux has no crypt command
 		rm -f %{BUILDROOT}/usr/bin/{cryptdir,decryptdir}
 		rm -f %{BUILDROOT}/usr/share/man1/{cryptdir,decryptdir}.1*
