@@ -5,7 +5,7 @@
 
 name       = lm-sensors
 version    = 3.3.1
-release    = 2
+release    = 3
 thisapp    = lm_sensors-%{version}
 
 groups     = Applications/Statistics
@@ -39,12 +39,13 @@ build
 	common_flags = PREFIX=%{prefix} LIBDIR=%{libdir} MANDIR=%{mandir} \
 		PROG_EXTRA=sensord
 
-	make_build_target += %{common_flags} user
-	make_install_target += %{common_flags} user_install
+	make_build_targets += %{common_flags} user
+	make_install_targets += %{common_flags} user_install
 
 	install_cmds
-		# Remove RPATH from binary.
+		# Remove RPATH from binaries.
 		chrpath --delete %{BUILDROOT}/usr/bin/sensors
+		chrpath --delete %{BUILDROOT}/usr/sbin/sensord
 	end
 end
 
