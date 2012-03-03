@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = libtiff
-version    = 4.0.0
-release    = 2
+version    = 4.0.1
+release    = 1
 thisapp    = tiff-%{version}
 
 groups     = System/Libraries
