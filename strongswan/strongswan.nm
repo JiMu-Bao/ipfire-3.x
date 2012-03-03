@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = strongswan
-version    = 4.6.1
+version    = 4.6.2
 release    = 1
 
 groups     = Networking/VPN
@@ -13,9 +13,9 @@ license    = GPL
 summary    = IPsec and IKEv1 implementation for Linux 2.4 and 2.6 kernels.
 
 description
-	StrongSwan is a complete IPsec and IKEv1 implementation for \
-	Linux 2.4 and 2.6 kernels. It also fully supports the new IKEv2 \
-	protocol with Linux 2.6 kernels. It interoperates in both IKEv1 \
+	StrongSwan is a complete IPsec and IKEv1 implementation for
+	Linux 2.4 and 2.6 kernels. It also fully supports the new IKEv2
+	protocol with Linux 2.6 kernels. It interoperates in both IKEv1
 	and IKEv2 mode with most other IPsec-based VPN products.
 end
 
