@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = hdparm
-version    = 9.38
-release    = 2
+version    = 9.39
+release    = 1
 
 groups     = Applications/Hardware
 url        = http://sourceforge.net/projects/hdparm/
