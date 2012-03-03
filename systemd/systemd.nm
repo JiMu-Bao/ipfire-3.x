@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 37
-release    = 2
+release    = 3
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -161,21 +161,21 @@ packages
 
 		script postin
 			# Enable default services.
-			systemctl enable \
+			/bin/systemctl enable \
 				getty@.service \
 				remote-fs.target > /dev/null 2>&1 || :
 		end
 
 		script preun
 			# Disable default services.
-			systemctl disable \
+			/bin/systemctl disable \
 				getty@.service \
 				remote-fs.target > /dev/null 2>&1 || :
 		end
 
 		script postup
 			# Reload service files
-			systemctl daemon-reload > /dev/null 2>&1 || :
+			/bin/systemctl daemon-reload > /dev/null 2>&1 || :
 		end
 	end
 
