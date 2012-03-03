@@ -8,7 +8,7 @@ build_cloog_ppl = 1
 
 name       = gcc
 version    = 4.6.2
-release    = 13
+release    = 14
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -222,8 +222,8 @@ build
 		FULLPATH="%{BUILDROOT}%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}"
 		[ -d "${FULLPATH}" ] || exit 1
 
-		mkdir -pv %{BUILDROOT}/%{lib}
-		ln -sfv ../usr/bin/cpp %{BUILDROOT}/%{lib}/cpp
+		mkdir -pv %{BUILDROOT}/lib
+		ln -sfv ../usr/bin/cpp %{BUILDROOT}/lib/cpp
 		ln -sfv gcc %{BUILDROOT}/usr/bin/cc
 
 		# Move libgcc_s to /lib
