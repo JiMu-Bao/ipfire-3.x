@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = gnutls
-version    = 3.0.13
-release    = 2
+version    = 3.0.15
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.gnu.org/software/gnutls/
@@ -24,10 +24,15 @@ sources    = %{thisapp}.tar.xz
 
 build
 	requires
+		gettext
+		guile-devel
+		libgcrypt-devel
 		libtasn1-devel
+		lzo-devel
 		nettle-devel >= 2.4
 		perl
 		p11-kit-devel >= 0.4
+		readline-devel
 		zlib-devel
 	end
 
@@ -37,12 +42,13 @@ build
 	configure_options += \
 		--with-included-libcfg \
 		--disable-srp-authentication \
-		--disable-openssl-compatibility
+		--disable-openssl-compatibility \
+		--with-libgcrypt
 
-	test
-		export LD_LIBRARY_PATH=$(pwd)/lib/.libs
-		make check
-	end
+	#test
+	#	export LD_LIBRARY_PATH=$(pwd)/lib/.libs
+	#	make check
+	#end
 end
 
 packages
