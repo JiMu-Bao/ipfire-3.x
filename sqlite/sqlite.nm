@@ -4,8 +4,9 @@
 ###############################################################################
 
 name       = sqlite
-version    = 3.7.3
+version    = 3.7.10
 release    = 1
+realver    = 3071000
 
 groups     = System/Databases
 url        = http://www.sqlite.org/
@@ -13,21 +14,19 @@ license    = PublicDomain
 summary    = A small an versative Database, that uses simple text files.
 
 description
-	SQLite is a in-process library that implements a self-contained, \
-	serverless, zero-configuration, transactional SQL database engine. \
-	The code for SQLite is in the public domain and is thus free for \
-	use for any purpose, commercial or private. SQLite is currently \
-	found in more applications than we can count, including several \
+	SQLite is a in-process library that implements a self-contained,
+	serverless, zero-configuration, transactional SQL database engine.
+	The code for SQLite is in the public domain and is thus free for
+	use for any purpose, commercial or private. SQLite is currently
+	found in more applications than we can count, including several
 	high-profile projects.
 end
 
-source_dl  =
+thisapp    = %{name}-autoconf-%{realver}
+source_dl  = http://www.sqlite.org/
 
 build
 	requires
-		autoconf
-		automake
-		libtool
 		ncurses-devel
 		readline-devel
 		tcl
@@ -47,10 +46,6 @@ build
 		--enable-threads-override-locks \
 		--enable-load-extension \
 		--disable-tcl
-
-	prepare_cmds
-		autoreconf -vfi
-	end
 end
 
 quality-agent
