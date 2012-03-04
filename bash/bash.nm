@@ -5,7 +5,7 @@
 
 name       = bash
 version    = 4.2
-release    = 5
+release    = 6
 
 groups     = System/Tools
 url        = http://www.gnu.org/software/bash/
@@ -75,7 +75,7 @@ packages
 			/etc/profile
 		end
 
-		script postin
+		script posttransin
 			# Create /etc/shells, if it does not exist.
 			[ -f "/etc/shells" ] || touch /etc/shells
 
