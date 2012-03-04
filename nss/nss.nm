@@ -4,9 +4,13 @@
 ###############################################################################
 
 name       = nss
-version    = 3.13.1
-release    = 2
+ver_major  = 3
+ver_minor  = 13
+ver_patch  = 1
+version    = %{ver_major}.%{ver_minor}.%{ver_patch}
+release    = 3
 
+maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Libraries
 url        = http://www.mozilla.org/projects/security/pki/nss/
 license    = MPLv1.1 or GPLv2+ or LGPLv2+
@@ -22,6 +26,8 @@ end
 
 sources += \
 	%{name}-pem-20100809.tar.bz2
+
+source_dl  = ftp://ftp.mozilla.org/pub/security/nss/releases/NSS_%{ver_major}_%{ver_minor}_%{ver_patch}_RTM/src/
 
 build
 	requires
@@ -176,6 +182,11 @@ packages
 
 	package %{name}-libs
 		template LIBS
+
+		requires
+			nss-softokn=%{thisver}
+			nss-softokn-freebl=%{thisver}
+		end
 
 		files
 			%{libdir}/*.so
