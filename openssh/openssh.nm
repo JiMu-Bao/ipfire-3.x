@@ -5,7 +5,7 @@
 
 name       = openssh
 version    = 5.9p1
-release    = 2
+release    = 3
 
 groups     = Application/Internet
 url        = http://www.openssh.com/portable.html
@@ -153,7 +153,10 @@ packages
 			/etc/ssh/sshd_config
 		end
 
-		prerequires = shadow-utils systemd-units
+		prerequires
+			shadow-utils
+			systemd-units
+		end
 
 		script prein
 			# Create unprivileged user and group.
