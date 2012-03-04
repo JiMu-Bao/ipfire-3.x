@@ -5,7 +5,7 @@
 
 name       = gdb
 version    = 7.3.50.20110722
-release    = 2
+release    = 3
 
 groups     = Development/Debuggers
 url        = http://gnu.org/software/gdb/
@@ -70,8 +70,9 @@ build
 		mkdir -pv %{BUILDROOT}/etc/gdbinit.d
 		cp -vf %{DIR_SOURCE}/gdbinit %{BUILDROOT}/etc/gdbinit
 
-		# Remove locale data which is provided by binutils.
+		# Remove locale data and headers which is provided by binutils.
 		rm -rf %{BUILDROOT}%{datadir}/locale/
+		rm -rf %{BUILDROOT}%{includedir}/{ansidecl,bfd,bfdlink,dis-asm,symcat}.h
 	end
 end
 
