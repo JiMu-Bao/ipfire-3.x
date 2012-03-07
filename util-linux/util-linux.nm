@@ -4,9 +4,9 @@
 ###############################################################################
 
 name       = util-linux
-major_ver  = 2.20
+major_ver  = 2.21
 version    = %{major_ver}
-release    = 3
+release    = 1
 
 groups     = System/Base
 url        = http://kernel.org/~kzak/util-linux/
