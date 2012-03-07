@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kmod
-version    = 5
-release    = 2
+version    = 6
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Kernel
@@ -20,8 +20,7 @@ description
 	filesystems are two examples of loaded and unloaded modules.
 end
 
-# Will eventually move to kernel.org.
-source_dl  = http://packages.profusion.mobi/kmod/
+source_dl  = ftp://ftp.kernel.org/pub/linux/utils/kernel/kmod/
 sources    = %{thisapp}.tar.xz
 
 build
