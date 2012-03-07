@@ -7,8 +7,8 @@
 build_cloog_ppl = 1
 
 name       = gcc
-version    = 4.6.2
-release    = 14
+version    = 4.6.3
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
