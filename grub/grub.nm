@@ -5,7 +5,7 @@
 
 name       = grub
 version    = 1.99
-release    = 4
+release    = 5
 sup_arches = x86_64 i686
 
 groups     = System/Boot
@@ -36,15 +36,11 @@ build
 		zlib-devel
 	end
 
-	# Can only use very basic CFLAGS.
-	export CFLAGS = -Os -pipe
-	export CXXFLAGS = %{CFLAGS}
-
 	prepare_cmds
 		# Replace pkglib_DATA (automake 1.11.2 incompatibility)
 		sed -i -e "s/pkglib_DATA/pkgdata_DATA/g" \
 			-e "s/pkglib_SCRIPTS/pkgdata_SCRIPTS/g" \
-			Makefile.am conf/Makefile.common \
+			Makefile* */Makefile* \
 			gentpl.py util/grub-*.in
 
 		./autogen.sh
@@ -54,16 +50,40 @@ build
 		cp -R . %{DIR_SRC}/%{thisapp}-efi
 	end
 
+	# As the modules contain always 32 bit code, they
+	# should be living in /usr/lib.
+	libdir = %{prefix}/lib
+
 	configure_options += \
+		--target="i386" \
 		--sbindir=/sbin \
-		--with-platform=pc
+		--datadir=%{libdir} \
+		--with-platform=pc \
+		--program-transform-name=s,grub,grub, \
+		--disable-werror \
+		CFLAGS="$(echo %{CFLAGS} | sed \
+			-e 's/-fstack-protector//g' \
+			-e 's/--param=ssp-buffer-size=4//g' \
+			-e 's/-mregparm=3/-mregparm=4/g' \
+			-e 's/-fexceptions//g' \
+			-e 's/-m64//g' \
+			-e 's/-fasynchronous-unwind-tables//g' )"
 
 	build_cmds
 		cd ../%{thisapp}-efi
-		#./autogen.sh
-		./configure %{configure_options} \
+		./configure \
+			%{configure_options} \
 			--with-platform=efi \
-			--program-transform-name=s,grub,grub-efi,
+			--program-transform-name=s,grub,grub-efi, \
+			CFLAGS="$(echo %{CFLAGS} | sed \
+				-e 's/-O.//g' \
+				-e 's/-fstack-protector//g' \
+				-e 's/--param=ssp-buffer-size=4//g' \
+				-e 's/-mregparm=3/-mregparm=4/g' \
+				-e 's/-fexceptions//g' \
+				-e 's/-m64//g' \
+				-e 's/-fasynchronous-unwind-tables//g' )"
+
 		make %{PARALLELISMFLAGS}
 
 		./grub-mkimage \
@@ -75,12 +95,11 @@ build
 			search font gfxterm echo video efi_gop efi_uga
 	end
 
-	install_cmds
+	install
 		cd ../%{thisapp}-efi
 		make install DESTDIR=%{BUILDROOT}
 
 		mv -v %{BUILDROOT}/etc/bash_completion.d/grub{,-efi}
-		mv -v %{BUILDROOT}/usr/lib/grub{,-efi}
 		sed -e "s,grub/grub-mkconfig_lib,grub-efi/grub-mkconfig_lib," \
 			-i %{BUILDROOT}/sbin/grub-efi-mkconfig
 
@@ -89,6 +108,9 @@ build
 		touch %{BUILDROOT}/boot/efi/EFI/%{DISTRO_SNAME}/grub-efi/grub.cfg
 		ln -svf ../boot/efi/EFI/%{DISTRO_SNAME}/grub-efi/grub.cfg %{BUILDROOT}/etc/grub-efi.cfg
 		install -m 755 grub.efi %{BUILDROOT}/boot/efi/EFI/%{DISTRO_SNAME}/grub-efi/grub.efi
+
+		cd -
+		make install DESTDIR=%{BUILDROOT}
 
 		# Install theme file
 		install -m 0744 %{DIR_SOURCE}/05_theme %{BUILDROOT}/etc/grub.d/
