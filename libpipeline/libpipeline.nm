@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libpipeline
-version    = 1.2.0
+version    = 1.2.1
 release    = 1
 
 groups     = Development/Libraries
@@ -17,11 +17,10 @@ description
 	in a flexible and convenient way.
 end
 
-source_dl  =
+source_dl  = http://download.savannah.gnu.org/releases/libpipeline/
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
