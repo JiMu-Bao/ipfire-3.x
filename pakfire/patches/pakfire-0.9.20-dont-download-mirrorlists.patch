@@ -1,0 +1,53 @@
+From 90919c62214dd821048027cce5752a8d7f64d437 Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Wed, 29 Feb 2012 18:37:50 +0100
+Subject: [PATCH] Don't download mirrorlist at repository initialization.
+
+---
+ python/pakfire/downloader.py |    9 +++++++--
+ 1 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/python/pakfire/downloader.py b/python/pakfire/downloader.py
+index 3bfbff2..f89681f 100644
+--- a/python/pakfire/downloader.py
++++ b/python/pakfire/downloader.py
+@@ -190,8 +190,6 @@ class MirrorList(object):
+ 		# Save URL to more mirrors.
+ 		self.mirrorlist = repo._mirrors
+ 
+-		self.update(force=False)
+-
+ 	@property
+ 	def distro(self):
+ 		return self.repo.distro
+@@ -245,6 +243,7 @@ class MirrorList(object):
+ 			f.close()
+ 
+ 		# Read mirrorlist from cache and parse it.
++		self.forget_mirrors()
+ 		with self.cache.open(cache_filename) as f:
+ 			self.parse_mirrordata(f.read())
+ 
+@@ -259,6 +258,9 @@ class MirrorList(object):
+ 
+ 		self.__mirrors.append(mirror)
+ 
++	def forget_mirrors(self):
++		self.__mirrors = []
++
+ 	@property
+ 	def preferred(self):
+ 		"""
+@@ -289,6 +291,9 @@ class MirrorList(object):
+ 		"""
+ 			Return a MirrorGroup object for the given grabber.
+ 		"""
++		# Make sure the mirrorlist is up to date.
++		self.update()
++
+ 		# A list of mirrors that is passed to MirrorGroup.
+ 		mirrors = []
+ 
+-- 
+1.7.3.4
+
