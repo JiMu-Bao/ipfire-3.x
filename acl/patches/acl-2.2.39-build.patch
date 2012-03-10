@@ -1,6 +1,8 @@
---- acl-2.2.39/include/builddefs.in.build	2006-06-20 02:51:25.000000000 -0400
-+++ acl-2.2.39/include/builddefs.in	2006-07-05 12:34:05.000000000 -0400
-@@ -26,14 +26,14 @@
+diff --git a/include/builddefs.in b/include/builddefs.in
+index d054a56..10b0cd4 100644
+--- a/include/builddefs.in
++++ b/include/builddefs.in
+@@ -28,14 +28,14 @@ PKG_RELEASE	= @pkg_release@
  PKG_VERSION	= @pkg_version@
  PKG_PLATFORM	= @pkg_platform@
  PKG_DISTRIBUTION= @pkg_distribution@
@@ -23,14 +25,16 @@
  
  CC		= @cc@
  AWK		= @awk@
---- acl-2.2.39/include/buildmacros.build	2006-07-05 12:32:07.000000000 -0400
-+++ acl-2.2.39/include/buildmacros	2006-07-05 12:32:07.000000000 -0400
-@@ -26,7 +26,7 @@
+diff --git a/include/buildmacros b/include/buildmacros
+index 17423c0..3118a17 100644
+--- a/include/buildmacros
++++ b/include/buildmacros
+@@ -40,7 +40,7 @@ OBJECTS = $(ASFILES:.s=.o) \
  	  $(LFILES:.l=.o) \
  	  $(YFILES:%.y=%.tab.o)
  
--INSTALL	= $(TOPDIR)/install-sh -o $(PKG_USER) -g $(PKG_GROUP)
-+INSTALL	= $(TOPDIR)/install-sh
+-INSTALL	= $(TOPDIR)/include/install-sh -o $(PKG_USER) -g $(PKG_GROUP)
++INSTALL	= $(TOPDIR)/include/install-sh
  
  SHELL = /bin/sh
  IMAGES_DIR = $(TOPDIR)/all-images
