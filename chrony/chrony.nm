@@ -5,7 +5,7 @@
 
 name       = chrony
 version    = 1.26
-release    = 8
+release    = 9
 
 groups     = System/Daemons
 url        = http://chrony.tuxfamily.org
@@ -80,7 +80,10 @@ packages
 			/etc/chrony.keys
 		end
 
-		prerequires = shadow-utils systemd-units
+		prerequires
+			shadow-utils
+			systemd-units
+		end
 
 		script prein
 			%{create_user}
