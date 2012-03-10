@@ -1,0 +1,97 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = subversion
+version    = 1.7.2
+release    = 1
+
+groups     = Development/Tools
+url        = http://subversion.apache.org/
+license    = ASL 2.0
+summary    = A Modern Concurrent Version Control System.
+
+description
+	Subversion is a concurrent version control system which enables one
+	or more users to collaborate in developing and maintaining a
+	hierarchy of files and directories while keeping a history of all
+	changes.  Subversion only stores the differences between versions,
+	instead of every complete file.  Subversion is intended to be a
+	compelling replacement for CVS.
+end
+
+source_dl  = http://www.apache.org/dist/subversion/
+
+build
+	requires
+		perl(ExtUtils::MakeMaker)
+		perl(ExtUtils::Embed)
+		perl-Carp
+		autoconf
+		apr-util-devel
+		automake
+		db4-devel
+		expat-devel
+		libapr-devel
+		perl-devel
+		sqlite-devel
+		swig
+		zlib-devel
+	end
+
+	configure_options += \
+		--sbindir=/sbin \
+		--disable-mod-activation \
+		--disable-static \
+		--with-berkeley-db
+
+	prepare_cmds
+		./autogen.sh --release
+
+		# Fix shebang lines.
+		perl -pi -e 's|/usr/bin/env perl -w|/usr/bin/perl -w|' tools/hook-scripts/*.pl.in
+	end
+
+	install_cmds
+		# Build / Install perl bindings.
+		make swig-pl-lib %{PARALELLISMFLAGS}
+		make install-swig-pl-lib DESTDIR=%{BUILDROOT}
+
+		cd subversion/bindings/swig/perl/native
+
+		# Doesn't allow OPTIMIZE="%{CFLAGS}".
+		perl Makefile.PL INSTALLDIRS=vendor
+		make %{PARALELLISMFLAGS}
+		make pure_install PERL_INSTALL_ROOT=%{BUILDROOT}
+	end
+end
+
+packages
+	package %{name}
+
+	package perl-%{name}
+		summary = Perl bindings to the Subversion libraries.
+		description
+			This package includes the Perl bindings to
+			the Subversion libraries.
+		end
+
+		files
+			/usr/lib/libsvn_swig_perl-1.so.*
+			/usr/lib/perl*/
+		end
+	end
+
+	package %{name}-libs
+		template LIBS
+	end
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
