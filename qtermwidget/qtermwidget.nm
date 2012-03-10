@@ -5,7 +5,7 @@
 
 name       = qtermwidget
 version    = 0.1
-release    = 2
+release    = 3
 
 groups     = /Tools
 url        = http://qtermwidget.sourceforge.net/
@@ -19,7 +19,7 @@ description
 	console (or terminal emulation widget).
 end
 
-source_dl  =
+source_dl  = http://sourceforge.net/projects/%{name}/files/sources/%{version}/
 
 build
 	requires
@@ -44,15 +44,14 @@ build
 		cp -vf lib/*.h %{BUILDROOT}/usr/include/%{name}
 
 		# Only install the library
-		mkdir -pv %{BUILDROOT}/usr/lib
-		cp -vf libqtermwidget.so.0 %{BUILDROOT}/usr/lib
-		ln -svf libqtermwidget.so.0 %{BUILDROOT}/usr/lib/libqtermwidget.so
+		mkdir -pv %{BUILDROOT}%{libdir}
+		cp -vf libqtermwidget.so.0 %{BUILDROOT}%{libdir}
+		ln -svf libqtermwidget.so.0 %{BUILDROOT}%{libdir}/libqtermwidget.so
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
