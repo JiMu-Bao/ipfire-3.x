@@ -1,0 +1,156 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = compat-db
+version    = %{version_db47}
+release    = 4
+thisapp    = db-%{version}
+
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = System/Libraries
+url        = http://www.oracle.com/technology/products/berkeley-db/
+license    = Proprietary
+summary    = The Berkeley DB database compatibility library.
+
+description
+	Berkeley DB (BDB) is a computer software library that provides
+	a high-performance embedded database.
+
+	This package contains various version that were used in the
+	past. Some software may depend on them though.
+end
+
+version_db46 = 4.6.21
+version_db47 = 4.7.25
+versions     = %{version_db47} %{version_db46}
+
+source_dl  = http://download.oracle.com/berkeley-db/
+sources    = db-%{version_db47}.tar.gz
+sources   += db-%{version_db46}.tar.gz
+
+build
+	requires
+		gcc-c++
+	end
+
+	CFLAGS += -fno-strict-aliasing
+
+	configure_options += \
+		--enable-compat185 \
+		--enable-cxx \
+		--disable-static
+
+	build
+		for version in %{versions}; do
+			cd %{DIR_SRC}/db-${version}/build_unix
+			../dist/configure \
+				%{configure_options}
+
+			%{MACRO_FIX_LIBTOOL}
+
+			make %{PARALLELISMFLAGS}
+		done
+	end
+
+	install
+		for version in %{versions}; do
+			cd %{DIR_SRC}/db-${version}/build_unix
+			make install DESTDIR=%{BUILDROOT} \
+				docdir=%{datadir}/doc/db-${version}
+
+			# Remove unversioned libs.
+			rm -vf %{BUILDROOT}%{libdir}/libdb*-4.so
+
+			# Move binaries.
+			tag=$(echo ${version} | cut -c1,3)
+			for bin in %{BUILDROOT}%{bindir}/*db_*; do
+				t=$(echo ${bin} | sed "s/db_/db${tag}_/g")
+				mv -v ${bin} ${t}
+			done
+
+			# Move libs.
+			major=$(echo ${version} | cut -c1-3)
+			mkdir -pv %{BUILDROOT}%{libdir}/db${version}
+			pushd %{BUILDROOT}%{libdir}/db${version}
+			ln -svf ../libdb-${major}.so libdb.so
+			ln -svf ../libdb_cxx-${major}.so libdb_cxx.so
+			popd
+			rm -vf %{BUILDROOT}%{libdir}/libdb{,_cxx}.so
+
+			# Move headers.
+			mkdir -pv %{BUILDROOT}%{includedir}/db${version}
+			mv -v %{BUILDROOT}%{includedir}/*.h \
+				%{BUILDROOT}%{includedir}/db${version}/
+
+			# Remove documentation.
+			rm -rf %{BUILDROOT}%{datadir}/doc
+		done
+	end
+end
+
+packages
+	package %{name}
+		requires += compat-db46 = %{version_db46}
+		requires += compat-db47 = %{version_db47}
+	end
+	
+	template COMPATDB
+		version = %{version_db%{version_tag}}
+
+		summary = The Berkeley DB database %{version} compatibility library.
+		description
+			The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
+			embedded database support for both traditional and client/server applications.
+
+			This package contains Berkeley DB library version %{version} used for compatibility.
+		end
+
+		files
+			%{bindir}/berkeley_db%{version_tag}_*
+			%{bindir}/db%{version_tag}_*
+			%{libdir}/db%{version}
+			%{libdir}/libdb*-%{version_major}.so
+		end
+
+		requires = compat-db-headers = %{thisver}
+		obsoletes
+			db4 < 1:%{version_major}
+			db4-devel < 1:%{version_major}
+			db4-cxx < 1:%{version_major}
+			db4-utils < 1:%{version_major}
+		end
+	end
+
+	package %{name}47
+		template COMPATDB
+
+		version_tag   = 47
+		version_major = 4.7
+	end
+
+	package %{name}46
+		template COMPATDB
+
+		version_tag   = 46
+		version_major = 4.6
+	end
+
+	package %{name}-headers
+		summary = The Berkeley DB database compatibility headers.
+		description
+			The Berkeley Database (Berkeley DB) is a programmatic toolkit that provides
+			embedded database support for both traditional and client/server applications.
+
+			This package contains Berkeley DB library headers used for compatibility.
+		end
+		arch = noarch
+
+		files = %{includedir}
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
