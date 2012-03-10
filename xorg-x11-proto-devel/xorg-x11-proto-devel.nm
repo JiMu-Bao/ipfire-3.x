@@ -5,7 +5,7 @@
 
 name       = xorg-x11-proto-devel
 version    = 7.4
-release    = 2
+release    = 3
 arch       = noarch
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -58,6 +58,11 @@ build
 		done
 	end
 
+	# Place the .pc files in /usr/share so they
+	# can be found on all architectures where libdir != /usr/lib.
+	configure_options += \
+		--libdir=%{datadir}
+
 	build
 		for object in %{sources}; do
 			cd %{DIR_SRC}/${object%*.tar.bz2}
@@ -78,5 +83,4 @@ end
 
 packages
 	package %{name}
-	end
 end
