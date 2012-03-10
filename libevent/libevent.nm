@@ -4,25 +4,25 @@
 ###############################################################################
 
 name       = libevent
-version    = 2.0.10
+version    = 2.0.17
 release    = 1
 
 groups     = Development/Tools
-url        = http://sourceforge.net/projects/levent/files/libevent/libevent-2.0
+url        = http://libevent.org
 license    = BSD
 summary    = Abstract asynchronous event notification library.
 
 description
-	The libevent API provides a mechanism to execute a callback \
-	function when a specific event occurs on a file descriptor or \
-	after a timeout has been reached. libevent is meant to replace \
-	the asynchronous event loop found in event driven network \
-	servers. An application just needs to call event_dispatch() and \
-	can then add or remove events dynamically without having to \
+	The libevent API provides a mechanism to execute a callback
+	function when a specific event occurs on a file descriptor or
+	after a timeout has been reached. libevent is meant to replace
+	the asynchronous event loop found in event driven network
+	servers. An application just needs to call event_dispatch() and
+	can then add or remove events dynamically without having to
 	change the event loop.
 end
 
-source_dl  =
+source_dl  = http://sourceforge.net/projects/levent/files/%{name}/libevent-2.0/
 sources    = %{thisapp}-stable.tar.gz
 
 build
@@ -34,7 +34,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
