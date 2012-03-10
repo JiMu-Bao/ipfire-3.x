@@ -6,7 +6,7 @@
 name       = squid
 major_ver  = 3.1
 version    = %{major_ver}.16
-release    = 4
+release    = 5
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
@@ -118,7 +118,10 @@ end
 
 packages
 	package %{name}
-		prerequires = shadow-utils systemd-units
+		prerequires
+			shadow-utils
+			systemd-units
+		end
 
 		configfiles
 			/etc/squid.conf

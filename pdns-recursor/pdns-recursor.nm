@@ -5,7 +5,7 @@
 
 name       = pdns-recursor
 version    = 3.3
-release    = 6
+release    = 7
 
 groups     = Networking/DNS
 url        = http://powerdns.com/
@@ -72,7 +72,10 @@ packages
 			/etc/%{name}/recursor.conf
 		end
 
-		prerequires = shadow-utils systemd-units
+		prerequires
+			shadow-utils
+			systemd-units
+		end
 
 		script prein
 			%{create_user}
