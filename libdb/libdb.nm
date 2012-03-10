@@ -1,0 +1,115 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libdb
+version_major = 5
+version_minor = 2
+version_patch = 36
+version    = %{version_major}.%{version_minor}.%{version_patch}
+release    = 1
+thisapp    = db-%{version}
+
+soversion  = %{version_major}.%{version_minor}
+
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = System/Libraries
+url        = http://www.oracle.com/technology/products/berkeley-db/
+license    = Proprietary
+summary    = Berkeley DB is a library that provides an embedded database.
+
+description
+	Berkeley DB (BDB) is a computer software library that provides
+	a high-performance embedded database.
+end
+
+source_dl  = http://download.oracle.com/berkeley-db/
+
+build
+	requires
+		chrpath
+		gcc-c++
+		libtool
+		perl
+	end
+
+	CFLAGS += -fno-strict-aliasing
+
+	DIR_APP = %{DIR_SRC}/%{thisapp}/dist/dist-tls
+
+	prepare_cmds
+		mkdir %{DIR_APP} && cd %{DIR_APP}
+		ln -s ../configure .
+	end
+
+	MACRO_FIX_LIBTOOL
+		# Remove libtool predep_objects and postdep_objects wonkiness so that
+		# building without -nostdlib doesn't include them twice.  Because we
+		# already link with g++, weird stuff happens if you don't let the
+		# compiler handle this.
+		perl -pi -e 's/^predep_objects=".*$/predep_objects=""/' libtool
+		perl -pi -e 's/^postdep_objects=".*$/postdep_objects=""/' libtool
+		perl -pi -e 's/-shared -nostdlib/-shared/' libtool
+	end
+
+	configure_options += \
+		-C \
+		--enable-compat185 \
+		--enable-cxx \
+		--enable-sql \
+		--disable-static \
+		--disable-rpath
+
+	install_cmds
+		# Remove RPATH in all binaries.
+		for i in %{BUILDROOT}%{bindir}/*; do
+			chrpath --delete ${i}
+		done
+
+		# Remove documentation which is very big.
+		rm -rf %{BUILDROOT}%{datadir}/docs
+
+		# Remove unversioned libs.
+		rm -vf %{BUILDROOT}%{libdir}/libdb*-%{version_major}.so
+
+		mkdir -pv %{BUILDROOT}%{includedir}/%{name}
+		mv -v %{BUILDROOT}%{includedir}/*.h %{BUILDROOT}%{includedir}/%{name}/
+		for i in db.h db_cxx.h db_185.h; do
+			ln -svf %{name}/${i} %{BUILDROOT}/%{includedir}
+		done
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+
+		files += !%{libdir}/libdb-%{soversion}.so
+		files += !%{libdir}/libdb_sql-%{soversion}.so
+	end
+
+	package %{name}-utils
+		summary = Command line tools for managing Berkeley DB (version 4) databases.
+		description = %{summary}
+
+		files
+			/usr/bin
+		end
+	end
+
+	package %{name}-cxx
+		summary = The Berkeley DB database library (version 4) for C++.
+		description = %{summary}
+
+		files
+			%{libdir}/libdb_cxx-%{soversion}.so
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
