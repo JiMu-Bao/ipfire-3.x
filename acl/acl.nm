@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = acl
-version    = 2.2.47
-release    = 3
+version    = 2.2.51
+release    = 1
 
 groups     = System/Filesystems
 url        = http://oss.sgi.com/projects/xfs/
@@ -17,7 +17,8 @@ description
 	manipulating access control lists.
 end
 
-source_dl  = ftp://oss.sgi.com/projects/xfs/previous/cmd_tars/
+source_dl  = http://download-mirror.savannah.gnu.org/releases/acl/
+sources    = %{thisapp}.src.tar.gz
 
 build
 	requires
@@ -33,11 +34,15 @@ build
 
 	make_build_targets += LIBTOOL="libtool --tag=CC"
 
+	test
+		make tests
+	end
+
 	install_cmds
-		mkdir -pv %{BUILDROOT}/%{lib} %{BUILDROOT}%{libdir}
-		install -v -m0755 libacl/.libs/libacl.so.1.2.0 %{BUILDROOT}/%{lib}
-		ln -vsf libacl.so.1.2.0 %{BUILDROOT}/%{lib}/libacl.so.1
-		ln -vsf ../../%{lib}/libacl.so.1 %{BUILDROOT}%{libdir}/libacl.so
+		mkdir -pv %{BUILDROOT}%{libdir}
+		install -v -m0755 libacl/.libs/libacl.so.1.1.0 %{BUILDROOT}%{libdir}
+		ln -vsf libacl.so.1.1.0 %{BUILDROOT}%{libdir}/libacl.so.1
+		ln -vsf libacl.so.1 %{BUILDROOT}%{libdir}/libacl.so
 
 		# Install headers.
 		mkdir -pv %{BUILDROOT}%{includedir}/{acl,sys}
