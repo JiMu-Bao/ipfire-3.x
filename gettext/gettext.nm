@@ -5,7 +5,7 @@
 
 name       = gettext
 version    = 0.18.1.1
-release    = 6
+release    = 7
 
 groups     = System/Base
 url        = http://www.gnu.org/software/gettext/
@@ -73,6 +73,7 @@ packages
 		requires
 			gettext-common-devel=%{thisver}
 			gettext-libs=%{thisver}
+			git
 		end
 
 		files += \
