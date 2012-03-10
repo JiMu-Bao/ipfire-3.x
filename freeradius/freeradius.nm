@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = freeradius-server
+name       = freeradius
 version    = 2.1.12
-release    = 3
+release    = 4
+thisapp    = %{name}-server-%{version}
 
 groups     = System/Daemons
 url        = http://www.freeradius.org
@@ -37,9 +38,7 @@ build
 
 	configure_options +=\
 		%{CONFIGURE_ARCH} \
-		--sysconfdir=/etc \
-		--libdir=/usr/lib/freeradius \
-		--localstatedir=/var \
+		--libdir=%{libdir}/freeradius \
 		--with-system-libtool \
 		--with-threads \
 		--with-thread-pool \
@@ -97,7 +96,7 @@ end
 
 quality-agent
 	whitelist_rpath
-		/usr/lib/freeradius
+		%{libdir}/freeradius
 	end
 end
 
@@ -107,7 +106,10 @@ packages
 			/etc/raddb/radiusd.conf
 		end
 
-		prerequires = shadow-utils systemd-units
+		prerequires
+			shadow-utils
+			systemd-units
+		end
 
 		script prein
 			%{create_user}
