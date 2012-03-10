@@ -7,11 +7,9 @@ name       = db4
 version_major = 4.8
 version_minor = 30
 version    = %{version_major}.%{version_minor}
-release    = 3
+release    = 4
 epoch      = 1
 thisapp    = db-%{version}
-
-# Never update this to major version 5.
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -49,27 +47,29 @@ build
 		cd %{DIR_APP}/build_unix
 		make install DESTDIR=%{BUILDROOT} \
 			docdir=/usr/share/doc/%{thisapp}
+
+		# Remove unversioned libs.
+		rm -vf %{BUILDROOT}%{libdir}/libdb*-4.so
+
+		mkdir -pv %{BUILDROOT}%{includedir}/%{name}
+		mv -v %{BUILDROOT}%{includedir}/*.h %{BUILDROOT}%{includedir}/%{name}/
+		for i in db.h db_cxx.h db_185.h; do
+			ln -svf %{name}/${i} %{BUILDROOT}/%{includedir}
+		done
 	end
 end
 
 packages
+	# /usr/lib64/libdb_cxx.so
+
 	package db4
-
-	package db4-devel
-		template DEVEL
-
-		# Overwrite because of epoch != 0.
-		requires = %{name}=%{epoch}:%{thisver}
-
-		files += !%{libdir}/libdb-%{version_major}.so
-	end
 
 	package db4-utils
 		summary = Command line tools for managing Berkeley DB (version 4) databases.
 		description = %{summary}
 
 		files
-			/usr/bin
+			%{bindir}
 		end
 	end
 
@@ -80,6 +80,21 @@ packages
 		files
 			%{libdir}/libdb_cxx-%{version_major}.so
 		end
+	end
+
+	package db4-devel
+		template DEVEL
+
+		# Overwrite because of epoch != 0.
+		requires = %{name}=%{epoch}:%{thisver}
+
+		files
+			%{includedir}
+			%{libdir}/libdb.so
+			%{libdir}/libdb_cxx.so
+		end
+
+		#files += !%{libdir}/libdb-%{version_major}.so
 	end
 
 	package %{name}-debuginfo
