@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = gnupg
+name       = gnupg2
 version    = 2.0.18
-release    = 1
+release    = 2
+thisapp    = gnupg-%{version}
 
 groups     = Security/Tools
 url        = http://www.gnupg.org/
@@ -35,7 +36,7 @@ build
 	end
 
 	configure_options += \
-		--libexecdir=/usr/lib/gnupg2 \
+		--libexecdir=%{libdir}/gnupg2 \
 		--enable-standard-socket
 end
 
