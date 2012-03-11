@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = compat-db
-version    = %{version_db47}
-release    = 4
+version    = %{main_version}
+release    = 5
 thisapp    = db-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -25,6 +25,7 @@ end
 version_db46 = 4.6.21
 version_db47 = 4.7.25
 versions     = %{version_db47} %{version_db46}
+main_version:= %{version_db47}
 
 source_dl  = http://download.oracle.com/berkeley-db/
 sources    = db-%{version_db47}.tar.gz
@@ -92,8 +93,8 @@ end
 
 packages
 	package %{name}
-		requires += compat-db46 = %{version_db46}
-		requires += compat-db47 = %{version_db47}
+		requires += compat-db46 = %{version_db46}-%{_release}
+		requires += compat-db47 = %{version_db47}-%{_release}
 	end
 	
 	template COMPATDB
@@ -114,7 +115,7 @@ packages
 			%{libdir}/libdb*-%{version_major}.so
 		end
 
-		requires = compat-db-headers = %{thisver}
+		requires = compat-db-headers = %{main_version}-%{_release}
 		obsoletes
 			db4 < 1:%{version_major}
 			db4-devel < 1:%{version_major}
