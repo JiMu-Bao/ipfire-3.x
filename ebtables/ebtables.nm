@@ -5,7 +5,7 @@
 
 name       = ebtables
 version    = v2.0.10-4
-release    = 1
+release    = 2
 
 groups     = Networking/Tools
 url        = http://ebtables.sourceforge.net/
@@ -24,22 +24,22 @@ build
 	CFLAGS += -Wall
 
 	build
-		make CFLAGS="%{CFLAGS}" BINDIR="/sbin" \
-			LIBDIR="/lib/ebtables" MANDIR="/usr/share/man" %{PARALLELISMFLAGS}
+		make CFLAGS="%{CFLAGS}" BINDIR="%{sbindir}" \
+			LIBDIR="%{libdir}/ebtables" MANDIR="%{mandir}" %{PARALLELISMFLAGS}
 	end
 
 	install
-		mkdir -pv %{BUILDROOT}/etc/{init.d,sysconfig}
-		make install DESTDIR="%{BUILDROOT}" BINDIR="/sbin" \
-			LIBDIR="/lib/ebtables" MANDIR="/usr/share/man" INITDIR="/etc/init.d"
+		make install DESTDIR="%{BUILDROOT}" BINDIR="%{sbindir}" \
+			LIBDIR="%{libdir}/ebtables" MANDIR="%{mandir}"
 
-		rm -vfr %{BUILDROOT}/etc/{init.d,sysconfig}
+		# Remove unneded directories.
+		rm -rvf %{BUILDROOT}/etc/{rc.d,sysconfig}
 	end
 end
 
 quality-agent
 	whitelist_rpath
-		/lib/ebtables
+		%{libdir}/ebtables
 	end
 end
 
