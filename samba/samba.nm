@@ -5,7 +5,7 @@
 
 name       = samba
 version    = 3.6.3
-release    = 1
+release    = 2
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
@@ -53,17 +53,17 @@ build
 	DIR_APP = %{DIR_SRC}/%{thisapp}/source3
 
 	configure_options += \
-		--prefix=/usr \
+		--prefix=%{prefix} \
 		--localstatedir=/var \
-		--with-lockdir=/var/lib/samba \
-		--with-piddir=/var/run \
-		--with-mandir=/usr/share/man \
-		--with-privatedir=/var/lib/samba/private \
+		--with-lockdir=%{sharedstatedir}/samba \
+		--with-piddir=%{rundir} \
+		--with-mandir=%{mandir} \
+		--with-privatedir=%{sharedstatedir}/samba/private \
 		--with-logfilebase=/var/log/samba \
-		--with-modulesdir=/usr/lib/samba \
-		--with-configdir=/etc/samba \
-		--with-pammodulesdir=/lib/security \
-		--with-swatdir=/usr/share/swat \
+		--with-modulesdir=%{libdir}/samba \
+		--with-configdir=%{sysconfdir}/samba \
+		--with-pammodulesdir=/%{lib}/security \
+		--with-swatdir=%{datadir}/swat \
 		--with-automount \
 		--with-libsmbclient \
 		--with-libsmbsharemodes \
@@ -81,8 +81,8 @@ build
 		all modules
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/etc/samba
-		echo "127.0.0.1 localhost" > %{BUILDROOT}/etc/samba/lmhosts
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/samba
+		echo "127.0.0.1 localhost" > %{BUILDROOT}%{sysconfdir}/samba/lmhosts
 	end
 end
 
@@ -96,7 +96,7 @@ packages
 	package %{name}-devel
 		template DEVEL
 
-		requires += %{name}-libs=%{thisver}
+		requires += %{name}-libs = %{thisver}
 	end
 
 	package %{name}-debuginfo
