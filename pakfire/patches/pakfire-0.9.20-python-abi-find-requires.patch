@@ -1,0 +1,29 @@
+commit d16c15690f94589c2667a5096c21cec16daee7b7
+Author: Michael Tremer <michael.tremer@ipfire.org>
+Date:   Sun Mar 11 19:53:10 2012 +0100
+
+    find-requires: Filter false positives for python abi.
+
+diff --git a/tools/find-requires b/tools/find-requires
+index 52b6651..044c59f 100755
+--- a/tools/find-requires
++++ b/tools/find-requires
+@@ -43,14 +43,16 @@ while read file; do
+ 		*/usr/lib*/python*/*)
+ 			# Sort out all python files.
+ 			;;
+-		*/usr/lib*/python*)
++		*/usr/lib/python*|*/usr/lib64/python*)
+ 			# This will only get the python directory.
+ 			file=$(basename ${file})
+ 
+ 			# Strip the python version from the string.
+ 			python_version="${file#python}"
+ 
+-			echo "python-abi = ${python_version}"
++			if [ -n "${python_version}" ]; then
++				echo "python-abi = ${python_version}"
++			fi
+ 			continue
+ 			;;
+ 	esac
