@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libtorrent
-version    = 0.12.7
+version    = 0.12.9
 release    = 1
 
 groups     = Internet/P2P
@@ -17,7 +17,7 @@ description
 	focus on high performance and good code.
 end
 
-source_dl  =
+source_dl  = http://libtorrent.rakshasa.no/downloads/
 
 build
 	requires
@@ -25,11 +25,12 @@ build
 		libsigc++-devel
 		openssl-devel
 	end
+
+	CFLAGS += -fno-strict-aliasing
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
