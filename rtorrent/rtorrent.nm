@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = rtorrent
-version    = 0.8.7
+version    = 0.8.9
 release    = 1
 
 groups     = Internet/P2P
@@ -24,19 +24,20 @@ source_dl  = http://libtorrent.rakshasa.no/downloads/
 
 build
 	requires
-		 gcc-c++
+		gcc-c++
 		libcurl-devel
 		libsigc++-devel
-		libtorrent-devel
+		libtorrent-devel >= 0.12.9
 		ncurses-devel
 	end
+
+	CFLAGS += -fno-strict-aliasing
 
 	make_build_targets += LDFLAGS=-lpthread
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
