@@ -5,7 +5,7 @@
 
 name       = openl2tp
 version    = 1.7
-release    = 1
+release    = 2
 
 groups     = Networking/PPP
 url        = http://www.openl2tp.org/
@@ -36,10 +36,13 @@ build
 
 	prepare_cmds
 		sed -e "s/-lfl/&_pic/g" -i Makefile
+
+		# Remove -Werror from all makefiles.
+		find . -name Makefile | xargs sed -i -e "s/-Werror//g"
 	end
 
 	build
-		make OPT_CFLAGS="%{CFLAGS}" \
+		make OPT_CFLAGS="%{CFLAGS}" ARCH="%{DISTRO_ARCH}" \
 			KERNEL_SRCDIR="/usr" PPPD_VERSION="2.4.5"
 	end
 
@@ -49,7 +52,7 @@ build
 #endef
 
 	install
-		make install DESTDIR=%{BUILDROOT} \
+		make install DESTDIR=%{BUILDROOT} ARCH="%{DISTRO_ARCH}" \
 			KERNEL_SRCDIR="/usr" PPPD_VERSION="2.4.5"
 	end
 end
