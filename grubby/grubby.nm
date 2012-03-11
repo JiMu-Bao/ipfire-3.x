@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = grubby
-version    = 8.3
+version    = 8.9
 release    = 1
 
 groups     = System/Base
@@ -20,7 +20,8 @@ description
 	environment.
 end
 
-sources = %{thisapp}.tar.bz2
+# Source tarballs must be generated from git.
+sources    = %{thisapp}.tar.bz2
 
 build
 	requires
@@ -34,11 +35,20 @@ build
 		make test
 	end
 
-	make_install_targets += mandir=/usr/share/man
+	make_install_targets += mandir=%{mandir}
 end
 
 packages
 	package %{name}
+		# Pull in uboot-tools on ARM platforms.
+		if "%{DISTRO_ARCH}" == "armv7hl"
+			requires += uboot-tools
+		end
+
+		if "%{DISTRO_ARCH}" == "armv5tel"
+			requires += uboot-tools
+		end
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
