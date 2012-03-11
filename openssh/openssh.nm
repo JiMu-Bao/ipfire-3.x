@@ -5,7 +5,7 @@
 
 name       = openssh
 version    = 5.9p1
-release    = 3
+release    = 4
 
 groups     = Application/Internet
 url        = http://www.openssh.com/portable.html
@@ -26,10 +26,14 @@ build
 		audit-devel
 		autoconf
 		automake
+		groff
+		libedit-devel
 		libselinux-devel
-		nss-devel
-		openssl-devel>=1.0.0d-2
+		ncurses-devel
+		openldap-devel
+		openssl-devel >= 1.0.0d-2
 		pam-devel
+		util-linux
 		zlib-devel
 	end
 
@@ -67,17 +71,25 @@ build
 	end
 
 	configure_options += \
-		--sysconfdir=/etc/ssh \
-		--datadir=/usr/share/sshd \
-		--libexecdir=/usr/lib/openssh \
-		--with-md5-passwords \
-		--with-privsep-path=/var/lib/sshd \
+		--sysconfdir=%{sysconfdir}/ssh \
+		--datadir=%{datadir}/sshd \
+		--libexecdir=%{libdir}/openssh \
+		--with-default-path=/usr/local/bin:/bin:/usr/bin \
+		--with-superuser-path=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin \
+		--with-privsep-path=/var/empty/sshd \
+		--enable-vendor-patchlevel="%{DISTRO_NAME} %{thisver}" \
+		--disable-strip \
+		--with-ssl-engine \
+		--with-authorized-keys-command \
+		--with-ipaddr-display \
+		--with-ldap \
 		--with-pam \
+		--with-libedit \
 		--with-selinux \
 		--with-audit=linux
 
 	prepare_cmds
-		autoreconf
+		autoreconf -vfi
 	end
 
 	install_cmds
@@ -85,15 +97,32 @@ build
 		sed -e "s/^.*GSSAPIAuthentication/#&/" -i %{BUILDROOT}/etc/ssh/ssh_config
 
 		# Install scriptfile for key generation
-		install -m 754 %{DIR_SOURCE}/ssh-keygen %{BUILDROOT}/usr/lib/openssh/
+		mkdir -pv %{BUILDROOT}%{sbindir}
+		install -m 754 %{DIR_SOURCE}/sshd-keygen %{BUILDROOT}%{sbindir}
+
+		# Install ssh-copy-id.
+		install -m755 contrib/ssh-copy-id %{BUILDROOT}%{bindir}
+		install contrib/ssh-copy-id.1 %{BUILDROOT}%{mandir}/man1/
 	end
 end
 
 packages
 	package openssh
+		prerequires
+			shadow-utils
+		end
+
 		requires
-			openssh-clients=%{thisver}
-			openssh-server=%{thisver}
+			openssh-clients = %{thisver}
+			openssh-server = %{thisver}
+		end
+
+		configfiles
+			%{sysconfdir}/ssh/moduli
+		end
+
+		script prein
+			getent group sshd_keys >/dev/null || groupadd -r ssh_keys || :
 		end
 	end
 
@@ -101,29 +130,33 @@ packages
 		summary = OpenSSH client applications.
 		description = %{summary}
 
+		requires = openssh = %{thisver}
+
 		files
-			/etc/ssh/ssh_config
-			/usr/bin/scp
-			/usr/bin/sftp
-			/usr/bin/slogin
-			/usr/bin/ssh
-			/usr/bin/ssh-add
-			/usr/bin/ssh-agent
-			/usr/bin/ssh-keyscan
-			/usr/lib/openssh/ssh-pkcs11-helper
-			/usr/share/man/cat1/scp.1
-			/usr/share/man/cat1/sftp.1
-			/usr/share/man/cat1/slogin.1
-			/usr/share/man/cat1/ssh-add.1
-			/usr/share/man/cat1/ssh-agent.1
-			/usr/share/man/cat1/ssh-keyscan.1
-			/usr/share/man/cat1/ssh.1
-			/usr/share/man/cat5/ssh_config.5
-			/usr/share/man/cat8/ssh-pkcs11-helper.8
+			%{sysconfdir}/ssh/ssh_config
+			%{bindir}/scp
+			%{bindir}/sftp
+			%{bindir}/slogin
+			%{bindir}/ssh
+			%{bindir}/ssh-add
+			%{bindir}/ssh-agent
+			%{bindir}/ssh-copy-id
+			%{bindir}/ssh-keyscan
+			%{libdir}/openssh/ssh-pkcs11-helper
+			%{mandir}/man1/scp.1*
+			%{mandir}/man1/sftp.1*
+			%{mandir}/man1/slogin.1*
+			%{mandir}/man1/ssh-add.1*
+			%{mandir}/man1/ssh-agent.1*
+			%{mandir}/man1/ssh-copy-id.1*
+			%{mandir}/man1/ssh-keyscan.1*
+			%{mandir}/man1/ssh.1*
+			%{mandir}/man5/ssh_config.5*
+			%{mandir}/man8/ssh-pkcs11-helper.8*
 		end
 
 		configfiles
-			/etc/ssh/ssh_config
+			%{sysconfdir}/ssh/ssh_config
 		end
 	end
 
@@ -131,26 +164,24 @@ packages
 		summary = OpenSSH server applications.
 		description = %{summary}
 
-		# /usr/bin/ssh-keygen is needed to generate keys for the ssh server.
-		requires = /usr/bin/ssh-keygen
+		requires = openssh = %{thisver}
 
 		files
-			/etc/pam.d/sshd
-			/etc/ssh/moduli
-			/etc/ssh/sshd_config
-			/lib/systemd/system/openssh.service
-			/usr/lib/openssh/sftp-server
-			/usr/lib/openssh/ssh-keygen
-			/usr/sbin/sshd
-			/usr/share/man/cat5/sshd_config.5*
-			/usr/share/man/cat5/moduli.5*
-			/usr/share/man/cat8/sshd.8*
-			/usr/share/man/cat8/sftp-server.8*
-			/var/lib/sshd
+			%{sysconfdir}/pam.d/sshd
+			%{sysconfdir}/ssh/sshd_config
+			/lib/systemd
+			%{libdir}/openssh/sftp-server
+			%{sbindir}/sshd-keygen
+			%{sbindir}/sshd
+			%{mandir}/man5/sshd_config.5*
+			%{mandir}/man5/moduli.5*
+			%{mandir}/man8/sshd.8*
+			%{mandir}/man8/sftp-server.8*
+			/var/empty/sshd
 		end
 
 		configfiles
-			/etc/ssh/sshd_config
+			%{sysconfdir}/ssh/sshd_config
 		end
 
 		prerequires
@@ -160,9 +191,10 @@ packages
 
 		script prein
 			# Create unprivileged user and group.
-			getent group sshd || groupadd -r sshd
-			getent passwd sshd || useradd -r -g sshd \
-				-d /var/lib/sshd -s /sbin/nologin sshd
+			getent group sshd >/dev/null || groupadd -r sshd
+			getent passwd sshd >/dev/null || useradd -r -g sshd \
+				-c "Privilege-separated SSH" \
+				-d /var/empty/sshd -s /sbin/nologin sshd
 		end
 
 		script postin
@@ -170,8 +202,10 @@ packages
 		end
 
 		script preun
-			/bin/systemctl --no-reload disable openssh.service >/dev/null 2>&1 || :
-			/bin/systemctl stop openssh.service >/dev/null 2>&1 || :
+			/bin/systemctl --no-reload disable sshd.service >/dev/null 2>&1 || :
+			/bin/systemctl --no-reload disable sshd-keygen.service >/dev/null 2>&1 || :
+			/bin/systemctl stop sshd.service >/dev/null 2>&1 || :
+			/bin/systemctl stop sshd-keygen.service >/dev/null 2>&1 || :
 		end
 
 		script postun
@@ -180,6 +214,9 @@ packages
 
 		script postup
 			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+
+			/bin/systemctl try-restart sshd.service >/dev/null 2>&1 || :
+			/bin/systemctl try-restart sshd-keygen.service >/dev/null 2>&1 || :
 		end
 	end
 

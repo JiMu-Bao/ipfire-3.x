@@ -1,8 +1,0 @@
-#! /bin/sh
-
-# Generates keyfiles for defined algorithm
-for algo in dsa rsa ecdsa; do
-	[ -e "/etc/ssh/ssh_host_${algo}_key" ] && continue
-	/usr/bin/ssh-keygen -q -t ${algo} -N "" -f /etc/ssh/ssh_host_${algo}_key
-done
-
