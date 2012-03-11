@@ -5,7 +5,7 @@
 
 name       = perl-Digest-SHA1
 version    = 2.13
-release    = 2
+release    = 3
 thisapp    = Digest-SHA1-%{version}
 
 groups     = Development/Libraries
@@ -32,6 +32,7 @@ source_dl  = http://search.cpan.org/CPAN/authors/id/G/GA/GAAS/
 build
 	requires
 		perl(ExtUtils::MakeMaker)
+		perl(ExtUtils::ParseXS)
 	end
 
 	build
