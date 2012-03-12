@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openldap
-version    = 2.4.28
-release    = 2
+version    = 2.4.30
+release    = 1
 
 groups     = System/Daemons
 url        = http://www.openldap.org/
