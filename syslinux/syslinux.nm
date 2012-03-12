@@ -5,7 +5,8 @@
 
 name       = syslinux
 version    = 4.02
-release    = 2
+release    = 3
+sup_arches = x86_64 i686
 
 groups     = System/Boot
 url        = http://syslinux.zytor.com/
