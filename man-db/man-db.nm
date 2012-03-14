@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = man-db
-version    = 2.6.0.2
-release    = 3
+version    = 2.6.1
+release    = 1
 
 groups     = Documentation
-url        = http://bzr.savannah.gnu.org/r/man-db/
+url        = http://savannah.nongnu.org/projects/man-db
 license    = GPL
 summary    = man-db is an on-line manual database.
 
@@ -19,7 +19,7 @@ description
 	used by several popular GNU/Linux distributions.
 end
 
-source_dl  =
+source_dl  = http://download.savannah.gnu.org/releases/man-db/
 
 build
 	requires
@@ -31,8 +31,6 @@ build
 	end
 
 	configure_options += \
-		--libexecdir=/usr/lib \
-		--sysconfdir=/etc \
 		--disable-setuid \
 		--with-browser=/usr/bin/lynx \
 		--with-col=/usr/bin/col \
@@ -50,7 +48,7 @@ end
 # accept that.
 quality-agent
 	whitelist_rpath
-		/usr/lib/man-db
+		%{libdir}/man-db
 	end
 end
 
