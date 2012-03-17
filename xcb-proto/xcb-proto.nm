@@ -5,7 +5,7 @@
 
 name       = xcb-proto
 version    = 1.6
-release    = 1
+release    = 2
 arch       = noarch
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -15,10 +15,9 @@ license    = MIT
 summary    = XCB protocol descriptions.
 
 description
-	XCB is a project to enable efficient language bindings to the X11 \
-	protocol. This package contains the protocol descriptions themselves. \
-	Language bindings use these protocol descriptions to generate code for \
-	marshalling the protocol.
+	XCB is a project to enable efficient language bindings to the X11
+	protocol. This package contains the protocol descriptions themselves.
+	Language bindings use these protocol descriptions to generate code for		marshalling the protocol.
 end
 
 source_dl  = http://xcb.freedesktop.org/dist/
@@ -29,6 +28,11 @@ build
 		pkg-config
 		python-devel
 	end
+
+	# Place the .pc files in /usr/share so they
+	# can be found on all architectures where libdir != /usr/lib.
+	configure_options += \
+		--libdir=%{datadir}
 end
 
 packages
