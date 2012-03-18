@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = audit
-version    = 2.1.3
-release    = 8
+version    = 2.2
+release    = 1
 
 groups     = System/Daemons
 url        = http://people.redhat.com/sgrubb/audit/
