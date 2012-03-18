@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libatasmart
-version    = 0.17
+version    = 0.18
 release    = 1
 
 groups     = System/Statistics
@@ -17,7 +17,7 @@ description
 	health monitoring.
 end
 
-source_dl  =
+source_dl  = http://0pointer.de/public/
 sources    = %{thisapp}.tar.gz
 
 build
