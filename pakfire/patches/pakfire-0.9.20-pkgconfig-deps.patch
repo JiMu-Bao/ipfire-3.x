@@ -1,0 +1,37 @@
+commit 6230230c96c4961d6e5e7aed176d4859dd744b03
+Author: Michael Tremer <michael.tremer@ipfire.org>
+Date:   Sat Mar 17 13:12:57 2012 +0100
+
+    Fix automatic pkgconfig dependencies.
+    
+    The pkgconfig package was added as "provides" instead of a
+    dependency when .pc files were in a package.
+
+diff --git a/tools/find-provides b/tools/find-provides
+index 8a3e3cb..0be2de7 100755
+--- a/tools/find-provides
++++ b/tools/find-provides
+@@ -81,9 +81,6 @@ if [ -n "${pkgconfig}" -a -x "${pkgconfig}" ]; then
+ 			# We have a dependency.  Make a note that we need the pkgconfig
+ 			# tool for this package.
+ 			echo "pkgconfig(${n}) ${r} ${v}"
+-
+-			# The dependency on the pkgconfig package itself.
+-			echo "pkgconfig"
+ 		done
+ 	done | sort -u
+ fi
+diff --git a/tools/find-requires b/tools/find-requires
+index 044c59f..9a98c32 100755
+--- a/tools/find-requires
++++ b/tools/find-requires
+@@ -142,6 +142,9 @@ fi
+ pkgconfig=$(which pkg-config)
+ if [ -n "${pkgconfig}" -a -x "${pkgconfig}" ]; then
+ 	for file in ${pkgconfig_files}; do
++		# The dependency for the pkgconfig package itself.
++		echo "pkgconfig"
++
+ 		${pkgconfig} --print-requires --print-requires-private "${file}" 2> /dev/null | while read n r v ; do
+ 			echo "pkgconfig(${n})" "${r}" "${v}"
+ 		done
