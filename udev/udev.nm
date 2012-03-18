@@ -5,7 +5,7 @@
 
 name       = udev
 version    = 181
-release    = 1
+release    = 2
 
 groups     = System/Base
 url        = ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug/
@@ -47,17 +47,33 @@ build
 		--with-rootlibdir=/%{lib} \
 		--with-selinux \
 		--with-systemdsystemunitdir=/lib/systemd/system
-
-	install_cmds
-		rm -vf %{BUILDROOT}/%{lib}/lib{udev,gudev-1.0}.so
-		ln -svf ../../%{lib}/libudev.so.0 %{BUILDROOT}%{libdir}/libudev.so
-		ln -svf ../../%{lib}/libgudev-1.0.so.0 %{BUILDROOT}%{libdir}/libgudev-1.0.so
-	end
 end
 
 packages
 	package %{name}
 		groups += Base
+
+		prerequires
+			shadow-utils
+			systemd-units
+		end
+
+		script prein
+			getent group cdrom >/dev/null || groupadd -g 11 cdrom || :
+			getent group tape >/dev/null || groupadd -g 33 tape || :
+			getent group dialout >/dev/null || groupadd -g 18 dialout || :
+			getent group floppy >/dev/null || groupadd -g 19 floppy || :
+			systemctl stop udev.service udev-control.socket udev-kernel.socket >/dev/null 2>&1 || :
+		end
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl start udev.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
 	end
 
 	package lib%{name}
