@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openssl
-version    = 1.0.0g
-release    = 3
+version    = 1.0.1
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -29,6 +29,8 @@ build
 		util-linux
 		zlib-devel
 	end
+
+	CFLAGS += -DPURIFY
 
 	prepare_cmds
 		find crypto/ -name Makefile -exec \
@@ -74,8 +76,10 @@ build
 			no-mdc2 \
 			no-rc5 \
 			no-ec no-ecdh no-ecdsa \
+			no-srp \
 			-DSSL_FORBID_ENULL \
-			 %{ssl_arch}
+			 %{ssl_arch} \
+			fips
 
 		# Build.
 		make depend all build-shared RPM_OPT_FLAGS="%{CFLAGS}" #%{PARALLELISMFLAGS}
@@ -85,16 +89,14 @@ build
 	end
 
 	test
+		# Revert ca-dir patch. Otherwise the tests will fail.
+		patch -Np1 -R < %{DIR_PATCHES}/openssl-1.0.0-beta4-ca-dir.patch
+
 		make test
 	end
 
 	install
 		make install build-shared INSTALL_PREFIX=%{BUILDROOT}
-
-		mkdir -pv %{BUILDROOT}/%{lib}
-		mv -vf %{BUILDROOT}%{libdir}/lib{crypto,ssl}.so.* %{BUILDROOT}/%{lib}
-		ln -svf ../../%{lib}/libcrypto.so.10 %{BUILDROOT}%{libdir}/libcrypto.so
-		ln -svf ../../%{lib}/libssl.so.10 %{BUILDROOT}%{libdir}/libssl.so
 
 		# Install manpages do right place
 		mkdir -pv %{BUILDROOT}/usr/share
@@ -135,6 +137,9 @@ packages
 		template LIBS
 
 		requires += ca-certificates
+
+		provides += libcrypto.so.10(libcrypto.so.10)
+		provides += libssl.so.10(libssl.so.10)
 	end
 
 	package %{name}-devel
