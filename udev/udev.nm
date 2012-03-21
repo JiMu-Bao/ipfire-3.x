@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = udev
-version    = 181
-release    = 2
+version    = 182
+release    = 1
 
 groups     = System/Base
 url        = ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug/
