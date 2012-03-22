@@ -8,7 +8,7 @@ build_cloog_ppl = 1
 
 name       = gcc
 version    = 4.6.3
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -226,10 +226,8 @@ build
 		ln -sfv ../usr/bin/cpp %{BUILDROOT}/lib/cpp
 		ln -sfv gcc %{BUILDROOT}/usr/bin/cc
 
-		# Move libgcc_s to /lib
+		# Fix libgcc_s symlinks.
 		rm -f ${FULLPATH}/libgcc_s.so %{BUILDROOT}%{libdir}/libgcc_s.so
-		mkdir -pv %{BUILDROOT}/%{lib}
-		mv -vf %{BUILDROOT}%{libdir}/libgcc_s.so.1 %{BUILDROOT}/%{lib}/
 		case "%{DISTRO_ARCH}" in
 			arm*)
 				cat <<EOF >${FULLPATH}/libgcc_s.so
@@ -237,11 +235,11 @@ build
 		   Use the shared library, but some functions are only in
 		   the static library, so try that secondarily.  */
 		OUTPUT_FORMAT(elf32-littlearm)
-		GROUP ( /%{lib}/libgcc_s.so.1 libgcc.a )
+		GROUP ( %{libdir}/libgcc_s.so.1 libgcc.a )
 		EOF
 				;;
 			*)
-				ln -svf ../../../../../%{lib}/libgcc_s.so.1 ${FULLPATH}/libgcc_s.so
+				ln -svf ../../../../../%{libdir}/libgcc_s.so.1 ${FULLPATH}/libgcc_s.so
 				;;
 		esac
 
@@ -289,20 +287,20 @@ packages
 		groups += Build
 
 		requires
-			binutils>=%{required_binutils_version}
+			binutils >= %{required_binutils_version}
 			glibc-devel
 			gmp-devel
-			cpp=%{thisver}
-			libgcc=%{thisver}
-			libgomp=%{thisver}
+			cpp = %{thisver}
+			libgcc = %{thisver}
+			libgomp = %{thisver}
 		end
 
 		# We do not ship libgcc-devel anymore.
-		provides += libgcc-devel=%{thisver}
-		obsoletes += libgcc-devel<%{thisver}
+		provides += libgcc-devel = %{thisver}
+		obsoletes += libgcc-devel < %{thisver}
 
 		if "%{build_cloog_ppl}" == "1"
-			requires += cloog-ppl>=0.15
+			requires += cloog-ppl >= 0.15
 		end
 	end
 
@@ -315,9 +313,9 @@ packages
 		end
 
 		requires
-			gcc=%{thisver}
-			libstdc++=%{thisver}
-			libstdc++-devel=%{thisver}
+			gcc = %{thisver}
+			libstdc++ = %{thisver}
+			libstdc++-devel = %{thisver}
 		end
 
 		files
@@ -354,7 +352,7 @@ packages
 		group = Development/Languages
 
 		files
-			/%{lib}/cpp
+			/lib/cpp
 			/usr/bin/cpp
 			/usr/share/man/man1/cpp.1*
 			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/cc1
@@ -369,7 +367,7 @@ packages
 		end
 
 		files
-			/%{lib}/libgcc*.so.*
+			%{libdir}/libgcc*.so.*
 		end
 	end
 
@@ -394,7 +392,7 @@ packages
 		end
 
 		requires
-			libstdc++=%{thisver}
+			libstdc++ = %{thisver}
 		end
 
 		files
@@ -438,7 +436,7 @@ packages
 		end
 
 		requires
-			libmudflap=%{thisver}
+			libmudflap = %{thisver}
 		end
 
 		files
@@ -469,8 +467,8 @@ packages
 			end
 
 			requires
-				gcc=%{thisver}
-				libquadmath=%{thisver}
+				gcc = %{thisver}
+				libquadmath = %{thisver}
 			end
 
 			files
@@ -490,10 +488,10 @@ packages
 		end
 
 		requires
-			gcc=%{thisver}
-			gmp-devel>=4.1.2-8
-			mpfr-devel>=2.2.1
-			libmpc-devel>=0.8.1
+			gcc = %{thisver}
+			gmp-devel >= 4.1.2-8
+			mpfr-devel >= 2.2.1
+			libmpc-devel >= 0.8.1
 		end
 
 		files
