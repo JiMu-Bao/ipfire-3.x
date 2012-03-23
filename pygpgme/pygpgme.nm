@@ -1,0 +1,44 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = pygpgme
+version    = 0.3
+release    = 1
+
+groups     = Development/Languages
+url        = http://cheeseshop.python.org/pypi/pygpgme
+license    = LGPLv2+
+summary    = Python module for working with OpenPGP messages.
+
+description
+	PyGPGME is a Python module that lets you sign, verify, encrypt and decrypt
+	files using the OpenPGP format.  It is built on top of GNU Privacy Guard and
+	the GPGME library.
+end
+
+source_dl  = http://cheeseshop.python.org/packages/source/p/%{name}/
+
+build
+	requires
+		gpgme-devel
+		python-devel
+	end
+
+	build
+		python setup.py build
+	end
+
+	install
+		python setup.py install --skip-build --root %{BUILDROOT}
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
