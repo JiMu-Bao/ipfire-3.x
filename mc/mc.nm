@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = mc
-version    = 4.7.4
-release    = 2
+version    = 4.8.2
+release    = 1
 
 groups     = Applications/System
 url        = http://www.ibiblio.org/mc/
@@ -20,8 +20,8 @@ description
 	specific files.
 end
 
-sources    = %{thisapp}.tar.bz2
-sources_dl =
+sources    = %{thisapp}.tar.xz
+source_dl  = http://www.midnight-commander.org/downloads/
 
 build
 	requires
