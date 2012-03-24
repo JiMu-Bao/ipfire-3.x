@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = libsemanage
-version    = 2.0.45
-release    = 1
+version    = 2.1.5
+release    = 3
 
 groups     = System/Libraries
 url        = http://www.selinuxproject.org
@@ -13,11 +13,10 @@ license    = LGPLv2+
 summary    = SELinux binary policy manipulation library.
 
 description
-	libsemanage provides an API for the manipulation of SELinux \
+	libsemanage provides an API for the manipulation of SELinux
 	binary policies.
 end
 
-source_dl  =
 sources    = %{thisapp}.tgz
 
 build
@@ -26,7 +25,7 @@ build
 		bzip2-devel
 		flex
 		libselinux-devel
-		libsepol-devel
+		libsepol-devel >= 2.1.4
 		python-devel
 		swig
 		ustr-devel
@@ -34,13 +33,18 @@ build
 
 	build
 		make clean
-		make CC=gcc LIBDIR="/usr/lib" CFLAGS="-g %{CFLAGS}" swigify
-		make CC=gcc LIBDIR="/usr/lib" CFLAGS="-g %{CFLAGS}" all
-		make CC=gcc LIBDIR="/usr/lib" CFLAGS="-g %{CFLAGS}" pywrap
+		make CC=gcc LIBDIR="%{libdir}" CFLAGS="-g %{CFLAGS}" swigify
+		make CC=gcc LIBDIR="%{libdir}" CFLAGS="-g %{CFLAGS}" all
+		make CC=gcc LIBDIR="%{libdir}" CFLAGS="-g %{CFLAGS}" pywrap
 	end
 
+	# Install libraries to correct place.
+	make_install_targets += \
+		LIBDIR="%{BUILDROOT}%{libdir}" \
+		SHLIBDIR="%{BUILDROOT}%{libdir}"
+
 	install_cmds
-		make install-pywrap DESTDIR=%{BUILDROOT}
+		make install-pywrap %{make_install_targets} DESTDIR=%{BUILDROOT}
 
 		# Install our config file
 		cp -vf %{DIR_SOURCE}/semanage.conf %{BUILDROOT}/etc/selinux/semanage.conf
@@ -54,13 +58,13 @@ packages
 	package %{name}-devel
 		template DEVEL
 	end
-
-	package python-selinux-manage
+	
+	package python-libsemanage
 		summary =  SELinux manage python bindings.
 		description = SELinux python bindings for libsemanage.
 
 		files
-			/usr/lib/python*
+			%{libdir}/python*
 		end
 	end
 

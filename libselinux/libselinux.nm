@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libselinux
-version    = 2.0.96
+version    = 2.1.9
 release    = 2
 
 groups     = System/Libraries
@@ -13,17 +13,17 @@ license    = Public Domain
 summary    = SELinux library and simple utilities.
 
 description
-	libselinux provides an API for SELinux applications to get and set \
-	process and file security contexts and to obtain security policy \
+	libselinux provides an API for SELinux applications to get and set
+	process and file security contexts and to obtain security policy
 	decisions.
 end
 
-source_dl  =
 sources    = %{thisapp}.tgz
 
 build
 	requires
 		libsepol-devel
+		libsepol-static
 		python-devel
 		swig
 	end
@@ -35,11 +35,13 @@ build
 		make CC=gcc LIBDIR="%{libdir}" CFLAGS="-g %{CFLAGS}" pywrap
 	end
 
-	make_install_targets += LIBDIR="%{BUILDROOT}%{libdir}" \
+	# Install libraries to correct place.
+	make_install_targets += \
+		LIBDIR="%{BUILDROOT}%{libdir}" \
 		SHLIBDIR="%{BUILDROOT}/%{lib}"
 
 	install_cmds
-		make install-pywrap DESTDIR=%{BUILDROOT} LIBDIR="%{BUILDROOT}%{libdir}"
+		make install-pywrap %{make_install_targets} DESTDIR=%{BUILDROOT}
 
 		# Remove unwanted binaries
 		rm -f %{BUILDROOT}/usr/sbin/compute_*
@@ -58,16 +60,12 @@ build
 
 		# Move binaries from /sbin to /usr/sbin
 		mv %{BUILDROOT}/sbin/* %{BUILDROOT}/usr/sbin
-
-		# Remove python module
-		rm -rvf %{BUILDROOT}/usr/lib/python*
 	end
 end
 
 packages
 	package %{name}
-	end
-
+	
 	package %{name}-devel
 		template DEVEL
 	end
@@ -83,17 +81,15 @@ packages
 			/usr/share/man/man{5,8}/*
 		end
 	end
-
-	#package python-selinux
-	#	summary =  SELinux python bindings.
-	#	description = SELinux python bindings for libselinux.
-	#
-	#	def files
-	#		/usr/lib/python*
-	#	end
-	#end
-
-
+	
+	package python-selinux
+		summary =  SELinux python bindings.
+		description = SELinux python bindings for libselinux.
+	
+		def files
+			%{libdir}/python*
+		end
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
