@@ -5,10 +5,10 @@
 
 name       = apr-util
 version    = 1.4.1
-release    = 1
+release    = 2
 
 groups     = System/Libraries
-url        = ttp://apr.apache.org/
+url        = http://apr.apache.org/
 license    = ASL 2.0
 summary    = Apache Portable Runtime library.
 
