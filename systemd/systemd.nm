@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 37
-release    = 3
+release    = 4
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -18,7 +18,7 @@ description
 	SysV and LSB init scripts.
 end
 
-source_dl  = http://cgit.freedesktop.org/systemd/snapshot/
+source_dl  = http://cgit.freedesktop.org/systemd/systemd/snapshot/
 
 build
 	requires
@@ -147,6 +147,11 @@ packages
 		description
 			This package contains all needed configuration files, directories
 			and installation / configuration tool for systemd.
+		end
+
+		prerequires
+			/bin/sh
+			coreutils
 		end
 
 		files
