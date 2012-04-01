@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = coreutils
-version    = 8.15
+version    = 8.16
 release    = 1
 
 groups     = System/Base
@@ -38,6 +38,8 @@ build
 		-D_GNU_SOURCE=1 \
 		-fno-strict-aliasing
 
+	export FORCE_UNSAFE_CONFIGURE=1
+
 	configure_options += \
 		--libexecdir=%{libdir} \
 		--enable-pam \
@@ -45,7 +47,8 @@ build
 		--enable-largefile \
 		--disable-rpath \
 		--enable-install-program=arch,su \
-		--enable-no-install-program=hostname,kill,uptime
+		--enable-no-install-program=hostname,kill,uptime \
+		--with-tty-group
 
 	prepare_cmds
 		aclocal -I m4
