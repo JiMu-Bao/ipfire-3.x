@@ -5,7 +5,7 @@
 
 name       = zlib
 version    = 1.2.6
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.gzip.org/zlib/
@@ -25,7 +25,7 @@ CFLAGS    += -fPIC -DPIC
 build
 	configure_options = \
 		--prefix=%{prefix} \
-		--libdir=/%{lib}
+		--libdir=%{libdir}
 
 	test
 		make check
@@ -34,10 +34,6 @@ build
 	install_cmds
 		mkdir -pv %{BUILDROOT}%{includedir} %{BUILDROOT}%{libdir}
 		cp -pfv zconf.h zlib.h %{BUILDROOT}%{includedir}
-		rm -vf %{BUILDROOT}/%{lib}/libz.so
-		ln -sfv ../../%{lib}/libz.so.%{version} %{BUILDROOT}%{libdir}/libz.so
-
-		mv -v %{BUILDROOT}/%{lib}/pkgconfig %{BUILDROOT}%{libdir}
 	end
 end
 
