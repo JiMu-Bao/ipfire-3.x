@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = iptables
-version    = 1.4.12.2
+version    = 1.4.13
 release    = 1
 
 groups     = Networking/Tools
@@ -30,9 +30,6 @@ build
 	CFLAGS += -fno-strict-aliasing
 
 	configure_options += \
-		--bindir=/bin \
-		--sbindir=/sbin \
-		--libdir=/%{lib} \
 		--libexecdir=/%{lib} \
 		--sysconfdir=/etc \
 		--with-pkgconfigdir=%{libdir}/pkgconfig \
@@ -58,20 +55,8 @@ build
 		install -v -m 644 include/libiptc/*.h \
 			%{BUILDROOT}/usr/include/libiptc
 
-		mkdir -pv %{BUILDROOT}%{libdir}
-		rm -vf %{BUILDROOT}/%{lib}/libip{tc,4tc,6tc,q}.so %{BUILDROOT}/%{lib}/libxtables.so
-		ln -svf ../../%{lib}/libiptc.so.0 %{BUILDROOT}%{libdir}/libiptc.so
-		ln -svf ../../%{lib}/libip4tc.so.0 %{BUILDROOT}%{libdir}/libip4tc.so
-		ln -svf ../../%{lib}/libip6tc.so.0 %{BUILDROOT}%{libdir}/libip6tc.so
-		ln -svf ../../%{lib}/libipq.so.0 %{BUILDROOT}%{libdir}/libipq.so
-		ln -svf ../../%{lib}/libxtables.so.7 %{BUILDROOT}%{libdir}/libxtables.so
-
-		# Replace absolute symlink
-		ln -svf ../sbin/xtables-multi %{BUILDROOT}/bin/iptables-xml
-
-		# Move binary which links to /usr/lib to /usr.
-		mkdir -pv %{BUILDROOT}/usr/sbin
-		mv -v %{BUILDROOT}/{,usr/}sbin/nfnl_osf
+		# Remove relative symlinks.
+		ln -svf ../sbin/xtables-multi %{BUILDROOT}/usr/bin/iptables-xml
 	end
 end
 
