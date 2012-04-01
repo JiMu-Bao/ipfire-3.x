@@ -5,7 +5,7 @@
 
 name       = bash
 version    = 4.2
-release    = 6
+release    = 7
 
 groups     = System/Tools
 url        = http://www.gnu.org/software/bash/
