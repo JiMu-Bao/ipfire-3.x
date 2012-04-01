@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = e2fsprogs
-version    = 1.41.11
-release    = 2
+version    = 1.42.2
+release    = 1
 
 groups     = System/Filesystems
 url        = http://e2fsprogs.sourceforge.net/
@@ -18,7 +18,7 @@ description
 	and third extended (ext2/ext3) filesystems.
 end
 
-source_dl  =
+source_dl  = http://prdownloads.sourceforge.net/%{name}/
 
 build
 	requires
@@ -26,6 +26,7 @@ build
 		libselinux-devel
 		libsepol-devel
 		libuuid-devel
+		psmisc
 	end
 
 	prepare_cmds
