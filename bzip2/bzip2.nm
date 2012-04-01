@@ -5,7 +5,7 @@
 
 name       = bzip2
 version    = 1.0.6
-release    = 5
+release    = 6
 
 groups     = Applications/Compression
 url        = http://www.bzip.org/
@@ -45,10 +45,10 @@ build
 		ln -svf bzip2 %{BUILDROOT}%{bindir}/bless
 
 		# Install libs.
-		mkdir -pv %{BUILDROOT}%{libdir} %{BUILDROOT}/%{lib}
-		install -m 755 libbz2.so.%{version} %{BUILDROOT}/%{lib}
-		ln -svf libbz2.so.%{version} %{BUILDROOT}/%{lib}/libbz2.so.1
-		ln -svf ../../%{lib}/libbz2.so.1 %{BUILDROOT}%{libdir}/libbz2.so
+		mkdir -pv %{BUILDROOT}%{libdir}
+		install -m 755 libbz2.so.%{version} %{BUILDROOT}/%{libdir}
+		ln -svf libbz2.so.%{version} %{BUILDROOT}/%{libdir}/libbz2.so.1
+		ln -svf libbz2.so.1 %{BUILDROOT}%{libdir}/libbz2.so
 
 		# Install headers.
 		mkdir -pv %{BUILDROOT}%{includedir}
@@ -69,6 +69,12 @@ end
 packages
 	package %{name}
 		groups += Build
+
+		# Provide older soname to fix problem with
+		# older version of the package.
+		if "%{DISTRO_ARCH}" == "i686"
+			provides += libbz2.so.1.0
+		end
 	end
 
 	package %{name}-devel
