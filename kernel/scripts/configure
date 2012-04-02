@@ -1,0 +1,315 @@
+#!/bin/bash
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+BASEDIR=$(dirname ${0})
+SCRIPTS_DIR=${BASEDIR}
+
+CONFIGS="x86_64:default i686:legacy i686:default"
+CONFIGS="${CONFIGS} armv7hl:omap armv5tel:versatile armv5tel:kirkwood"
+
+function merge_config() {
+	local arch=${1}
+	local flavour=${2}
+	local output=${3}
+	shift 3
+
+	local arg
+	for arg in arch flavour output; do
+		if [ -z "${!arg}" ]; then
+			echo >&2 "merge usage: <arch> <flavour> <output filename>"
+			exit 2
+		fi
+	done
+
+	local config_mode="oldnoconfig"
+	local extra_configs
+	while [ $# -gt 0 ]; do
+		case "${1}" in
+			--mode=*)
+				config_mode=${1#--mode=}
+				shift
+				;;
+			-*)
+				echo >&2 "Unknown option: ${1}"
+				;;
+			*)
+				extra_configs="${extra_configs} ${1}"
+				;;
+		esac
+		shift
+	done
+
+	local configs="${extra_configs} config-generic"
+
+	case "${arch}:${flavour}" in
+		# x86
+		x86_64:default)
+			configs="${configs} config-x86-generic config-x86_64-default"
+			;;
+		i686:default)
+			configs="${configs} config-x86-generic config-i686-default"
+			;;
+		i686:legacy)
+			configs="${configs} config-x86-generic config-i686-default"
+			configs="${configs} config-i686-legacy"
+			;;
+
+		# ARM
+		armv5tel:versatile)
+			configs="${configs} config-arm-generic"
+			;;
+		armv5tel:kirkwood)
+			configs="${configs} config-arm-generic config-armv5tel-kirkwood"
+			;;
+		armv7hl:omap)
+			configs="${configs} config-arm-generic config-armv7hl-omap"
+			;;
+		*)
+			echo >&2 "ERROR: Invalid parameters given: $@"
+			return 1
+			;;
+	esac
+
+	# Determine the kernel arch.
+	local kernel_arch=
+	case "${arch}" in
+		arm*)
+			kernel_arch="arm"
+			;;
+		i?86|x86*)
+			kernel_arch="x86"
+			;;
+	esac
+
+	# Merge the configuration files from its elementary configuration
+	# files.
+	local tmp_out=$(mktemp)
+	local tmp_in=$(mktemp)
+
+	local config
+	for config in ${configs}; do
+		cat ${tmp_out} > ${tmp_in}
+		perl ${SCRIPTS_DIR}/merge.pl \
+			${config} ${tmp_in} > ${tmp_out}
+	done
+
+	if [ "${config_mode}" != "none" ]; then
+		echo "Running 'make oldnoconfig' for ${arch} (${flavour})..."
+		(
+			cd ${KERNEL_DIR}
+			cat ${tmp_out} > .config
+			make ARCH="${kernel_arch}" ${config_mode}
+			cat .config > ${tmp_out}
+		)
+	fi
+
+	cat ${tmp_out} > ${output}
+	rm -f ${tmp_in} ${tmp_out}
+}
+
+# This function runs an interactive "make oldconfig".
+function make_oldconfig() {
+	local arch="x86_64"
+	local kernel_arch="x86"
+	local flavour="default"
+
+	local config_in=$(mktemp)
+	local config_out=$(mktemp)
+	local diff_out=$(mktemp)
+
+	merge_config ${arch} ${flavour} ${config_in} --mode=none
+
+	(
+		cd ${KERNEL_DIR}
+		cat ${config_in} > .config
+
+		echo "You may now edit the configuration..."
+
+		local option
+		select option in oldconfig menuconfig oldnoconfig startover quit; do
+			case "${option}" in
+				oldconfig|menuconfig|oldnoconfig)
+					make ARCH=${kernel_arch} ${option}
+					;;
+				startover)
+					cat ${config_in} > .config
+					;;
+				quit)
+					break
+					;;
+			esac
+		done
+
+		cat .config > ${config_out}
+	)
+
+	${SCRIPTS_DIR}/configdiff.py ${config_in} ${config_out} > ${diff_out}
+
+	# Update the rest of the configurations.
+	diff_configs ${diff_out} --mode=oldconfig
+
+	rm -f ${config_in} ${config_out} ${diff_out}
+}
+
+# config-generic
+#  Intersection of all files.
+# config-x86-generic
+#  Diff of (intersection of (i686-{default,legacy} and x86_64-default)
+#  against config-generic).
+# config-x86-x86_64
+#  Diff against merge of (config-generic and config-x86-generic).
+
+function diff_configs() {
+	local extra_configs="$@"
+
+	declare -A arch_configs
+
+	tmpdir=$(mktemp -d)
+
+	for config in ${CONFIGS}; do
+		arch=${config%:*}
+		flavour=${config#*:}
+
+		filename=${tmpdir}/config-${arch}-${flavour}
+
+		merge_config ${arch} ${flavour} ${filename} ${extra_configs}
+
+		# Do not include i686 legacy.
+		case "${config}" in
+			i686:legacy)
+				continue
+				;;
+			armv5tel:versatile)
+				;;
+			arm*)
+				continue
+				;;
+		esac
+
+		case "${arch}" in
+			x86*|i?86)
+				arch_configs[x86]="${arch_configs[x86]} ${filename}"
+				;;
+			arm*)
+				arch_configs[arm]="${arch_configs[arm]} ${filename}"
+				;;
+			*)
+				echo >&2 "ERROR: Invalid architecture: ${arch}"
+				;;
+		esac
+	done
+
+	common_configs=""
+	for arch in x86 arm; do
+		filename="${tmpdir}/config-${arch}-common"
+		${SCRIPTS_DIR}/configcommon.py ${arch_configs[${arch}]} \
+			> ${filename}
+
+		common_configs="${common_configs} ${filename}"
+	done
+
+	${SCRIPTS_DIR}/configcommon.py ${common_configs} > ${tmpdir}/config-generic
+
+	${SCRIPTS_DIR}/configdiff.py ${tmpdir}/config-generic ${tmpdir}/config-arm-common \
+		> ${tmpdir}/config-arm-generic
+
+	${SCRIPTS_DIR}/configdiff.py ${tmpdir}/config-generic ${tmpdir}/config-x86-common \
+		> ${tmpdir}/config-x86-generic
+
+	for config in ${CONFIGS}; do
+		arch=${config%:*}
+		flavour=${config#*:}
+
+		case "${config}" in
+			arm*:*)
+				suparch="arm"
+				;;
+			i?86:*|x86*:*)
+				suparch="x86"
+				;;
+		esac
+		filename=${tmpdir}/config-${arch}-${flavour}
+
+		case "${config}" in
+			i686:legacy)
+				# Legacy depends directly on the default configuration.
+				${SCRIPTS_DIR}/configdiff.py ${tmpdir}/config-i686-default \
+					${filename} > ${filename}.tmp
+				;;
+			armv5tel:versatile)
+				rm -f ${filename}
+				continue
+				;;
+			*)
+				${SCRIPTS_DIR}/configdiff.py ${tmpdir}/config-${suparch}-common \
+					${filename} > ${filename}.tmp
+				;;
+		esac
+		mv ${filename}{.tmp,}
+	done
+	rm -f ${tmpdir}/config-*-common
+
+	for config in ${tmpdir}/*; do
+		if ! cmp $(basename ${config}) ${config} &>/dev/null; then
+			echo "$(basename ${config}) has changed."
+		fi
+		cat ${config} > $(basename ${config})
+	done
+
+	rm -rf ${tmpdir}
+}
+
+KERNEL_DIR=
+
+# Parse commandline.
+while [ $# -gt 0 ]; do
+	arg=${1}; shift
+	case "${arg}" in
+		--kernel-dir=*)
+			KERNEL_DIR=${arg#--kernel-dir=}
+			;;
+		help|"")
+			echo "${0} - available commands:"
+			echo "    * merge <arch> <flavour> <output filename>"
+			echo "    * update ..."
+			echo "    * oldconfig"
+			echo ""
+			echo "    You must always set --kernel-dir=..."
+			exit 0
+			;;
+		merge|oldconfig|update)
+			action=${arg}
+			break
+			;;
+	esac
+done
+
+if [ -z "${KERNEL_DIR}" ]; then
+	echo >&2 "--kernel-dir=... was not set!"
+	exit 2
+fi
+
+if [ -z "${action}" ]; then
+	echo >&2 "No action given... Try ${0} help."
+	exit 2
+fi
+
+case "${action}" in
+	merge)
+		merge_config $@
+		exit $?
+		;;
+	oldconfig)
+		make_oldconfig
+		exit $?
+		;;
+	update)
+		diff_configs $@
+		exit $?
+		;;
+esac
+
+exit 1

@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kernel
-version    = 3.1.5
-release    = 4
+version    = 3.2.12
+release    = 1
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -15,9 +15,9 @@ license    = GPLv2
 summary    = The Linux kernel.
 
 description
-	The kernel package contains the Linux kernel (vmlinuz), the core of any \
-	Linux operating system. The kernel handles the basic functions \
-	of the operating system: memory allocation, process allocation, device \
+	The kernel package contains the Linux kernel (vmlinuz), the core of any
+	Linux operating system. The kernel handles the basic functions
+	of the operating system: memory allocation, process allocation, device
 	input and output, etc.
 end
 
@@ -40,13 +40,14 @@ build
 		elfutils-devel
 		gcc-plugin-devel
 		gettext
-		module-init-tools
 		ncurses-devel
 		net-tools
 		perl
 		python-devel
 		xmlto
 		xz-lzma-compat
+
+		/sbin/depmod
 	end
 
 	tools_cpupower_requires
@@ -81,8 +82,14 @@ build
 	end
 
 	if "%{DISTRO_ARCH}" == "armv5tel"
+		# ERROR Currently all kernel images are disabled, because they
+		# won't build with the grsecurity patch.
+
 		# Build versatile kernel.
-		build_kernel_versatile = 1
+		#build_kernel_versatile = 1
+
+		# Build a kernel for Marvell Kirkwood-based devices.
+		#build_kernel_kirkwood = 1
 
 		kernel_arch  = arm
 		kernel_image = arch/%{kernel_arch}/boot/zImage
@@ -92,9 +99,11 @@ build
 	end
 
 	if "%{DISTRO_ARCH}" == "armv7hl"
-		# Currently build no kernel images.
+		# Build a kernel for TI OMAP SoCs.
+		build_kernel_omap = 1
 
 		kernel_arch  = arm
+		kernel_image = arch/%{kernel_arch}/boot/zImage
 
 		# ARM does not support cpupower.
 		build_cpupower = 0
@@ -113,6 +122,16 @@ build
 	# Build ARM versatile kernel.
 	if "%{build_kernel_versatile}" == "1"
 		kernels += versatile
+	end
+
+	# Build ARM kirkwood kernel.
+	if "%{build_kernel_kirkwood}" == "1"
+		kernels += kirkwood
+	end
+
+	# Build ARM omap kernel.
+	if "%{build_kernel_omap}" == "1"
+		kernels += omap
 	end
 
 	# Add tools' build requirements if build is requested.
@@ -138,6 +157,8 @@ build
 		touch .scmversion
 
 		mkdir -pv configs
+
+		cd %{DIR_SOURCE}
 		configure_kernel() {
 			local flavour=${1}
 			local suffix
@@ -145,13 +166,8 @@ build
 				suffix="-${flavour}"
 			fi
 
-			# This is the place, where the configuration files
-			# should be dynamically generated.
-			# For now, we just copy pregenerated ones.
-			cp %{DIR_SOURCE}/config.%{arch}${suffix} .config
-
-			make ARCH=%{kernel_arch} oldnoconfig
-			mv .config configs/config.${flavour}
+			scripts/configure --kernel-dir=%{DIR_APP} \
+				merge %{DISTRO_ARCH} ${flavour} %{DIR_APP}/configs/config.${flavour}
 		}
 
 		# Generate configuration files for all kernels we are going to
@@ -276,6 +292,10 @@ build
 	end
 
 	install
+		# When no kernels are configured, we create a default config
+		# which enables us to install at least the header files.
+		[ -n "%{kernels}" ] || make ARCH=%{kernel_arch} defconfig
+
 		# Install the header files
 		make ARCH=%{kernel_arch} INSTALL_HDR_PATH=dest headers_install
 		mkdir -pv %{BUILDROOT}/usr/include
@@ -317,9 +337,7 @@ packages
 		summary = The Linux kernel %{kernel_release}.
 
 		prerequires
-			dracut
-			grubby
-			module-init-tools
+			/sbin/depmod
 		end
 
 		provides
@@ -327,7 +345,8 @@ packages
 		end
 
 		requires
-			%{prerequires}
+			dracut
+			grubby
 			linux-firmware
 		end
 
@@ -428,10 +447,42 @@ packages
 		end
 
 		package kernel-versatile-devel
-			kernel KERNELDEVEL
+			template KERNELDEVEL
 
 			kernel_name = kernel-versatile
 			kernel_release = %{fullver}.versatile
+		end
+	end
+
+	if "%{build_kernel_kirkwood}" == "1"
+		package kernel-kirkwood
+			template KERNEL
+
+			kernel_name = kernel-kirkwood
+			kernel_release = %{fullver}.kirkwood
+		end
+
+		package kernel-kirkwood-devel
+			template KERNELDEVEL
+
+			kernel_name = kernel-kirkwood
+			kernel_release = %{fullver}.kirkwood
+		end
+	end
+
+	if "%{build_kernel_omap}" == "1"
+		package kernel-omap
+			template KERNEL
+
+			kernel_name = kernel-omap
+			kernel_release = %{fullver}.omap
+		end
+
+		package kernel-omap-devel
+			template KERNELDEVEL
+
+			kernel_name = kernel-omap
+			kernel_release = %{fullver}.omap
 		end
 	end
 
