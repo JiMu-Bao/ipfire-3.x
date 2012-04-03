@@ -5,7 +5,7 @@
 
 name       = attr
 version    = 2.4.43
-release    = 3
+release    = 4
 
 groups     = System/Filesystems
 url        = http://oss.sgi.com/projects/xfs/
@@ -26,20 +26,19 @@ build
 	end
 
 	configure_options += \
-		--bindir=/bin \
 		--enable-shared
 
 	make_build_targets += LIBTOOL="libtool --tag=CC"
 
 	install_cmds
 		# Install libraries.
-		mkdir -pv %{BUILDROOT}/%{lib} %{BUILDROOT}%{libdir}
-		install -v -m0755 libattr/.libs/libattr.so.1.1.0 %{BUILDROOT}/%{lib}
-		ln -vsf libattr.so.1.1.0 %{BUILDROOT}/%{lib}/libattr.so.1
-		ln -vsf ../../%{lib}/libattr.so.1 %{BUILDROOT}%{libdir}/libattr.so
+		mkdir -pv %{BUILDROOT}%{libdir}
+		install -v -m0755 libattr/.libs/libattr.so.1.1.0 %{BUILDROOT}/%{libdir}
+		ln -vsf libattr.so.1.1.0 %{BUILDROOT}/%{libdir}/libattr.so.1
+		ln -vsf libattr.so.1 %{BUILDROOT}%{libdir}/libattr.so
 
 		# Install includes.
-		install -v -d %{BUILDROOT}%{includedir}/attr
+		mkdir -pv %{BUILDROOT}%{includedir}/attr
 		cp -vf include/{attributes.h,error_context.h,libattr.h,xattr.h} \
 			%{BUILDROOT}%{includedir}/attr/
 	end
