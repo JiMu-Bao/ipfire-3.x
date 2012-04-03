@@ -5,7 +5,7 @@
 
 name       = readline
 version    = 6.2
-release    = 5
+release    = 6
 
 groups     = System/Libraries
 url        = ftp://ftp.gnu.org/gnu/readline/
@@ -29,20 +29,12 @@ build
 		ncurses-devel
 	end
 
-	configure_options += \
-		--libdir=/%{lib} \
-
 	make_build_targets += \
 		SHLIB_LIBS=-lncurses
 
 	install_cmds
 		# Remove a bunch of *.c files
 		rm -rfv %{BUILDROOT}/usr/share/readline
-
-		mkdir -pv %{BUILDROOT}%{libdir}
-		rm -fv %{BUILDROOT}/%{lib}/lib{readline,history}.so
-		ln -sfv ../../%{lib}/libreadline.so.6 %{BUILDROOT}%{libdir}/libreadline.so
-		ln -sfv ../../%{lib}/libhistory.so.6 %{BUILDROOT}%{libdir}/libhistory.so
 
 		mkdir -pv %{BUILDROOT}/etc/profile.d
 		cp -vf %{DIR_SOURCE}/readline.sh %{BUILDROOT}/etc/profile.d/
