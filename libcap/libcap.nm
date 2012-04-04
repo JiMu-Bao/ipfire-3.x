@@ -5,7 +5,7 @@
 
 name       = libcap
 version    = 2.22
-release    = 2
+release    = 3
 
 groups     = System/Libraries
 url        = http://ftp.kernel.org/pub/linux/libs/security/linux-privs/kernel-2.6/
@@ -33,13 +33,8 @@ build
 	end
 
 	install
-		make install DESTDIR=%{BUILDROOT} lib=/%{lib}
-
-		rm -vf %{BUILDROOT}/%{lib}/libcap.so
-		mkdir -pv %{BUILDROOT}%{libdir}
-		ln -svf ../../%{lib}/libcap.so.2 %{BUILDROOT}%{libdir}/libcap.so
-
-		chmod 755 %{BUILDROOT}/%{lib}/libcap.so.%{version}
+		make install DESTDIR=%{BUILDROOT} prefix=%{prefix} lib=%{lib}
+		chmod 755 %{BUILDROOT}/%{libdir}/libcap.so.%{version}
 	end
 end
 
