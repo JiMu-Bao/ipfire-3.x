@@ -5,7 +5,7 @@
 
 name       = bash
 version    = 4.2
-release    = 7
+release    = 8
 
 groups     = System/Tools
 url        = http://www.gnu.org/software/bash/
@@ -69,8 +69,8 @@ packages
 	package %{name}
 		groups += Base Build
 
-		prerequires = coreutils
 		requires
+			coreutils
 			/etc/bashrc
 			/etc/profile
 		end
