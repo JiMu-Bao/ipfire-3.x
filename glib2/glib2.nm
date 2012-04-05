@@ -6,7 +6,7 @@
 name       = glib2
 ver_major  = 2.31
 version    = %{ver_major}.2
-release    = 1
+release    = 2
 thisapp    = glib-%{version}
 
 groups     = System/Libraries
@@ -40,12 +40,6 @@ build
 		--with-pcre=system
 
 	install_cmds
-		./mkinstalldirs %{BUILDROOT}/lib
-		cd %{BUILDROOT}/usr/lib && for name in glib gobject gmodule gthread gio; do \
-			mv -v lib${name}-2.0.so.* ../../lib; \
-			ln -svf ../../lib/lib${name}-2.0.so.*.* lib${name}-2.0.so; \
-		done
-
 		mkdir -pv %{BUILDROOT}/etc/profile.d/
 		cp -vf %{DIR_SOURCE}/glib2-locale.sh %{BUILDROOT}/etc/profile.d/
 	end
