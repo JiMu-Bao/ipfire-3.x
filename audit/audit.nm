@@ -5,7 +5,7 @@
 
 name       = audit
 version    = 2.2
-release    = 1
+release    = 2
 
 groups     = System/Daemons
 url        = http://people.redhat.com/sgrubb/audit/
@@ -32,9 +32,6 @@ build
 	end
 
 	configure_options += \
-		--sysconfdir=/etc \
-		--sbindir=/sbin \
-		--libdir=/%{lib} \
 		--without-prelude \
 		--without-libwrap \
 		--enable-gssapi-krb5=no \
@@ -45,13 +42,6 @@ build
 	end
 
 	install_cmds
-		rm -vf %{BUILDROOT}/%{lib}/libau{dit,parse}.so
-		ln -svf ../../%{lib}/libaudit.so.1 %{BUILDROOT}%{libdir}/libaudit.so
-		ln -svf ../../%{lib}/libauparse.so.0 %{BUILDROOT}%{libdir}/libauparse.so
-
-		mkdir -pv %{BUILDROOT}/usr/sbin/
-		mv -v %{BUILDROOT}/sbin/audisp*remote %{BUILDROOT}/usr/sbin/
-
 		mkdir -pv %{BUILDROOT}/var/log/audit
 
 		rm -rfv %{BUILDROOT}/etc/{rc.d,sysconfig}
@@ -100,7 +90,7 @@ packages
 		description = %{summary}
 
 		files
-			/usr/lib/python*/
+			%{libdir}/python*/
 		end
 	end
 
