@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 3.2.12
-release    = 1
+release    = 2
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -359,8 +359,8 @@ packages
 		end
 
 		_posttrans
-			/sbin/new-kernel-pkg --package %{kernel_name} --mkinitrd --dracut --depmod --update %{kernel_release} || exit $?
-			/sbin/new-kernel-pkg --package %{kernel_name} --rpmposttrans %{kernel_release} || exit $?
+			/sbin/new-kernel-pkg --package %{kernel_name} --mkinitrd --dracut --depmod --update %{kernel_release}
+			/sbin/new-kernel-pkg --package %{kernel_name} --rpmposttrans %{kernel_release}
 		end
 
 		script posttransin
@@ -372,7 +372,7 @@ packages
 		end
 
 		script postin
-			/sbin/new-kernel-pkg --package kernel%{?-v:-%{-v*}} --install %{KVERREL}%{?-v:.%{-v*}}
+			/sbin/new-kernel-pkg --package %{kernel_name} --install %{kernel_release}
 		end
 
 		script postup
