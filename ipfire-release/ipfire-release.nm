@@ -4,16 +4,17 @@
 ###############################################################################
 
 # Make the configuration of your distribution right here.
-DISTRO_NAME    = IPFire
-DISTRO_SNAME   = ipfire
-DISTRO_VERSION = 3.0-alpha2
-DISTRO_RELEASE = 3
-DISTRO_SLOGAN  = Gluttony
-DISTRO_COLOR   = 0;31
+DISTRO_NAME     = IPFire
+DISTRO_SNAME    = ipfire
+DISTRO_RELEASE  = 3
+DISTRO_VERSION  = %{DISTRO_RELEASE}.0-alpha2
+DISTRO_CODENAME = Gluttony
+DISTRO_SLOGAN   = An Open Source Firewall Solution
+DISTRO_COLOR    = 0;31
 
 name       = %{DISTRO_SNAME}-release
 version    = %{DISTRO_VERSION}
-release    = 1
+release    = 2
 epoch      = 3
 arch       = noarch
 
@@ -38,12 +39,13 @@ build
 	install
 		mkdir -pv %{BUILDROOT}/etc
 
-		echo "%{DISTRO_NAME} v%{DISTRO_VERSION} for %{DISTRO_ARCH} - %{DISTRO_SLOGAN} (\l)" \
-			> %{BUILDROOT}/etc/issue
-		echo "===============================" >> %{BUILDROOT}/etc/issue
-		echo "\n running on \s \r \m"          >> %{BUILDROOT}/etc/issue
+		cat <<EOF >%{BUILDROOT}/etc/issue
+		%{DISTRO_NAME} %{DISTRO_VERSION} (%{DISTRO_CODENAME}) - %{DISTRO_SLOGAN} (\l)
+		===============================
+		\n running on \s \r
+		EOF
 
-		echo "%{DISTRO_NAME} release %{DISTRO_VERSION} (%{DISTRO_SLOGAN})" \
+		echo "%{DISTRO_NAME} release %{DISTRO_VERSION} (%{DISTRO_CODENAME})" \
 			> %{BUILDROOT}/etc/%{DISTRO_SNAME}-release
 		ln -svf %{DISTRO_SNAME}-release %{BUILDROOT}/etc/system-release
 
@@ -51,18 +53,28 @@ build
 		echo "%{DISTRO_SNAME}.localdomain" > %{BUILDROOT}/etc/hostname
 
 		# Create /etc/os-release.
-		echo "NAME=\"%{DISTRO_NAME}\"" >> %{BUILDROOT}/etc/os-release
-		echo "VERSION=\"%{DISTRO_VERSION}\"" >> %{BUILDROOT}/etc/os-release
-		echo "ID=%{DISTRO_SNAME}" >> %{BUILDROOT}/etc/os-release
-		echo "VERSION_ID=%{DISTRO_RELEASE}" >> %{BUILDROOT}/etc/os-release
-		echo "PRETTY_NAME=\"%{DISTRO_NAME} %{DISTRO_VERSION} (%{DISTRO_SLOGAN})\"" \
-			>> %{BUILDROOT}/etc/os-release
-		echo "ANSI_COLOR=%{DISTRO_COLOR}" >> %{BUILDROOT}/etc/os-release
+		cat <<EOF >%{BUILDROOT}/etc/os-release
+		NAME="%{DISTRO_NAME}"
+		VERSION="%{DISTRO_VERSION}"
+		ID=%{DISTRO_SNAME}
+		VERSION_ID=%{DISTRO_RELEASE}
+		PRETTY_NAME="%{DISTRO_NAME} %{DISTRO_VERSION} (%{DISTRO_CODENAME})"
+		ANSI_COLOR=%{DISTRO_COLOR}
+		EOF
+
+		# Install default repositories.
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/pakfire/repos
+		cp -vf %{DIR_SOURCE}/repos/* %{BUILDROOT}%{sysconfdir}/pakfire/repos
 	end
 end
 
 packages
 	package %{name}
 		provides = system-release
+
+		configfiles
+			/etc/hostname
+			/etc/pakfire/repos
+		end
 	end
 end
