@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = linux-atm
-version    = 2.4.1
+version    = 2.5.1
 release    = 1
 
 groups     = System/Daemons
@@ -17,36 +17,34 @@ description
 	using theLinux ATM API.
 end
 
-source_dl  =
+sources    = %{thisapp}.tgz
+source_dl  = http://downloads.sf.net/%{name}/
 
 build
 	requires
+		bison
 		flex
 		flex-devel
 		kernel-headers
 		perl
 	end
 
-	configure_options += \
-		--sysconfdir=/etc \
-		--mandir=/usr/share/man
-
 	prepare_cmds
 		sed -e "s/-lfl/&_pic/g" -i src/*{,/*}/Makefile.in
 	end
-
-	# Fails
-	#def test
-	#	make check
-	#end
 end
 
 packages
 	package %{name}
+
+	package %{name}-libs
+		template LIBS
 	end
 
 	package %{name}-devel
 		template DEVEL
+
+		requires += %{name}-libs = %{thisver}
 	end
 
 	package %{name}-debuginfo
