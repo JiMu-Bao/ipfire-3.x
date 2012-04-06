@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = authconfig
-version    = 6.1.14
-release    = 2
+version    = 6.2.2
+release    = 1
 
 groups     = System/Base
 url        = https://fedorahosted.org/authconfig
@@ -13,9 +13,9 @@ license    = GPLv2+
 summary    = Command line tool for setting up authentication from network services.
 
 description
-	Authconfig is a command line utility which can configure a workstation\
-	to use shadow (more secure) passwords.  Authconfig can also configure a \
-	system to be a client for certain networked user information and \
+	Authconfig is a command line utility which can configure a workstation
+	to use shadow (more secure) passwords.  Authconfig can also configure a
+	system to be a client for certain networked user information and
 	authentication schemes.
 end
 
@@ -61,6 +61,9 @@ build
 
 		# Remove app icons for authconfig
 		rm -rf %{BUILDROOT}/usr/share/icons
+
+		# Remove unneded stuff for X11
+		rm -rf %{BUILDROOT}/etc/X11
 	end
 end
 
