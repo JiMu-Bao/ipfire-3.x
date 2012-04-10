@@ -5,7 +5,7 @@
 
 name       = ed
 version    = 1.5
-release    = 3
+release    = 4
 
 groups     = Application/Text
 url        = http://www.gnu.org/software/ed/
@@ -22,23 +22,11 @@ end
 source_dl  =
 
 build
-	configure_options += \
-		--exec-prefix=/
-
 	make_build_target = CFLAGS="%{CFLAGS}"
-
-	install
-		# Create directory for man pages
-		mkdir -pv %{BUILDROOT}/usr/share/man/man1
-
-		make install bindir=/bin mandir=/usr/share/man \
-			DESTDIR=%{BUILDROOT}
-	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
