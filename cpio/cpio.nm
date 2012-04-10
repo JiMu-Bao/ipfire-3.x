@@ -5,7 +5,7 @@
 
 name       = cpio
 version    = 2.11
-release    = 1
+release    = 2
 
 groups     = System/Packaging
 url        = http://www.gnu.org/software/cpio/
@@ -25,7 +25,6 @@ sources    = %{thisapp}.tar.bz2
 
 build
 	configure_options += \
-		--bindir=/bin \
 		--libexecdir=/tmp \
 		--with-rmt=/usr/sbin/rmt
 
