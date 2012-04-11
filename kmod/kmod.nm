@@ -5,7 +5,7 @@
 
 name       = kmod
 version    = 7
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Kernel
@@ -30,37 +30,33 @@ build
 	end
 
 	configure_options += \
-		--bindir=/bin \
-		--with-rootprefix= \
-		--with-rootlibdir=/%{lib} \
 		--with-xz \
 		--with-zlib
 
 	# The testsuite does generate lots of errors.
 
 	install_cmds
-		# Remove all man pages (because there are not corresponding
-		# binaries, yet).
-		rm -rvf %{BUILDROOT}%{mandir}
-
-		mkdir -pv %{BUILDROOT}/lib/modprobe.d
+		mkdir -pv %{BUILDROOT}%{prefix}/lib/modprobe.d
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/modprobe.d
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/depmod.d
 
-		mkdir -pv %{BUILDROOT}/sbin
-		ln -svf ../bin/kmod %{BUILDROOT}/sbin/modprobe
-		ln -svf ../bin/kmod %{BUILDROOT}/sbin/modinfo
-		ln -svf ../bin/kmod %{BUILDROOT}/sbin/insmod
-		ln -svf ../bin/kmod %{BUILDROOT}/sbin/rmmod
-		ln -svf ../bin/kmod %{BUILDROOT}/sbin/depmod
-		ln -svf ../bin/kmod %{BUILDROOT}/sbin/lsmod
-		ln -svf kmod %{BUILDROOT}/bin/lsmod
+		mkdir -pv %{BUILDROOT}%{sbindir}
+		ln -svf ../bin/kmod %{BUILDROOT}%{sbindir}/modprobe
+		ln -svf ../bin/kmod %{BUILDROOT}%{sbindir}/modinfo
+		ln -svf ../bin/kmod %{BUILDROOT}%{sbindir}/insmod
+		ln -svf ../bin/kmod %{BUILDROOT}%{sbindir}/rmmod
+		ln -svf ../bin/kmod %{BUILDROOT}%{sbindir}/depmod
+		ln -svf ../bin/kmod %{BUILDROOT}%{sbindir}/lsmod
 	end
 end
 
 packages
 	package %{name}
-		provides = module-init-tools = 4.0-1
+		provides
+			module-init-tools = 4.0-1
+			/sbin/modprobe
+		end
+
 		obsoletes = module-init-tools < 4.0-1
 	end
 
