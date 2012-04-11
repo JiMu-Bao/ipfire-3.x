@@ -8,7 +8,7 @@ build_cloog_ppl = 1
 
 name       = gcc
 version    = 4.6.3
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -40,7 +40,7 @@ patches = \
 	gcc46-ppl-0.10.patch \
 	gcc46-Woverlength-string.patch0 \
 	gcc46-Woverlength-string-asm.patch0 \
-	gcc-4.6.0-piepatches-20110407.patch
+	gcc-4.6.3-piepatches-20120408.patch
 
 build
 	requires

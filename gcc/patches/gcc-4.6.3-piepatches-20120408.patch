@@ -1,6 +1,8 @@
-diff -Nur gcc-4.6.0-vanilla/configure gcc-4.6.0/configure
---- gcc-4.6.0-vanilla/configure	2011-03-16 19:27:36.000000000 +0100
-+++ gcc-4.6.0/configure	2011-04-07 19:17:55.383923352 +0200
+git://git.overlays.gentoo.org/proj/hardened-gccpatchset.git
+
+diff -Nur gcc-4.6.3.vanilla/configure gcc-4.6.3/configure
+--- gcc-4.6.3.vanilla/configure	2011-12-18 11:03:44.000000000 +0100
++++ gcc-4.6.3/configure	2012-04-09 12:23:07.039817993 +0200
 @@ -668,6 +668,7 @@
  CFLAGS
  CC
@@ -17,11 +19,11 @@ diff -Nur gcc-4.6.0-vanilla/configure gcc-4.6.0/configure
 +			   Enable Stack protector, Position independent executable as
 +			   default if we have suppot for it when compiling
 +			   and link with -z relro and -z now as default.
-+			   Linux targets supported i*86, x86_64, powerpc, powerpc64, ia64 and arm
++			   Linux targets supported i*86, x86_64, powerpc, powerpc64, ia64 and arm.
    --enable-libssp         build libssp directory
    --enable-build-with-cxx build with C++ compiler instead of C compiler
    --disable-ppl-version-check
-@@ -3040,6 +3046,25 @@
+@@ -3039,6 +3045,25 @@
    noconfigdirs="$noconfigdirs gnattools"
  fi
  
@@ -47,7 +49,7 @@ diff -Nur gcc-4.6.0-vanilla/configure gcc-4.6.0/configure
  # Check whether --enable-libssp was given.
  if test "${enable_libssp+set}" = set; then :
    enableval=$enable_libssp; ENABLE_LIBSSP=$enableval
-@@ -14199,6 +14224,9 @@
+@@ -14168,6 +14193,9 @@
        *) stage1_cflags="-g -J" ;;
      esac ;;
  esac
@@ -57,25 +59,25 @@ diff -Nur gcc-4.6.0-vanilla/configure gcc-4.6.0/configure
  
  # This is aimed to mimic bootstrap with a non-GCC compiler to catch problems.
  if test "$GCC" = yes -a "$ENABLE_BUILD_WITH_CXX" != yes; then
-diff -Nur gcc-4.6.0-vanilla/gcc/config/gnu-user.h gcc-4.6.0/gcc/config/gnu-user.h
---- gcc-4.6.0-vanilla/gcc/config/gnu-user.h	2011-01-12 15:29:14.000000000 +0100
-+++ gcc-4.6.0/gcc/config/gnu-user.h	2011-04-07 19:19:31.962715700 +0200
+diff -Nur gcc-4.6.3.vanilla/gcc/config/gnu-user.h gcc-4.6.3/gcc/config/gnu-user.h
+--- gcc-4.6.3.vanilla/gcc/config/gnu-user.h	2011-01-12 15:29:14.000000000 +0100
++++ gcc-4.6.3/gcc/config/gnu-user.h	2012-04-09 12:25:51.598251886 +0200
 @@ -41,7 +41,11 @@
     provides part of the support for getting C++ file-scope static
     object constructed before entering `main'.  */
     
 -#if defined HAVE_LD_PIE
-+#if defined (HAVE_LD_PIE) && defined (ENABLE_CRTBEGINTS)
++#if defined (HAVE_LD_PIE) && defined (ENABLE_CRTBEGINP)
 +#define GNU_USER_TARGET_STARTFILE_SPEC \
 +  "%{!shared: %{pg|p|profile:gcrt1.o%s;pie:Scrt1.o%s;:crt1.o%s}} crti.o%s \
-+   %{static:%{pie:crtbeginTS.o%s;:crtbeginT.o%s}} %{!static:%{shared|pie:crtbeginS.o%s;:crtbegin.o%s}}"
-+#elif defined (HAVE_LD_PIE) && ! defined (ENABLE_CRTBEGINTS)
++   %{static:%{pie:crtbeginP.o%s;:crtbeginT.o%s}} %{!static:%{shared|pie:crtbeginS.o%s;:crtbegin.o%s}}"
++#elif defined (HAVE_LD_PIE) && ! defined (ENABLE_CRTBEGINP)
  #define GNU_USER_TARGET_STARTFILE_SPEC \
    "%{!shared: %{pg|p|profile:gcrt1.o%s;pie:Scrt1.o%s;:crt1.o%s}} \
     crti.o%s %{static:crtbeginT.o%s;shared|pie:crtbeginS.o%s;:crtbegin.o%s}"
-diff -Nur gcc-4.6.0-vanilla/gcc/config/rs6000/linux64.h gcc-4.6.0/gcc/config/rs6000/linux64.h
---- gcc-4.6.0-vanilla/gcc/config/rs6000/linux64.h	2011-03-07 08:50:23.000000000 +0100
-+++ gcc-4.6.0/gcc/config/rs6000/linux64.h	2011-04-07 19:19:26.658727069 +0200
+diff -Nur gcc-4.6.3.vanilla/gcc/config/rs6000/linux64.h gcc-4.6.3/gcc/config/rs6000/linux64.h
+--- gcc-4.6.3.vanilla/gcc/config/rs6000/linux64.h	2011-03-07 08:50:23.000000000 +0100
++++ gcc-4.6.3/gcc/config/rs6000/linux64.h	2012-04-09 12:25:39.139032665 +0200
 @@ -193,7 +193,7 @@
  #endif
  
@@ -85,40 +87,40 @@ diff -Nur gcc-4.6.0-vanilla/gcc/config/rs6000/linux64.h gcc-4.6.0/gcc/config/rs6
  %{memb} %{!memb: %{msdata=eabi: -memb}} \
  %{!mlittle: %{!mlittle-endian: %{!mbig: %{!mbig-endian: \
      %{mcall-freebsd: -mbig} \
-diff -Nur gcc-4.6.0-vanilla/gcc/config/rs6000/sysv4.h gcc-4.6.0/gcc/config/rs6000/sysv4.h
---- gcc-4.6.0-vanilla/gcc/config/rs6000/sysv4.h	2011-03-07 08:50:23.000000000 +0100
-+++ gcc-4.6.0/gcc/config/rs6000/sysv4.h	2011-04-07 19:19:31.963715695 +0200
+diff -Nur gcc-4.6.3.vanilla/gcc/config/rs6000/sysv4.h gcc-4.6.3/gcc/config/rs6000/sysv4.h
+--- gcc-4.6.3.vanilla/gcc/config/rs6000/sysv4.h	2011-03-07 08:50:23.000000000 +0100
++++ gcc-4.6.3/gcc/config/rs6000/sysv4.h	2012-04-09 12:25:51.599251502 +0200
 @@ -800,7 +800,12 @@
  %{!mnewlib: %{pthread:-lpthread} %{shared:-lc} \
  %{!shared: %{profile:-lc_p} %{!profile:-lc}}}"
  
 -#ifdef HAVE_LD_PIE
-+#if defined (HAVE_LD_PIE) && defined (ENABLE_CRTBEGINTS)
++#if defined (HAVE_LD_PIE) && defined (ENABLE_CRTBEGINP)
 +#define STARTFILE_LINUX_SPEC "\
 +%{!shared: %{pg|p|profile:gcrt1.o%s;pie:Scrt1.o%s;:crt1.o%s}} \
 +%{mnewlib:ecrti.o%s;:crti.o%s} \
-+%{static:%{pie:crtbeginTS.o%s;:crtbeginT.o%s}} %{!static:%{shared|pie:crtbeginS.o%s;:crtbegin.o%s}}"
-+#elif defined (HAVE_LD_PIE) && ! defined (ENABLE_CRTBEGINTS)
++%{static:%{pie:crtbeginP.o%s;:crtbeginT.o%s}} %{!static:%{shared|pie:crtbeginS.o%s;:crtbegin.o%s}}"
++#elif defined (HAVE_LD_PIE) && ! defined (ENABLE_CRTBEGINP)
  #define	STARTFILE_LINUX_SPEC "\
  %{!shared: %{pg|p|profile:gcrt1.o%s;pie:Scrt1.o%s;:crt1.o%s}} \
  %{mnewlib:ecrti.o%s;:crti.o%s} \
-diff -Nur gcc-4.6.0-vanilla/gcc/config.in gcc-4.6.0/gcc/config.in
---- gcc-4.6.0-vanilla/gcc/config.in	2011-03-25 18:07:00.000000000 +0100
-+++ gcc-4.6.0/gcc/config.in	2011-04-07 19:18:10.478890819 +0200
+diff -Nur gcc-4.6.3.vanilla/gcc/config.in gcc-4.6.3/gcc/config.in
+--- gcc-4.6.3.vanilla/gcc/config.in	2012-03-01 13:03:46.000000000 +0100
++++ gcc-4.6.3/gcc/config.in	2012-04-09 12:24:09.220535670 +0200
 @@ -58,6 +58,12 @@
  #endif
  
  
-+/* Define to 1 to enable crtbeginTS.o. */
++/* Define to 1 to enable crtbeginP.o. */
 +#ifndef USED_FOR_TARGET
-+#undef ENABLE_CRTBEGINTS
++#undef ENABLE_CRTBEGINP
 +#endif
 +
 +
  /* Define to 1 to specify that we are using the BID decimal floating point
     format instead of DPD */
  #ifndef USED_FOR_TARGET
-@@ -77,6 +83,12 @@
+@@ -77,6 +83,18 @@
  #endif
  
  
@@ -128,22 +130,28 @@ diff -Nur gcc-4.6.0-vanilla/gcc/config.in gcc-4.6.0/gcc/config.in
 +#endif
 +
 +
++/* Define to 1 to enable esp ssp. */
++#ifndef USED_FOR_TARGET
++#undef ENABLE_ESP_SSP
++#endif
++
++
  /* Define to 1 to enable fixed-point arithmetic extension to C. */
  #ifndef USED_FOR_TARGET
  #undef ENABLE_FIXED_POINT
-diff -Nur gcc-4.6.0-vanilla/gcc/configure gcc-4.6.0/gcc/configure
---- gcc-4.6.0-vanilla/gcc/configure	2011-02-28 16:36:37.000000000 +0100
-+++ gcc-4.6.0/gcc/configure	2011-04-07 19:17:55.388923340 +0200
+diff -Nur gcc-4.6.3.vanilla/gcc/configure gcc-4.6.3/gcc/configure
+--- gcc-4.6.3.vanilla/gcc/configure	2011-11-20 22:24:07.000000000 +0100
++++ gcc-4.6.3/gcc/configure	2012-04-09 12:24:09.229532218 +0200
 @@ -677,6 +677,8 @@
  HOST_LIBS
  GGC
  libgcc_visibility
 +enable_esp
-+enable_crtbeginTS
++enable_crtbeginP
  gcc_cv_readelf
  gcc_cv_objdump
  ORIGINAL_NM_FOR_TARGET
-@@ -25608,6 +25610,50 @@
+@@ -25606,6 +25608,50 @@
      ;;
  esac
  
@@ -194,7 +202,7 @@ diff -Nur gcc-4.6.0-vanilla/gcc/configure gcc-4.6.0/gcc/configure
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking linker --build-id support" >&5
  $as_echo_n "checking linker --build-id support... " >&6; }
  if test "${gcc_cv_ld_buildid+set}" = set; then :
-@@ -25792,6 +25838,74 @@
+@@ -25790,6 +25836,113 @@
  
  fi
  
@@ -235,43 +243,82 @@ diff -Nur gcc-4.6.0-vanilla/gcc/configure gcc-4.6.0/gcc/configure
 +   { (exit 1); exit 1; }; }
 +fi
 +
-+echo "$as_me:$LINENO: checking for crtbeginTS.o support" >&5
-+echo $ECHO_N "checking for crtbeginTS.o support... $ECHO_C" >&6
-+if test "${enable_crtbeginTS+set}" = set; then
++echo "$as_me:$LINENO: checking for crtbeginP.o support" >&5
++echo $ECHO_N "checking for crtbeginP.o support... $ECHO_C" >&6
++if test "${enable_crtbeginP+set}" = set; then
 +  echo $ECHO_N "(cached) $ECHO_C" >&6
 +else
 +
 +if test x$enable_esp = xyes ; then
 +	case "$target" in
 +	  ia64*-*-linux*)
-+			enable_crtbeginTS=no ;;
++			enable_crtbeginP=no ;;
 +      *-*-linux*)
 +		if test x$gcc_cv_ld_pie = xyes && test x$lt_cv_prog_compiler_static_works = xyes; then
-+			enable_crtbeginTS=yes
++			enable_crtbeginP=yes
 +     	fi
 +		;;
-+  	  *) enable_crtbeginTS=no ;;
++  	  *) enable_crtbeginP=no ;;
 +    esac
 +fi
 +
 +fi
-+echo "$as_me:$LINENO: result: $enable_crtbeginTS" >&5
-+echo "${ECHO_T}$enable_crtbeginTS" >&6
++echo "$as_me:$LINENO: result: $enable_crtbeginP" >&5
++echo "${ECHO_T}$enable_crtbeginP" >&6
 +
-+if test x$enable_crtbeginTS = xyes; then
++if test x$enable_crtbeginP = xyes; then
 +
 +cat >>confdefs.h <<\_ACEOF
-+#define ENABLE_CRTBEGINTS 1
++#define ENABLE_CRTBEGINP 1
 +_ACEOF
 +
 +fi
 +
++
++# Check if we have SSP support. if uClibc we need 0.9.32 or newer and TLS.
++echo "$as_me:$LINENO: checking for SSP support" >&5
++echo $ECHO_N "checking for SSP support... $ECHO_C" >&6
++if test "${enable_esp_SSP+set}" = set; then
++  echo $ECHO_N "(cached) $ECHO_C" >&6
++else
++  if test x$enable_esp = xyes && test x$gcc_cv_libc_provides_ssp = xyes \
++     && test x$set_have_as_tls = xyes; then
++    if $EGREP '^[ 	]*#[ 	]*define[ 	]+__UCLIBC__[ 	]+1' \
++       $target_header_dir/features.h > /dev/null; then
++      if test -f $target_header_dir/bits/uClibc_config.h && \
++	 $EGREP '^[ 	]*#[ 	]*define[ 	]+__UCLIBC_SUBLEVEL__[ 	]+([3-9][2-9]|[4-9][0-9])' \
++	 $target_header_dir/bits/uClibc_config.h > /dev/null && \
++	 $EGREP '^[ 	]*#[ 	]*define[ 	]+__UCLIBC_HAS_TLS__[ 	]+1' \
++	 $target_header_dir/bits/uClibc_config.h > /dev/null; then
++	enable_esp_SSP=yes
++      else
++	enable_esp_SSP=no
++      fi
++    else
++      enable_esp_SSP=yes
++    fi
++  else
++    enable_esp_SSP=no
++  fi
++fi
++echo "$as_me:$LINENO: result: $enable_esp_SSP" >&5
++echo "${ECHO_T}$enable_esp_SSP" >&6
++
++if test x$$enable_esp_SSP = xyes; then
++
++cat >>confdefs.h <<\_ACEOF
++#define ENABLE_ESP_SSP 1
++_ACEOF
++
++fi
++
++
  # Check if TFmode long double should be used by default or not.
  # Some glibc targets used DFmode long double, but with glibc 2.4
  # and later they can use TFmode.
-diff -Nur gcc-4.6.0-vanilla/gcc/cp/lang-specs.h gcc-4.6.0/gcc/cp/lang-specs.h
---- gcc-4.6.0-vanilla/gcc/cp/lang-specs.h	2011-03-06 17:27:57.000000000 +0100
-+++ gcc-4.6.0/gcc/cp/lang-specs.h	2011-04-07 19:19:04.828773916 +0200
+diff -Nur gcc-4.6.3.vanilla/gcc/cp/lang-specs.h gcc-4.6.3/gcc/cp/lang-specs.h
+--- gcc-4.6.3.vanilla/gcc/cp/lang-specs.h	2011-03-06 17:27:57.000000000 +0100
++++ gcc-4.6.3/gcc/cp/lang-specs.h	2012-04-09 12:25:11.222744541 +0200
 @@ -47,7 +47,7 @@
  		%(cpp_options) %2 -o %{save-temps*:%b.ii} %{!save-temps*:%g.ii} \n}\
        cc1plus %{save-temps*|no-integrated-cpp:-fpreprocessed %{save-temps*:%b.ii} %{!save-temps*:%g.ii}}\
@@ -290,12 +337,52 @@ diff -Nur gcc-4.6.0-vanilla/gcc/cp/lang-specs.h gcc-4.6.0/gcc/cp/lang-specs.h
         %{!fsyntax-only:%(invoke_as)}}}}",
       CPLUSPLUS_CPP_SPEC, 0, 0},
    {".ii", "@c++-cpp-output", 0, 0, 0},
-diff -Nur gcc-4.6.0-vanilla/gcc/esp.h gcc-4.6.0/gcc/esp.h
---- gcc-4.6.0-vanilla/gcc/esp.h	1970-01-01 01:00:00.000000000 +0100
-+++ gcc-4.6.0/gcc/esp.h	2011-04-07 19:19:14.329753502 +0200
+diff -Nur gcc-4.6.3.vanilla/gcc/doc/invoke.texi gcc-4.6.3/gcc/doc/invoke.texi
+--- gcc-4.6.3.vanilla/gcc/doc/invoke.texi	2012-01-03 17:43:38.000000000 +0100
++++ gcc-4.6.3/gcc/doc/invoke.texi	2012-04-09 12:26:06.709453504 +0200
+@@ -8185,6 +8185,11 @@
+ @opindex fstack-protector-all
+ Like @option{-fstack-protector} except that all functions are protected.
+ 
++NOTE: When --enable-esp this option is enabled by default 
++for C, C++, ObjC, ObjC++, if neither @option{-fno-stack-protector}
++or @option{-nostdlib} or @option{-nodefaultlibs} or 
++@option{-fstack-protector} are found.
++
+ @item -fsection-anchors
+ @opindex fsection-anchors
+ Try to reduce the number of symbolic address calculations by using
+@@ -9090,6 +9095,12 @@
+ that were used to generate code (@option{-fpie}, @option{-fPIE},
+ or model suboptions) when you specify this option.
+ 
++NOTE: When --enable-esp this option is enabled by default
++for C, C++, ObjC, ObjC++, if neither @option{-fno-pie} or @option{-fno-PIE}
++or @option{-fno-pic} or @option{-fno-PIC} or @option{-nostdlib} or
++@option{-nostartfiles} or @option{-shared} or @option{-pg} or @option{-p}
++are found.
++
+ @item -rdynamic
+ @opindex rdynamic
+ Pass the flag @option{-export-dynamic} to the ELF linker, on targets
+@@ -18099,6 +18110,11 @@
+ @code{__pie__} and @code{__PIE__}.  The macros have the value 1
+ for @option{-fpie} and 2 for @option{-fPIE}.
+ 
++NOTE: When --enable-esp this option is enabled by default
++for C, C++, ObjC, ObjC++, if neither @option{-fno-pie} or @option{-fno-PIE}
++or @option{-fno-pic} or @option{-fno-PIC} or @option{-nostdlib} or
++@option{-nostartfiles} or @option{-shared} are found.
++
+ @item -fno-jump-tables
+ @opindex fno-jump-tables
+ Do not use jump tables for switch statements even where it would be
+diff -Nur gcc-4.6.3.vanilla/gcc/esp.h gcc-4.6.3/gcc/esp.h
+--- gcc-4.6.3.vanilla/gcc/esp.h	1970-01-01 01:00:00.000000000 +0100
++++ gcc-4.6.3/gcc/esp.h	2012-04-09 12:25:25.376313618 +0200
 @@ -0,0 +1,145 @@
 +/* License terms see GNU GENERAL PUBLIC LICENSE Version 3.
-+ * Version 20100527.1
++ * Version 20120403.2
 + * Magnus Granberg (Zorry) <zorry@gentoo.org>  */
 +#ifndef GCC_ESP_H
 +#define GCC_ESP_H
@@ -309,7 +396,7 @@ diff -Nur gcc-4.6.0-vanilla/gcc/esp.h gcc-4.6.0/gcc/esp.h
 +	ESP_CC1_SPEC is added to CC1_SPEC.
 +	ESP_CC1_STRICT_OVERFLOW_SPEC is added so we don't disable the strict-overflow check.
 +	ESP_LINK_PIE_CHECK_SPEC check for -pie, -p, -pg, -profile and -static.
-+	ENABLE_CRTBEGINTS add support for crtbeginTS.o, build -static with -fPIE or -fpie.
++	ENABLE_CRTBEGINP add support for crtbeginP.o, build -static with -fPIE or -fpie.
 +*/
 +#ifdef ENABLE_ESP
 +	
@@ -345,7 +432,7 @@ diff -Nur gcc-4.6.0-vanilla/gcc/esp.h gcc-4.6.0/gcc/esp.h
 +
 +	/*  This will add -fstack-protector-all if we don't have -nostdlib -nodefaultlibs -fno-stack-protector -fstack-protector
 +		-fstack-protector-all and we have EFAULT_SSP or EFAULT_PIE_SSP defined.  */
-+	#if defined ( EFAULT_SSP ) || defined ( EFAULT_PIE_SSP )
++	#if ( defined ( EFAULT_SSP ) || defined ( EFAULT_PIE_SSP ) ) && defined ( ENABLE_ESP_SSP )
 +		#define ESP_OPTIONS_SSP_SPEC \
 +			"%{!D__KERNEL__:%{!nostdlib:%{!nodefaultlibs: %{!fno-stack-protector: \
 +			%{!fstack-protector:%{!fstack-protector-all:-fstack-protector-all}}}}}}"
@@ -358,8 +445,8 @@ diff -Nur gcc-4.6.0-vanilla/gcc/esp.h gcc-4.6.0/gcc/esp.h
 +
 +		/*  This will add -fPIE if we don't have -pie -fpic -fPIC -fpie -fPIE -fno-pic -fno-PIC -fno-pie -fno-PIE -shared -static
 +			-nostdlib -nostartfiles.  */
-+		/*  With ENABLE_CRTBEGINTS we don't need to check for -static  */
-+		#ifdef ENABLE_CRTBEGINTS
++		/*  With ENABLE_CRTBEGINP we don't need to check for -static  */
++		#ifdef ENABLE_CRTBEGINP
 +			#define ESP_OPTIONS_PIE_SPEC \
 +				"%{!pie: %{!fpic:%{!fPIC:%{!fpie:%{!fPIE: %{!fno-pic:%{!fno-PIC:%{!fno-pie:%{!fno-PIE: \
 +				%{!shared: %{!nostdlib: %{!nostartfiles:-fPIE}} } }}}} }}}} }"
@@ -371,9 +458,9 @@ diff -Nur gcc-4.6.0-vanilla/gcc/esp.h gcc-4.6.0/gcc/esp.h
 +
 +		/*  This will add -pie if we don't have -pie -A -fno-pic -fno-PIC -fno-pie -fno-PIE -shared -static -r -nostdlib 
 +			-nostartfiles  */
-+		/*  With ENABLE_CRTBEGINTS we don't need to check for -static
++		/*  With ENABLE_CRTBEGINP we don't need to check for -static
 +			and we add -pie only to get the start and endfiles. -pie will not go to the linker. */
-+		#ifdef ENABLE_CRTBEGINTS
++		#ifdef ENABLE_CRTBEGINP
 +			#define ESP_LINK_PIE_SPEC \
 +				"%{!pie:%{!A:%{!fno-pie:%{!fno-PIE:%{!fno-pic:%{!fno-PIC:%{!shared:%{!r: \
 +				%{!nostdlib:%{!nostartfiles:-pie}}}}}}}}}}"
@@ -385,8 +472,8 @@ diff -Nur gcc-4.6.0-vanilla/gcc/esp.h gcc-4.6.0/gcc/esp.h
 +		
 +		/*  This will check if -pie is set when (-static) -pg -p -profile. If set it will make gcc print out
 +			"-pie and (static)|pg|p|profile are incompatible when linking"  */
-+		/*  With ENABLE_CRTBEGINTS we don't need to check for -static  */
-+		#ifdef ENABLE_CRTBEGINTS
++		/*  With ENABLE_CRTBEGINP we don't need to check for -static  */
++		#ifdef ENABLE_CRTBEGINP
 +			#define ESP_LINK_PIE_CHECK_SPEC \
 +				"%{pie:%{pg|p|profile:%e-pie and -pg|p|profile are incompatible when linking}}"
 +		#else
@@ -395,7 +482,7 @@ diff -Nur gcc-4.6.0-vanilla/gcc/esp.h gcc-4.6.0/gcc/esp.h
 +		#endif
 +
 +		/*  We don't pass -pie to the linker when -static.  */
-+		#ifdef ENABLE_CRTBEGINTS
++		#ifdef ENABLE_CRTBEGINP
 +			#define LINK_PIE_SPEC "%{!static:%{pie:-pie}} %(esp_link)"
 +		#else
 +			#define LINK_PIE_SPEC "%{pie:-pie} %(esp_link)"
@@ -439,9 +526,9 @@ diff -Nur gcc-4.6.0-vanilla/gcc/esp.h gcc-4.6.0/gcc/esp.h
 +
 +#endif
 +#endif /* End GCC_ESP_H */
-diff -Nur gcc-4.6.0-vanilla/gcc/gcc.c gcc-4.6.0/gcc/gcc.c
---- gcc-4.6.0-vanilla/gcc/gcc.c	2011-02-23 03:04:43.000000000 +0100
-+++ gcc-4.6.0/gcc/gcc.c	2011-04-07 19:19:04.828773916 +0200
+diff -Nur gcc-4.6.3.vanilla/gcc/gcc.c gcc-4.6.3/gcc/gcc.c
+--- gcc-4.6.3.vanilla/gcc/gcc.c	2011-02-23 03:04:43.000000000 +0100
++++ gcc-4.6.3/gcc/gcc.c	2012-04-09 12:25:11.222744541 +0200
 @@ -44,6 +44,7 @@
  #include "flags.h"
  #include "opts.h"
@@ -547,9 +634,9 @@ diff -Nur gcc-4.6.0-vanilla/gcc/gcc.c gcc-4.6.0/gcc/gcc.c
    /* Now we have the specs.
       Set the `valid' bits for switches that match anything in any spec.  */
  
-diff -Nur gcc-4.6.0-vanilla/gcc/Makefile.in gcc-4.6.0/gcc/Makefile.in
---- gcc-4.6.0-vanilla/gcc/Makefile.in	2011-01-26 05:19:58.000000000 +0100
-+++ gcc-4.6.0/gcc/Makefile.in	2011-04-07 19:18:24.186861296 +0200
+diff -Nur gcc-4.6.3.vanilla/gcc/Makefile.in gcc-4.6.3/gcc/Makefile.in
+--- gcc-4.6.3.vanilla/gcc/Makefile.in	2011-08-20 09:51:09.000000000 +0200
++++ gcc-4.6.3/gcc/Makefile.in	2012-04-09 12:23:38.285405919 +0200
 @@ -642,6 +642,14 @@
  INHIBIT_LIBC_CFLAGS = -Dinhibit_libc
  endif
@@ -578,16 +665,16 @@ diff -Nur gcc-4.6.0-vanilla/gcc/Makefile.in gcc-4.6.0/gcc/Makefile.in
  # The rules for compiling them should be in the t-* file for the machine.
  EXTRA_PARTS = @extra_parts@
  
-+# We add crtbeginTS.o to the EXTRA_PARTS list if enable_crtbeginTS = yes
-+enable_crtbeginTS = @enable_crtbeginTS@
-+ifeq ($(enable_crtbeginTS),yes)
-+EXTRA_PARTS += crtbeginTS.o
++# We add crtbeginP.o to the EXTRA_PARTS list if enable_crtbeginP = yes
++enable_crtbeginP = @enable_crtbeginP@
++ifeq ($(enable_crtbeginP),yes)
++EXTRA_PARTS += crtbeginP.o
 +endif
 +
  # List of extra object files that should be compiled and linked with
  # compiler proper (cc1, cc1obj, cc1plus).
  EXTRA_OBJS = @extra_objs@
-@@ -996,7 +1010,7 @@
+@@ -996,12 +1010,12 @@
  
  # This is the variable actually used when we compile. If you change this,
  # you probably want to update BUILD_CFLAGS in configure.ac
@@ -596,6 +683,13 @@ diff -Nur gcc-4.6.0-vanilla/gcc/Makefile.in gcc-4.6.0/gcc/Makefile.in
    $(CFLAGS) $(INTERNAL_CFLAGS) $(COVERAGE_FLAGS) $(WARN_CFLAGS) @DEFS@
  
  # The C++ version.
+-ALL_CXXFLAGS = $(T_CFLAGS) $(CXXFLAGS) $(INTERNAL_CFLAGS) \
+-  $(COVERAGE_FLAGS) $(WARN_CXXFLAGS) @DEFS@
++ALL_CXXFLAGS = $(ESP_NOPIE_CFLAGS) $(T_CFLAGS) $(CXXFLAGS) \
++  $(INTERNAL_CFLAGS) $(COVERAGE_FLAGS) $(WARN_CXXFLAGS) @DEFS@
+ 
+ # Likewise.  Put INCLUDES at the beginning: this way, if some autoconf macro
+ # puts -I options in CPPFLAGS, our include files in the srcdir will always
 @@ -1920,9 +1934,10 @@
  	echo LIBGCC_SYNC = '$(LIBGCC_SYNC)' >> tmp-libgcc.mvars
  	echo LIBGCC_SYNC_CFLAGS = '$(LIBGCC_SYNC_CFLAGS)' >> tmp-libgcc.mvars
@@ -604,7 +698,7 @@ diff -Nur gcc-4.6.0-vanilla/gcc/Makefile.in gcc-4.6.0/gcc/Makefile.in
 +	echo CRTSTUFF_T_CFLAGS = '$(CRTSTUFF_T_CFLAGS) $(ESP_NOPIE_CFLAGS)' >> tmp-libgcc.mvars
  	echo CRTSTUFF_T_CFLAGS_S = '$(CRTSTUFF_T_CFLAGS_S)' >> tmp-libgcc.mvars
  	echo TARGET_SYSTEM_ROOT = '$(TARGET_SYSTEM_ROOT)' >> tmp-libgcc.mvars
-+	echo enable_crtbeginTS = '$(enable_crtbeginTS)' >> tmp-libgcc.mvars
++	echo enable_crtbeginP = '$(enable_crtbeginP)' >> tmp-libgcc.mvars
  
  	mv tmp-libgcc.mvars libgcc.mvars
  
@@ -617,20 +711,20 @@ diff -Nur gcc-4.6.0-vanilla/gcc/Makefile.in gcc-4.6.0/gcc/Makefile.in
  	  -o $(T)crtbeginT$(objext)
  
 +# This is a version of crtbegin for -static -fPIE links if esp is enable.
-+ifeq ($(enable_crtbeginTS),yes)
-+$(T)crtbeginTS.o: crtstuff.c $(GCC_PASSES) $(TCONFIG_H) auto-host.h \
++ifeq ($(enable_crtbeginP),yes)
++$(T)crtbeginP.o: crtstuff.c $(GCC_PASSES) $(TCONFIG_H) auto-host.h \
 +  gbl-ctors.h stmp-int-hdrs tsystem.h coretypes.h $(TM_H)
 +	$(GCC_FOR_TARGET) $(CRTSTUFF_CFLAGS) $(CRTSTUFF_T_CFLAGS_S) \
 +	  -c $(srcdir)/crtstuff.c -DCRT_BEGIN -DCRTSTUFFT_O -DCRTSTUFFS_O \
-+	  -o $(T)crtbeginTS$(objext)
++	  -o $(T)crtbeginP$(objext)
 +endif
 +
  # Compile the start modules crt0.o and mcrt0.o that are linked with
  # every program
  $(T)crt0.o: s-crt0 ; @true
-diff -Nur gcc-4.6.0-vanilla/gcc/objc/lang-specs.h gcc-4.6.0/gcc/objc/lang-specs.h
---- gcc-4.6.0-vanilla/gcc/objc/lang-specs.h	2011-03-06 17:27:57.000000000 +0100
-+++ gcc-4.6.0/gcc/objc/lang-specs.h	2011-04-07 19:19:04.831773909 +0200
+diff -Nur gcc-4.6.3.vanilla/gcc/objc/lang-specs.h gcc-4.6.3/gcc/objc/lang-specs.h
+--- gcc-4.6.3.vanilla/gcc/objc/lang-specs.h	2011-03-06 17:27:57.000000000 +0100
++++ gcc-4.6.3/gcc/objc/lang-specs.h	2012-04-09 12:25:11.224743774 +0200
 @@ -30,9 +30,9 @@
  	%{traditional|traditional-cpp:\
  %eGNU Objective C no longer supports traditional compilation}\
@@ -666,9 +760,9 @@ diff -Nur gcc-4.6.0-vanilla/gcc/objc/lang-specs.h gcc-4.6.0/gcc/objc/lang-specs.
 -       %{!M:%{!MM:%{!E:cc1obj -fpreprocessed %i %(cc1_options) %{print-objc-runtime-info} %{gen-decls}\
 +       %{!M:%{!MM:%{!E:cc1obj -fpreprocessed %i %(cc1_options) %(esp_options) %{print-objc-runtime-info} %{gen-decls}\
  			     %{!fsyntax-only:%(invoke_as)}}}}", 0, 0, 0},
-diff -Nur gcc-4.6.0-vanilla/gcc/objcp/lang-specs.h gcc-4.6.0/gcc/objcp/lang-specs.h
---- gcc-4.6.0-vanilla/gcc/objcp/lang-specs.h	2011-03-06 17:27:57.000000000 +0100
-+++ gcc-4.6.0/gcc/objcp/lang-specs.h	2011-04-07 19:19:04.829773913 +0200
+diff -Nur gcc-4.6.3.vanilla/gcc/objcp/lang-specs.h gcc-4.6.3/gcc/objcp/lang-specs.h
+--- gcc-4.6.3.vanilla/gcc/objcp/lang-specs.h	2011-03-06 17:27:57.000000000 +0100
++++ gcc-4.6.3/gcc/objcp/lang-specs.h	2012-04-09 12:25:11.223744157 +0200
 @@ -36,7 +36,7 @@
  		%(cpp_options) %2 -o %{save-temps*:%b.mii} %{!save-temps*:%g.mii} \n}\
        cc1objplus %{save-temps*|no-integrated-cpp:-fpreprocessed %{save-temps*:%b.mii} %{!save-temps*:%g.mii}}\
@@ -698,10 +792,10 @@ diff -Nur gcc-4.6.0-vanilla/gcc/objcp/lang-specs.h gcc-4.6.0/gcc/objcp/lang-spec
 -    cc1objplus -fpreprocessed %i %(cc1_options) %2\
 +    cc1objplus -fpreprocessed %i %(cc1_options) %(esp_options) %2\
      %{!fsyntax-only:%(invoke_as)}}}}", 0, 0, 0},
-diff -Nur gcc-4.6.0-vanilla/gcc/varasm.c gcc-4.6.0/gcc/varasm.c
---- gcc-4.6.0-vanilla/gcc/varasm.c	2011-02-28 16:36:37.000000000 +0100
-+++ gcc-4.6.0/gcc/varasm.c	2011-04-07 19:18:52.338800740 +0200
-@@ -6022,7 +6022,11 @@
+diff -Nur gcc-4.6.3.vanilla/gcc/varasm.c gcc-4.6.3/gcc/varasm.c
+--- gcc-4.6.3.vanilla/gcc/varasm.c	2011-12-09 20:11:01.000000000 +0100
++++ gcc-4.6.3/gcc/varasm.c	2012-04-09 12:24:55.766675254 +0200
+@@ -6028,7 +6028,11 @@
    bool is_local;
  
    is_local = targetm.binds_local_p (decl);
@@ -714,17 +808,17 @@ diff -Nur gcc-4.6.0-vanilla/gcc/varasm.c gcc-4.6.0/gcc/varasm.c
      {
        if (is_local)
  	kind = TLS_MODEL_LOCAL_EXEC;
-diff -Nur gcc-4.6.0-vanilla/libgcc/Makefile.in gcc-4.6.0/libgcc/Makefile.in
---- gcc-4.6.0-vanilla/libgcc/Makefile.in	2011-01-26 05:19:58.000000000 +0100
-+++ gcc-4.6.0/libgcc/Makefile.in	2011-04-07 19:18:24.190861287 +0200
+diff -Nur gcc-4.6.3.vanilla/libgcc/Makefile.in gcc-4.6.3/libgcc/Makefile.in
+--- gcc-4.6.3.vanilla/libgcc/Makefile.in	2011-01-26 05:19:58.000000000 +0100
++++ gcc-4.6.3/libgcc/Makefile.in	2012-04-09 12:23:38.286405535 +0200
 @@ -298,6 +298,12 @@
  gen-hide-list = echo > \$@
  endif
  
-+# We add crtbeginTS.o to the EXTRA_PARTS list if enable_crtbeginTS = yes
-+enable_libgcc_crtbeginTS = $(enable_crtbeginTS)
-+ifeq ($(enable_libgcc_crtbeginTS),yes)
-+EXTRA_PARTS += crtbeginTS.o
++# We add crtbeginP.o to the EXTRA_PARTS list if enable_crtbeginP = yes
++enable_libgcc_crtbeginP = $(enable_crtbeginP)
++ifeq ($(enable_libgcc_crtbeginP),yes)
++EXTRA_PARTS += crtbeginP.o
 +endif
 +
  ifneq ($(EXTRA_PARTS),)
@@ -736,17 +830,17 @@ diff -Nur gcc-4.6.0-vanilla/libgcc/Makefile.in gcc-4.6.0/libgcc/Makefile.in
  	  -c $(gcc_srcdir)/crtstuff.c -DCRT_BEGIN -DCRTSTUFFT_O
 +
 +# This is a version of crtbegin for -static -fPIE links.
-+ifeq ($(enable_libgcc_crtbeginTS),yes)
-+crtbeginTS.o: $(gcc_srcdir)/crtstuff.c
++ifeq ($(enable_libgcc_crtbeginP),yes)
++crtbeginP.o: $(gcc_srcdir)/crtstuff.c
 +	$(crt_compile) $(CRTSTUFF_T_CFLAGS_S) \
 +	  -c $(gcc_srcdir)/crtstuff.c -DCRT_BEGIN -DCRTSTUFFT_O -DCRTSTUFFS_O
 +endif
  endif
  
  # Build extra startfiles in the libgcc directory.
-diff -Nur gcc-4.6.0-vanilla/libmudflap/configure gcc-4.6.0/libmudflap/configure
---- gcc-4.6.0-vanilla/libmudflap/configure	2011-02-13 12:45:53.000000000 +0100
-+++ gcc-4.6.0/libmudflap/configure	2011-04-07 19:17:55.399923318 +0200
+diff -Nur gcc-4.6.3.vanilla/libmudflap/configure gcc-4.6.3/libmudflap/configure
+--- gcc-4.6.3.vanilla/libmudflap/configure	2011-11-20 22:24:07.000000000 +0100
++++ gcc-4.6.3/libmudflap/configure	2012-04-09 12:23:07.050818345 +0200
 @@ -652,6 +652,7 @@
  MAINTAINER_MODE_FALSE
  MAINTAINER_MODE_TRUE
@@ -755,9 +849,9 @@ diff -Nur gcc-4.6.0-vanilla/libmudflap/configure gcc-4.6.0/libmudflap/configure
  am__tar
  AMTAR
  am__leading_dot
-diff -Nur gcc-4.6.0-vanilla/Makefile.in gcc-4.6.0/Makefile.in
---- gcc-4.6.0-vanilla/Makefile.in	2011-02-12 13:02:24.000000000 +0100
-+++ gcc-4.6.0/Makefile.in	2011-04-07 19:18:24.184861300 +0200
+diff -Nur gcc-4.6.3.vanilla/Makefile.in gcc-4.6.3/Makefile.in
+--- gcc-4.6.3.vanilla/Makefile.in	2012-01-02 12:02:10.000000000 +0100
++++ gcc-4.6.3/Makefile.in	2012-04-09 12:23:38.283406686 +0200
 @@ -356,9 +356,17 @@
  BUILD_PREFIX = @BUILD_PREFIX@
  BUILD_PREFIX_1 = @BUILD_PREFIX_1@
