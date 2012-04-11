@@ -5,7 +5,7 @@
 
 name       = nspr
 version    = 4.8.9
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.mozilla.org/projects/nspr/
@@ -56,7 +56,6 @@ build
 	end
 
 	configure_options += \
-		--libdir=/%{lib} \
 		--includedir=/usr/include/nspr4 \
 		--enable-optimize="%{CFLAGS}" \
 		--disable-debug
@@ -70,7 +69,6 @@ build
 
 	install_cmds
 		mkdir -pv %{BUILDROOT}/usr/{bin,%{lib}}
-		mkdir -pv %{BUILDROOT}/%{lib}
 		mkdir -pv %{BUILDROOT}%{libdir}/pkgconfig
 
 		cp -vf %{DIR_APP}/config/nspr-config-pc \
@@ -87,11 +85,6 @@ build
 			< %{DIR_SOURCE}/nspr.pc.in \
 			> %{BUILDROOT}%{libdir}/pkgconfig/nspr.pc
 
-		#mv -v %{BUILDROOT}/usr/lib/lib{nspr,plc.plds}4.so %{BUILDROOT}/lib/
-		ln -svf ../../%{lib}/libnspr4.so %{BUILDROOT}%{libdir}/libnspr4.so
-		ln -svf ../../%{lib}/libplc4.so %{BUILDROOT}%{libdir}/libplc4.so
-		ln -svf ../../%{lib}/libplds4.so %{BUILDROOT}%{libdir}/libplds4.so
-
 		# Remove unneeded stuff
 		rm -rfv \
 			%{BUILDROOT}/usr/bin/compile-et.pl \
@@ -106,6 +99,9 @@ packages
 
 	package %{name}-devel
 		template DEVEL
+
+		# libs are not versioned.
+		files += !%{libdir}/*.so
 	end
 
 	package %{name}-debuginfo
