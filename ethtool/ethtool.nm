@@ -5,7 +5,7 @@
 
 name       = ethtool
 version    = 2.6.34
-release    = 2
+release    = 3
 
 groups     = Applications/System
 url        = http://sourceforge.net/projects/gkernel/
@@ -19,11 +19,6 @@ description
 end
 
 source_dl  =
-
-build
-	configure_options += \
-		--sbindir=/sbin
-end
 
 packages
 	package %{name}
