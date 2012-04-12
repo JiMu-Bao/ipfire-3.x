@@ -5,7 +5,7 @@
 
 name       = attr
 version    = 2.4.43
-release    = 5
+release    = 6
 
 groups     = System/Filesystems
 url        = http://oss.sgi.com/projects/xfs/
@@ -13,7 +13,7 @@ license    = GPLv2+ LGPLv2+
 summary    = Tools for extended attribute support.
 
 description
-	A set of tools for manipulating extended attributes on filesystem \
+	A set of tools for manipulating extended attributes on filesystem
 	objects.
 end
 
@@ -30,7 +30,13 @@ build
 		--enable-shared
 
 	make_build_targets += LIBTOOL="libtool --tag=CC"
-	make_install_targets += install-libs install-dev
+	make_install_targets += install-lib install-dev
+
+	install_cmds
+		# Fix absolute symlink.
+		rm -rvf %{BUILDROOT}%{libdir}/libattr.so
+		ln -svf libattr.so.1 %{BUILDROOT}%{libdir}/libattr.so
+	end
 end
 
 packages
