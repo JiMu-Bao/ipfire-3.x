@@ -5,7 +5,7 @@
 
 name       = mdadm
 version    = 3.2.2
-release    = 1
+release    = 2
 
 groups     = System/Base
 url        = http://www.kernel.org/pub/linux/utils/raid/mdadm/
@@ -35,12 +35,10 @@ build
 
 	build
 		make %{PARALLELISMFLAGS} CXFLAGS="%{CFLAGS}" \
-			CWFLAGS= SYSCONFDIR="/etc" MDASSEMBLE_AUTO=1
+			CWFLAGS= SYSCONFDIR="%{sysconfdir}" MDASSEMBLE_AUTO=1
 	end
 
-	install
-		make install BINDIR=/sbin DESTDIR=%{BUILDROOT}
-
+	install_cmds
 		mkdir -pv %{BUILDROOT}/var/run/mdadm
 		chmod 700 %{BUILDROOT}/var/run/mdadm
 	end
