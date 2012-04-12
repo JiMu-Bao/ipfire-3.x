@@ -5,7 +5,7 @@
 
 name       = ncurses
 version    = 5.9
-release    = 6
+release    = 7
 
 groups     = System/Base
 url        = http://invisible-island.net/ncurses/ncurses.html
@@ -27,7 +27,6 @@ build
 	end
 
 	configure_options += \
-		--mandir=/usr/share/man \
 		--with-shared \
 		--without-debug \
 		--without-ada \
@@ -68,13 +67,6 @@ build
 
 		chmod -v 755 %{BUILDROOT}%{libdir}/lib*.so.*.*
 
-		# move lib{ncurses{,w},tinfo}.so.* to /lib*
-		mkdir -pv %{BUILDROOT}/%{lib}
-		mv -v %{BUILDROOT}%{libdir}/lib{ncurses{,w},tinfo}.so.* %{BUILDROOT}/%{lib}
-		for l in %{BUILDROOT}%{libdir}/lib{ncurses{,w},tinfo}.so; do
-			ln -sf $(echo %{libdir} | \
-				sed 's,\(^/\|\)[^/][^/]*,..,g')/%{lib}/$(readlink $l) $l
-		done
 		mkdir -pv %{BUILDROOT}/{etc,lib}/terminfo
 
 		# move few basic terminfo entries to /lib
