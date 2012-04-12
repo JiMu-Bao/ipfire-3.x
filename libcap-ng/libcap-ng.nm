@@ -5,7 +5,7 @@
 
 name       = libcap-ng
 version    = 0.6.6
-release    = 2
+release    = 3
 
 groups     = System/Libraries
 url        = http://people.redhat.com/sgrubb/libcap-ng
@@ -23,15 +23,6 @@ build
 	requires
 		libattr-devel
 		python
-	end
-
-	install_cmds
-		# Move libraries to lib
-		mkdir -pv %{BUILDROOT}/%{lib}
-		mv -vf %{BUILDROOT}%{libdir}/libcap-ng.so.* %{BUILDROOT}/%{lib}/
-
-		# Recreate symlink
-		ln -svf ../../%{lib}/libcap-ng.so.0 %{BUILDROOT}%{libdir}/libcap-ng.so
 	end
 
 	# XXX Testsuite is broken by the package developers
