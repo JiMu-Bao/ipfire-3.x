@@ -5,7 +5,7 @@
 
 name       = tar
 version    = 1.26
-release    = 3
+release    = 4
 
 groups     = System/Packaging
 url        = http://www.gnu.org/software/tar/
@@ -39,7 +39,6 @@ build
 	end
 
 	configure_options += \
-		--bindir=/bin \
 		--libexecdir=/usr/sbin \
 		--enable-selinux \
 		FORCE_UNSAFE_CONFIGURE=1
