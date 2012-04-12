@@ -5,7 +5,7 @@
 
 name       = lvm2
 version    = 2.02.54
-release    = 2
+release    = 3
 thisapp    = LVM2.%{version}
 
 groups     = System/Base
@@ -34,18 +34,7 @@ build
 	end
 
 	configure_options += \
-		--bindir=/bin \
-		--sbindir=/sbin \
-		--exec-prefix=/ \
-		--libdir=/%{lib} \
 		--enable-pkgconfig
-
-	install_cmds
-		mkdir -pv %{BUILDROOT}%{libdir}
-		rm -vf %{BUILDROOT}/%{lib}/libdevmapper.so
-		ln -svf libdevmapper.so.1.02 %{BUILDROOT}/%{lib}/libdevmapper.so.1
-		ln -svf ../../%{lib}/libdevmapper.so.1 %{BUILDROOT}%{libdir}/libdevmapper.so
-	end
 end
 
 packages
