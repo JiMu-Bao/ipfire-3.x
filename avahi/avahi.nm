@@ -5,7 +5,7 @@
 
 name       = avahi
 version    = 0.6.30
-release    = 1
+release    = 2
 
 groups     = Networking/Zeroconf
 url        = http://avahi.org/
@@ -41,10 +41,6 @@ build
 	end
 
 	configure_options += \
-		--bindir=/bin \
-		--mandir=/usr/share/man \
-		--sysconfdir=/etc \
-		--localstatedir=/var \
 		--with-distro=none \
 		--disable-gdbm \
 		--disable-qt3 \
