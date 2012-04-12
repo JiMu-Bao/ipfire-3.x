@@ -5,7 +5,7 @@
 
 name       = libgcrypt
 version    = 1.5.0
-release    = 2
+release    = 3
 
 groups     = System/Libraries
 url        = http://www.gnupg.org/
@@ -28,14 +28,7 @@ build
 	end
 
 	configure_options += \
-		--libdir=/%{lib} \
-		--enable-noexecstack \
-
-	install_cmds
-		mkdir -pv %{BUILDROOT}%{libdir}
-		rm -vf %{BUILDROOT}/%{lib}/libgcrypt.so
-		ln -sfv ../../%{lib}/libgcrypt.so.11 %{BUILDROOT}%{libdir}/libgcrypt.so
-	end
+		--enable-noexecstack
 end
 
 packages
