@@ -5,7 +5,7 @@
 
 name       = acl
 version    = 2.2.51
-release    = 1
+release    = 2
 
 groups     = System/Filesystems
 url        = http://oss.sgi.com/projects/xfs/
@@ -29,7 +29,7 @@ build
 	end
 
 	configure_options += \
-		--bindir=/bin \
+		--libexecdir=%{libdir} \
 		--disable-static
 
 	make_build_targets += LIBTOOL="libtool --tag=CC"
@@ -38,17 +38,7 @@ build
 		make tests
 	end
 
-	install_cmds
-		mkdir -pv %{BUILDROOT}%{libdir}
-		install -v -m0755 libacl/.libs/libacl.so.1.1.0 %{BUILDROOT}%{libdir}
-		ln -vsf libacl.so.1.1.0 %{BUILDROOT}%{libdir}/libacl.so.1
-		ln -vsf libacl.so.1 %{BUILDROOT}%{libdir}/libacl.so
-
-		# Install headers.
-		mkdir -pv %{BUILDROOT}%{includedir}/{acl,sys}
-		cp -vf include/libacl.h %{BUILDROOT}%{includedir}/acl/
-		cp -vf include/acl.h %{BUILDROOT}%{includedir}/sys/
-	end
+	make_install_targets += install-dev install-lib
 end
 
 packages
