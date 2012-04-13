@@ -8,7 +8,7 @@ build_cloog_ppl = 1
 
 name       = gcc
 version    = 4.6.3
-release    = 3
+release    = 4
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -112,7 +112,8 @@ build
 	end
 
 	# CFLAGS for hardening.
-	HARD_CFLAGS = -DEFAULT_PIE_SSP -DEFAULT_RELRO -DEFAULT_BIND_NOW
+	HARD_CFLAGS = -DEFAULT_PIE -DEFAULT_SSP -DEFAULT_PIE_SSP -DEFAULT_ESP_SPP \
+		-DENABLE_ESP_SSP -DEFAULT_RELRO -DEFAULT_BIND_NOW
 
 	prepare_cmds
 		mkdir -v %{DIR_SRC}/gcc-build
