@@ -6,7 +6,7 @@
 name       = isdn4k-utils
 version    = 3.2
 devel_ver  = CVS-2010-05-01
-release    = 6
+release    = 7
 thisapp    = %{name}-%{devel_ver}-patched
 
 groups     = Networking/Tools
@@ -59,11 +59,11 @@ build
 		sed -e "s/^CONFIG_XISDNLOAD=.*/#&/" -i .config
 		echo "CONFIG_GENMAN=y" >> .config
 		echo "CONFIG_FAQ=y" >> .config
-		echo "CONFIG_FAQDIR='/usr/share/doc/isdn4k-utils'" >> .config
-		echo "CONFIG_DATADIR='/usr/share/isdn'" >> .config
+		echo "CONFIG_FAQDIR='%{datadir}/doc/isdn4k-utils'" >> .config
+		echo "CONFIG_DATADIR='%{datadir}/isdn'" >> .config
 		echo "LIBDIR='%{libdir}'" >> .config
-		echo "CONFIG_FIRMWAREDIR='/usr/share/isdn'" >> .config
-		echo "CONFIG_CARD_SBINDIR='/sbin'" >> .config
+		echo "CONFIG_FIRMWAREDIR='%{datadir}/isdn'" >> .config
+		echo "CONFIG_CARD_SBINDIR='%{sbindir}'" >> .config
 		sed -e "s,',,g" .config > .config.h
 	end
 
@@ -76,10 +76,6 @@ build
 	install
 		mkdir -pv %{BUILDROOT}/usr/sbin
 		make install CFLAGS="%{CFLAGS}" LIBDIR="%{libdir}" DESTDIR="%{BUILDROOT}"
-
-		# Install udev rules for isdn.
-		mkdir -pv %{BUILDROOT}/%{lib}/udev/rules.d/
-		install -m 644 %{DIR_SOURCE}/40-isdn.rules %{BUILDROOT}/%{lib}/udev/rules.d/
 
 		# Install config files for capi.
 		mkdir -pv %{BUILDROOT}/etc
@@ -95,6 +91,10 @@ end
 packages
 	package %{name}
 		prerequires += systemd-units
+
+		conflicts
+			filesystem < 002
+		end
 
 		configfiles
 			/etc/capi.conf
