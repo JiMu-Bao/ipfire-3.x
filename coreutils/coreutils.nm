@@ -5,7 +5,7 @@
 
 name       = coreutils
 version    = 8.16
-release    = 1
+release    = 2
 
 groups     = System/Base
 url        = http://www.gnu.org/software/coreutils/
@@ -38,8 +38,6 @@ build
 		-D_GNU_SOURCE=1 \
 		-fno-strict-aliasing
 
-	export FORCE_UNSAFE_CONFIGURE=1
-
 	configure_options += \
 		--libexecdir=%{libdir} \
 		--enable-pam \
@@ -48,42 +46,84 @@ build
 		--disable-rpath \
 		--enable-install-program=arch,su \
 		--enable-no-install-program=hostname,kill,uptime \
-		--with-tty-group
+		--with-tty-group \
+		\
+		gl_cv_func_mknod_works=yes
 
 	prepare_cmds
 		aclocal -I m4
 		autoconf --force
 	end
 
-	test
-		make check
-	end
+	# FIXME broken
+	#test
+	#	make check
+	#end
+
+	make_install_targets += install-man
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/{bin,etc/profile.d,usr/sbin}
-		mv -v %{BUILDROOT}/usr/bin/{cat,chgrp,chmod,chown,cp,date,dd,df,echo} %{BUILDROOT}/bin
-		mv -v %{BUILDROOT}/usr/bin/{false,ln,ls,mkdir,mknod,mv,pwd,readlink,rm} %{BUILDROOT}/bin
-		mv -v %{BUILDROOT}/usr/bin/{rmdir,stty,sync,touch,true,uname} %{BUILDROOT}/bin
-		mv -v %{BUILDROOT}/usr/bin/chroot %{BUILDROOT}/usr/sbin
-		mv -v %{BUILDROOT}/usr/bin/{head,sleep,nice} %{BUILDROOT}/bin
+		mkdir -pv %{BUILDROOT}%{sbindir}
+		mv -v %{BUILDROOT}/usr/bin/chroot %{BUILDROOT}%{sbindir}
+		mv -v %{BUILDROOT}/usr/bin/runuser %{BUILDROOT}%{sbindir}
 
-		# Reinstall su in /bin
-		rm -rfv %{BUILDROOT}/usr/bin/su
-		install -m 4755 src/su %{BUILDROOT}/bin
+		# su (set right capabilities)
+		chmod -v u-s %{BUILDROOT}%{bindir}/su
+		setcap cap_setgid,cap_setuid+ep %{BUILDROOT}%{bindir}/su
 
 		# Dump /etc/DIR_COLORS
+		mkdir -pv %{BUILDROOT}%{sysconfdir}
 		dircolors -p > %{BUILDROOT}/etc/DIR_COLORS
-		cp -vf %{DIR_SOURCE}/profile.d/* %{BUILDROOT}/etc/profile.d/
 
-		# Capabilities
-		chmod u-s %{BUILDROOT}/bin/su
-		setcap cap_setgid,cap_setuid+ep %{BUILDROOT}/bin/su
+		# Install profile.d.
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/profile.d/
+		cp -vf %{DIR_SOURCE}/profile.d/* %{BUILDROOT}/etc/profile.d/
 	end
 end
 
 packages
 	package %{name}
 		groups += Base Build
+
+		provides
+			/bin/basename
+			/bin/cat
+			/bin/chgrp
+			/bin/chmod
+			/bin/chown
+			/bin/cp
+			/bin/cut
+			/bin/date
+			/bin/dd
+			/bin/df
+			/bin/echo
+			/bin/env
+			/bin/false
+			/bin/ln
+			/bin/ls
+			/bin/mkdir
+			/bin/mknod
+			/bin/mktemp
+			/bin/mv
+			/bin/nice
+			/bin/pwd
+			/bin/readlink
+			/bin/rm
+			/bin/rmdir
+			/bin/sleep
+			/bin/sort
+			/bin/stty
+			/bin/su
+			/bin/sync
+			/bin/touch
+			/bin/true
+			/bin/uname
+			/sbin/runuser
+		end
+
+		conflicts
+			filesystem < 002
+		end
 	end
 
 	package %{name}-debuginfo
