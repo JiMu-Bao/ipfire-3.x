@@ -6,7 +6,7 @@
 name       = util-linux
 major_ver  = 2.21
 version    = %{major_ver}
-release    = 1
+release    = 2
 
 groups     = System/Base
 url        = http://kernel.org/~kzak/util-linux/
@@ -40,8 +40,6 @@ build
 		-D_FILE_OFFSET_BITS=64
 
 	configure_options += \
-		--bindir=/bin \
-		--sbindir=/sbin \
 		--disable-wall \
 		--enable-kill \
 		--enable-login-utils \
@@ -64,29 +62,29 @@ build
 	end
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/sbin \
+		mkdir -pv \
 			%{BUILDROOT}/var/lib/hwclock \
 			%{BUILDROOT}/usr/share/man/man8 \
 			%{BUILDROOT}/var/log
 
-		install -m 755 %{DIR_APP}/nologin %{BUILDROOT}/sbin
+		install -m 755 %{DIR_APP}/nologin %{BUILDROOT}%{sbindir}
 		install -m 644 %{DIR_SOURCE}/nologin.8 %{BUILDROOT}/usr/share/man/man8/
 
 		touch %{BUILDROOT}/var/log/lastlog
 
 		# Remove deprecated commands
-		rm -fv %{BUILDROOT}/{sbin,usr/share/man/man*}/{fsck,mkfs}.{bfs,minix}* \
-			%{BUILDROOT}/usr/{,s}bin/{chkdupexe,newgrp,vi{gr,pw}} \
-			%{BUILDROOT}/sbin/{sln,shutdown} %{BUILDROOT}/bin/{line,pg}
+		rm -fv %{BUILDROOT}/{%{sbindir},usr/share/man/man*}/{fsck,mkfs}.{bfs,minix}* \
+			%{BUILDROOT}{%{bindir},%{sbindir}}/{chkdupexe,newgrp,vi{gr,pw}} \
+			%{BUILDROOT}%{sbindir}/{sln,shutdown} %{BUILDROOT}%{bindir}/{line,pg}
 		rm -fv %{BUILDROOT}/usr/share/man/man1/{chkdupexe,line,pg,newgrp}.* \
 			%{BUILDROOT}/usr/share/man/man8/{vipw,vigr}.*
 		rm -fv %{BUILDROOT}/usr/share/getopt/*.tcsh
 
 		# Set capabilities
-		chmod -v -s %{BUILDROOT}/bin/mount
-		setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep %{BUILDROOT}/bin/mount
-		chmod -v -s %{BUILDROOT}/bin/umount
-		setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep %{BUILDROOT}/bin/umount
+		chmod -v -s %{BUILDROOT}%{bindir}/mount
+		setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep %{BUILDROOT}%{bindir}/mount
+		chmod -v -s %{BUILDROOT}%{bindir}/umount
+		setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep %{BUILDROOT}%{bindir}/umount
 	end
 end
 
@@ -98,9 +96,23 @@ packages
 			/etc/pam.d/system-auth
 		end
 
+		provides
+			/bin/dmesg
+			/bin/kill
+			/bin/more
+			/bin/mount
+			/bin/umount
+			/sbin/blkid
+			/sbin/blockdev
+			/sbin/findfs
+			/sbin/fsck
+			/sbin/nologin
+		end
+
 		obsoletes = util-linux-ng
 
 		conflicts
+			filesystem < 002
 			setup < 3.0-2
 			util-linux-ng
 			sysvinit <= 2.86-2
@@ -124,6 +136,8 @@ packages
 			This is the block device identification library,
 			part of util-linux.
 		end
+
+		conflicts = filesystem < 002
 
 		files
 			%{libdir}/libblkid.*
@@ -151,6 +165,8 @@ packages
 			part of util-linux.
 		end
 
+		conflicts = filesystem < 002
+
 		files
 			%{libdir}/libuuid.*
 		end
@@ -176,6 +192,8 @@ packages
 			This is the device mounting library,
 			part of util-linux.
 		end
+
+		conflicts = filesystem < 002
 
 		files
 			%{libdir}/libmount.*
