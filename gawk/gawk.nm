@@ -5,7 +5,7 @@
 
 name       = gawk
 version    = 4.0.1
-release    = 1
+release    = 2
 
 groups     = System/Tools
 url        = http://www.gnu.org/software/gawk/gawk.html
@@ -28,8 +28,6 @@ build
 	end
 
 	configure_options += \
-		--bindir=/bin \
-		--libexecdir=%{libdir} \
 		--with-libsigsegv-prefix=no
 
 	test
@@ -37,20 +35,25 @@ build
 	end
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/usr/bin
-		ln -svf ../../bin/awk %{BUILDROOT}/usr/bin/awk
-		ln -svf ../../bin/gawk %{BUILDROOT}/usr/bin/gawk
-
-		mv -v %{BUILDROOT}/bin/{p,i}gawk %{BUILDROOT}/usr/bin/
+		ln -svf gawk %{BUILDROOT}/usr/bin/awk
 
 		# Remove versioned binary.
-		rm -rfv %{BUILDROOT}/bin/{,p}gawk-*
+		rm -rfv %{BUILDROOT}%{bindir}/{,p}gawk-*
 	end
 end
 
 packages
 	package %{name}
 		groups += Base Build
+
+		provides
+			/bin/awk
+			/bin/gawk
+		end
+
+		conflicts
+			filesystem < 002
+		end
 	end
 
 	package %{name}-debuginfo
