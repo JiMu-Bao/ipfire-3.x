@@ -35,16 +35,14 @@ fi
 
 # Path manipulation
 if [ "$EUID" = "0" ]; then
-    pathmunge /sbin
     pathmunge /usr/sbin
     pathmunge /usr/local/sbin
 else
     pathmunge /usr/local/sbin after
     pathmunge /usr/sbin after
-    pathmunge /sbin after
 fi
 
-HOSTNAME=`/bin/hostname 2>/dev/null`
+HOSTNAME=`/usr/bin/hostname 2>/dev/null`
 HISTSIZE=1000
 if [ "$HISTCONTROL" = "ignorespace" ] ; then
     export HISTCONTROL=ignoreboth

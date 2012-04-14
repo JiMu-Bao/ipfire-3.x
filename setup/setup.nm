@@ -5,7 +5,7 @@
 
 name       = setup
 version    = 3.0
-release    = 4
+release    = 5
 arch       = noarch
 
 groups     = Base Build System/Base
@@ -49,6 +49,10 @@ end
 packages
 	package %{name}
 		requires = iana-etc
+
+		conflicts
+			filesystem < 002
+		end
 
 		configfiles
 			/etc/aliases
