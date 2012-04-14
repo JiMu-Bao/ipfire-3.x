@@ -37,8 +37,10 @@ build
 
 	# Install libraries to correct place.
 	make_install_targets += \
+		BINDIR="%{BUILDROOT}%{bindir}" \
+		SBINDIR="%{BUILDROOT}%{sbindir}" \
 		LIBDIR="%{BUILDROOT}%{libdir}" \
-		SHLIBDIR="%{BUILDROOT}/%{lib}"
+		SHLIBDIR="%{BUILDROOT}%{libdir}"
 
 	install_cmds
 		make install-pywrap %{make_install_targets} DESTDIR=%{BUILDROOT}
@@ -57,9 +59,6 @@ build
 		rm -f %{BUILDROOT}/usr/sbin/selinuxdisable
 		rm -f %{BUILDROOT}/usr/sbin/getseuser
 		rm -f %{BUILDROOT}/usr/sbin/selinux_check_securetty_context
-
-		# Move binaries from /sbin to /usr/sbin
-		mv %{BUILDROOT}/sbin/* %{BUILDROOT}/usr/sbin
 	end
 end
 
@@ -78,7 +77,7 @@ packages
 
 		files
 			/usr/sbin/*
-			/usr/share/man/man{5,8}/*
+			/usr/share/man/man{5,8}
 		end
 	end
 	
