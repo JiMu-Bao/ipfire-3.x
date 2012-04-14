@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = filesystem
-version    = 001
-release    = 3
+version    = 002
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Base Build System/Base
@@ -24,6 +24,12 @@ end
 sources   =
 
 build
+	# Pakfire supports python scriptlets since
+	# version 0.9.22.
+	requires
+		pakfire-builder >= 0.9.22
+	end
+
 	DIR_APP = %{DIR_SRC}
 
 	build
@@ -33,23 +39,18 @@ build
 	install
 		cd %{BUILDROOT}
 		mkdir -pv \
-			bin \
 			boot \
 			dev \
 			etc/pki \
 			etc/skel \
 			etc/sysconfig \
 			home \
-			lib \
-			%{lib} \
-			lib/modules \
 			media \
 			mnt \
 			opt \
 			proc \
 			root \
 			run/lock \
-			sbin \
 			srv \
 			sys \
 			tmp \
@@ -58,6 +59,7 @@ build
 			usr/lib \
 			usr/%{lib} \
 			usr/lib/locale \
+			usr/lib/modules \
 			usr/sbin \
 			usr/share/{aclocal,dict,doc,empty,info,mime-info,misc} \
 			usr/share/man/man{1,2,3,4,5,6,7,8,9,n,1x,2x,3x,4x,5x,6x,7x,8x,9x,0p,1p,3p} \
@@ -83,6 +85,11 @@ build
 			var/db \
 			var/cache
 
+		ln -snf usr/bin bin
+		ln -snf usr/sbin sbin
+		ln -snf usr/lib lib
+		[ "%{lib}" = "lib" ] || ln -snf usr/%{lib} %{lib}
+
 		ln -snf ../var/tmp usr/tmp
 		ln -snf spool/mail var/mail
 
@@ -100,6 +107,23 @@ end
 packages
 	package %{name}
 		prerequires = setup
+
+		# We do not know, if the filesystem package is the first
+		# in the transaction, so we create the symlinks prior to running
+		# the transaction.
+		script pretransin python
+			if not os.path.exists("/usr"):
+				os.makedirs("/usr")
+
+			for dir in ("/lib", "/%{lib}", "/sbin", "/bin"):
+				usr_dir = "/usr%s" % dir
+
+				if not os.path.exists(usr_dir):
+					os.makedirs(usr_dir)
+
+				if not os.path.exists(dir):
+					os.symlink(usr_dir[1:], dir)
+		end
 	end
 
 	# Although this package is not noarch, it does not
