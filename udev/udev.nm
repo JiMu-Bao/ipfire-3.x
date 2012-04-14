@@ -5,7 +5,7 @@
 
 name       = udev
 version    = 182
-release    = 2
+release    = 3
 
 groups     = System/Base
 url        = ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug/
@@ -21,6 +21,7 @@ source_dl  = ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug/
 
 build
 	requires
+		filesystem >= 002
 		glib2-devel
 		gobject-introspection-devel
 		gperf
@@ -34,24 +35,29 @@ build
 		libusb-compat-devel
 		libxslt
 		pciutils
-		pkg-config
+		shadow-utils
+		systemd-units
 		usbutils
 	end
 
 	configure_options += \
-		--with-rootprefix="" \
-		--libexecdir=/lib \
+		--libexecdir=%{prefix}/lib \
 		--with-selinux \
-		--with-systemdsystemunitdir=/lib/systemd/system
+		--with-systemdsystemunitdir=%{unitdir}
 end
 
 packages
 	package %{name}
 		groups += Base
 
-		prerequires
-			shadow-utils
+		requires
+			hwdata
 			systemd-units
+			util-linux
+		end
+
+		conflicts
+			filesystem < 002
 		end
 
 		script prein
@@ -74,6 +80,10 @@ packages
 
 	package lib%{name}
 		template LIBS
+
+		conflicts
+			filesystem < 002
+		end
 	end
 
 	package lib%{name}-devel
