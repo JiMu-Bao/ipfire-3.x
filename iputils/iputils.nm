@@ -5,7 +5,7 @@
 
 name       = iputils
 version    = s20071127
-release    = 3
+release    = 4
 
 groups     = Networking/Tools
 url        = http://www.skbuff.net/iputils
@@ -48,39 +48,45 @@ build
 	end
 
 	install
-		mkdir -pv %{BUILDROOT}/{bin,sbin} %{BUILDROOT}/usr/sbin
-		mkdir -pv %{BUILDROOT}/usr/share/man/man8
+		mkdir -pv %{BUILDROOT}{%{bindir},%{sbindir}}
+		mkdir -pv %{BUILDROOT}%{mandir}/man8
 
-		install -cp clockdiff	%{BUILDROOT}/usr/sbin/
-		install -cp arping	%{BUILDROOT}/sbin/
-		install -cp ping	%{BUILDROOT}/bin/
-		install -cp ping6	%{BUILDROOT}/bin/
-		install -cp rdisc	%{BUILDROOT}/sbin/
-		install -cp tracepath	%{BUILDROOT}/bin/
-		install -cp tracepath6	%{BUILDROOT}/bin/
+		install -cp clockdiff        %{BUILDROOT}%{sbindir}
+		install -cp arping           %{BUILDROOT}%{sbindir}
+		install -cp ping             %{BUILDROOT}%{bindir}
+		install -cp ping6            %{BUILDROOT}%{bindir}
+		install -cp rdisc            %{BUILDROOT}%{sbindir}
+		install -cp tracepath        %{BUILDROOT}%{bindir}
+		install -cp tracepath6       %{BUILDROOT}%{bindir}
 
-		install -cp doc/clockdiff.8 %{BUILDROOT}/usr/share/man/man8/
-		install	-cp doc/arping.8 %{BUILDROOT}/usr/share/man/man8/
-		install	-cp doc/ping.8 %{BUILDROOT}/usr/share/man/man8/
-		install	-cp doc/rdisc.8 %{BUILDROOT}/usr/share/man/man8/
-		install	-cp doc/tracepath.8 %{BUILDROOT}/usr/share/man/man8/
+		install -cp doc/clockdiff.8  %{BUILDROOT}%{mandir}/man8/
+		install	-cp doc/arping.8     %{BUILDROOT}%{mandir}/man8/
+		install	-cp doc/ping.8       %{BUILDROOT}%{mandir}/man8/
+		install	-cp doc/rdisc.8      %{BUILDROOT}%{mandir}/man8/
+		install	-cp doc/tracepath.8  %{BUILDROOT}%{mandir}/man8/
 
-		ln -svf ../../sbin/arping	%{BUILDROOT}/usr/sbin/arping
-		ln -svf ../../bin/ping6		%{BUILDROOT}/usr/sbin/
-		ln -svf ../../bin/tracepath	%{BUILDROOT}/usr/sbin/
-		ln -svf ../../bin/tracepath6	%{BUILDROOT}/usr/sbin/
+		ln -svf ../bin/ping6         %{BUILDROOT}%{sbindir}
+		ln -svf ../bin/tracepath     %{BUILDROOT}%{sbindir}
+		ln -svf ../bin/tracepath6    %{BUILDROOT}%{sbindir}
 
-		ln -s ping.8 %{BUILDROOT}/usr/share/man/man8/ping6.8
-		ln -s tracepath.8 %{BUILDROOT}/usr/share/man/man8/tracepath6.8
+		ln -s ping.8                 %{BUILDROOT}%{mandir}/man8/ping6.8
+		ln -s tracepath.8            %{BUILDROOT}%{mandir}/man8/tracepath6.8
 
-		setcap cap_net_admin=ep %{BUILDROOT}/bin/ping
-		setcap cap_net_admin=ep %{BUILDROOT}/bin/ping6
+		setcap cap_net_admin=ep %{BUILDROOT}%{bindir}/ping
+		setcap cap_net_admin=ep %{BUILDROOT}%{bindir}/ping6
 	end
 end
 
 packages
 	package %{name}
 		groups += Base
+
+		provides
+			/bin/ping
+			/bin/ping6
+			/sbin/arping
+			/sbin/rdisc
+		end
 	end
 
 	package %{name}-debuginfo
