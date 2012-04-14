@@ -5,7 +5,7 @@
 
 name       = sed
 version    = 4.2.1
-release    = 2
+release    = 3
 
 groups     = Applications/Text
 url        = http://sed.sourceforge.net/
@@ -28,9 +28,7 @@ build
 	end
 
 	configure_options += \
-		--bindir=/bin \
-		--without-included-regex \
-		--mandir=/usr/share/man
+		--without-included-regex
 
 	test
 		make check
@@ -40,6 +38,14 @@ end
 packages
 	package %{name}
 		groups += Base Build
+
+		provides
+			/bin/sed
+		end
+
+		conflicts
+			filesystem < 002
+		end
 	end
 
 	package %{name}-debuginfo
