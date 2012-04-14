@@ -5,7 +5,7 @@
 
 name       = pam
 version    = 1.1.5
-release    = 1
+release    = 2
 thisapp    = Linux-PAM-%{version}
 
 groups     = System/Base
@@ -34,20 +34,12 @@ build
 	end
 
 	configure_options += \
-		--libdir=/%{lib} \
 		--includedir=%{includedir}/security \
 		--docdir=/usr/share/doc/Linux-PAM-%{version} \
 		--enable-read-both-confs \
 		--disable-rpath
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}%{libdir}
-		for LINK in libpam{,c,_misc}.so; do
-			ln -v -sf ../../%{lib}/$(readlink %{BUILDROOT}/%{lib}/${LINK}) \
-				%{BUILDROOT}%{libdir}/${LINK}
-			rm -v %{BUILDROOT}/%{lib}/${LINK}
-		done
-
 		#useradd -D -b /home
 		#sed -i 's/yes/no/' %{BUILDROOT}/etc/default/useradd
 		mkdir -pv %{BUILDROOT}/etc/security
