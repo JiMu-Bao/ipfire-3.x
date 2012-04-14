@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = pakfire
-version    = 0.9.21
+version    = 0.9.22
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -43,6 +43,12 @@ build
 		cd %{DIR_APP}/python/src/ && python -c "import _pakfire"
 		cd %{DIR_APP}/python/src/ && python -c "import _lzma"
 	end
+
+	install_cmds
+		# Remove all example repository definitions.
+		# Those will be solely provided by system-release.
+		rm -rfv %{BUILDROOT}%{sysconfdir}/pakfire/repos/*
+	end
 end
 
 packages
@@ -54,26 +60,33 @@ packages
 
 	package %{name}-common
 		requires
+			pygpgme
 			python-progressbar
 			python-urlgrabber
 			system-release
 		end
 
 		files
+			%{sysconfdir}/pakfire/general.conf
+			%{bindir}/pakfire-key
 			/usr/lib/pakfire/pakfire-multicall.py
 			%{libdir}/python*/site-packages/pakfire*
 			/usr/share/locale
 		end
+		configfiles = %{sysconfdir}/pakfire/general.conf
 	end
-	
+
 	package %{name}-builder
-		summary = The pakfire builder.
+		summary = The Pakfire builder.
 		description
 			The tools that are needed to build new pakfire packages.
 		end
 		groups += Build
 
 		requires
+			# For --rpm-requires.
+			bash >= 4.2-7
+
 			%{name} = %{thisver}
 			quality-agent = %{thisver}
 			cpio
@@ -81,15 +94,62 @@ packages
 		end
 		provides = pakfire-build = %{thisver}
 		obsoletes = pakfire-build < %{thisver}
-		conflicts = build-essentials
+
+		conflicts
+			build-essentials
+			systemd-devel < 38
+		end
+
+		configfiles
+			/etc/pakfire/builder.conf
+			/etc/pakfire/distros
+		end
 
 		files
+			/etc/pakfire/builder.conf
+			/etc/pakfire/distros
 			%{libdir}/libpakfire_preload.so
-			/usr/bin/pakfire-builder
-			/usr/bin/pakfire-server
+			%{bindir}/pakfire-builder
+			%{bindir}/pakfire-server
 			/usr/lib/pakfire/*
 			!/usr/lib/pakfire/pakfire-multicall.py
 		end
+	end
+
+	package %{name}-client
+		summary = The Pakfire XMLRPC client.
+		description
+			The pakfire client has the power to create build jobs
+			and communicate with the Pakfire Build Service.
+		end
+
+		requires
+			pakfire-common = %{thisver}
+		end
+
+		files
+			%{sysconfdir}/pakfire/client.conf
+			%{bindir}/pakfire-client
+		end
+		configfiles = %{sysconfdir}/pakfire/client.conf
+	end
+
+	package %{name}-daemon
+		summary = The Pakfire daemon.
+		description
+			The Pakfire daemon takes build jobs from the
+			Pakfire Build Service and compiles them.
+		end
+
+		requires
+			pakfire-builder = %{thisver}
+		end
+
+		files
+			%{sysconfdir}/pakfire/daemon.conf
+			%{bindir}/pakfire-daemon
+		end
+		configfiles = %{sysconfdir}/pakfire/daemon.conf
 	end
 
 	package quality-agent
@@ -104,7 +164,8 @@ packages
 		end
 
 		files
-			/usr/lib/pakfire/quality-agent*
+			/usr/lib/pakfire/quality-agent
+			/usr/lib/quality-agent*
 		end
 
 		requires
