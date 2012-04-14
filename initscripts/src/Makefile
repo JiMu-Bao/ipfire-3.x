@@ -3,6 +3,7 @@ PROGS = ipcalc securetty
 
 CC = gcc
 CFLAGS += -D_GNU_SOURCE $(shell pkg-config --cflags glib-2.0)
+prefix ?= /usr
 
 all: $(PROGS)
 
@@ -14,9 +15,9 @@ test: ipcalc
 
 install: $(PROGS)
 	# Install binaries
-	-mkdir -pv $(DESTDIR)/lib/udev $(DESTDIR)/{,s}bin
-	install -v -m 755 ipcalc $(DESTDIR)/bin
-	install -v -m 755 securetty $(DESTDIR)/sbin
+	-mkdir -pv $(DESTDIR)$(prefix)/lib/udev $(DESTDIR)$(prefix)/{,s}bin
+	install -v -m 755 ipcalc $(DESTDIR)$(prefix)/bin
+	install -v -m 755 securetty $(DESTDIR)$(prefix)/sbin
 
 	# Install man pages
 	-mkdir -pv $(DESTDIR)/usr/share/man/man1

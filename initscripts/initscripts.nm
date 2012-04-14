@@ -6,7 +6,7 @@
 name       = initscripts
 epoch      = 1
 version    = 2.99
-release    = 14
+release    = 15
 
 groups     = System/Boot
 url        =
@@ -25,6 +25,8 @@ build
 	requires
 		glib2-devel
 		popt-devel
+		shadow-utils
+		systemd-units
 	end
 
 	DIR_APP = %{DIR_SOURCE}
@@ -48,8 +50,8 @@ build
 		install -v -m 755 %{DIR_SOURCE}/rc.local %{BUILDROT}/etc/rc.local
 
 		# Install udev rules
-		mkdir -pv %{BUILDROOT}/lib/udev/rules.d/
-		cp -vf %{DIR_SOURCE}/udev/* %{BUILDROOT}/lib/udev/rules.d/
+		mkdir -pv %{BUILDROOT}%{prefix}/lib/udev/rules.d/
+		cp -vf %{DIR_SOURCE}/udev/* %{BUILDROOT}%{prefix}/lib/udev/rules.d/
 	end
 end
 
@@ -69,6 +71,10 @@ packages
 			system-release
 			udev
 			util-linux
+		end
+
+		conflicts
+			filesystem  < 002
 		end
 
 		configfiles
