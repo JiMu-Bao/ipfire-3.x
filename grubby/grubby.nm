@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = grubby
-version    = 8.9
+version    = 8.11
 release    = 1
 
 groups     = System/Base
@@ -36,6 +36,11 @@ build
 	end
 
 	make_install_targets += mandir=%{mandir}
+
+	install_cmds
+		mkdir -pv %{BUILDROOT}%{prefix}
+		mv -v %{BUILDROOT}{,%{prefix}}/sbin
+	end
 end
 
 packages
