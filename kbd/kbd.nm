@@ -5,7 +5,7 @@
 
 name       = kbd
 version    = 1.15.3
-release    = 1
+release    = 2
 epoch      = 1
 
 groups     = System/Base
@@ -31,7 +31,7 @@ build
 	end
 
 	configure_options += \
-		--datadir=/lib/kbd \
+		--datadir=%{prefix}/lib/kbd \
 		--disable-rpath \
 		--enable-nls
 
@@ -62,15 +62,13 @@ build
 		cd %{DIR_APP}/po
 		rm -f gr.po gr.gmo
 	end
-
-	install_cmds
-		mkdir -pv %{BUILDROOT}/bin
-		mv -v %{BUILDROOT}/usr/bin/{kbd_mode,loadkeys,openvt,setfont} %{BUILDROOT}/bin
-	end
 end
 
 packages
 	package %{name}
+		conflicts
+			filesystem < 002
+		end
 	end
 
 	package %{name}-debuginfo
