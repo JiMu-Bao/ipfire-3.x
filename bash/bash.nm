@@ -5,7 +5,7 @@
 
 name       = bash
 version    = 4.2
-release    = 8
+release    = 9
 
 groups     = System/Tools
 url        = http://www.gnu.org/software/bash/
@@ -26,6 +26,7 @@ build
 		autoconf
 		automake
 		bison
+		filesystem >= 002
 		ncurses-devel
 		readline-devel
 	end
@@ -41,7 +42,6 @@ build
 	end
 
 	configure_options += \
-		--bindir=/bin \
 		--without-bash-malloc \
 		--with-installed-readline
 
@@ -51,7 +51,7 @@ build
 	#end
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/{bin,etc/profile.d,root}
+		mkdir -pv %{BUILDROOT}/{etc/profile.d,root}
 
 		# Bash startup files
 		cp -vf %{DIR_SOURCE}/dot_bash_logout %{BUILDROOT}/root/.bash_logout
@@ -61,7 +61,7 @@ build
 		# /etc/profile.d
 		cp -vf %{DIR_SOURCE}/profile.d/* %{BUILDROOT}/etc/profile.d
 
-		ln -svf bash %{BUILDROOT}/bin/sh
+		ln -svf bash %{BUILDROOT}%{bindir}/sh
 	end
 end
 
@@ -73,6 +73,15 @@ packages
 			coreutils
 			/etc/bashrc
 			/etc/profile
+		end
+
+		provides
+			/bin/bash
+			/bin/sh
+		end
+
+		conflicts
+			filesystem < 002
 		end
 
 		script posttransin
