@@ -8,7 +8,7 @@ build_cloog_ppl = 1
 
 name       = gcc
 version    = 4.6.3
-release    = 4
+release    = 5
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -49,6 +49,7 @@ build
 		dejagnu
 		elfutils-devel
 		expect
+		filesystem >= 002
 		flex
 		glibc-devel
 		gmp-devel
@@ -223,8 +224,8 @@ build
 		FULLPATH="%{BUILDROOT}%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}"
 		[ -d "${FULLPATH}" ] || exit 1
 
-		mkdir -pv %{BUILDROOT}/lib
-		ln -sfv ../usr/bin/cpp %{BUILDROOT}/lib/cpp
+		mkdir -pv %{BUILDROOT}%{prefix}/lib
+		ln -sfv ../bin/cpp %{BUILDROOT}%{prefix}/lib/cpp
 		ln -sfv gcc %{BUILDROOT}/usr/bin/cc
 
 		# Fix libgcc_s symlinks.
@@ -289,6 +290,7 @@ packages
 
 		requires
 			binutils >= %{required_binutils_version}
+			filesystem >= 002
 			glibc-devel
 			gmp-devel
 			cpp = %{thisver}
@@ -353,11 +355,13 @@ packages
 		group = Development/Languages
 
 		files
-			/lib/cpp
-			/usr/bin/cpp
-			/usr/share/man/man1/cpp.1*
+			%{prefix}/lib/cpp
+			%{bindir}/cpp
+			%{mandir}/man1/cpp.1*
 			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/cc1
 		end
+
+		provides = /lib/cpp
 	end
 
 	package libgcc
