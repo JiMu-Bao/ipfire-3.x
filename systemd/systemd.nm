@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = systemd
-version    = 37
-release    = 4
+version    = 44
+release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -21,6 +21,8 @@ end
 source_dl  = http://cgit.freedesktop.org/systemd/systemd/snapshot/
 
 build
+	unitdir = %{prefix}/lib/systemd/system
+
 	requires
 		audit-devel
 		automake
@@ -32,22 +34,20 @@ build
 		gperf
 		gettext-devel
 		intltool
+		kmod-devel >= 5
 		libacl-devel
 		libcap-devel
 		libselinux-devel
 		libtool
-		libudev-devel>=172
+		libudev-devel >= 172
 		pam-devel
 		vala
+		xz-devel
 	end
 
 	configure_options += \
-		--sysconfdir=/etc \
 		--libexecdir=%{libdir} \
-		--with-rootdir= \
-		--with-distro=ipfire \
-		--with-udevrulesdir=/lib/udev/rules.d/ \
-		--with-pamlibdir=/%{lib}/security
+		--with-distro=ipfire
 
 	prepare_cmds
 		./autogen.sh ac
@@ -59,43 +59,47 @@ build
 
 	install_cmds
 		# Create sysv compatible symlinks.
-		mkdir -pv %{BUILDROOT}/sbin
-		ln -svf ../bin/systemd   %{BUILDROOT}/sbin/init
-		ln -svf ../bin/systemctl %{BUILDROOT}/sbin/reboot
-		ln -svf ../bin/systemctl %{BUILDROOT}/sbin/halt
-		ln -svf ../bin/systemctl %{BUILDROOT}/sbin/poweroff
-		ln -svf ../bin/systemctl %{BUILDROOT}/sbin/shutdown
+		mkdir -pv %{BUILDROOT}%{sbindir}
+		ln -svf ../lib/systemd/systemd  %{BUILDROOT}/%{sbindir}/init
+		ln -svf ../lib/systemd/systemd  %{BUILDROOT}/%{bindir}/systemd
+		ln -svf ../bin/systemctl %{BUILDROOT}/%{sbindir}/reboot
+		ln -svf ../bin/systemctl %{BUILDROOT}/%{sbindir}/halt
+		ln -svf ../bin/systemctl %{BUILDROOT}/%{sbindir}/poweroff
+		ln -svf ../bin/systemctl %{BUILDROOT}/%{sbindir}/shutdown
 
 		# Create empty machine-id file.
 		touch %{BUILDROOT}/etc/machine-id
 
 		# Copy locale and console settings
-		mkdir -pv %{BUILDROOT}/etc
-		cp -vf %{DIR_SOURCE}/locale.conf %{BUILDROOT}/etc/
-		cp -vf %{DIR_SOURCE}/vconsole.conf %{BUILDROOT}/etc/
+		mkdir -pv %{BUILDROOT}%{sysconfdir}
+		cp -vf %{DIR_SOURCE}/{locale,vconsole}.conf %{BUILDROOT}%{sysconfdir}
 
 		# Recreate all targets
-		rm -rfv %{BUILDROOT}/etc/systemd/system/*.target.wants
-		mkdir -pv %{BUILDROOT}/lib/systemd/system/basic.target.wants
-		mkdir -pv %{BUILDROOT}/lib/systemd/system/default.target.wants
-		mkdir -pv %{BUILDROOT}/lib/systemd/system/dbus.target.wants
-		mkdir -pv %{BUILDROOT}/lib/systemd/system/syslog.target.wants
+		rm -rfv %{BUILDROOT}%{unitdir}/*.target.wants
+		for i in basic.target.wants default.target.wants dbus.target.wants syslog.target.wants; do
+			mkdir -pv %{BUILDROOT}%{unitdir}/${i} || exit 1
+		done
 
 		# Remove runlevel targets and graphical.target
-		rm -rfv %{BUILDROOT}/lib/systemd/system/runlevel*
-		rm -rfv %{BUILDROOT}/lib/systemd/system/graphical.target
+		rm -rfv %{BUILDROOT}%{unitdir}/runlevel*
+		rm -rfv %{BUILDROOT}%{unitdir}/graphical.target
 
 		# Set default target to multi-user
-		cd %{BUILDROOT}/lib/systemd/system && ln -svf multi-user.target default.target
+		ln -svf multi-user.target %{BUILDROOT}%{unitdir}/default.target
 
 		# Replace absolute symlinks by relative ones.
-		cd %{BUILDROOT}/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/bluetooth.target bluetooth.target
-		cd %{BUILDROOT}/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/local-fs.target local-fs.target
-		cd %{BUILDROOT}/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/printer.target printer.target
-		cd %{BUILDROOT}/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/shutdown.target shutdown.target
-		cd %{BUILDROOT}/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/sockets.target sockets.target
-		cd %{BUILDROOT}/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/sound.target sound.target
-		cd %{BUILDROOT}/usr/lib/systemd/user/ && ln -svf ../../../../lib/systemd/system/swap.target swap.target
+		cd %{BUILDROOT}%{unitdir}/../user
+		for i in bluetooth local-fs printer remote-fs shutdown sockets sound swap; do
+			ln -svf ../system/${i}.target ${i}.target || exit 1
+		done
+
+		# Replace absolute symlink for getty@tty1.service.
+		ln -svf ../../../../%{unitdir}/getty@.service \
+			%{BUILDROOT}%{sysconfdir}/systemd/system/getty.target.wants/getty@tty1.service
+
+		# Replace absolute symlink for remote-fs.target.
+		ln -svf ../../../../%{unitdir}/remote-fs.target \
+			%{BUILDROOT}%{sysconfdir}/systemd/system/multi-user.target.wants/remote-fs.target
 
 		# Remove tmpfile for X11
 		rm -rfv %{BUILDROOT}/usr/lib/tmpfiles.d/x11.conf
@@ -107,6 +111,8 @@ end
 
 packages
 	package %{name}
+		prerequires += authconfig
+
 		requires
 			dbus
 			python-cairo
@@ -116,28 +122,30 @@ packages
 			util-linux>=2.19
 		end
 
-		prerequires += authconfig
-		conflicts += upstart
+		conflicts
+			filesystem < 002
+			upstart
+		end
 
 		script postin
 			# Generate Machine ID.
-			/bin/systemd-machine-id-setup > /dev/null 2>&1 || :
+			/usr/bin/systemd-machine-id-setup > /dev/null 2>&1 || :
 
 			# Reexec systemd daemon.
-			/bin/systemctl daemon-reexec > /dev/null 2>&1 || :
+			/usr/bin/systemctl daemon-reexec > /dev/null 2>&1 || :
 
 			# Make sure pam_systemd is enabled
-			if ! /bin/grep -q pam_systemd /etc/pam.d/system-auth-ac ; then
-				/usr/sbin/authconfig --update --nostart >/dev/null 2>&1 || :
+			if ! grep -q pam_systemd /etc/pam.d/system-auth-ac ; then
+				authconfig --update --nostart >/dev/null 2>&1 || :
 
 				# Try harder
-				/bin/grep -q pam_systemd /etc/pam.d/system-auth-ac || /usr/sbin/authconfig --updateall --nostart >/dev/null 2>&1 || :
+				grep -q pam_systemd /etc/pam.d/system-auth-ac || authconfig --updateall --nostart >/dev/null 2>&1 || :
 			fi
 		end
 
 		script postup
 			# Restart login service after update
-			/bin/systemctl try-restart systemd-logind.service >/dev/null 2>&1 || :
+			/usr/bin/systemctl try-restart systemd-logind.service >/dev/null 2>&1 || :
 		end
 	end
 
@@ -154,38 +162,34 @@ packages
 			coreutils
 		end
 
-		files
-			/etc/systemd/system
-			/etc/tmpfiles.d
-			/etc/bash_completion.d/systemctl-bash-completion.sh
-			/lib/systemd/system
+		provides
 			/bin/systemctl
-			/bin/systemd-tmpfiles
-			/usr/share/man/man1/systemctl.*
 		end
 
-		script postin
-			# Enable default services.
-			/bin/systemctl enable \
-				getty@.service \
-				remote-fs.target > /dev/null 2>&1 || :
+		conflicts
+			filesystem < 002
 		end
 
-		script preun
-			# Disable default services.
-			/bin/systemctl disable \
-				getty@.service \
-				remote-fs.target > /dev/null 2>&1 || :
+		files
+			%{sysconfdir}/etc/systemd/system
+			%{sysconfdir}/tmpfiles.d
+			%{sysconfdir}/bash_completion.d/systemctl-bash-completion.sh
+			%{unitdir}
+			%{bindir}/systemctl
+			%{bindir}/systemd-tmpfiles
+			%{mandir}/man1/systemctl.*
 		end
 
 		script postup
 			# Reload service files
-			/bin/systemctl daemon-reload > /dev/null 2>&1 || :
+			/usr/bin/systemctl daemon-reload > /dev/null 2>&1 || :
 		end
 	end
 
 	package %{name}-devel
 		template DEVEL
+
+		files += %{prefix}/lib/pakfire/macros/
 	end
 
 	package %{name}-debuginfo
