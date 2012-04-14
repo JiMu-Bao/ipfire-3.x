@@ -5,7 +5,7 @@
 
 name       = linux-firmware
 version    = 20110311
-release    = 2
+release    = 3
 arch       = noarch
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -29,8 +29,8 @@ build
 	end
 
 	install
-		mkdir -pv %{BUILDROOT}/lib/firmware
-		cp -prv * %{BUILDROOT}/lib/firmware
+		mkdir -pv %{BUILDROOT}%{prefix}/lib/firmware
+		cp -prv * %{BUILDROOT}%{prefix}/lib/firmware
 	end
 end
 
