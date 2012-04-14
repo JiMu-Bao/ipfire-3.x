@@ -1,6 +1,5 @@
 [Unit]
 Description=/etc/rc.local Compatiblity
-ConditionFileIsExecuteable=/etc/rc.local
 Requires=multi-user.target
 After=multi-user.target network.target
 
