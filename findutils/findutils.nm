@@ -5,7 +5,7 @@
 
 name       = findutils
 version    = 4.5.10
-release    = 2
+release    = 3
 
 groups     = System/Tools
 url        = http://www.gnu.org/software/findutils/
@@ -35,18 +35,19 @@ build
 	test
 		make check
 	end
-
-	install_cmds
-		mkdir -pv %{BUILDROOT}/bin
-		mv -v %{BUILDROOT}/usr/bin/find %{BUILDROOT}/bin
-
-		sed -i -e 's/find:=${BINDIR}/find:=\/bin/' %{BUILDROOT}/usr/bin/updatedb
-	end
 end
 
 packages
 	package %{name}
 		groups += Base Build
+
+		provides
+			/bin/find
+		end
+
+		conflicts
+			filesystem < 002
+		end
 	end
 
 	package %{name}-debuginfo
