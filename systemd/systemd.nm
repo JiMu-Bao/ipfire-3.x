@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 44
-release    = 2
+release    = 3
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -47,6 +47,7 @@ build
 
 	configure_options += \
 		--libexecdir=%{libdir} \
+		--with-udevrulesdir=%{prefix}/lib/udev/rules.d \
 		--with-distro=ipfire
 
 	prepare_cmds
