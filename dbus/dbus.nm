@@ -4,9 +4,10 @@
 ###############################################################################
 
 name       = dbus
-version    = 1.4.16
-release    = 3
+version    = 1.4.20
+release    = 1
 
+maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Daemons
 url        = http://www.freedesktop.org/software/dbus/
 license    = GPLv2+ AFL
@@ -26,12 +27,13 @@ build
 		expat-devel
 		libcap-ng-devel
 		libselinux-devel
+		systemd-units
 	end
 
 	configure_options += \
 		--enable-libaudit \
 		--enable-selinux=yes \
-		--with-systemdsystemunitdir=/lib/systemd/system/ \
+		--with-systemdsystemunitdir=%{unitdir} \
 		--with-dbus-user=dbus
 end
 
@@ -49,27 +51,27 @@ packages
 
 		# Just search for new unit files that were just installed.
 		script postin
-			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl daemon-reload >/dev/null 2>&1 || :
 
 			# The dbus service should be started on default.
-			/bin/systemctl enable dbus.service > /dev/null 2>&1 || :
+			systemctl enable dbus.service > /dev/null 2>&1 || :
 		end
 
 		# Disable the service that is to be removed and stop it if it is still running.
 		script preun
-			/bin/systemctl --no-reload disable dbus.service >/dev/null 2>&1 || :
-			/bin/systemctl stop dbus.service >/dev/null 2>&1 || :
+			systemctl --no-reload disable dbus.service >/dev/null 2>&1 || :
+			systemctl stop dbus.service >/dev/null 2>&1 || :
 		end
 
 		# Just tell systemd that unitfiles have been removed.
 		script postun
-			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl daemon-reload >/dev/null 2>&1 || :
 		end
 
 		# Try to restart the service if it is running.
 		script postup
-			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-			/bin/systemctl try-restart dbus.service >/dev/null 2>&1 || :
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart dbus.service >/dev/null 2>&1 || :
 		end
 	end
 
