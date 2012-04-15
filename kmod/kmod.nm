@@ -5,7 +5,7 @@
 
 name       = kmod
 version    = 7
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Kernel
@@ -54,7 +54,13 @@ packages
 	package %{name}
 		provides
 			module-init-tools = 4.0-1
+			/bin/kmod
+			/sbin/depmod
+			/sbin/insmod
+			/sbin/lsmod
+			/sbin/modinfo
 			/sbin/modprobe
+			/sbin/rmmod
 		end
 
 		obsoletes = module-init-tools < 4.0-1
