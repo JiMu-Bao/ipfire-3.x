@@ -5,7 +5,7 @@
 
 name       = filesystem
 version    = 002
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Base Build System/Base
@@ -75,11 +75,9 @@ build
 			var/empty \
 			var/lib \
 			var/local \
-			var/lock/subsys \
 			var/log \
 			var/nis \
 			var/preserve \
-			var/run \
 			var/spool/{mail,lpd} \
 			var/tmp \
 			var/db \
@@ -92,6 +90,8 @@ build
 
 		ln -snf ../var/tmp usr/tmp
 		ln -snf spool/mail var/mail
+		ln -snf ../run var/run
+		ln -snf ../run/lock var/lock
 
 		# Setting correct permissions.
 		chmod 1777 %{BUILDROOT}/{,var/}tmp
@@ -121,7 +121,9 @@ packages
 				if not os.path.exists(usr_dir):
 					os.makedirs(usr_dir)
 
-				if not os.path.exists(dir):
+				try:
+					os.lstat(dir)
+				except OSError:
 					os.symlink(usr_dir[1:], dir)
 		end
 	end
