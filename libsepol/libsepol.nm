@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = libsepol
-version    = 2.1.4
-release    = 5
+version    = 2.1.5
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.selinuxproject.org
@@ -40,6 +40,9 @@ build
 
 		# Remove manpages for binaries
 		rm -rf %{BUILDROOT}/usr/share/man/man8
+
+		# Fix bad symlink.
+		ln -svf libsepol.so.1 %{BUILDROOT}%{libdir}/libsepol.so
 	end
 end
 
