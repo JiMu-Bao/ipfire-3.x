@@ -4,10 +4,10 @@ Requires=network.target
 After=network.target
 
 [Service]
-ExecStartPre=/lib/network/network-radvd-config start
+ExecStartPre=/usr/lib/network/network-radvd-config start
 ExecStart=/usr/sbin/radvd -C /etc/radvd.conf -u radvd
 ExecReload=/bin/kill -HUP $MAINPID
-ExecStopPost=/lib/network/network-radvd-config stop
+ExecStopPost=/usr/lib/network/network-radvd-config stop
 Type=forking
 PIDFile=/run/radvd/radvd.pid
 Restart=on-failure

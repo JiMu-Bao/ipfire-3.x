@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = radvd
-version    = 1.8.3
-release    = 4
+version    = 1.8.5
+release    = 1
 
 groups     = System/Daemons
 url        = http://www.litech.org/radvd/
@@ -32,7 +32,6 @@ build
 	end
 
 	configure_options += \
-		--mandir=/usr/share/man \
 		--with-pidfile=/run/radvd/radvd.pid
 
 	prepare_cmds
@@ -59,9 +58,9 @@ end
 
 packages
 	package %{name}
-		requires = /lib/network/network-radvd-config
-
-		prerequires += shadow-utils
+		requires
+			network
+		end
 
 		script prein
 			%{create_user}
