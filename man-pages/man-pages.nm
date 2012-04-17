@@ -5,7 +5,7 @@
 
 name       = man-pages
 version    = 3.38
-release    = 1
+release    = 2
 arch       = noarch
 
 groups     = Base Documentation
@@ -21,6 +21,19 @@ end
 source_dl  = %{url}
 
 build
+	prepare_cmds
+		# Remove deprecated/unneeded stuff:
+
+		# libattr-devel
+		rm -vf man2/{,f,l}{get,list,remove,set}xattr.2
+
+		# db4
+		rm -vf man3/{db,btree,dbopen,hash,mpool,recno}.3
+
+		# misc.
+		rm -vf man2/pciconfig_{write,read,iobase}.2
+	end
+
 	build = # Do nothing
 end
 
