@@ -5,7 +5,7 @@
 
 name       = openssl
 version    = 1.0.1
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -31,6 +31,7 @@ build
 	end
 
 	CFLAGS += -DPURIFY
+	export RPM_OPT_FLAGS = %{CFLAGS}
 
 	prepare_cmds
 		find crypto/ -name Makefile -exec \
@@ -113,7 +114,7 @@ build
 		cp -v -r certs %{BUILDROOT}/etc/pki/tls
 
 		# Rename man pages so that they don't conflict with other system man pages.
-		pushd ${BUILDROOT}/usr/share/man
+		pushd %{BUILDROOT}%{mandir}
 		for manpage in man*/*; do
 			if [ -L ${manpage} ]; then
 				TARGET=`ls -l ${manpage} | awk '{ print $NF }'`
@@ -123,9 +124,6 @@ build
 				mv ${manpage} ${manpage}ssl
 			fi
 		done
-
-		mv -v %{BUILDROOT}/usr/share/man/man1/{,ssl}passwd.1
-		mv -v %{BUILDROOT}/usr/share/man/man1/{,ssl}rand.1
 		popd
 	end
 end
@@ -138,8 +136,7 @@ packages
 
 		requires += ca-certificates
 
-		provides += libcrypto.so.10(libcrypto.so.10)
-		provides += libssl.so.10(libssl.so.10)
+		files += %{libdir}/openssl
 	end
 
 	package %{name}-devel
