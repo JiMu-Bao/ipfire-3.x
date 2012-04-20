@@ -5,7 +5,7 @@
 
 name       = curl
 version    = 7.24.0
-release    = 2
+release    = 3
 
 groups     = Application/Internet
 url        = http://www.curl.haxx.se/
@@ -70,11 +70,17 @@ packages
 
 	package libcurl-devel
 		template DEVEL
+
+		provides
+			curl-devel = %{thisver}
+		end
 	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
 
-		provides += libcurl-debuginfo
+		provides
+			libcurl-debuginfo = %{thisver}
+		end
 	end
 end
