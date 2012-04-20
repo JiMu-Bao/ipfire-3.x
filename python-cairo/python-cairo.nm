@@ -5,7 +5,7 @@
 
 name       = python-cairo
 version    = 1.8.10
-release    = 2
+release    = 3
 
 groups     = Development/Tools
 url        = http://cairographics.org/pycairo
@@ -31,9 +31,10 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
+		template DEVEL
+
 		# The development headers need the cairo headers.
 		requires
 			cairo-devel

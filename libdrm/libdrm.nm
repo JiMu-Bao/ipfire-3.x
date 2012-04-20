@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libdrm
-version    = 2.4.21
+version    = 2.4.31
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -17,13 +17,15 @@ description
 	Direct Rendering Manager runtime library.
 end
 
-source_dl  =
+source_dl  = %{url}
 sources    = %{thisapp}.tar.bz2
 
 build
 	requires
 		automake
 		autoconf
+		cairo-devel
+		libpciaccess-devel
 		libtool
 		libxcb-devel
 		pkg-config
@@ -33,6 +35,7 @@ build
 	configure_options += \
 		--enable-udev \
 		--enable-libkms \
+		--enable-nouveau-experimental-api \
 		--disable-static
 
 	prepare_cmds
@@ -42,15 +45,14 @@ build
 	end
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/lib/udev/rules.d/
-		cd %{DIR_APP} && install -m 644 %{DIR_SOURCE}/91-drm-modeset.rules\
-			%{BUILDROOT}/lib/udev/rules.d/
+		mkdir -pv %{BUILDROOT}%{prefix}/lib/udev/rules.d/
+		install -m 644 %{DIR_SOURCE}/91-drm-modeset.rules \
+			%{BUILDROOT}%{prefix}/lib/udev/rules.d/
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
