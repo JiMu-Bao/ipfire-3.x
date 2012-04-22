@@ -1,0 +1,65 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-Coro
+version    = 6.08
+release    = 1
+thisapp    = Coro-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/Coro/
+license    = GPL+ or Artistic
+summary    = The only real threads in perl.
+
+description
+	This module collection manages continuations in general, most often in the
+	form of cooperative threads (also called coros, or simply "coro" in the
+	documentation). They are similar to kernel threads but don't (in general) run
+	in parallel at the same time even on SMP machines
+end
+
+source_dl  = http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/
+
+build
+	requires
+		perl(ExtUtils::MakeMaker)
+		perl(ExtUtils::ParseXS)
+	end
+
+	prepare_cmds
+		# Fix bad path for perl interpreter.
+		for F in Coro/jit-*.pl; do
+			sed -i -e '/^#!/d' "$F"
+		done
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=perl OPTIMIZE="%{CFLAGS}"
+		make %{PARALLELISMFLAGS}
+	end
+
+	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+end
+
+packages
+	package %{name}
+		filter_requires
+			AnyEvent
+			EV
+			Event
+			Guard
+			Storable
+			Coro
+		end
+
+		requires
+			perl
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

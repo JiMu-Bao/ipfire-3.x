@@ -1,0 +1,53 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-common-sense
+version    = 3.5
+release    = 1
+arch       = noarch
+thisapp    = common-sense-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/common-sense
+license    = GPL+ or Artistic
+summary    = "Common sense" Perl defaults.
+
+description
+	This module implements some sane defaults for Perl programs, as defined
+	by two typical (or not so typical - use your common sense) specimens of
+
+	Perl coders:
+		- use strict qw(vars subs);
+		- use feature qw(say state switch);
+		- no warnings;
+end
+
+source_dl  = http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/
+
+build
+	requires
+		perl(ExtUtils::MakeMaker)
+		perl(ExtUtils::ParseXS)
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{CFLAGS}"
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make test
+	end
+
+	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+end
+
+packages
+	package %{name}
+		requires
+			perl
+		end
+	end
+end

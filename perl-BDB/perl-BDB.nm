@@ -1,0 +1,52 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-BDB
+version    = 1.9
+release    = 1
+thisapp    = BDB-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/BDB/
+license    = GPL+ or Artistic
+summary    = Asynchronous Berkeley DB access.
+
+description
+	Asynchronous Berkeley DB access.
+end
+
+source_dl  = http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/
+
+build
+	requires
+		perl(common::sense)
+		perl(ExtUtils::MakeMaker)
+		perl(ExtUtils::ParseXS)
+		libdb-devel
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{CFLAGS}"
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make test
+	end
+
+	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+end
+
+packages
+	package %{name}
+		requires
+			perl
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

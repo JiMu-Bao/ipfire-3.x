@@ -1,0 +1,58 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-DBI
+version    = 1.618
+release    = 1
+thisapp    = DBI-%{version}
+
+groups     = Development/Libraries
+url        = http://dbi.perl.org
+license    = GPL+ or Artistic
+summary    = A database access API for perl.
+
+description
+	DBI is a database access Application Programming Interface (API) for
+	the Perl Language.
+end
+
+source_dl  = http://search.cpan.org/CPAN/authors/id/T/TI/TIMB/
+
+build
+	requires
+		perl(ExtUtils::MakeMaker)
+		perl(ExtUtils::ParseXS)
+		perl(Carp)
+		perl(Test::Simple)
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{CFLAGS}"
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make test
+	end
+
+	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+end
+
+packages
+	package %{name}
+		filter_requires
+			RPC
+			Win32
+		end
+
+		requires
+			perl
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
