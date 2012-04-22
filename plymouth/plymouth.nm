@@ -1,0 +1,306 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = plymouth
+version    = 0.8.4
+release    = 1
+
+groups     = System/Base
+url        = http://www.freedesktop.org/wiki/Software/Plymouth
+license    = GPLv2+
+summary    = Graphical Boot Animation and Logger.
+
+description
+	Plymouth provides an attractive graphical boot animation in
+	place of the text messages that normally get shown. Text
+	messages are instead redirected to a log file for viewing
+	after boot.
+end
+
+source_dl  = http://www.freedesktop.org/software/plymouth/releases/
+sources    = %{thisapp}.tar.bz2
+
+build
+	requires
+		autoconf
+		automake
+		cairo-devel
+		glib2-devel
+		pkgconfig(libdrm)
+		pkgconfig(libdrm_intel)
+		pkgconfig(libdrm_radeon)
+		pkgconfig(libdrm_nouveau)
+		libpng-devel
+		pango-devel
+	end
+
+	CFLAGS += -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
+
+	configure_options += \
+		--libexecdir=/usr/lib \
+		--enable-tracing \
+		--disable-tests \
+		--with-logo=%{datadir}/pixmaps/system-logo-white.png \
+		--with-background-start-color-stop=0x880400 \
+		--with-background-end-color-stop=0x000000 \
+		--with-background-color=0x880400 \
+		--disable-gdm-transition \
+		--enable-systemd-integration \
+		--without-system-root-install \
+		--without-rhgb-compat-link \
+		--without-log-viewer
+
+	prepare_cmds
+		autoreconf -vfi
+	end
+
+	install_cmds
+		mkdir -pv %{BUILDROOT}%{datadir}/plymouth
+		mkdir -pv %{BUILDROOT}%{localstatedir}/lib/plymouth
+		cp -vf %{DIR_SOURCE}/boot-duration \
+			%{BUILDROOT}%{datadir}/plymouth/default-boot-duration
+		cp -vf %{DIR_SOURCE}/boot-duration \
+			%{BUILDROOT}%{localstatedir}/lib/plymouth
+
+		# Override plymouth-update-initrd to work dracut or mkinitrd
+		cp -vf %{DIR_SOURCE}/plymouth-update-initrd \
+			%{BUILDROOT}/usr/lib/plymouth/plymouth-update-initrd
+		chmod 755 %{BUILDROOT}/usr/lib/plymouth/plymouth-update-initrd
+	end
+end
+
+packages
+	package %{name}
+		groups += Base
+
+		prerequires
+			coreutils
+		end
+
+		requires
+			%{name}-libs = %{thisver}
+			%{name}-scripts = %{thisver}
+			%{name}-system-theme = %{thisver}
+			initscripts
+		end
+
+		configfiles
+			/etc/plymouth/plymouthd.conf
+		end
+
+		script postin
+			if [ ! -f "%{localstatedir}/lib/plymouth/boot-duration" ]; then
+				cp -f %{datadir}/plymouth/default-boot-duration \
+					%{localstatedir}/lib/plymouth/boot-duration
+			fi
+		end
+
+		script posttransin
+			/usr/lib/plymouth/plymouth-generate-initrd >/dev/null 2>&1
+		end
+
+		script postun
+			rm -f /boot/initrd-plymouth.img
+		end
+	end
+
+	package %{name}-libs
+		template LIBS
+	end
+
+	package %{name}-devel
+		template DEVEL
+
+		requires = plymouth-libs = %{thisver}
+	end
+
+	package %{name}-scripts
+		summary = Plymouth related scripts.
+		descrtiption
+			This package contains scripts that help to integrate
+			Plymouth with the system.
+		end
+
+		prerequires = /usr/bin/plymouth
+
+		requires
+			plymouth = %{thisver}
+			coreutils
+			cpio
+			dracut
+			findutils
+			grubby
+			gzip
+		end
+
+		files
+			%{sbindir}/plymouth-set-default-theme
+			%{sbindir}/plymouth-set-default-plugin
+			/usr/lib/plymouth/plymouth-update-initrd
+			/usr/lib/plymouth/plymouth-generate-initrd
+			/usr/lib/plymouth/plymouth-populate-initrd
+		end
+	end
+
+	package %{name}-plugin-label
+		summary = Plymouth label plugin.
+		description
+			This package contains the label plugin for Plymouth.
+			It provides the ability to render text on graphical boot
+			splashes using pango and cairo.
+		end
+
+		files
+			%{libdir}/plymouth/label.so
+		end
+	end
+
+	package %{name}-plugin-fade-throbber
+		summary = Plymouth fade-throbber plugin.
+		description
+			The package contains the fade-throbber plugin for Plymouth.
+			It features a centered image that fades in and out while
+			other images pulsate around during system boot up.
+		end
+
+		requires
+			%{name}-plugin-label
+		end
+
+		files
+			%{libdir}/plymouth/fade-throbber.so
+		end
+	end
+
+	package %{name}-plugin-throbgress
+		summary = Plymouth throbgress plugin.
+		description
+			This package contains the throbgress plugin for Plymouth.
+			It features a centered logo and animated spinner that spins
+			repeatedly while a progress bar advances at the bootom of the
+			screen.
+		end
+
+		requires
+			%{name}-plugin-label
+		end
+
+		files
+			%{libdir}/plymouth/throbgress.so
+		end
+	end
+
+	package %{name}-plugin-space-flares
+		summary = Plymouth space-flares plugin.
+		description
+			This package contains the space-flares plugin for Plymouth.
+			It features a corner image with animated flares.
+		end
+
+		requires
+			%{name}-plugin-label
+		end
+
+		files
+			%{libdir}/plymouth/space-flares.so
+		end
+	end
+
+	package %{name}-plugin-two-step
+		summary = Plymouth two-step plugin.
+		description
+			This package contains the two-step plugin for Plymouth.
+			It features a corner image with animated flares.
+		end
+
+		requires
+			%{name}-plugin-label
+		end
+
+		files
+			%{libdir}/plymouth/two-step.so
+		end
+	end
+
+	package %{name}-plugin-script
+		files
+			%{libdir}/plymouth/script.so
+		end
+	end
+
+	template THEME
+		summary = The plymouth "%{theme_name}" theme.
+		description
+			This package contains the "%{theme_name}" boot
+			splash theme for plymouth.
+		end
+
+		requires
+			%{name}-scripts = %{thisver}
+		end
+
+		files
+			%{datadir}/plymouth/themes/%{theme_name}
+		end
+
+		script postun
+			if [ "$(%{sbindir}/plymouth-set-default-theme)" = %{theme_name}" ]; then
+				%{sbindir}/plymouth-set-default-theme --reset
+				/usr/lib/plymouth/plymouth-generate-initrd
+			fi
+		end
+	end
+
+	package %{name}-theme-fade-in
+		template THEME
+		theme_name = fade-in
+
+		requires += %{name}-plugin-fade-throbber=%{thisver}
+	end
+
+	package %{name}-theme-spinner
+		template THEME
+		theme_name = spinner
+
+		requires += %{name}-plugin-two-step=%{thisver}
+	end
+
+	package %{name}-theme-spinfinity
+		template THEME
+		theme_name = spinfinity
+
+		requires += %{name}-plugin-throbgress=%{thisver}
+	end
+
+	package %{name}-theme-script
+		template THEME
+		theme_name = script
+
+		requires += %{name}-plugin-script=%{thisver}
+	end
+
+	package %{name}-theme-solar
+		template THEME
+		theme_name = solar
+
+		requires += %{name}-plugin-space-flares=%{thisver}
+	end
+
+	package %{name}-system-theme
+		summary = Plymouth default theme.
+		description
+			This metapackage tracks the current distribution default theme.
+		end
+
+		groups += Base
+
+		requires
+			system-logos
+		end
+
+		# Don't package any files.
+		files =
+	end
+end
