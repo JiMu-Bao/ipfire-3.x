@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 44
-release    = 3
+release    = 4
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -76,9 +76,10 @@ build
 		cp -vf %{DIR_SOURCE}/{locale,vconsole}.conf %{BUILDROOT}%{sysconfdir}
 
 		# Recreate all targets
-		rm -rfv %{BUILDROOT}%{unitdir}/*.target.wants
-		for i in basic.target.wants default.target.wants dbus.target.wants syslog.target.wants; do
-			mkdir -pv %{BUILDROOT}%{unitdir}/${i} || exit 1
+		rm -rfv %{BUILDROOT}/%{sysconfdir}/systemd/system/*.target.wants
+		for i in basic.target.wants default.target.wants dbus.target.wants getty.target.wants \
+			multi-user.target.wants syslog.target.wants; do
+				mkdir -pv %{BUILDROOT}/%{sysconfdir}/systemd/system/${i} || exit 1
 		done
 
 		# Remove runlevel targets and graphical.target
