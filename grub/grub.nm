@@ -5,7 +5,7 @@
 
 name       = grub
 version    = 1.99
-release    = 5
+release    = 6
 sup_arches = x86_64 i686
 
 groups     = System/Boot
@@ -56,7 +56,6 @@ build
 
 	configure_options += \
 		--target="i386" \
-		--sbindir=/sbin \
 		--datadir=%{libdir} \
 		--with-platform=pc \
 		--program-transform-name=s,grub,grub, \
@@ -101,7 +100,7 @@ build
 
 		mv -v %{BUILDROOT}/etc/bash_completion.d/grub{,-efi}
 		sed -e "s,grub/grub-mkconfig_lib,grub-efi/grub-mkconfig_lib," \
-			-i %{BUILDROOT}/sbin/grub-efi-mkconfig
+			-i %{BUILDROOT}%{sbindir}/grub-efi-mkconfig
 
 		install -m 755 -d %{BUILDROOT}/boot/efi/EFI/%{DISTRO_SNAME}/
 		install -d %{BUILDROOT}/boot/efi/EFI/%{DISTRO_SNAME}/grub-efi
@@ -168,9 +167,9 @@ packages
 			/boot/efi
 			/etc/bash_completion.d/grub-efi
 			/etc/grub-efi.cfg
-			/sbin/grub-efi-*
-			/usr/bin/grub-efi-*
-			/usr/lib/grub-efi
+			%{sbindir}/grub-efi-*
+			%{bindir}/grub-efi-*
+			%{prefix}/lib/grub-efi
 		end
 	end
 
