@@ -1,0 +1,51 @@
+From d38612fe50395a35d6fdc0774d56c7c2ddc58cf7 Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Sun, 22 Apr 2012 14:48:10 +0200
+Subject: [PATCH 8/8] Fixes for removing files (and configfiles).
+
+There were some problems when the user removed those
+files earlier.
+---
+ python/pakfire/packages/base.py |   12 ++++++++++++
+ 1 files changed, 12 insertions(+), 0 deletions(-)
+
+diff --git a/python/pakfire/packages/base.py b/python/pakfire/packages/base.py
+index e27c3f7..9162536 100644
+--- a/python/pakfire/packages/base.py
++++ b/python/pakfire/packages/base.py
+@@ -516,6 +516,12 @@ class Package(object):
+ 
+ 			# Rename configuration files.
+ 			if _file.is_config():
++				# Skip already removed config files.
++				try:
++					os.lstat(file)
++				except OSError:
++					continue
++
+ 				file_save = "%s%s" % (file, CONFIG_FILE_SUFFIX_SAVE)
+ 
+ 				try:
+@@ -530,6 +536,7 @@ class Package(object):
+ 
+ 			# Handle regular files and symlinks.
+ 			if os.path.isfile(file) or os.path.islink(file):
++				log.debug("Removing %s..." % _file)
+ 				try:
+ 					os.remove(file)
+ 				except OSError:
+@@ -545,6 +552,11 @@ class Package(object):
+ 				except OSError:
+ 					pass
+ 
++			# Handle files that have already been removed
++			# by somebody else.
++			elif not os.path.exists(file):
++				pass
++
+ 			# Log all unhandled types.
+ 			else:
+ 				log.warning("Cannot remove file: %s. Filetype is unhandled." % file)
+-- 
+1.7.7.6
+
