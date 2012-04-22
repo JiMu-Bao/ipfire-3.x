@@ -5,7 +5,7 @@
 
 name       = authconfig
 version    = 6.2.2
-release    = 1
+release    = 2
 
 groups     = System/Base
 url        = https://fedorahosted.org/authconfig
@@ -27,6 +27,9 @@ build
 		intltool
 		python-devel
 	end
+
+	# Manually link against libresolv.
+	export LDFLAGS += -lresolv
 
 	configure_options += \
 		--sysconfdir=/etc \
