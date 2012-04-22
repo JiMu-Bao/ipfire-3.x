@@ -8,7 +8,7 @@ version_major = 5
 version_minor = 2
 version_patch = 36
 version    = %{version_major}.%{version_minor}.%{version_patch}
-release    = 2
+release    = 3
 thisapp    = db-%{version}
 
 soversion  = %{version_major}.%{version_minor}
@@ -86,6 +86,12 @@ packages
 
 	package %{name}-devel
 		template DEVEL
+
+		# You cannot install libdb-devel and db4-devel
+		# at the same time.
+		conflicts
+			db4-devel
+		end
 
 		files += !%{libdir}/libdb-%{soversion}.so
 		files += !%{libdir}/libdb_sql-%{soversion}.so
