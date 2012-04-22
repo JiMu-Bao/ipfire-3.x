@@ -1,0 +1,58 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-IO-AIO
+version    = 4.15
+release    = 1
+thisapp    = IO-AIO-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/IO-AIO/
+license    = GPL+ or Artistic
+summary    = Perl module for Asynchronous Input/Output.
+
+description
+	This module implements asynchronous I/O using whatever means your operating
+	system supports.
+end
+
+source_dl  = http://search.cpan.org/CPAN/authors/id/M/ML/MLEHMANN/
+
+build
+	requires
+		perl(ExtUtils::MakeMaker)
+		perl(ExtUtils::ParseXS)
+		perl(Carp)
+		perl(common::sense)
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{CFLAGS}"
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make test
+	end
+
+	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+
+	install_cmds
+		# Remove script we don't want packaged
+		rm -rvf %{BUILDROOT}%{bindir}/treescan
+	end
+end
+
+packages
+	package %{name}
+		requires
+			perl
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
