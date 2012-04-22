@@ -5,7 +5,7 @@
 
 name       = pygobject2
 version    = 2.27.0
-release    = 1
+release    = 2
 
 groups     = Development/Tools
 url        = http://www.pygtk.org/
@@ -42,7 +42,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-codegen
 		summary = The code generation program for PyGObject.
@@ -58,6 +57,8 @@ packages
 	end
 
 	package %{name}-devel
+		template DEVEL
+
 		requires
 			glib2-devel
 			%{name}-codegen
