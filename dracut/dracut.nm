@@ -5,7 +5,7 @@
 
 name       = dracut
 version    = 018
-release    = 1
+release    = 2
 arch       = noarch
 
 groups     = System/Boot
@@ -29,6 +29,11 @@ build
 	prepare_cmds
 		# Disable dash syntax check as we don't have dash.
 		sed -e "s/dash/true/g" -i Makefile
+
+		# The plymouth plugin contains a lot of hardcoded libexec paths.
+		# We don't use libexec and so we need to change this.
+		sed -e "s/libexec/lib/g" -i \
+			modules.d/50plymouth/module-setup.sh
 	end
 
 	dracutlibdir = %{prefix}/lib/dracut
