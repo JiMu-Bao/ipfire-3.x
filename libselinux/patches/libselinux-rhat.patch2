@@ -1,92 +1,3 @@
-diff --git a/libselinux/Makefile b/libselinux/Makefile
-index 9feaf94..fd4f0b1 100644
---- a/libselinux/Makefile
-+++ b/libselinux/Makefile
-@@ -1,3 +1,5 @@
-+SUBDIRS = src include utils man
-+
- DISABLE_AVC ?= n
- DISABLE_SETRANS ?= n
- DISABLE_RPM ?= n
-@@ -19,41 +21,24 @@ ifeq ($(DISABLE_SETRANS),y)
- endif
- export DISABLE_AVC DISABLE_SETRANS DISABLE_RPM DISABLE_BOOL EMFLAGS
- 
--all: 
--	$(MAKE) -C src 
--	$(MAKE) -C utils
-+all install relabel clean distclean indent:
-+	@for subdir in $(SUBDIRS); do \
-+		(cd $$subdir && $(MAKE) $@) || exit 1; \
-+	done
- 
- swigify: all
--	$(MAKE) -C src swigify
-+	$(MAKE) -C src swigify $@
- 
- pywrap: 
--	$(MAKE) -C src pywrap
-+	$(MAKE) -C src pywrap $@
- 
- rubywrap: 
--	$(MAKE) -C src rubywrap
--
--install: 
--	$(MAKE) -C include install
--	$(MAKE) -C src install
--	$(MAKE) -C utils install
--	$(MAKE) -C man install
-+	$(MAKE) -C src rubywrap $@
- 
- install-pywrap: 
--	$(MAKE) -C src install-pywrap 
-+	$(MAKE) -C src install-pywrap $@
- 
- install-rubywrap: 
--	$(MAKE) -C src install-rubywrap 
--
--relabel: 
--	$(MAKE) -C src relabel
--
--clean distclean:
--	$(MAKE) -C src $@
--	$(MAKE) -C utils clean
--
--indent:
--	$(MAKE) -C src $@
--	$(MAKE) -C utils $@
--	$(MAKE) -C include $@
-+	$(MAKE) -C src install-rubywrap $@
- 
- test:
-diff --git a/libselinux/include/Makefile b/libselinux/include/Makefile
-index 09bcea3..dd264d0 100644
---- a/libselinux/include/Makefile
-+++ b/libselinux/include/Makefile
-@@ -11,3 +11,6 @@ install: all
- indent:
- 	../../scripts/Lindent $(wildcard selinux/*.h)
- 
-+distclean clean:
-+	-rm -f selinux/*~
-+
-diff --git a/libselinux/include/selinux/avc.h b/libselinux/include/selinux/avc.h
-index da18e41..87a2b12 100644
---- a/libselinux/include/selinux/avc.h
-+++ b/libselinux/include/selinux/avc.h
-@@ -130,7 +130,11 @@ struct avc_memory_callback {
- 
- struct avc_log_callback {
- 	/* log the printf-style format and arguments. */
--	void (*func_log) (const char *fmt, ...);
-+	void
-+#ifdef __GNUC__
-+__attribute__ ((format(printf, 1, 2)))
-+#endif
-+	(*func_log) (const char *fmt, ...);
- 	/* store a string representation of auditdata (corresponding
- 	   to the given security class) into msgbuf. */
- 	void (*func_audit) (void *auditdata, security_class_t cls,
 diff --git a/libselinux/include/selinux/label.h b/libselinux/include/selinux/label.h
 index 1a54307..f6eeb21 100644
 --- a/libselinux/include/selinux/label.h
@@ -104,7 +15,7 @@ index 1a54307..f6eeb21 100644
  /*
   * Label operations
 diff --git a/libselinux/include/selinux/selinux.h b/libselinux/include/selinux/selinux.h
-index 2985f6f..e0b2dd4 100644
+index 6f483c9..9756ac9 100644
 --- a/libselinux/include/selinux/selinux.h
 +++ b/libselinux/include/selinux/selinux.h
 @@ -139,7 +139,10 @@ struct av_decision {
@@ -119,7 +30,7 @@ index 2985f6f..e0b2dd4 100644
  };
  
  /* Callback facilities */
-@@ -410,6 +413,11 @@ extern int matchpathcon_init(const char *path);
+@@ -420,6 +423,11 @@ extern int matchpathcon_init(const char *path);
     regexes that have stems that are prefixes of 'prefix'. */
  extern int matchpathcon_init_prefix(const char *path, const char *prefix);
  
@@ -131,24 +42,27 @@ index 2985f6f..e0b2dd4 100644
  /* Free the memory allocated by matchpathcon_init. */
  extern void matchpathcon_fini(void);
  
-@@ -537,7 +545,7 @@ extern int selinux_check_securetty_context(const security_context_t tty_context)
-    Normally, this is determined automatically during libselinux 
-    initialization, but this is not always possible, e.g. for /sbin/init
-    which performs the initial mount of selinuxfs. */
--void set_selinuxmnt(char *mnt);
-+void set_selinuxmnt(const char *mnt);
+@@ -488,6 +496,7 @@ extern const char *selinux_policy_root(void);
  
- /* Check if selinuxfs exists as a kernel filesystem */
- int selinuxfs_exists(void);
-diff --git a/libselinux/man/Makefile b/libselinux/man/Makefile
-index a20a5d1..a53c4ad 100644
---- a/libselinux/man/Makefile
-+++ b/libselinux/man/Makefile
-@@ -13,3 +13,4 @@ install: all
- 	install -m 644 man5/*.5 $(MAN5DIR)
- 	install -m 644 man8/*.8 $(MAN8DIR)
- 
-+indent distclean clean:
+ /* These functions return the paths to specific files under the 
+    policy root directory. */
++extern const char *selinux_current_policy_path(void);
+ extern const char *selinux_binary_policy_path(void);
+ extern const char *selinux_failsafe_context_path(void);
+ extern const char *selinux_removable_context_path(void);
+@@ -502,10 +511,12 @@ extern const char *selinux_homedir_context_path(void);
+ extern const char *selinux_media_context_path(void);
+ extern const char *selinux_virtual_domain_context_path(void);
+ extern const char *selinux_virtual_image_context_path(void);
++extern const char *selinux_lxc_contexts_path(void);
+ extern const char *selinux_x_context_path(void);
+ extern const char *selinux_sepgsql_context_path(void);
+ extern const char *selinux_contexts_path(void);
+ extern const char *selinux_securetty_types_path(void);
++extern const char *selinux_booleans_subs_path(void);
+ extern const char *selinux_booleans_path(void);
+ extern const char *selinux_customizable_types_path(void);
+ extern const char *selinux_users_path(void);
 diff --git a/libselinux/man/man3/matchpathcon.3 b/libselinux/man/man3/matchpathcon.3
 index cdbb252..b6814ed 100644
 --- a/libselinux/man/man3/matchpathcon.3
@@ -216,67 +130,285 @@ index 8674e37..fc5b120 100644
  .BR selinux_set_callback (3),
  .BR selinux (8)
 -
-diff --git a/libselinux/man/man8/selinux.8 b/libselinux/man/man8/selinux.8
-index 1fc5b95..9f16f77 100644
---- a/libselinux/man/man8/selinux.8
-+++ b/libselinux/man/man8/selinux.8
-@@ -12,7 +12,7 @@ enforcement of many kinds of mandatory access control policies,
- including those based on the concepts of Type Enforcement®, Role-
- Based Access Control, and Multi-Level Security.  Background
- information and technical documentation about SELinux can be found at
--http://www.nsa.gov/selinux.
-+http://www.nsa.gov/research/selinux.
+diff --git a/libselinux/man/man3/selinux_binary_policy_path.3 b/libselinux/man/man3/selinux_binary_policy_path.3
+index 8ead1a4..c68ace5 100644
+--- a/libselinux/man/man3/selinux_binary_policy_path.3
++++ b/libselinux/man/man3/selinux_binary_policy_path.3
+@@ -17,6 +17,8 @@ extern const char *selinux_policy_root(void);
  
- The
- .I /etc/selinux/config
-diff --git a/libselinux/src/Makefile b/libselinux/src/Makefile
-index 1ddddb0..985842d 100644
---- a/libselinux/src/Makefile
-+++ b/libselinux/src/Makefile
-@@ -51,9 +51,29 @@ endif
- GENERATED=$(SWIGCOUT) $(SWIGRUBYCOUT) selinuxswig_python_exception.i
- SRCS= $(filter-out $(UNUSED_SRCS) $(GENERATED) audit2why.c, $(wildcard *.c))
+ extern const char *selinux_binary_policy_path(void);
  
-+MAX_STACK_SIZE=32768
++extern const char *selinux_current_policy_path(void);
 +
- OBJS= $(patsubst %.c,%.o,$(SRCS))
- LOBJS= $(patsubst %.c,%.lo,$(SRCS))
--CFLAGS ?= -Werror -Wall -W -Wundef -Wshadow -Wmissing-noreturn -Wmissing-format-attribute
-+CFLAGS ?= -Wall -W -Wundef -Wformat-y2k -Wformat-security -Winit-self -Wmissing-include-dirs \
-+          -Wunused -Wunknown-pragmas -Wstrict-aliasing -Wshadow -Wpointer-arith \
-+          -Wbad-function-cast -Wcast-align -Wwrite-strings -Wlogical-op -Waggregate-return \
-+          -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes \
-+          -Wmissing-declarations -Wmissing-noreturn -Wmissing-format-attribute \
-+          -Wredundant-decls -Wnested-externs -Winline -Winvalid-pch -Wvolatile-register-var \
-+          -Wdisabled-optimization -Wbuiltin-macro-redefined -Wmudflap -Wpacked-bitfield-compat \
-+          -Wsync-nand -Wattributes -Wcoverage-mismatch -Wmultichar -Wcpp \
-+          -Wdeprecated-declarations -Wdiv-by-zero -Wdouble-promotion -Wendif-labels -Wextra \
-+          -Wformat-contains-nul -Wformat-extra-args -Wformat-zero-length -Wformat=2 -Wmultichar \
-+          -Wnormalized=nfc -Woverflow -Wpointer-to-int-cast -Wpragmas -Wsuggest-attribute=const \
-+          -Wsuggest-attribute=noreturn -Wsuggest-attribute=pure -Wtrampolines \
-+          -Wno-missing-field-initializers -Wno-sign-compare -Wjump-misses-init \
-+          -Wno-format-nonliteral -Wframe-larger-than=$(MAX_STACK_SIZE) -Wp,-D_FORTIFY_SOURCE=2 \
-+          -fstack-protector-all --param=ssp-buffer-size=4 -fexceptions \
-+          -fasynchronous-unwind-tables -fdiagnostics-show-option -funit-at-a-time \
-+          -fipa-pure-const -Wno-suggest-attribute=pure -Wno-suggest-attribute=const \
-+          -Werror -Wno-aggregate-return -Wno-redundant-decls
+ extern const char *selinux_failsafe_context_path(void);
+ 
+ extern const char *selinux_removable_context_path(void);
+@@ -52,7 +54,9 @@ selinux_path() - top-level SELinux configuration directory
+ .sp
+ selinux_policy_root() - top-level policy directory 
+ .sp
+-selinux_binary_policy_path() - binary policy file loaded into kernel
++selinux_current_policy_path() - binary policy file loaded into kernel
++.sp
++selinux_binary_policy_path() - binary policy path on disk
+ .sp
+ selinux_default_type_path - context file mapping roles to default types.
+ .sp
+diff --git a/libselinux/src/audit2why.c b/libselinux/src/audit2why.c
+index 1bf3599..f621de7 100644
+--- a/libselinux/src/audit2why.c
++++ b/libselinux/src/audit2why.c
+@@ -214,19 +214,12 @@ static int __policy_init(const char *init_path)
+ 			PyErr_SetString( PyExc_ValueError, errormsg);
+ 			return 1;
+ 		}
+-		snprintf(path, PATH_MAX, "%s.%d",
+-			 selinux_binary_policy_path(), vers);
+-		fp = fopen(path, "r");
+-		while (!fp && errno == ENOENT && --vers) {
+-			snprintf(path, PATH_MAX, "%s.%d",
+-				 selinux_binary_policy_path(), vers);
+-			fp = fopen(path, "r");
+-		}
++		fp = fopen(selinux_current_policy_path(), "r");
+ 		if (!fp) {
+ 			snprintf(errormsg, sizeof(errormsg), 
+-				 "unable to open %s.%d:  %s\n",
+-				 selinux_binary_policy_path(),
+-				 security_policyvers(), strerror(errno));
++				 "unable to open %s:  %s\n",
++				 selinux_current_policy_path(),
++				 strerror(errno));
+ 			PyErr_SetString( PyExc_ValueError, errormsg);
+ 			return 1;
+ 		}
+diff --git a/libselinux/src/avc.c b/libselinux/src/avc.c
+index 802a07f..6ff83a7 100644
+--- a/libselinux/src/avc.c
++++ b/libselinux/src/avc.c
+@@ -827,6 +827,7 @@ int avc_has_perm(security_id_t ssid, security_id_t tsid,
+ 	errsave = errno;
+ 	avc_audit(ssid, tsid, tclass, requested, &avd, rc, auditdata);
+ 	errno = errsave;
++	if (!avc_enforcing) return 0;
+ 	return rc;
+ }
+ 
+diff --git a/libselinux/src/avc_internal.c b/libselinux/src/avc_internal.c
+index be4c0a3..a07aa7f 100644
+--- a/libselinux/src/avc_internal.c
++++ b/libselinux/src/avc_internal.c
+@@ -101,7 +101,9 @@ static int avc_netlink_receive(char *buf, unsigned buflen, int blocking)
+ 	socklen_t nladdrlen = sizeof nladdr;
+ 	struct nlmsghdr *nlh = (struct nlmsghdr *)buf;
+ 
+-	rc = poll(&pfd, 1, (blocking ? -1 : 0));
++	do {
++		rc = poll(&pfd, 1, (blocking ? -1 : 0));
++	} while (rc < 0 && errno == EINTR);
+ 
+ 	if (rc == 0 && !blocking) {
+ 		errno = EWOULDBLOCK;
+diff --git a/libselinux/src/booleans.c b/libselinux/src/booleans.c
+index 1510043..bf526c0 100644
+--- a/libselinux/src/booleans.c
++++ b/libselinux/src/booleans.c
+@@ -86,45 +86,131 @@ int security_get_boolean_names(char ***names, int *len)
+ }
+ 
+ hidden_def(security_get_boolean_names)
+-#define STRBUF_SIZE 3
+-static int get_bool_value(const char *name, char **buf)
 +
- override CFLAGS += -I../include -I$(INCLUDEDIR) -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 $(EMFLAGS)
- RANLIB=ranlib
++static char * bool_sub(const char *name) 
+ {
+-	int fd, len;
++	char *sub = NULL;
++	char *line_buf = NULL;
++	size_t line_len = 0;
++	FILE *cfg;
++
++	if (!name) 
++		return NULL;
++
++	cfg = fopen(selinux_booleans_subs_path(), "r");
++
++	if (!cfg)
++		return NULL;
++
++	while (getline(&line_buf, &line_len, cfg)) {
++		char *ptr = NULL;
++		char *src = line_buf;
++		char *dst = NULL;
++
++		while (*src && isspace(*src))
++			src++;
++		if (src[0] == '#') continue;
++		ptr = src;
++		while (*ptr && ! isspace(*ptr))
++			ptr++;
++		*ptr++ = '\0';
++		if (! *src || (strcmp(src, name) != 0))
++			continue;
++
++		dst = ptr;
++		while (*dst && isspace(*dst))
++			dst++;
++		ptr=dst;
++		while (*ptr && ! isspace(*ptr))
++			ptr++;
++		*ptr='\0';
++		if (! *dst)
++			continue;
++
++		sub = strdup(dst);
++		break;
++	}
++
++	free(line_buf);
++	fclose(cfg);
++	return sub;
++}
++
++static int bool_open(const char *name, int flag) {
+ 	char *fname = NULL;
++	char *alt_name = NULL;
++	int len;
++	int fd = -1;
++	char *ptr;
  
-diff --git a/libselinux/src/avc_internal.h b/libselinux/src/avc_internal.h
-index 53610e8..f851659 100644
---- a/libselinux/src/avc_internal.h
-+++ b/libselinux/src/avc_internal.h
-@@ -20,7 +20,7 @@
- extern void *(*avc_func_malloc) (size_t) hidden;
- extern void (*avc_func_free) (void *)hidden;
+-	if (!selinux_mnt) {
+-		errno = ENOENT;
+-		return -1;
++	if (!name) {
++		errno = EINVAL;
++		return fd;
+ 	}
  
--extern void (*avc_func_log) (const char *, ...)hidden;
-+extern void (*avc_func_log) (const char *, ...) __attribute__((__format__(printf,1,2))) hidden;
- extern void (*avc_func_audit) (void *, security_class_t, char *, size_t)hidden;
+-	*buf = (char *)malloc(sizeof(char) * (STRBUF_SIZE + 1));
+-	if (!*buf)
+-		goto out;
+-	(*buf)[STRBUF_SIZE] = 0;
+-
+ 	len = strlen(name) + strlen(selinux_mnt) + sizeof(SELINUX_BOOL_DIR);
+ 	fname = (char *)malloc(sizeof(char) * len);
+ 	if (!fname)
+-		goto out;
++		return fd;
++
+ 	snprintf(fname, len, "%s%s%s", selinux_mnt, SELINUX_BOOL_DIR, name);
  
- extern int avc_using_threads hidden;
+-	fd = open(fname, O_RDONLY);
+-	if (fd < 0)
++	fd = open(fname, flag);
++	if (fd >= 0 || errno != ENOENT) 
+ 		goto out;
+ 
+-	len = read(fd, *buf, STRBUF_SIZE);
+-	close(fd);
+-	if (len != STRBUF_SIZE)
++	alt_name = bool_sub(name);
++	if (! alt_name)
+ 		goto out;
+ 
++	len = strlen(alt_name) + strlen(selinux_mnt) + sizeof(SELINUX_BOOL_DIR);
++	ptr = realloc(fname, len);
++	if (!ptr) 
++		goto out;
++
++	fname = ptr;
++	snprintf(fname, len, "%s%s%s", selinux_mnt, SELINUX_BOOL_DIR, alt_name);
++	fd = open(fname, flag);
++
++out:
+ 	free(fname);
+-	return 0;
++	free(alt_name);
++
++	return fd;
++}
++
++#define STRBUF_SIZE 3
++static int get_bool_value(const char *name, char **buf)
++{
++	int fd, len;
++	int rc = -1;
++	char *bool_buf = NULL;
++	if (!selinux_mnt) {
++		errno = ENOENT;
++		return -1;
++	}
++
++	fd = bool_open(name, O_RDONLY);
++	if (fd < 0)
++		return -1;
++
++	bool_buf = malloc(sizeof(char) * (STRBUF_SIZE + 1));
++	if (!bool_buf)
++		goto out;
++	bool_buf[STRBUF_SIZE] = 0;
++
++	len = read(fd, bool_buf, STRBUF_SIZE);
++	if (len != STRBUF_SIZE) 
++		goto out;
++	rc = 0;
+       out:
+-	if (*buf)
+-		free(*buf);
+-	if (fname)
+-		free(fname);
+-	return -1;
++	close(fd);
++	if (!rc) {
++		*buf = bool_buf;
++	} else {
++		free(bool_buf);
++	}
++	return rc;
+ }
+ 
+ int security_get_boolean_pending(const char *name)
+@@ -164,8 +250,8 @@ hidden_def(security_get_boolean_active)
+ 
+ int security_set_boolean(const char *name, int value)
+ {
+-	int fd, ret, len;
+-	char buf[2], *fname;
++	int fd, ret;
++	char buf[2];
+ 
+ 	if (!selinux_mnt) {
+ 		errno = ENOENT;
+@@ -176,17 +262,9 @@ int security_set_boolean(const char *name, int value)
+ 		return -1;
+ 	}
+ 
+-	len = strlen(name) + strlen(selinux_mnt) + sizeof(SELINUX_BOOL_DIR);
+-	fname = (char *)malloc(sizeof(char) * len);
+-	if (!fname)
++	fd = bool_open(name, O_WRONLY);
++	if (fd < 0) 
+ 		return -1;
+-	snprintf(fname, len, "%s%s%s", selinux_mnt, SELINUX_BOOL_DIR, name);
+-
+-	fd = open(fname, O_WRONLY);
+-	if (fd < 0) {
+-		ret = -1;
+-		goto out;
+-	}
+ 
+ 	if (value)
+ 		buf[0] = '1';
+@@ -196,8 +274,7 @@ int security_set_boolean(const char *name, int value)
+ 
+ 	ret = write(fd, buf, 2);
+ 	close(fd);
+-      out:
+-	free(fname);
++
+ 	if (ret > 0)
+ 		return 0;
+ 	else
 diff --git a/libselinux/src/callbacks.c b/libselinux/src/callbacks.c
 index b245364..7c47222 100644
 --- a/libselinux/src/callbacks.c
@@ -289,42 +421,19 @@ index b245364..7c47222 100644
  	va_start(ap, fmt);
  	rc = vfprintf(stderr, fmt, ap);
  	va_end(ap);
-diff --git a/libselinux/src/get_default_type.c b/libselinux/src/get_default_type.c
-index ca3d291..27f2ae5 100644
---- a/libselinux/src/get_default_type.c
-+++ b/libselinux/src/get_default_type.c
-@@ -27,7 +27,8 @@ int get_default_type(const char *role, char **type)
- static int find_default_type(FILE * fp, const char *role, char **type)
- {
- 	char buf[250];
--	char *ptr = "", *end, *t;
-+	const char *ptr = "", *end;
-+	char *t;
- 	size_t len;
- 	int found = 0;
- 
-diff --git a/libselinux/src/init.c b/libselinux/src/init.c
-index 00afde7..6d1ef33 100644
---- a/libselinux/src/init.c
-+++ b/libselinux/src/init.c
-@@ -28,7 +28,7 @@ int obj_class_compat = 1;
-    * The file system is read/write
-    * then set this as the default file system.
- */
--static int verify_selinuxmnt(char *mnt)
-+static int verify_selinuxmnt(const char *mnt)
- {
- 	struct statfs sfbuf;
- 	int rc;
-@@ -139,7 +139,7 @@ void fini_selinuxmnt(void)
- 
- hidden_def(fini_selinuxmnt)
- 
--void set_selinuxmnt(char *mnt)
-+void set_selinuxmnt(const char *mnt)
- {
- 	selinux_mnt = strdup(mnt);
- }
+diff --git a/libselinux/src/file_path_suffixes.h b/libselinux/src/file_path_suffixes.h
+index 0b00156..825f295 100644
+--- a/libselinux/src/file_path_suffixes.h
++++ b/libselinux/src/file_path_suffixes.h
+@@ -22,6 +22,8 @@ S_(BINPOLICY, "/policy/policy")
+     S_(COLORS, "/secolor.conf")
+     S_(VIRTUAL_DOMAIN, "/contexts/virtual_domain_context")
+     S_(VIRTUAL_IMAGE, "/contexts/virtual_image_context")
++    S_(LXC_CONTEXTS, "/contexts/lxc_contexts")
+     S_(FILE_CONTEXT_SUBS, "/contexts/files/file_contexts.subs")
+     S_(FILE_CONTEXT_SUBS_DIST, "/contexts/files/file_contexts.subs_dist")
+     S_(SEPGSQL_CONTEXTS, "/contexts/sepgsql_contexts")
++    S_(BOOLEAN_SUBS, "/booleans.subs")
 diff --git a/libselinux/src/label_file.c b/libselinux/src/label_file.c
 index 7bc46cc..82a608c 100644
 --- a/libselinux/src/label_file.c
@@ -426,21 +535,8 @@ index 7bc46cc..82a608c 100644
  				if (status)
  					goto finish;
  			}
-diff --git a/libselinux/src/load_policy.c b/libselinux/src/load_policy.c
-index f569664..10e29b9 100644
---- a/libselinux/src/load_policy.c
-+++ b/libselinux/src/load_policy.c
-@@ -369,7 +369,7 @@ int selinux_init_load_policy(int *enforce)
- 	 * Check for the existence of SELinux via selinuxfs, and 
- 	 * mount it if present for use in the calls below.  
- 	 */
--	char *mntpoint = NULL;
-+	const char *mntpoint = NULL;
- 	if (mount(SELINUXFS, SELINUXMNT, SELINUXFS, 0, 0) == 0 || errno == EBUSY) {
- 		mntpoint = SELINUXMNT;
- 	} else {
 diff --git a/libselinux/src/matchpathcon.c b/libselinux/src/matchpathcon.c
-index 48f7a11..ca87bd2 100644
+index 8f200d4..c18ea47 100644
 --- a/libselinux/src/matchpathcon.c
 +++ b/libselinux/src/matchpathcon.c
 @@ -2,6 +2,7 @@
@@ -460,16 +556,7 @@ index 48f7a11..ca87bd2 100644
  	va_end(ap);
  }
  
-@@ -292,6 +293,8 @@ static void matchpathcon_thread_destructor(void __attribute__((unused)) *ptr)
- 	matchpathcon_fini();
- }
- 
-+void __attribute__((destructor)) matchpathcon_lib_destructor(void);
-+
- void __attribute__((destructor)) matchpathcon_lib_destructor(void)
- {
- 	if (destructor_key_initialized)
-@@ -304,7 +307,7 @@ static void matchpathcon_init_once(void)
+@@ -306,7 +307,7 @@ static void matchpathcon_init_once(void)
  		destructor_key_initialized = 1;
  }
  
@@ -478,7 +565,7 @@ index 48f7a11..ca87bd2 100644
  {
  	if (!mycanoncon)
  		mycanoncon = default_canoncon;
-@@ -312,15 +315,22 @@ int matchpathcon_init_prefix(const char *path, const char *subset)
+@@ -314,15 +315,22 @@ int matchpathcon_init_prefix(const char *path, const char *subset)
  	__selinux_once(once, matchpathcon_init_once);
  	__selinux_setspecific(destructor_key, (void *)1);
  
@@ -493,232 +580,110 @@ index 48f7a11..ca87bd2 100644
  	return hnd ? 0 : -1;
  }
 +hidden_def(matchpathcon_init_prefixes)
-+
+ 
 +int matchpathcon_init_prefix(const char *path, const char *prefix)
 +{
 +	const char *prefixes[2] = { prefix, NULL };
- 
++
 +	return matchpathcon_init_prefixes(path, prefixes);
 +}
  hidden_def(matchpathcon_init_prefix)
  
  int matchpathcon_init(const char *path)
 diff --git a/libselinux/src/selinux_config.c b/libselinux/src/selinux_config.c
-index f4c33df..f42cb7c 100644
+index f42cb7c..f544ac2 100644
 --- a/libselinux/src/selinux_config.c
 +++ b/libselinux/src/selinux_config.c
-@@ -246,172 +246,172 @@ static const char *get_path(int idx)
- 	return file_paths[idx];
- }
+@@ -9,6 +9,7 @@
+ #include <unistd.h>
+ #include <pthread.h>
+ #include "selinux_internal.h"
++#include "policy.h"
+ #include "get_default_type_internal.h"
  
--const char *selinux_default_type_path()
-+const char *selinux_default_type_path(void)
- {
- 	return get_path(DEFAULT_TYPE);
- }
+ #define SELINUXDIR "/etc/selinux/"
+@@ -46,7 +47,9 @@
+ #define FILE_CONTEXT_SUBS 23
+ #define SEPGSQL_CONTEXTS  24
+ #define FILE_CONTEXT_SUBS_DIST 25
+-#define NEL               26
++#define BOOLEAN_SUBS      26
++#define LXC_CONTEXTS      27
++#define NEL               28
  
- hidden_def(selinux_default_type_path)
- 
--const char *selinux_policy_root()
-+const char *selinux_policy_root(void)
- {
- 	__selinux_once(once, init_selinux_config);
- 	return selinux_policyroot;
- }
- 
--const char *selinux_path()
-+const char *selinux_path(void)
- {
- 	return selinux_rootpath;
- }
- 
- hidden_def(selinux_path)
- 
--const char *selinux_default_context_path()
-+const char *selinux_default_context_path(void)
- {
- 	return get_path(DEFAULT_CONTEXTS);
- }
- 
- hidden_def(selinux_default_context_path)
- 
--const char *selinux_securetty_types_path()
-+const char *selinux_securetty_types_path(void)
- {
- 	return get_path(SECURETTY_TYPES);
- }
- 
- hidden_def(selinux_securetty_types_path)
- 
--const char *selinux_failsafe_context_path()
-+const char *selinux_failsafe_context_path(void)
- {
- 	return get_path(FAILSAFE_CONTEXT);
- }
- 
- hidden_def(selinux_failsafe_context_path)
- 
--const char *selinux_removable_context_path()
-+const char *selinux_removable_context_path(void)
- {
- 	return get_path(REMOVABLE_CONTEXT);
- }
- 
- hidden_def(selinux_removable_context_path)
- 
--const char *selinux_binary_policy_path()
-+const char *selinux_binary_policy_path(void)
- {
- 	return get_path(BINPOLICY);
- }
+ /* Part of one-time lazy init */
+ static pthread_once_t once = PTHREAD_ONCE_INIT;
+@@ -301,6 +304,29 @@ const char *selinux_binary_policy_path(void)
  
  hidden_def(selinux_binary_policy_path)
  
--const char *selinux_file_context_path()
-+const char *selinux_file_context_path(void)
++const char *selinux_current_policy_path(void)
++{
++	int rc = 0;
++	int vers = 0;
++	static char policy_path[PATH_MAX];
++
++	snprintf(policy_path, sizeof(policy_path), "%s/policy", selinux_mnt);
++	if (access(policy_path, F_OK) != 0 ) {
++		vers = security_policyvers();
++		do {
++			/* Check prior versions to see if old policy is available */
++			snprintf(policy_path, sizeof(policy_path), "%s.%d",
++				 selinux_binary_policy_path(), vers);
++		} while ((rc = access(policy_path, F_OK)) && --vers > 0);
++
++		if (rc) return NULL;
++	}
++
++	return policy_path;
++}
++
++hidden_def(selinux_current_policy_path)
++
+ const char *selinux_file_context_path(void)
  {
  	return get_path(FILE_CONTEXTS);
- }
+@@ -418,6 +444,19 @@ const char *selinux_virtual_image_context_path(void)
  
- hidden_def(selinux_file_context_path)
+ hidden_def(selinux_virtual_image_context_path)
  
--const char *selinux_homedir_context_path()
-+const char *selinux_homedir_context_path(void)
- {
- 	return get_path(HOMEDIR_CONTEXTS);
- }
- 
- hidden_def(selinux_homedir_context_path)
- 
--const char *selinux_media_context_path()
-+const char *selinux_media_context_path(void)
- {
- 	return get_path(MEDIA_CONTEXTS);
- }
- 
- hidden_def(selinux_media_context_path)
- 
--const char *selinux_customizable_types_path()
-+const char *selinux_customizable_types_path(void)
- {
- 	return get_path(CUSTOMIZABLE_TYPES);
- }
- 
- hidden_def(selinux_customizable_types_path)
- 
--const char *selinux_contexts_path()
-+const char *selinux_contexts_path(void)
- {
- 	return get_path(CONTEXTS_DIR);
- }
- 
--const char *selinux_user_contexts_path()
-+const char *selinux_user_contexts_path(void)
- {
- 	return get_path(USER_CONTEXTS);
- }
- 
- hidden_def(selinux_user_contexts_path)
- 
--const char *selinux_booleans_path()
-+const char *selinux_booleans_path(void)
- {
- 	return get_path(BOOLEANS);
- }
- 
- hidden_def(selinux_booleans_path)
- 
--const char *selinux_users_path()
-+const char *selinux_users_path(void)
- {
- 	return get_path(USERS_DIR);
- }
- 
- hidden_def(selinux_users_path)
- 
--const char *selinux_usersconf_path()
-+const char *selinux_usersconf_path(void)
- {
- 	return get_path(SEUSERS);
- }
- 
- hidden_def(selinux_usersconf_path)
- 
--const char *selinux_translations_path()
-+const char *selinux_translations_path(void)
- {
- 	return get_path(TRANSLATIONS);
- }
- 
- hidden_def(selinux_translations_path)
- 
--const char *selinux_colors_path()
-+const char *selinux_colors_path(void)
- {
- 	return get_path(COLORS);
- }
- 
- hidden_def(selinux_colors_path)
- 
--const char *selinux_netfilter_context_path()
-+const char *selinux_netfilter_context_path(void)
- {
- 	return get_path(NETFILTER_CONTEXTS);
- }
- 
- hidden_def(selinux_netfilter_context_path)
- 
--const char *selinux_file_context_homedir_path()
-+const char *selinux_file_context_homedir_path(void)
- {
- 	return get_path(FILE_CONTEXTS_HOMEDIR);
- }
- 
- hidden_def(selinux_file_context_homedir_path)
- 
--const char *selinux_file_context_local_path()
-+const char *selinux_file_context_local_path(void)
- {
- 	return get_path(FILE_CONTEXTS_LOCAL);
- }
- 
- hidden_def(selinux_file_context_local_path)
- 
--const char *selinux_x_context_path()
-+const char *selinux_x_context_path(void)
- {
- 	return get_path(X_CONTEXTS);
- }
- 
- hidden_def(selinux_x_context_path)
- 
--const char *selinux_virtual_domain_context_path()
-+const char *selinux_virtual_domain_context_path(void)
- {
- 	return get_path(VIRTUAL_DOMAIN);
- }
- 
- hidden_def(selinux_virtual_domain_context_path)
- 
--const char *selinux_virtual_image_context_path()
-+const char *selinux_virtual_image_context_path(void)
- {
- 	return get_path(VIRTUAL_IMAGE);
- }
-@@ -430,7 +430,7 @@ const char * selinux_file_context_subs_dist_path(void) {
- 
- hidden_def(selinux_file_context_subs_dist_path)
- 
--const char *selinux_sepgsql_context_path()
-+const char *selinux_sepgsql_context_path(void)
- {
- 	return get_path(SEPGSQL_CONTEXTS);
++const char *selinux_lxc_contexts_path(void)
++{
++	return get_path(LXC_CONTEXTS);
++}
++
++hidden_def(selinux_lxc_contexts_path)
++
++const char * selinux_booleans_subs_path(void) {
++	return get_path(BOOLEAN_SUBS);
++}
++
++hidden_def(selinux_booleans_subs_path)
++
+ const char * selinux_file_context_subs_path(void) {
+ 	return get_path(FILE_CONTEXT_SUBS);
  }
 diff --git a/libselinux/src/selinux_internal.h b/libselinux/src/selinux_internal.h
-index 710396a..9a3fc14 100644
+index 00df405..8a935d0 100644
 --- a/libselinux/src/selinux_internal.h
 +++ b/libselinux/src/selinux_internal.h
-@@ -80,6 +80,7 @@ hidden_proto(selinux_mkload_policy)
+@@ -60,12 +60,15 @@ hidden_proto(selinux_mkload_policy)
+     hidden_proto(security_setenforce)
+     hidden_proto(security_deny_unknown)
+     hidden_proto(selinux_binary_policy_path)
++    hidden_proto(selinux_booleans_subs_path)
++    hidden_proto(selinux_current_policy_path)
+     hidden_proto(selinux_default_context_path)
+     hidden_proto(selinux_securetty_types_path)
+     hidden_proto(selinux_failsafe_context_path)
+     hidden_proto(selinux_removable_context_path)
+     hidden_proto(selinux_virtual_domain_context_path)
+     hidden_proto(selinux_virtual_image_context_path)
++    hidden_proto(selinux_lxc_contexts_path)
+     hidden_proto(selinux_file_context_path)
+     hidden_proto(selinux_file_context_homedir_path)
+     hidden_proto(selinux_file_context_local_path)
+@@ -82,6 +85,7 @@ hidden_proto(selinux_mkload_policy)
      hidden_proto(selinux_path)
      hidden_proto(selinux_check_passwd_access)
      hidden_proto(selinux_check_securetty_context)
@@ -726,264 +691,3 @@ index 710396a..9a3fc14 100644
      hidden_proto(matchpathcon_init_prefix)
      hidden_proto(selinux_users_path)
      hidden_proto(selinux_usersconf_path);
-diff --git a/libselinux/src/setrans_client.c b/libselinux/src/setrans_client.c
-index e074142..9432f49 100644
---- a/libselinux/src/setrans_client.c
-+++ b/libselinux/src/setrans_client.c
-@@ -253,6 +253,8 @@ static void setrans_thread_destructor(void __attribute__((unused)) *unused)
- 	free(prev_r2c_raw);
- }
- 
-+void __attribute__((destructor)) setrans_lib_destructor(void);
-+
- void __attribute__((destructor)) setrans_lib_destructor(void)
- {
- 	if (destructor_key_initialized)
-diff --git a/libselinux/src/seusers.c b/libselinux/src/seusers.c
-index b653cad..5cdf6c0 100644
---- a/libselinux/src/seusers.c
-+++ b/libselinux/src/seusers.c
-@@ -269,9 +269,10 @@ int getseuser(const char *username, const char *service,
- 	size_t lineno = 0;
- 	char *rec = NULL;
- 	char *path=NULL;
-+	FILE *fp = NULL;
- 	if (asprintf(&path,"%s/logins/%s", selinux_policy_root(), username) <  0)
- 		goto err;
--	FILE *fp = fopen(path, "r");
-+	fp = fopen(path, "r");
- 	free(path);
- 	if (fp == NULL) goto err;
- 	__fsetlocking(fp, FSETLOCKING_BYCALLER);
-diff --git a/libselinux/src/stringrep.c b/libselinux/src/stringrep.c
-index f0167e7..176ac34 100644
---- a/libselinux/src/stringrep.c
-+++ b/libselinux/src/stringrep.c
-@@ -305,28 +305,6 @@ err1:
- 	return NULL;
- }
- 
--void flush_class_cache(void)
--{
--	struct discover_class_node *cur = discover_class_cache, *prev = NULL;
--	size_t i;
--
--	while (cur != NULL) {
--		free(cur->name);
--
--		for (i=0 ; i<MAXVECTORS ; i++)
--			free(cur->perms[i]);
--
--		free(cur->perms);
--
--		prev = cur;
--		cur = cur->next;
--
--		free(prev);
--	}
--
--	discover_class_cache = NULL;
--}
--
- static security_class_t string_to_security_class_compat(const char *s)
- {
- 	unsigned int val;
-diff --git a/libselinux/utils/Makefile b/libselinux/utils/Makefile
-index 6f5aa52..d76ccfa 100644
---- a/libselinux/utils/Makefile
-+++ b/libselinux/utils/Makefile
-@@ -1,10 +1,28 @@
- # Installation directories.
- PREFIX ?= $(DESTDIR)/usr
- LIBDIR ?= $(PREFIX)/lib
--BINDIR ?= $(PREFIX)/sbin
--_BINDIR ?= $(DESTDIR)/sbin
--
--CFLAGS ?= -Werror -Wall -W
-+USRBINDIR ?= $(PREFIX)/sbin
-+SBINDIR ?= $(DESTDIR)/sbin
-+
-+MAX_STACK_SIZE=8192
-+CFLAGS ?= -Wall -W -Wundef -Wformat-y2k -Wformat-security -Winit-self -Wmissing-include-dirs \
-+          -Wunused -Wunknown-pragmas -Wstrict-aliasing -Wshadow -Wpointer-arith \
-+          -Wbad-function-cast -Wcast-align -Wwrite-strings -Wlogical-op -Waggregate-return \
-+          -Wstrict-prototypes -Wold-style-definition -Wmissing-prototypes \
-+          -Wmissing-declarations -Wmissing-noreturn -Wmissing-format-attribute \
-+          -Wredundant-decls -Wnested-externs -Winline -Winvalid-pch -Wvolatile-register-var \
-+          -Wdisabled-optimization -Wbuiltin-macro-redefined -Wmudflap -Wpacked-bitfield-compat \
-+          -Wsync-nand -Wattributes -Wcoverage-mismatch -Wmultichar -Wcpp \
-+          -Wdeprecated-declarations -Wdiv-by-zero -Wdouble-promotion -Wendif-labels -Wextra \
-+          -Wformat-contains-nul -Wformat-extra-args -Wformat-zero-length -Wformat=2 -Wmultichar \
-+          -Wnormalized=nfc -Woverflow -Wpointer-to-int-cast -Wpragmas -Wsuggest-attribute=const \
-+          -Wsuggest-attribute=noreturn -Wsuggest-attribute=pure -Wtrampolines \
-+          -Wno-missing-field-initializers -Wno-sign-compare -Wjump-misses-init \
-+          -Wno-format-nonliteral -Wframe-larger-than=$(MAX_STACK_SIZE) -Wp,-D_FORTIFY_SOURCE=2 \
-+          -fstack-protector-all --param=ssp-buffer-size=4 -fexceptions \
-+          -fasynchronous-unwind-tables -fdiagnostics-show-option -funit-at-a-time \
-+          -fipa-pure-const -Wno-suggest-attribute=pure -Wno-suggest-attribute=const \
-+          -Werror -Wno-aggregate-return -Wno-redundant-decls
- override CFLAGS += -I../include -D_GNU_SOURCE $(EMFLAGS)
- LDLIBS += -L../src -lselinux -L$(LIBDIR)
- 
-@@ -17,18 +35,18 @@ endif
- ifeq ($(DISABLE_BOOL),y)
- 	UNUSED_TARGETS+=getsebool togglesebool
- endif
--TARGETS:= $(filter-out $(UNUSED_TARGETS) matchpathcon, $(TARGETS))
-+TARGETS:= $(filter-out $(UNUSED_TARGETS), $(TARGETS))
- 
--all: $(TARGETS) matchpathcon
-+all: $(TARGETS)
- 
- install: all
--	-mkdir -p $(BINDIR)
--	install -m 755 $(TARGETS) $(BINDIR)
--	-mkdir -p $(_BINDIR)
--	install -m 755 matchpathcon $(_BINDIR)
--	(cd $(BINDIR); 	ln -fs ../../sbin/matchpathcon)
-+	-mkdir -p $(USRBINDIR)
-+	install -m 755 $(TARGETS) $(USRBINDIR)
-+	-mkdir -p $(SBINDIR)
- clean:
--	rm -f $(TARGETS) matchpathcon *.o *~
-+	rm -f $(TARGETS) *.o *~
-+
-+distclean: clean
- 
- indent:
- 	../../scripts/Lindent $(wildcard *.[ch])
-diff --git a/libselinux/utils/avcstat.c b/libselinux/utils/avcstat.c
-index 772118a..7239ef2 100644
---- a/libselinux/utils/avcstat.c
-+++ b/libselinux/utils/avcstat.c
-@@ -43,7 +43,7 @@ static char buf[DEF_BUF_SIZE];
- /* selinuxfs mount point */
- extern char *selinux_mnt;
- 
--static void die(const char *msg, ...)
-+static __attribute__((__format__(printf,1,2))) void die(const char *msg, ...)
- {
- 	va_list args;
- 
-@@ -118,7 +118,7 @@ int main(int argc, char **argv)
- 			exit(0);
- 		default:
- 			usage();
--			die("unrecognized parameter", i);
-+			die("unrecognized parameter '%c'", i);
- 		}
- 	}
- 
-diff --git a/libselinux/utils/getconlist.c b/libselinux/utils/getconlist.c
-index 4f473e4..94c9bff 100644
---- a/libselinux/utils/getconlist.c
-+++ b/libselinux/utils/getconlist.c
-@@ -9,7 +9,7 @@
- #include <selinux/selinux.h>
- #include <selinux/get_context_list.h>
- 
--void usage(char *name, char *detail, int rc)
-+static void usage(const char *name, const char *detail, int rc)
- {
- 	fprintf(stderr, "usage:  %s [-l level] user [context]\n", name);
- 	if (detail)
-diff --git a/libselinux/utils/getdefaultcon.c b/libselinux/utils/getdefaultcon.c
-index e6eb98b..049e75c 100644
---- a/libselinux/utils/getdefaultcon.c
-+++ b/libselinux/utils/getdefaultcon.c
-@@ -9,7 +9,7 @@
- #include <selinux/selinux.h>
- #include <selinux/get_context_list.h>
- 
--void usage(char *name, char *detail, int rc)
-+static void usage(const char *name, const char *detail, int rc)
- {
- 	fprintf(stderr, "usage:  %s [-l level] user fromcon\n", name);
- 	if (detail)
-diff --git a/libselinux/utils/getsebool.c b/libselinux/utils/getsebool.c
-index cab2bb9..3a90449 100644
---- a/libselinux/utils/getsebool.c
-+++ b/libselinux/utils/getsebool.c
-@@ -6,7 +6,7 @@
- #include <string.h>
- #include <selinux/selinux.h>
- 
--void usage(const char *progname)
-+static void usage(const char *progname)
- {
- 	fprintf(stderr, "usage:  %s -a or %s boolean...\n", progname, progname);
- 	exit(1);
-diff --git a/libselinux/utils/matchpathcon.c b/libselinux/utils/matchpathcon.c
-index 5f0a4c2..b1adadd 100644
---- a/libselinux/utils/matchpathcon.c
-+++ b/libselinux/utils/matchpathcon.c
-@@ -13,7 +13,7 @@
- #include <stdlib.h>
- 
- 
--void usage(const char *progname)
-+static void usage(const char *progname)
- {
- 	fprintf(stderr,
- 		"usage:  %s [-N] [-n] [-f file_contexts] [-p prefix] [-Vq] path...\n",
-@@ -21,7 +21,7 @@ void usage(const char *progname)
- 	exit(1);
- }
- 
--int printmatchpathcon(char *path, int header, int mode)
-+static int printmatchpathcon(const char *path, int header, int mode)
- {
- 	char *buf;
- 	int rc = matchpathcon(path, mode, &buf);
-diff --git a/libselinux/utils/selinux_check_securetty_context.c b/libselinux/utils/selinux_check_securetty_context.c
-index 95bfb7f..b158eb3 100644
---- a/libselinux/utils/selinux_check_securetty_context.c
-+++ b/libselinux/utils/selinux_check_securetty_context.c
-@@ -9,7 +9,7 @@
- #include <sys/errno.h>
- #include <selinux/selinux.h>
- 
--void usage(const char *progname)
-+static void usage(const char *progname)
- {
- 	fprintf(stderr, "usage:  %s tty_context...\n", progname);
- 	exit(1);
-diff --git a/libselinux/utils/selinuxexeccon.c b/libselinux/utils/selinuxexeccon.c
-index c55fde9..476f564 100644
---- a/libselinux/utils/selinuxexeccon.c
-+++ b/libselinux/utils/selinuxexeccon.c
-@@ -9,7 +9,7 @@
- #include <selinux/flask.h>
- #include <selinux/selinux.h>
- 
--void usage(char *name, char *detail, int rc)
-+static void usage(const char *name, const char *detail, int rc)
- {
- 	fprintf(stderr, "usage:  %s command [ fromcon ]\n", name);
- 	if (detail)
-diff --git a/libselinux/utils/setenforce.c b/libselinux/utils/setenforce.c
-index e45b804..df58597 100644
---- a/libselinux/utils/setenforce.c
-+++ b/libselinux/utils/setenforce.c
-@@ -6,7 +6,7 @@
- #include <strings.h>
- #include <selinux/selinux.h>
- 
--void usage(const char *progname)
-+static void usage(const char *progname)
- {
- 	fprintf(stderr, "usage:  %s [ Enforcing | Permissive | 1 | 0 ]\n",
- 		progname);
-diff --git a/libselinux/utils/togglesebool.c b/libselinux/utils/togglesebool.c
-index 680ed8d..ad0d2a2 100644
---- a/libselinux/utils/togglesebool.c
-+++ b/libselinux/utils/togglesebool.c
-@@ -10,7 +10,7 @@
- 
- /* Attempt to rollback the transaction. No need to check error
-    codes since this is rolling back something that blew up. */
--void rollback(int argc, char **argv)
-+static void rollback(int argc, char **argv)
- {
- 	int i;
- 

@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = libselinux
-version    = 2.1.9
-release    = 2
+version    = 2.1.10
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.selinuxproject.org
@@ -30,21 +30,19 @@ build
 
 	build
 		make clean
-		make CC=gcc LIBDIR="%{libdir}" CFLAGS="-g %{CFLAGS}" swigify
-		make CC=gcc LIBDIR="%{libdir}" CFLAGS="-g %{CFLAGS}" all
-		make CC=gcc LIBDIR="%{libdir}" CFLAGS="-g %{CFLAGS}" pywrap
+		make CC=gcc LIBDIR="%{libdir}" SHLIBDIR="%{libdir}" CFLAGS="-g %{CFLAGS}" swigify
+		make CC=gcc LIBDIR="%{libdir}" SHLIBDIR="%{libdir}" CFLAGS="-g %{CFLAGS}" all
+		make CC=gcc LIBDIR="%{libdir}" SHLIBDIR="%{libdir}" CFLAGS="-g %{CFLAGS}" pywrap
 	end
 
 	# Install libraries to correct place.
-	make_install_targets += \
+	make_install_targets += install-pywrap \
 		BINDIR="%{BUILDROOT}%{bindir}" \
 		SBINDIR="%{BUILDROOT}%{sbindir}" \
 		LIBDIR="%{BUILDROOT}%{libdir}" \
 		SHLIBDIR="%{BUILDROOT}%{libdir}"
 
 	install_cmds
-		make install-pywrap %{make_install_targets} DESTDIR=%{BUILDROOT}
-
 		# Remove unwanted binaries
 		rm -f %{BUILDROOT}/usr/sbin/compute_*
 		rm -f %{BUILDROOT}/usr/sbin/deftype
@@ -59,6 +57,9 @@ build
 		rm -f %{BUILDROOT}/usr/sbin/selinuxdisable
 		rm -f %{BUILDROOT}/usr/sbin/getseuser
 		rm -f %{BUILDROOT}/usr/sbin/selinux_check_securetty_context
+
+		# Fix weird symlink.
+		ln -svf libselinux.so.1 %{BUILDROOT}%{libdir}/libselinux.so
 	end
 end
 
