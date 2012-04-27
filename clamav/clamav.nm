@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = clamav
-version    = 0.97
-release    = 3
+version    = 0.97.4
+release    = 1
 
 groups     = System Environment/Daemons
 url        = http://www.clamav.net
@@ -64,10 +64,17 @@ end
 
 packages
 	package %{name}
+		requires
+			%{name}-libs = %{thisver}
+		end
 	end
 
 	package %{name}-libs
 		template LIBS
+
+		requires
+			%{name}-databases = %{thisver}
+		end
 	end
 
 	package %{name}-devel
@@ -76,5 +83,16 @@ packages
 
 	package %{name}-debuginfo
 		template DEBUGINFO
+	end
+
+	package %{name}-databases
+		summary = Clamav Virus Databases.
+		description
+			Shipped virus databases needed for virus scanning.
+		end
+
+		files
+			%{localstatedir}/lib/%{name}
+		end
 	end
 end
