@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 44
-release    = 4
+release    = 5
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -95,14 +95,6 @@ build
 			ln -svf ../system/${i}.target ${i}.target || exit 1
 		done
 
-		# Replace absolute symlink for getty@tty1.service.
-		ln -svf ../../../../%{unitdir}/getty@.service \
-			%{BUILDROOT}%{sysconfdir}/systemd/system/getty.target.wants/getty@tty1.service
-
-		# Replace absolute symlink for remote-fs.target.
-		ln -svf ../../../../%{unitdir}/remote-fs.target \
-			%{BUILDROOT}%{sysconfdir}/systemd/system/multi-user.target.wants/remote-fs.target
-
 		# Remove tmpfile for X11
 		rm -rfv %{BUILDROOT}/usr/lib/tmpfiles.d/x11.conf
 
@@ -152,10 +144,18 @@ packages
 				# Try harder
 				grep -q pam_systemd /etc/pam.d/system-auth-ac || authconfig --updateall --nostart >/dev/null 2>&1 || :
 			fi
+
+			/usr/bin/systemctl enable \
+				getty@.service \
+				remote-fs.service \
+				systemd-readahead-replay.service \
+				systemd-readahead-collect.service \
+				>/dev/null 2>&1 || :
 		end
 
 		script postup
 			# Restart login service after update
+			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
 			/usr/bin/systemctl try-restart systemd-logind.service >/dev/null 2>&1 || :
 		end
 	end
