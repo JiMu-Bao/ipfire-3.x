@@ -6,7 +6,7 @@
 name       = initscripts
 epoch      = 1
 version    = 2.99
-release    = 15
+release    = 16
 
 groups     = System/Boot
 url        =
@@ -71,6 +71,10 @@ packages
 			system-release
 			udev
 			util-linux
+		end
+
+		provides
+			/bin/ipcalc
 		end
 
 		conflicts

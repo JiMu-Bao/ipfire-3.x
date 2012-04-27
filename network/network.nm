@@ -6,7 +6,7 @@
 name       = network
 epoch      = 1
 version    = 003
-release    = 1
+release    = 2
 arch       = noarch
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -49,7 +49,7 @@ packages
 			tunctl
 			vlan
 			wpa_supplicant
-			/bin/ipcalc
+			/usr/bin/ipcalc
 			/usr/bin/logger
 		end
 
