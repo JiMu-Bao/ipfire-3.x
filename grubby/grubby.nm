@@ -5,7 +5,7 @@
 
 name       = grubby
 version    = 8.11
-release    = 2
+release    = 3
 
 groups     = System/Base
 url        = http://git.fedorahosted.org/git/grubby.git
@@ -48,6 +48,12 @@ packages
 		# Pull in u-boot-tools on ARM platforms.
 		if "%{DISTRO_PLATFORM}" == "arm"
 			requires += u-boot-tools
+		end
+
+		provides
+			/sbin/grubby
+			/sbin/installkernel
+			/sbin/new-kernel-pkg
 		end
 	end
 

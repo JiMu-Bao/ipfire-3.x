@@ -5,7 +5,7 @@
 
 name       = plymouth
 version    = 0.8.4
-release    = 1
+release    = 2
 
 groups     = System/Base
 url        = http://www.freedesktop.org/wiki/Software/Plymouth
@@ -29,11 +29,22 @@ build
 		cairo-devel
 		glib2-devel
 		pkgconfig(libdrm)
-		pkgconfig(libdrm_intel)
 		pkgconfig(libdrm_radeon)
 		pkgconfig(libdrm_nouveau)
 		libpng-devel
 		pango-devel
+	end
+
+	enable_libdrm_intel = 0
+
+	if "%{DISTRO_MACHINE}" == "x86_64"
+		enable_libdrm_intel = 1
+		requires += pkgconfig(libdrm_intel)
+	end
+
+	if "%{DISTRO_MACHINE}" == "i686"
+		enable_libdrm_intel = 1
+		requires += pkgconfig(libdrm_intel)
 	end
 
 	CFLAGS += -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include
@@ -51,6 +62,10 @@ build
 		--without-system-root-install \
 		--without-rhgb-compat-link \
 		--without-log-viewer
+
+	if "%{enable_libdrm_intel}" == "0"
+		configure_options += --disable-libdrm_intel
+	end
 
 	prepare_cmds
 		autoreconf -vfi
