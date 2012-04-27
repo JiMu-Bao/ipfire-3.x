@@ -5,7 +5,7 @@
 
 name       = pam
 version    = 1.1.5
-release    = 2
+release    = 3
 thisapp    = Linux-PAM-%{version}
 
 groups     = System/Base
@@ -48,14 +48,25 @@ build
 
 		# Included in setup package
 		rm -f %{BUILDROOT}/etc/environment
+
+		# Install man pages.
+		mkdir -pv %{BUILDROOT}%{mandir}/man5
+		for file in config-util.5 postlogin.5 system-auth.5; do
+			install -v -m 644 %{DIR_SOURCE}/man/${file} \
+				%{BUILDROOT}%{mandir}/man5
+		done
 	end
 end
 
 packages
 	package %{name}
-		#requires
-		#	pam_ldap
-		#end
+		requires
+			pam_ldap
+		end
+
+		configfiles
+			/etc/pam.d
+		end
 	end
 
 	package %{name}-devel
