@@ -2,3 +2,5 @@
 #
 # This script will be executed at the end of the boot process.
 # You can put your own initialization stuff in here.
+
+exit 0
