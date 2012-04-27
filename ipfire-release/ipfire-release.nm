@@ -14,7 +14,7 @@ DISTRO_COLOR    = 0;31
 
 name       = %{DISTRO_SNAME}-release
 version    = %{DISTRO_VERSION}
-release    = 2
+release    = 3
 epoch      = 3
 arch       = noarch
 

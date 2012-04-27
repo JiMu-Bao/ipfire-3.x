@@ -3,4 +3,3 @@ description = IPFire 3 - Stable repository.
 enabled = 1
 baseurl = http://pakfire.ipfire.org/repositories/ipfire3/stable/%{arch}
 mirrors = https://pakfire.ipfire.org/distro/ipfire3/repo/stable/mirrorlist?arch=%{arch}
-priority = 500
