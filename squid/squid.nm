@@ -5,8 +5,8 @@
 
 name       = squid
 major_ver  = 3.1
-version    = %{major_ver}.16
-release    = 5
+version    = %{major_ver}.19
+release    = 1
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
@@ -152,7 +152,7 @@ packages
 
 		requires = /usr/bin/smbclient
 
-		filter_requires = perl\(Authen::Smb\)
+		filter_requires = perl.Auth.*
 	end
 
 	package %{name}-debuginfo
