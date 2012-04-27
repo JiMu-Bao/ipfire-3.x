@@ -5,7 +5,7 @@
 
 name       = ipfire-logos
 version    = 1
-release    = 1
+release    = 2
 arch       = noarch
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -31,5 +31,24 @@ end
 packages
 	package %{name}
 		provides = system-logos
+
+		prerequires
+			plymouth-scripts
+		end
+
+		requires
+			plymouth-plugin-script
+		end
+
+		script postin
+			%{sbindir}/plymouth-set-default-theme ipfire-logo || :
+		end
+
+		script postun
+			if [ "$(%{sbindir}/plymouth-set-default-theme)" = "ipfire-logo" ]; then
+				%{sbindir}/plymouth-set-default-theme --reset
+				/usr/lib/plymouth/plymouth-generate-initrd
+			fi
+		end
 	end
 end
