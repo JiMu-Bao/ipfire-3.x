@@ -1,14 +1,9 @@
 [Unit]
-Description=/etc/rc.local Compatiblity
-Requires=multi-user.target
-After=multi-user.target network.target
+Description=/etc/rc.local Compatibility
+After=network.target
 
 [Service]
 Type=forking
 ExecStart=/etc/rc.local
 TimeoutSec=0
-StandardOutput=tty
 RemainAfterExit=yes
-
-[Install]
-WantedBy=multi-user.target

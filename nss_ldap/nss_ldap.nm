@@ -5,7 +5,7 @@
 
 name       = nss_ldap
 version    = 265
-release    = 3
+release    = 4
 
 groups     = System/Base
 url        = http://www.padl.com/
@@ -47,7 +47,6 @@ build
 
 	configure_options += \
 		--sysconfdir=/etc \
-		--libdir=/%{lib} \
 		--with-ldap-lib=openldap \
 		--enable-rfc2307bis \
 		--with-ldap-conf-file=/etc/nss_ldap.conf \
@@ -75,8 +74,6 @@ build
 		# Remove awkward directory
 		rm -rvf %{BUILDROOT}/usr/usr
 
-		mv -v %{BUILDROOT}/%{lib}/* %{BUILDROOT}%{libdir}
-		rm -rvf %{BUILDROOT}/%{lib}
 		ln -svf libnss_ldap-%{version}.so %{BUILDROOT}%{libdir}/libnss_ldap.so
 		ln -svf libnss_ldap.so.2 %{BUILDROOT}%{libdir}/libnss_ldap.so
 
@@ -91,7 +88,12 @@ end
 packages
 	package %{name}
 		requires
-			/%{lib}/security/pam_ldap.so
+			%{libdir}/security/pam_ldap.so
+		end
+
+		configfiles
+			%{sysconfdir}/nss_ldap.conf
+			%{sysconfdir}/nss_ldap.secret
 		end
 	end
 
