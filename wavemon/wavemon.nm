@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = wavemon
-version    = 0.7.2
+version    = 0.7.4
 release    = 1
 
 groups     = Applications/Internet
