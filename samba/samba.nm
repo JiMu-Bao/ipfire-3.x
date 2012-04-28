@@ -5,7 +5,7 @@
 
 name       = samba
 version    = 3.6.4
-release    = 1
+release    = 2
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
@@ -83,11 +83,16 @@ build
 	install_cmds
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/samba
 		echo "127.0.0.1 localhost" > %{BUILDROOT}%{sysconfdir}/samba/lmhosts
+		cp -vf %{DIR_SOURCE}/smb.conf %{BUILDROOT}/%{sysconfdir}/%{name}
 	end
 end
 
 packages
 	package %{name}
+		prerequires = systemd-units
+		configfiles = /etc/smb.conf
+		requires += %{name}-libs = %{thisver}
+	end
 
 	package %{name}-libs
 		template LIBS
