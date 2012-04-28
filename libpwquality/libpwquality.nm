@@ -1,0 +1,57 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libpwquality
+version    = 1.0.0
+release    = 1
+
+groups     = System/Base
+url        = https://fedorahosted.org/libpwquality/
+license    = BSD or GPL+
+summary    = A library for password generation and password quality checking.
+
+description
+	This is a library for password quality checks and generation of random 
+	passwords that pass the checks. This library uses the cracklib and 
+	cracklib dictionaries to perform some of the checks.
+end
+
+source_dl  = http://fedorahosted.org/releases/l/i/libpwquality/
+sources    = %{thisapp}.tar.bz2
+
+build
+	requires
+		cracklib-devel
+		gettext
+		pam-devel
+		python-devel
+	end
+end
+
+packages
+	package %{name}
+
+	package python-%{name}
+		summary = Python bindings for the libpwquality library.
+		description
+			This is pwquality Python module that provides Python bindings
+			for the libpwquality library. These bindings can be used
+			for easy password quality checking and generation of random
+			pronounceable passwords from Python applications.
+		end
+
+		files
+			%{libdir}/python*
+		end
+	end
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
