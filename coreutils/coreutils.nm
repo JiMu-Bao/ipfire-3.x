@@ -5,7 +5,7 @@
 
 name       = coreutils
 version    = 8.16
-release    = 3
+release    = 4
 
 groups     = System/Base
 url        = http://www.gnu.org/software/coreutils/
@@ -55,10 +55,9 @@ build
 		autoconf --force
 	end
 
-	# FIXME broken
-	#test
-	#	make check
-	#end
+	test
+		make check
+	end
 
 	make_install_targets += install-man
 
