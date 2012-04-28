@@ -5,7 +5,7 @@
 
 name       = c_icap
 version    = 0.1.7
-release    = 1
+release    = 2
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
@@ -49,6 +49,7 @@ end
 
 packages
 	package %{name}
+		requires = %{name}_modules
 	end
 
 	package %{name}-debuginfo
