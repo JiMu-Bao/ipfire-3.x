@@ -4,8 +4,11 @@
 ###############################################################################
 
 name       = acpid
-version    = 2.0.9
-release    = 5
+version    = 2.0.16
+release    = 1
+
+# ACPI is only available on x86 architectures.
+sup_arches = x86_64 i686
 
 groups     = System/Daemons
 url        = http://tedfelix.com/linux/acpid-netlink.html
@@ -17,26 +20,40 @@ description
 end
 
 source_dl  = http://tedfelix.com/linux/
+sources    = %{thisapp}.tar.xz
 
 build
-	build
-		sed -e "s/-Werror//g" -i Makefile
-		make CC=gcc RPM_OPT_FLAGS="%{CFLAGS}" %{PARALLLEISMFLAGS}
-	end
-
 	install_cmds
 		mkdir -pv %{BUILDROOT}/etc/acpi/{actions,events}
 		cp -vf %{DIR_SOURCE}/power %{BUILDROOT}/etc/acpi/events/
 		cp -vf %{DIR_SOURCE}/power.sh %{BUILDROOT}/etc/acpi/actions/
-
-		mkdir -pv %{BUILDROOT}/etc/sysconfig
-		cp -vf %{DIR_SOURCE}/acpid.sysconfig %{BUILDROOT}/etc/sysconfig/acpid
 	end
 end
 
 packages
 	package %{name}
 		groups += Base
+
+		script postin
+			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+
+			# ACPI is enabled by default.
+			/usr/bin/systemctl --no-reload enable acpid.service >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/usr/bin/systemctl --no-reload disable acpid.service >/dev/null 2>&1 || :
+			/usr/bin/systemctl stop acpid.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/usr/bin/systemctl try-restart acpid.service >/dev/null 2>&1 || :
+		end
 	end
 
 	package %{name}-debuginfo
