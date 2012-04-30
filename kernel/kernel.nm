@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 3.2.12
-release    = 3
+release    = 4
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
