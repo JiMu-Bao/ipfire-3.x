@@ -5,7 +5,7 @@
 
 name       = man-db
 version    = 2.6.1
-release    = 1
+release    = 2
 
 groups     = Documentation
 url        = http://savannah.nongnu.org/projects/man-db
@@ -32,23 +32,22 @@ build
 
 	configure_options += \
 		--disable-setuid \
-		--with-browser=/usr/bin/lynx \
-		--with-col=/usr/bin/col \
-		--with-vgrind=/usr/bin/vgrind \
-		--with-grap=/usr/bin/grap
+		--with-browser=%{bindir}/lynx \
+		--with-col=%{bindir}/col \
+		--with-vgrind=%{bindir}/vgrind \
+		--with-grap=%{bindir}/grap \
+		--disable-rpath
 
 	prepare_cmds
 		sed -i -e '\%\t/usr/man%d' -e '\%\t/usr/local/man%d' \
 			src/man_db.conf.in
 	end
-end
 
-# This package installs a lib in /usr/lib/man-db and links all binaries
-# against it. Seems as if the ABI is not stable, yet and so we need to
-# accept that.
-quality-agent
-	whitelist_rpath
-		%{libdir}/man-db
+	install_cmds
+		# Move some libs
+		mv -v %{BUILDROOT}%{libdir}/man-db/* %{BUILDROOT}%{libdir}/
+		rm -rf %{BUILDROOTi}%{libdir}/man-db/
+
 	end
 end
 
@@ -59,6 +58,7 @@ packages
 		requires
 			groff
 			less
+			xz
 		end
 
 		# This package also should be known as man.
