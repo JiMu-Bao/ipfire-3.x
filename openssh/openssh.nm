@@ -5,7 +5,7 @@
 
 name       = openssh
 version    = 5.9p1
-release    = 4
+release    = 5
 
 groups     = Application/Internet
 url        = http://www.openssh.com/portable.html
@@ -122,7 +122,7 @@ packages
 		end
 
 		script prein
-			getent group sshd_keys >/dev/null || groupadd -r ssh_keys || :
+			getent group ssh_keys >/dev/null || groupadd -r ssh_keys
 		end
 	end
 
@@ -203,9 +203,7 @@ packages
 
 		script preun
 			/bin/systemctl --no-reload disable sshd.service >/dev/null 2>&1 || :
-			/bin/systemctl --no-reload disable sshd-keygen.service >/dev/null 2>&1 || :
 			/bin/systemctl stop sshd.service >/dev/null 2>&1 || :
-			/bin/systemctl stop sshd-keygen.service >/dev/null 2>&1 || :
 		end
 
 		script postun
