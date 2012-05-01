@@ -37,6 +37,8 @@ build
 		--disable-static_link \
 		--enable-libselinux
 
+	# Dmraid doesn't automatically build and install a versioned library
+	# so we do it on or own.
 	build_cmds
 		make -C lib libdmraid.so
 	end
@@ -45,6 +47,12 @@ build
 		# Install development headers.
 		mkdir -pv %{BUILDROOT}%{includedir}/dmraid
 		install -m 644 include/dmraid/*.h %{BUILDROOT}%{includedir}/dmraid/
+
+		# Manually install versioned library and create symlinks.
+		mkdir -pv %{BUILDROOT}%{libdir}
+		install -m 755 lib/libdmraid.so %{BUILDROOT}%{libdir}/libdmraid.so.%{version}
+		ln -sv libdmraid.so.%{version} %{BUILDROOT}%{libdir}/libdmraid.so.1
+		ln -sv libdmraid.so.%{version} %{BUILDROOT}%{libdir}/libdmraid.so
 	end
 end
 
