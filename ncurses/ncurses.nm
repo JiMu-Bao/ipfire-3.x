@@ -5,7 +5,7 @@
 
 name       = ncurses
 version    = 5.9
-release    = 7
+release    = 8
 
 groups     = System/Base
 url        = http://invisible-island.net/ncurses/ncurses.html
@@ -35,7 +35,7 @@ build
 		--enable-hard-tabs \
 		--enable-xmc-glitch \
 		--enable-colorfgbg \
-		--with-terminfo-dirs=/etc/terminfo:/usr/share/terminfo:/lib/terminfo \
+		--with-terminfo-dirs=%{sysconfdir}/terminfo:%{datadir}/terminfo \
 		--enable-overwrite \
 		--enable-pc-files \
 		--with-termlib=tinfo
@@ -67,32 +67,7 @@ build
 
 		chmod -v 755 %{BUILDROOT}%{libdir}/lib*.so.*.*
 
-		mkdir -pv %{BUILDROOT}/{etc,lib}/terminfo
-
-		# move few basic terminfo entries to /lib
-		baseterms=
-		for termname in \
-				ansi dumb linux vt100 vt100-nav vt102 vt220 vt52; do
-			for t in $(find %{BUILDROOT}/usr/share/terminfo \
-					-samefile %{BUILDROOT}/usr/share/terminfo/${termname::1}/$termname); do
-				baseterms="$baseterms $(basename $t)"
-			done
-		done
-		for termname in ${baseterms}; do
-			termpath=terminfo/${termname::1}/${termname}
-			mkdir -pv %{BUILDROOT}/lib/terminfo/${termname::1}
-			mv -v %{BUILDROOT}/usr/share/${termpath} %{BUILDROOT}/lib/${termpath}
-			ln -svf $(dirname /usr/share/${termpath} | \
-					sed 's,\(^/\|\)[^/][^/]*,..,g')/lib/${termpath} \
-				%{BUILDROOT}/usr/share//${termpath}
-		done
-
-		# can't replace directory with symlink, symlink all headers
-		#mkdir %{BUILDROOT}/usr/include/ncurses{,w}
-		#for l in %{BUILDROOT}/usr/include/*.h; do
-		#	ln -s ../$(basename $l) %{BUILDROOT}/usr/include/ncurses
-		#	ln -s ../$(basename $l) %{BUILDROOT}/usr/include/ncursesw
-		#done
+		mkdir -pv %{BUILDROOT}/etc/terminfo
 
 		# don't require -ltinfo when linking with --no-add-needed
 		for l in %{BUILDROOT}%{libdir}/libncurses{,w}.so; do
@@ -150,7 +125,6 @@ packages
 		conflicts = ncurses<=5.9-1
 
 		files
-			/lib/terminfo
 			/usr/share/terminfo/*/Eterm*
 			/usr/share/terminfo/*/aterm
 			/usr/share/terminfo/*/bterm
@@ -182,7 +156,8 @@ packages
 			/usr/share/terminfo/*/vwmterm
 			/usr/share/terminfo/*/wsvt25*
 			/usr/share/terminfo/*/xfce
-			/usr/share/terminfo/*/xterm xterm-*
+			/usr/share/terminfo/*/xterm
+			/usr/share/terminfo/*/xterm-*
 		end
 	end
 
