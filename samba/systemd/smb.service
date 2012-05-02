@@ -4,7 +4,6 @@ After=syslog.target network.target nmb.service winbind.service
 
 [Service]
 Type=forking
-PIDFile=/run/smbd.pid
 LimitNOFILE=16384
 ExecStart=/usr/sbin/smbd
 

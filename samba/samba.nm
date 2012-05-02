@@ -5,7 +5,7 @@
 
 name       = samba
 version    = 3.6.5
-release    = 1
+release    = 2
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
