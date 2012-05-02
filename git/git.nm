@@ -5,7 +5,7 @@
 
 name       = git
 version    = 1.7.8.2
-release    = 1
+release    = 2
 
 groups     = Development/Tools
 url        = http://git-scm.com/
@@ -45,6 +45,9 @@ build
 		echo "prefix = /usr" >> %{DIR_APP}/config.mak
 		echo "gitwebdir = /var/www/git" >> %{DIR_APP}/config.mak
 		echo "gitexecdir = lib/git-core" >> %{DIR_APP}/config.mak
+
+		# Remove shebang from bash-completion script.
+		sed -i '/^#!bash/,+1 d' contrib/completion/git-completion.bash
 	end
 
 	build
@@ -52,6 +55,13 @@ build
 	end
 
 	make_install_targets += INSTALLDIRS=vendor
+
+	install_cmds
+		# Install bash completion file.
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/bash_completion.d
+		install -v -m 644 contrib/completion/git-completion.bash \
+			%{BUILDROOT}%{sysconfdir}/bash_completion.d/git
+	end
 end
 
 packages
