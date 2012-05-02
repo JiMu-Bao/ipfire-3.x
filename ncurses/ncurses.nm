@@ -5,7 +5,7 @@
 
 name       = ncurses
 version    = 5.9
-release    = 8
+release    = 9
 
 groups     = System/Base
 url        = http://invisible-island.net/ncurses/ncurses.html
@@ -126,10 +126,12 @@ packages
 
 		files
 			/usr/share/terminfo/*/Eterm*
+			/usr/share/terminfo/*/ansi
 			/usr/share/terminfo/*/aterm
 			/usr/share/terminfo/*/bterm
 			/usr/share/terminfo/*/cons25
 			/usr/share/terminfo/*/cygwin
+			/usr/share/terminfo/*/dumb
 			/usr/share/terminfo/*/eterm*
 			/usr/share/terminfo/*/gnome
 			/usr/share/terminfo/*/gnome-256color
@@ -137,6 +139,7 @@ packages
 			/usr/share/terminfo/*/jfbterm
 			/usr/share/terminfo/*/konsole
 			/usr/share/terminfo/*/konsole-256color
+			/usr/share/terminfo/*/linux
 			/usr/share/terminfo/*/mach*
 			/usr/share/terminfo/*/mlterm
 			/usr/share/terminfo/*/mrxvt
@@ -151,6 +154,11 @@ packages
 			/usr/share/terminfo/*/sun
 			/usr/share/terminfo/*/teraterm
 			/usr/share/terminfo/*/teraterm2.3
+			/usr/share/terminfo/*/vt100
+			/usr/share/terminfo/*/vt100-nav
+			/usr/share/terminfo/*/vt102
+			/usr/share/terminfo/*/vt220
+			/usr/share/terminfo/*/vt52
 			/usr/share/terminfo/*/vte
 			/usr/share/terminfo/*/vte-256color
 			/usr/share/terminfo/*/vwmterm
