@@ -1,6 +1,6 @@
-diff -up openssl-1.0.1-beta3/apps/pkcs12.c.fips openssl-1.0.1-beta3/apps/pkcs12.c
---- openssl-1.0.1-beta3/apps/pkcs12.c.fips	2011-03-13 19:20:23.000000000 +0100
-+++ openssl-1.0.1-beta3/apps/pkcs12.c	2012-02-29 10:33:02.773294716 +0100
+diff -up openssl-1.0.1b/apps/pkcs12.c.fips openssl-1.0.1b/apps/pkcs12.c
+--- openssl-1.0.1b/apps/pkcs12.c.fips	2011-03-13 19:20:23.000000000 +0100
++++ openssl-1.0.1b/apps/pkcs12.c	2012-04-26 18:00:51.379768840 +0200
 @@ -67,6 +67,9 @@
  #include <openssl/err.h>
  #include <openssl/pem.h>
@@ -23,9 +23,9 @@ diff -up openssl-1.0.1-beta3/apps/pkcs12.c.fips openssl-1.0.1-beta3/apps/pkcs12.
      enc = EVP_des_ede3_cbc();
      if (bio_err == NULL ) bio_err = BIO_new_fp (stderr, BIO_NOCLOSE);
  
-diff -up openssl-1.0.1-beta3/apps/speed.c.fips openssl-1.0.1-beta3/apps/speed.c
---- openssl-1.0.1-beta3/apps/speed.c.fips	2012-01-11 22:49:16.000000000 +0100
-+++ openssl-1.0.1-beta3/apps/speed.c	2012-02-29 10:33:02.774294724 +0100
+diff -up openssl-1.0.1b/apps/speed.c.fips openssl-1.0.1b/apps/speed.c
+--- openssl-1.0.1b/apps/speed.c.fips	2012-01-11 22:49:16.000000000 +0100
++++ openssl-1.0.1b/apps/speed.c	2012-04-26 18:00:51.380768861 +0200
 @@ -195,7 +195,6 @@
  #ifdef OPENSSL_DOING_MAKEDEPEND
  #undef AES_set_encrypt_key
@@ -123,9 +123,9 @@ diff -up openssl-1.0.1-beta3/apps/speed.c.fips openssl-1.0.1-beta3/apps/speed.c
  #endif
  #ifndef OPENSSL_NO_RSA
  	memset(rsa_c,0,sizeof(rsa_c));
-diff -up openssl-1.0.1-beta3/Configure.fips openssl-1.0.1-beta3/Configure
---- openssl-1.0.1-beta3/Configure.fips	2012-02-29 10:33:02.738294416 +0100
-+++ openssl-1.0.1-beta3/Configure	2012-02-29 10:33:02.775294732 +0100
+diff -up openssl-1.0.1b/Configure.fips openssl-1.0.1b/Configure
+--- openssl-1.0.1b/Configure.fips	2012-04-26 18:00:51.341768009 +0200
++++ openssl-1.0.1b/Configure	2012-04-26 18:00:51.381768883 +0200
 @@ -993,11 +993,6 @@ if (defined($disabled{"md5"}) || defined
  	$disabled{"ssl2"} = "forced";
  	}
@@ -138,7 +138,7 @@ diff -up openssl-1.0.1-beta3/Configure.fips openssl-1.0.1-beta3/Configure
  # RSAX ENGINE sets default non-FIPS RSA method.
  if ($fips)
  	{
-@@ -1478,7 +1473,6 @@ $cflags.=" -DOPENSSL_BN_ASM_GF2m" if ($b
+@@ -1472,7 +1467,6 @@ $cflags.=" -DOPENSSL_BN_ASM_GF2m" if ($b
  if ($fips)
  	{
  	$openssl_other_defines.="#define OPENSSL_FIPS\n";
@@ -146,7 +146,7 @@ diff -up openssl-1.0.1-beta3/Configure.fips openssl-1.0.1-beta3/Configure
  	}
  
  $cpuid_obj="mem_clr.o"	unless ($cpuid_obj =~ /\.o$/);
-@@ -1665,9 +1659,12 @@ while (<IN>)
+@@ -1659,9 +1653,12 @@ while (<IN>)
  
  	s/^FIPSDIR=.*/FIPSDIR=$fipsdir/;
  	s/^FIPSLIBDIR=.*/FIPSLIBDIR=$fipslibdir/;
@@ -160,9 +160,9 @@ diff -up openssl-1.0.1-beta3/Configure.fips openssl-1.0.1-beta3/Configure
  	s/^SHLIB_TARGET=.*/SHLIB_TARGET=$shared_target/;
  	s/^SHLIB_MARK=.*/SHLIB_MARK=$shared_mark/;
  	s/^SHARED_LIBS=.*/SHARED_LIBS=\$(SHARED_CRYPTO) \$(SHARED_SSL)/ if (!$no_shared);
-diff -up openssl-1.0.1-beta3/crypto/aes/aes_misc.c.fips openssl-1.0.1-beta3/crypto/aes/aes_misc.c
---- openssl-1.0.1-beta3/crypto/aes/aes_misc.c.fips	2011-06-05 19:36:33.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/aes/aes_misc.c	2012-02-29 10:33:02.776294741 +0100
+diff -up openssl-1.0.1b/crypto/aes/aes_misc.c.fips openssl-1.0.1b/crypto/aes/aes_misc.c
+--- openssl-1.0.1b/crypto/aes/aes_misc.c.fips	2011-06-05 19:36:33.000000000 +0200
++++ openssl-1.0.1b/crypto/aes/aes_misc.c	2012-04-26 18:00:51.382768906 +0200
 @@ -69,17 +69,11 @@ const char *AES_options(void) {
  int AES_set_encrypt_key(const unsigned char *userKey, const int bits,
  			AES_KEY *key)
@@ -181,9 +181,9 @@ diff -up openssl-1.0.1-beta3/crypto/aes/aes_misc.c.fips openssl-1.0.1-beta3/cryp
 -#endif
  	return private_AES_set_decrypt_key(userKey, bits, key);
  	}
-diff -up openssl-1.0.1-beta3/crypto/cmac/cmac.c.fips openssl-1.0.1-beta3/crypto/cmac/cmac.c
---- openssl-1.0.1-beta3/crypto/cmac/cmac.c.fips	2011-06-12 17:07:25.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/cmac/cmac.c	2012-02-29 10:33:02.776294741 +0100
+diff -up openssl-1.0.1b/crypto/cmac/cmac.c.fips openssl-1.0.1b/crypto/cmac/cmac.c
+--- openssl-1.0.1b/crypto/cmac/cmac.c.fips	2012-04-11 17:11:16.000000000 +0200
++++ openssl-1.0.1b/crypto/cmac/cmac.c	2012-04-26 18:00:51.382768906 +0200
 @@ -107,13 +107,6 @@ CMAC_CTX *CMAC_CTX_new(void)
  
  void CMAC_CTX_cleanup(CMAC_CTX *ctx)
@@ -210,7 +210,7 @@ diff -up openssl-1.0.1-beta3/crypto/cmac/cmac.c.fips openssl-1.0.1-beta3/crypto/
  		}
  #endif
  	/* All zeros means restart */
-@@ -214,10 +202,6 @@ int CMAC_Update(CMAC_CTX *ctx, const voi
+@@ -216,10 +204,6 @@ int CMAC_Update(CMAC_CTX *ctx, const voi
  	{
  	const unsigned char *data = in;
  	size_t bl;
@@ -221,7 +221,7 @@ diff -up openssl-1.0.1-beta3/crypto/cmac/cmac.c.fips openssl-1.0.1-beta3/crypto/
  	if (ctx->nlast_block == -1)
  		return 0;
  	if (dlen == 0)
-@@ -259,10 +243,6 @@ int CMAC_Update(CMAC_CTX *ctx, const voi
+@@ -261,10 +245,6 @@ int CMAC_Update(CMAC_CTX *ctx, const voi
  int CMAC_Final(CMAC_CTX *ctx, unsigned char *out, size_t *poutlen)
  	{
  	int i, bl, lb;
@@ -232,9 +232,9 @@ diff -up openssl-1.0.1-beta3/crypto/cmac/cmac.c.fips openssl-1.0.1-beta3/crypto/
  	if (ctx->nlast_block == -1)
  		return 0;
  	bl = EVP_CIPHER_CTX_block_size(&ctx->cctx);
-diff -up openssl-1.0.1-beta3/crypto/crypto.h.fips openssl-1.0.1-beta3/crypto/crypto.h
---- openssl-1.0.1-beta3/crypto/crypto.h.fips	2012-02-29 10:33:02.538292696 +0100
-+++ openssl-1.0.1-beta3/crypto/crypto.h	2012-02-29 10:33:02.777294750 +0100
+diff -up openssl-1.0.1b/crypto/crypto.h.fips openssl-1.0.1b/crypto/crypto.h
+--- openssl-1.0.1b/crypto/crypto.h.fips	2012-04-26 18:00:51.094762613 +0200
++++ openssl-1.0.1b/crypto/crypto.h	2012-04-26 18:00:51.382768906 +0200
 @@ -553,24 +553,29 @@ int FIPS_mode_set(int r);
  void OPENSSL_init(void);
  
@@ -280,9 +280,9 @@ diff -up openssl-1.0.1-beta3/crypto/crypto.h.fips openssl-1.0.1-beta3/crypto/cry
  /* Error codes for the CRYPTO functions. */
  
  /* Function codes. */
-diff -up openssl-1.0.1-beta3/crypto/des/des.h.fips openssl-1.0.1-beta3/crypto/des/des.h
---- openssl-1.0.1-beta3/crypto/des/des.h.fips	2012-02-29 10:33:02.605293272 +0100
-+++ openssl-1.0.1-beta3/crypto/des/des.h	2012-02-29 10:33:02.777294750 +0100
+diff -up openssl-1.0.1b/crypto/des/des.h.fips openssl-1.0.1b/crypto/des/des.h
+--- openssl-1.0.1b/crypto/des/des.h.fips	2012-04-26 18:00:51.173764340 +0200
++++ openssl-1.0.1b/crypto/des/des.h	2012-04-26 18:00:51.383768928 +0200
 @@ -224,9 +224,6 @@ int DES_set_key(const_DES_cblock *key,DE
  int DES_key_sched(const_DES_cblock *key,DES_key_schedule *schedule);
  int DES_set_key_checked(const_DES_cblock *key,DES_key_schedule *schedule);
@@ -293,9 +293,9 @@ diff -up openssl-1.0.1-beta3/crypto/des/des.h.fips openssl-1.0.1-beta3/crypto/de
  void DES_string_to_key(const char *str,DES_cblock *key);
  void DES_string_to_2keys(const char *str,DES_cblock *key1,DES_cblock *key2);
  void DES_cfb64_encrypt(const unsigned char *in,unsigned char *out,long length,
-diff -up openssl-1.0.1-beta3/crypto/des/set_key.c.fips openssl-1.0.1-beta3/crypto/des/set_key.c
---- openssl-1.0.1-beta3/crypto/des/set_key.c.fips	2011-06-01 18:54:04.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/des/set_key.c	2012-02-29 10:33:02.777294750 +0100
+diff -up openssl-1.0.1b/crypto/des/set_key.c.fips openssl-1.0.1b/crypto/des/set_key.c
+--- openssl-1.0.1b/crypto/des/set_key.c.fips	2011-06-01 18:54:04.000000000 +0200
++++ openssl-1.0.1b/crypto/des/set_key.c	2012-04-26 18:00:51.383768928 +0200
 @@ -337,13 +337,6 @@ int DES_set_key_checked(const_DES_cblock
  	}
  
@@ -310,9 +310,9 @@ diff -up openssl-1.0.1-beta3/crypto/des/set_key.c.fips openssl-1.0.1-beta3/crypt
  	{
  	static const int shifts2[16]={0,0,1,1,1,1,1,1,0,1,1,1,1,1,1,0};
  	register DES_LONG c,d,t,s,t2;
-diff -up openssl-1.0.1-beta3/crypto/dh/dh_gen.c.fips openssl-1.0.1-beta3/crypto/dh/dh_gen.c
---- openssl-1.0.1-beta3/crypto/dh/dh_gen.c.fips	2011-06-09 17:21:46.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/dh/dh_gen.c	2012-02-29 10:33:02.778294759 +0100
+diff -up openssl-1.0.1b/crypto/dh/dh_gen.c.fips openssl-1.0.1b/crypto/dh/dh_gen.c
+--- openssl-1.0.1b/crypto/dh/dh_gen.c.fips	2011-06-09 17:21:46.000000000 +0200
++++ openssl-1.0.1b/crypto/dh/dh_gen.c	2012-04-26 18:00:51.383768928 +0200
 @@ -84,11 +84,6 @@ int DH_generate_parameters_ex(DH *ret, i
  #endif
  	if(ret->meth->generate_params)
@@ -346,9 +346,9 @@ diff -up openssl-1.0.1-beta3/crypto/dh/dh_gen.c.fips openssl-1.0.1-beta3/crypto/
  	ctx=BN_CTX_new();
  	if (ctx == NULL) goto err;
  	BN_CTX_start(ctx);
-diff -up openssl-1.0.1-beta3/crypto/dh/dh.h.fips openssl-1.0.1-beta3/crypto/dh/dh.h
---- openssl-1.0.1-beta3/crypto/dh/dh.h.fips	2012-02-29 10:33:02.483292223 +0100
-+++ openssl-1.0.1-beta3/crypto/dh/dh.h	2012-02-29 10:33:02.778294759 +0100
+diff -up openssl-1.0.1b/crypto/dh/dh.h.fips openssl-1.0.1b/crypto/dh/dh.h
+--- openssl-1.0.1b/crypto/dh/dh.h.fips	2012-04-26 18:00:51.033761281 +0200
++++ openssl-1.0.1b/crypto/dh/dh.h	2012-04-26 18:00:51.384768950 +0200
 @@ -77,6 +77,8 @@
  # define OPENSSL_DH_MAX_MODULUS_BITS	10000
  #endif
@@ -358,9 +358,9 @@ diff -up openssl-1.0.1-beta3/crypto/dh/dh.h.fips openssl-1.0.1-beta3/crypto/dh/d
  #define DH_FLAG_CACHE_MONT_P     0x01
  #define DH_FLAG_NO_EXP_CONSTTIME 0x02 /* new with 0.9.7h; the built-in DH
                                         * implementation now uses constant time
-diff -up openssl-1.0.1-beta3/crypto/dh/dh_key.c.fips openssl-1.0.1-beta3/crypto/dh/dh_key.c
---- openssl-1.0.1-beta3/crypto/dh/dh_key.c.fips	2011-11-14 15:16:09.000000000 +0100
-+++ openssl-1.0.1-beta3/crypto/dh/dh_key.c	2012-02-29 10:33:02.779294768 +0100
+diff -up openssl-1.0.1b/crypto/dh/dh_key.c.fips openssl-1.0.1b/crypto/dh/dh_key.c
+--- openssl-1.0.1b/crypto/dh/dh_key.c.fips	2011-11-14 15:16:09.000000000 +0100
++++ openssl-1.0.1b/crypto/dh/dh_key.c	2012-04-26 18:00:51.384768950 +0200
 @@ -61,6 +61,9 @@
  #include <openssl/bn.h>
  #include <openssl/rand.h>
@@ -419,9 +419,9 @@ diff -up openssl-1.0.1-beta3/crypto/dh/dh_key.c.fips openssl-1.0.1-beta3/crypto/
  	dh->flags |= DH_FLAG_CACHE_MONT_P;
  	return(1);
  	}
-diff -up openssl-1.0.1-beta3/crypto/dh/dh_lib.c.fips openssl-1.0.1-beta3/crypto/dh/dh_lib.c
---- openssl-1.0.1-beta3/crypto/dh/dh_lib.c.fips	2011-06-20 21:41:11.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/dh/dh_lib.c	2012-02-29 10:33:02.779294768 +0100
+diff -up openssl-1.0.1b/crypto/dh/dh_lib.c.fips openssl-1.0.1b/crypto/dh/dh_lib.c
+--- openssl-1.0.1b/crypto/dh/dh_lib.c.fips	2011-06-20 21:41:11.000000000 +0200
++++ openssl-1.0.1b/crypto/dh/dh_lib.c	2012-04-26 18:00:51.384768950 +0200
 @@ -81,14 +81,7 @@ const DH_METHOD *DH_get_default_method(v
  	{
  	if(!default_DH_method)
@@ -437,9 +437,9 @@ diff -up openssl-1.0.1-beta3/crypto/dh/dh_lib.c.fips openssl-1.0.1-beta3/crypto/
  		}
  	return default_DH_method;
  	}
-diff -up openssl-1.0.1-beta3/crypto/dsa/dsa_err.c.fips openssl-1.0.1-beta3/crypto/dsa/dsa_err.c
---- openssl-1.0.1-beta3/crypto/dsa/dsa_err.c.fips	2011-10-10 01:13:49.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/dsa/dsa_err.c	2012-02-29 10:33:02.779294768 +0100
+diff -up openssl-1.0.1b/crypto/dsa/dsa_err.c.fips openssl-1.0.1b/crypto/dsa/dsa_err.c
+--- openssl-1.0.1b/crypto/dsa/dsa_err.c.fips	2011-10-10 01:13:49.000000000 +0200
++++ openssl-1.0.1b/crypto/dsa/dsa_err.c	2012-04-26 18:00:51.385768972 +0200
 @@ -74,6 +74,8 @@ static ERR_STRING_DATA DSA_str_functs[]=
  {ERR_FUNC(DSA_F_DO_DSA_PRINT),	"DO_DSA_PRINT"},
  {ERR_FUNC(DSA_F_DSAPARAMS_PRINT),	"DSAparams_print"},
@@ -458,9 +458,9 @@ diff -up openssl-1.0.1-beta3/crypto/dsa/dsa_err.c.fips openssl-1.0.1-beta3/crypt
  {ERR_REASON(DSA_R_MISSING_PARAMETERS)    ,"missing parameters"},
  {ERR_REASON(DSA_R_MODULUS_TOO_LARGE)     ,"modulus too large"},
  {ERR_REASON(DSA_R_NEED_NEW_SETUP_VALUES) ,"need new setup values"},
-diff -up openssl-1.0.1-beta3/crypto/dsa/dsa_gen.c.fips openssl-1.0.1-beta3/crypto/dsa/dsa_gen.c
---- openssl-1.0.1-beta3/crypto/dsa/dsa_gen.c.fips	2011-06-09 17:21:46.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/dsa/dsa_gen.c	2012-02-29 10:33:02.780294777 +0100
+diff -up openssl-1.0.1b/crypto/dsa/dsa_gen.c.fips openssl-1.0.1b/crypto/dsa/dsa_gen.c
+--- openssl-1.0.1b/crypto/dsa/dsa_gen.c.fips	2011-06-09 17:21:46.000000000 +0200
++++ openssl-1.0.1b/crypto/dsa/dsa_gen.c	2012-04-26 18:00:51.385768972 +0200
 @@ -85,6 +85,14 @@
  #include <openssl/fips.h>
  #endif
@@ -867,9 +867,9 @@ diff -up openssl-1.0.1-beta3/crypto/dsa/dsa_gen.c.fips openssl-1.0.1-beta3/crypt
  		}
  	if (mont != NULL) BN_MONT_CTX_free(mont);
  	return ok;
-diff -up openssl-1.0.1-beta3/crypto/dsa/dsa.h.fips openssl-1.0.1-beta3/crypto/dsa/dsa.h
---- openssl-1.0.1-beta3/crypto/dsa/dsa.h.fips	2012-02-29 10:33:02.310290735 +0100
-+++ openssl-1.0.1-beta3/crypto/dsa/dsa.h	2012-02-29 10:33:02.780294777 +0100
+diff -up openssl-1.0.1b/crypto/dsa/dsa.h.fips openssl-1.0.1b/crypto/dsa/dsa.h
+--- openssl-1.0.1b/crypto/dsa/dsa.h.fips	2012-04-26 18:00:50.840757065 +0200
++++ openssl-1.0.1b/crypto/dsa/dsa.h	2012-04-26 18:00:51.386768993 +0200
 @@ -88,6 +88,8 @@
  # define OPENSSL_DSA_MAX_MODULUS_BITS	10000
  #endif
@@ -930,9 +930,9 @@ diff -up openssl-1.0.1-beta3/crypto/dsa/dsa.h.fips openssl-1.0.1-beta3/crypto/ds
  #define DSA_R_PARAMETER_ENCODING_ERROR			 105
  
  #ifdef  __cplusplus
-diff -up openssl-1.0.1-beta3/crypto/dsa/dsa_key.c.fips openssl-1.0.1-beta3/crypto/dsa/dsa_key.c
---- openssl-1.0.1-beta3/crypto/dsa/dsa_key.c.fips	2011-06-09 17:21:46.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/dsa/dsa_key.c	2012-02-29 10:33:02.781294786 +0100
+diff -up openssl-1.0.1b/crypto/dsa/dsa_key.c.fips openssl-1.0.1b/crypto/dsa/dsa_key.c
+--- openssl-1.0.1b/crypto/dsa/dsa_key.c.fips	2011-06-09 17:21:46.000000000 +0200
++++ openssl-1.0.1b/crypto/dsa/dsa_key.c	2012-04-26 18:00:51.386768993 +0200
 @@ -66,6 +66,24 @@
  
  #ifdef OPENSSL_FIPS
@@ -1000,9 +1000,9 @@ diff -up openssl-1.0.1-beta3/crypto/dsa/dsa_key.c.fips openssl-1.0.1-beta3/crypt
  	ok=1;
  
  err:
-diff -up openssl-1.0.1-beta3/crypto/dsa/dsa_lib.c.fips openssl-1.0.1-beta3/crypto/dsa/dsa_lib.c
---- openssl-1.0.1-beta3/crypto/dsa/dsa_lib.c.fips	2011-11-14 15:16:09.000000000 +0100
-+++ openssl-1.0.1-beta3/crypto/dsa/dsa_lib.c	2012-02-29 10:33:02.781294786 +0100
+diff -up openssl-1.0.1b/crypto/dsa/dsa_lib.c.fips openssl-1.0.1b/crypto/dsa/dsa_lib.c
+--- openssl-1.0.1b/crypto/dsa/dsa_lib.c.fips	2011-11-14 15:16:09.000000000 +0100
++++ openssl-1.0.1b/crypto/dsa/dsa_lib.c	2012-04-26 18:00:51.387769014 +0200
 @@ -87,14 +87,7 @@ const DSA_METHOD *DSA_get_default_method
  	{
  	if(!default_DSA_method)
@@ -1018,18 +1018,18 @@ diff -up openssl-1.0.1-beta3/crypto/dsa/dsa_lib.c.fips openssl-1.0.1-beta3/crypt
  		}
  	return default_DSA_method;
  	}
-diff -up openssl-1.0.1-beta3/crypto/dsa/dsa_locl.h.fips openssl-1.0.1-beta3/crypto/dsa/dsa_locl.h
---- openssl-1.0.1-beta3/crypto/dsa/dsa_locl.h.fips	2012-02-29 10:33:02.313290762 +0100
-+++ openssl-1.0.1-beta3/crypto/dsa/dsa_locl.h	2012-02-29 10:33:02.781294786 +0100
+diff -up openssl-1.0.1b/crypto/dsa/dsa_locl.h.fips openssl-1.0.1b/crypto/dsa/dsa_locl.h
+--- openssl-1.0.1b/crypto/dsa/dsa_locl.h.fips	2012-04-26 18:00:50.844757152 +0200
++++ openssl-1.0.1b/crypto/dsa/dsa_locl.h	2012-04-26 18:00:51.387769014 +0200
 @@ -56,5 +56,4 @@
  
  int dsa_builtin_paramgen(DSA *ret, size_t bits, size_t qbits,
  	const EVP_MD *evpmd, const unsigned char *seed_in, size_t seed_len,
 -	unsigned char *seed_out,
  	int *counter_ret, unsigned long *h_ret, BN_GENCB *cb);
-diff -up openssl-1.0.1-beta3/crypto/dsa/dsa_ossl.c.fips openssl-1.0.1-beta3/crypto/dsa/dsa_ossl.c
---- openssl-1.0.1-beta3/crypto/dsa/dsa_ossl.c.fips	2011-02-01 13:53:47.000000000 +0100
-+++ openssl-1.0.1-beta3/crypto/dsa/dsa_ossl.c	2012-02-29 10:33:02.782294795 +0100
+diff -up openssl-1.0.1b/crypto/dsa/dsa_ossl.c.fips openssl-1.0.1b/crypto/dsa/dsa_ossl.c
+--- openssl-1.0.1b/crypto/dsa/dsa_ossl.c.fips	2011-02-01 13:53:47.000000000 +0100
++++ openssl-1.0.1b/crypto/dsa/dsa_ossl.c	2012-04-26 18:00:51.388769035 +0200
 @@ -65,6 +65,9 @@
  #include <openssl/dsa.h>
  #include <openssl/rand.h>
@@ -1103,9 +1103,9 @@ diff -up openssl-1.0.1-beta3/crypto/dsa/dsa_ossl.c.fips openssl-1.0.1-beta3/cryp
  	dsa->flags|=DSA_FLAG_CACHE_MONT_P;
  	return(1);
  }
-diff -up openssl-1.0.1-beta3/crypto/dsa/dsa_pmeth.c.fips openssl-1.0.1-beta3/crypto/dsa/dsa_pmeth.c
---- openssl-1.0.1-beta3/crypto/dsa/dsa_pmeth.c.fips	2011-06-20 22:05:13.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/dsa/dsa_pmeth.c	2012-02-29 10:33:02.782294795 +0100
+diff -up openssl-1.0.1b/crypto/dsa/dsa_pmeth.c.fips openssl-1.0.1b/crypto/dsa/dsa_pmeth.c
+--- openssl-1.0.1b/crypto/dsa/dsa_pmeth.c.fips	2011-06-20 22:05:13.000000000 +0200
++++ openssl-1.0.1b/crypto/dsa/dsa_pmeth.c	2012-04-26 18:00:51.388769035 +0200
 @@ -255,7 +255,7 @@ static int pkey_dsa_paramgen(EVP_PKEY_CT
  	if (!dsa)
  		return 0;
@@ -1115,9 +1115,9 @@ diff -up openssl-1.0.1-beta3/crypto/dsa/dsa_pmeth.c.fips openssl-1.0.1-beta3/cry
  	if (ret)
  		EVP_PKEY_assign_DSA(pkey, dsa);
  	else
-diff -up openssl-1.0.1-beta3/crypto/dsa/dsatest.c.fips openssl-1.0.1-beta3/crypto/dsa/dsatest.c
---- openssl-1.0.1-beta3/crypto/dsa/dsatest.c.fips	2008-08-06 17:54:11.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/dsa/dsatest.c	2012-02-29 10:33:02.782294795 +0100
+diff -up openssl-1.0.1b/crypto/dsa/dsatest.c.fips openssl-1.0.1b/crypto/dsa/dsatest.c
+--- openssl-1.0.1b/crypto/dsa/dsatest.c.fips	2008-08-06 17:54:11.000000000 +0200
++++ openssl-1.0.1b/crypto/dsa/dsatest.c	2012-04-26 18:00:51.389769058 +0200
 @@ -96,36 +96,41 @@ static int MS_CALLBACK dsa_cb(int p, int
  /* seed, out_p, out_q, out_g are taken from the updated Appendix 5 to
   * FIPS PUB 186 and also appear in Appendix 5 to FIPS PIB 186-1 */
@@ -1202,9 +1202,9 @@ diff -up openssl-1.0.1-beta3/crypto/dsa/dsatest.c.fips openssl-1.0.1-beta3/crypt
  		goto end;
  		}
  	if (h != 2)
-diff -up openssl-1.0.1-beta3/crypto/engine/eng_all.c.fips openssl-1.0.1-beta3/crypto/engine/eng_all.c
---- openssl-1.0.1-beta3/crypto/engine/eng_all.c.fips	2011-08-10 20:53:13.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/engine/eng_all.c	2012-02-29 10:33:02.783294803 +0100
+diff -up openssl-1.0.1b/crypto/engine/eng_all.c.fips openssl-1.0.1b/crypto/engine/eng_all.c
+--- openssl-1.0.1b/crypto/engine/eng_all.c.fips	2011-08-10 20:53:13.000000000 +0200
++++ openssl-1.0.1b/crypto/engine/eng_all.c	2012-04-26 18:00:51.389769058 +0200
 @@ -58,11 +58,25 @@
  
  #include "cryptlib.h"
@@ -1231,9 +1231,9 @@ diff -up openssl-1.0.1-beta3/crypto/engine/eng_all.c.fips openssl-1.0.1-beta3/cr
  #if 0
  	/* There's no longer any need for an "openssl" ENGINE unless, one day,
  	 * it is the *only* way for standard builtin implementations to be be
-diff -up openssl-1.0.1-beta3/crypto/err/err_all.c.fips openssl-1.0.1-beta3/crypto/err/err_all.c
---- openssl-1.0.1-beta3/crypto/err/err_all.c.fips	2011-06-21 18:58:10.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/err/err_all.c	2012-02-29 10:33:02.783294803 +0100
+diff -up openssl-1.0.1b/crypto/err/err_all.c.fips openssl-1.0.1b/crypto/err/err_all.c
+--- openssl-1.0.1b/crypto/err/err_all.c.fips	2011-06-21 18:58:10.000000000 +0200
++++ openssl-1.0.1b/crypto/err/err_all.c	2012-04-26 18:00:51.390769081 +0200
 @@ -96,6 +96,9 @@
  #include <openssl/ocsp.h>
  #include <openssl/err.h>
@@ -1254,9 +1254,9 @@ diff -up openssl-1.0.1-beta3/crypto/err/err_all.c.fips openssl-1.0.1-beta3/crypt
  #ifndef OPENSSL_NO_CMS
  	ERR_load_CMS_strings();
  #endif
-diff -up openssl-1.0.1-beta3/crypto/evp/c_allc.c.fips openssl-1.0.1-beta3/crypto/evp/c_allc.c
---- openssl-1.0.1-beta3/crypto/evp/c_allc.c.fips	2011-11-14 22:13:35.000000000 +0100
-+++ openssl-1.0.1-beta3/crypto/evp/c_allc.c	2012-02-29 10:33:02.783294803 +0100
+diff -up openssl-1.0.1b/crypto/evp/c_allc.c.fips openssl-1.0.1b/crypto/evp/c_allc.c
+--- openssl-1.0.1b/crypto/evp/c_allc.c.fips	2011-11-14 22:13:35.000000000 +0100
++++ openssl-1.0.1b/crypto/evp/c_allc.c	2012-04-26 18:00:51.390769081 +0200
 @@ -65,6 +65,11 @@
  void OpenSSL_add_all_ciphers(void)
  	{
@@ -1330,9 +1330,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/c_allc.c.fips openssl-1.0.1-beta3/crypto
 +		}
 +#endif
  	}
-diff -up openssl-1.0.1-beta3/crypto/evp/c_alld.c.fips openssl-1.0.1-beta3/crypto/evp/c_alld.c
---- openssl-1.0.1-beta3/crypto/evp/c_alld.c.fips	2009-07-08 10:50:53.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/evp/c_alld.c	2012-02-29 10:33:02.784294811 +0100
+diff -up openssl-1.0.1b/crypto/evp/c_alld.c.fips openssl-1.0.1b/crypto/evp/c_alld.c
+--- openssl-1.0.1b/crypto/evp/c_alld.c.fips	2009-07-08 10:50:53.000000000 +0200
++++ openssl-1.0.1b/crypto/evp/c_alld.c	2012-04-26 18:00:51.390769081 +0200
 @@ -64,6 +64,11 @@
  
  void OpenSSL_add_all_digests(void)
@@ -1378,9 +1378,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/c_alld.c.fips openssl-1.0.1-beta3/crypto
 +		}
 +#endif
  	}
-diff -up openssl-1.0.1-beta3/crypto/evp/digest.c.fips openssl-1.0.1-beta3/crypto/evp/digest.c
---- openssl-1.0.1-beta3/crypto/evp/digest.c.fips	2011-05-29 17:55:13.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/evp/digest.c	2012-02-29 10:33:02.784294811 +0100
+diff -up openssl-1.0.1b/crypto/evp/digest.c.fips openssl-1.0.1b/crypto/evp/digest.c
+--- openssl-1.0.1b/crypto/evp/digest.c.fips	2011-05-29 17:55:13.000000000 +0200
++++ openssl-1.0.1b/crypto/evp/digest.c	2012-04-26 18:00:51.391769103 +0200
 @@ -142,9 +142,50 @@ int EVP_DigestInit(EVP_MD_CTX *ctx, cons
  	return EVP_DigestInit_ex(ctx, type, NULL);
  	}
@@ -1529,9 +1529,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/digest.c.fips openssl-1.0.1-beta3/crypto
  	memset(ctx,'\0',sizeof *ctx);
  
  	return 1;
-diff -up openssl-1.0.1-beta3/crypto/evp/e_aes.c.fips openssl-1.0.1-beta3/crypto/evp/e_aes.c
---- openssl-1.0.1-beta3/crypto/evp/e_aes.c.fips	2011-11-15 13:19:56.000000000 +0100
-+++ openssl-1.0.1-beta3/crypto/evp/e_aes.c	2012-02-29 10:33:02.785294819 +0100
+diff -up openssl-1.0.1b/crypto/evp/e_aes.c.fips openssl-1.0.1b/crypto/evp/e_aes.c
+--- openssl-1.0.1b/crypto/evp/e_aes.c.fips	2011-11-15 13:19:56.000000000 +0100
++++ openssl-1.0.1b/crypto/evp/e_aes.c	2012-04-26 18:00:51.391769103 +0200
 @@ -56,7 +56,6 @@
  #include <assert.h>
  #include <openssl/aes.h>
@@ -1563,9 +1563,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/e_aes.c.fips openssl-1.0.1-beta3/crypto/
  
  #endif
 -#endif
-diff -up openssl-1.0.1-beta3/crypto/evp/e_des3.c.fips openssl-1.0.1-beta3/crypto/evp/e_des3.c
---- openssl-1.0.1-beta3/crypto/evp/e_des3.c.fips	2011-05-29 01:01:26.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/evp/e_des3.c	2012-02-29 10:33:02.785294819 +0100
+diff -up openssl-1.0.1b/crypto/evp/e_des3.c.fips openssl-1.0.1b/crypto/evp/e_des3.c
+--- openssl-1.0.1b/crypto/evp/e_des3.c.fips	2011-05-29 01:01:26.000000000 +0200
++++ openssl-1.0.1b/crypto/evp/e_des3.c	2012-04-26 18:00:51.392769125 +0200
 @@ -65,8 +65,6 @@
  #include <openssl/des.h>
  #include <openssl/rand.h>
@@ -1624,9 +1624,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/e_des3.c.fips openssl-1.0.1-beta3/crypto
  }
  #endif
 -#endif
-diff -up openssl-1.0.1-beta3/crypto/evp/e_null.c.fips openssl-1.0.1-beta3/crypto/evp/e_null.c
---- openssl-1.0.1-beta3/crypto/evp/e_null.c.fips	2011-06-20 22:00:10.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/evp/e_null.c	2012-02-29 10:33:02.785294819 +0100
+diff -up openssl-1.0.1b/crypto/evp/e_null.c.fips openssl-1.0.1b/crypto/evp/e_null.c
+--- openssl-1.0.1b/crypto/evp/e_null.c.fips	2011-06-20 22:00:10.000000000 +0200
++++ openssl-1.0.1b/crypto/evp/e_null.c	2012-04-26 18:00:51.392769125 +0200
 @@ -61,8 +61,6 @@
  #include <openssl/evp.h>
  #include <openssl/objects.h>
@@ -1650,9 +1650,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/e_null.c.fips openssl-1.0.1-beta3/crypto
  	return 1;
  	}
 -#endif
-diff -up openssl-1.0.1-beta3/crypto/evp/evp_enc.c.fips openssl-1.0.1-beta3/crypto/evp/evp_enc.c
---- openssl-1.0.1-beta3/crypto/evp/evp_enc.c.fips	2012-02-10 17:54:56.000000000 +0100
-+++ openssl-1.0.1-beta3/crypto/evp/evp_enc.c	2012-02-29 10:33:02.786294827 +0100
+diff -up openssl-1.0.1b/crypto/evp/evp_enc.c.fips openssl-1.0.1b/crypto/evp/evp_enc.c
+--- openssl-1.0.1b/crypto/evp/evp_enc.c.fips	2012-04-20 02:07:48.000000000 +0200
++++ openssl-1.0.1b/crypto/evp/evp_enc.c	2012-04-26 18:02:25.419823276 +0200
 @@ -69,17 +69,58 @@
  #endif
  #include "evp_locl.h"
@@ -1731,35 +1731,29 @@ diff -up openssl-1.0.1-beta3/crypto/evp/evp_enc.c.fips openssl-1.0.1-beta3/crypt
  #ifndef OPENSSL_NO_ENGINE
  	/* Whether it's nice or not, "Inits" can be used on "Final"'d contexts
  	 * so this context may already have an ENGINE! Try to avoid releasing
-@@ -169,9 +218,6 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ct
+@@ -169,10 +218,6 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ct
  			ctx->engine = NULL;
  #endif
  
 -#ifdef OPENSSL_FIPS
--		return FIPS_cipherinit(ctx, cipher, key, iv, enc);
--#else
+-		if (FIPS_mode())
+-			return FIPS_cipherinit(ctx, cipher, key, iv, enc);
+-#endif
  		ctx->cipher=cipher;
  		if (ctx->cipher->ctx_size)
  			{
-@@ -196,7 +242,6 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ct
- 				return 0;
- 				}
- 			}
--#endif
- 		}
- 	else if(!ctx->cipher)
- 		{
-@@ -206,9 +251,6 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ct
+@@ -206,10 +251,6 @@ int EVP_CipherInit_ex(EVP_CIPHER_CTX *ct
  #ifndef OPENSSL_NO_ENGINE
  skip_to_init:
  #endif
 -#ifdef OPENSSL_FIPS
--	return FIPS_cipherinit(ctx, cipher, key, iv, enc);
--#else
+-	if (FIPS_mode())
+-		return FIPS_cipherinit(ctx, cipher, key, iv, enc);
+-#endif
  	/* we assume block size is a power of 2 in *cryptUpdate */
  	OPENSSL_assert(ctx->cipher->block_size == 1
  	    || ctx->cipher->block_size == 8
-@@ -248,6 +290,22 @@ skip_to_init:
+@@ -249,6 +290,22 @@ skip_to_init:
  		}
  	}
  
@@ -1782,14 +1776,6 @@ diff -up openssl-1.0.1-beta3/crypto/evp/evp_enc.c.fips openssl-1.0.1-beta3/crypt
  	if(key || (ctx->cipher->flags & EVP_CIPH_ALWAYS_CALL_INIT)) {
  		if(!ctx->cipher->init(ctx,key,iv,enc)) return 0;
  	}
-@@ -255,7 +313,6 @@ skip_to_init:
- 	ctx->final_used=0;
- 	ctx->block_mask=ctx->cipher->block_size-1;
- 	return 1;
--#endif
- 	}
- 
- int EVP_CipherUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl,
 @@ -568,7 +625,6 @@ void EVP_CIPHER_CTX_free(EVP_CIPHER_CTX
  
  int EVP_CIPHER_CTX_cleanup(EVP_CIPHER_CTX *c)
@@ -1815,9 +1801,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/evp_enc.c.fips openssl-1.0.1-beta3/crypt
  	memset(c,0,sizeof(EVP_CIPHER_CTX));
  	return 1;
  	}
-diff -up openssl-1.0.1-beta3/crypto/evp/evp.h.fips openssl-1.0.1-beta3/crypto/evp/evp.h
---- openssl-1.0.1-beta3/crypto/evp/evp.h.fips	2012-02-29 10:33:02.567292944 +0100
-+++ openssl-1.0.1-beta3/crypto/evp/evp.h	2012-02-29 10:33:02.787294835 +0100
+diff -up openssl-1.0.1b/crypto/evp/evp.h.fips openssl-1.0.1b/crypto/evp/evp.h
+--- openssl-1.0.1b/crypto/evp/evp.h.fips	2012-04-26 18:00:51.128763357 +0200
++++ openssl-1.0.1b/crypto/evp/evp.h	2012-04-26 18:00:51.394769168 +0200
 @@ -75,6 +75,10 @@
  #include <openssl/bio.h>
  #endif
@@ -1870,9 +1856,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/evp.h.fips openssl-1.0.1-beta3/crypto/ev
  /* Cipher handles any and all padding logic as well
   * as finalisation.
   */
-diff -up openssl-1.0.1-beta3/crypto/evp/evp_lib.c.fips openssl-1.0.1-beta3/crypto/evp/evp_lib.c
---- openssl-1.0.1-beta3/crypto/evp/evp_lib.c.fips	2011-05-29 04:32:05.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/evp/evp_lib.c	2012-02-29 10:33:02.787294835 +0100
+diff -up openssl-1.0.1b/crypto/evp/evp_lib.c.fips openssl-1.0.1b/crypto/evp/evp_lib.c
+--- openssl-1.0.1b/crypto/evp/evp_lib.c.fips	2011-05-29 04:32:05.000000000 +0200
++++ openssl-1.0.1b/crypto/evp/evp_lib.c	2012-04-26 18:00:51.394769168 +0200
 @@ -190,6 +190,9 @@ int EVP_CIPHER_CTX_block_size(const EVP_
  
  int EVP_Cipher(EVP_CIPHER_CTX *ctx, unsigned char *out, const unsigned char *in, unsigned int inl)
@@ -1883,9 +1869,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/evp_lib.c.fips openssl-1.0.1-beta3/crypt
  	return ctx->cipher->do_cipher(ctx,out,in,inl);
  	}
  
-diff -up openssl-1.0.1-beta3/crypto/evp/evp_locl.h.fips openssl-1.0.1-beta3/crypto/evp/evp_locl.h
---- openssl-1.0.1-beta3/crypto/evp/evp_locl.h.fips	2012-02-29 10:33:02.558292867 +0100
-+++ openssl-1.0.1-beta3/crypto/evp/evp_locl.h	2012-02-29 10:33:02.787294835 +0100
+diff -up openssl-1.0.1b/crypto/evp/evp_locl.h.fips openssl-1.0.1b/crypto/evp/evp_locl.h
+--- openssl-1.0.1b/crypto/evp/evp_locl.h.fips	2012-04-26 18:00:51.118763138 +0200
++++ openssl-1.0.1b/crypto/evp/evp_locl.h	2012-04-26 18:00:51.395769190 +0200
 @@ -258,10 +258,9 @@ const EVP_CIPHER *EVP_##cname##_ecb(void
  	BLOCK_CIPHER_func_cfb(cipher##_##keysize,cprefix,cbits,kstruct,ksched) \
  	BLOCK_CIPHER_def_cfb(cipher##_##keysize,kstruct, \
@@ -1920,9 +1906,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/evp_locl.h.fips openssl-1.0.1-beta3/cryp
  #define Camellia_set_key	private_Camellia_set_key
  
  #endif
-diff -up openssl-1.0.1-beta3/crypto/evp/Makefile.fips openssl-1.0.1-beta3/crypto/evp/Makefile
---- openssl-1.0.1-beta3/crypto/evp/Makefile.fips	2011-12-27 15:38:27.000000000 +0100
-+++ openssl-1.0.1-beta3/crypto/evp/Makefile	2012-02-29 10:33:02.788294844 +0100
+diff -up openssl-1.0.1b/crypto/evp/Makefile.fips openssl-1.0.1b/crypto/evp/Makefile
+--- openssl-1.0.1b/crypto/evp/Makefile.fips	2012-04-26 12:42:19.000000000 +0200
++++ openssl-1.0.1b/crypto/evp/Makefile	2012-04-26 18:00:51.395769190 +0200
 @@ -28,7 +28,7 @@ LIBSRC= encode.c digest.c evp_enc.c evp_
  	bio_md.c bio_b64.c bio_enc.c evp_err.c e_null.c \
  	c_all.c c_allc.c c_alld.c evp_lib.c bio_ok.c \
@@ -1941,806 +1927,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/Makefile.fips openssl-1.0.1-beta3/crypto
  	e_aes_cbc_hmac_sha1.o e_rc4_hmac_md5.o
  
  SRC= $(LIBSRC)
-@@ -103,44 +103,46 @@ bio_b64.o: ../../e_os.h ../../include/op
- bio_b64.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- bio_b64.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
- bio_b64.o: ../../include/openssl/err.h ../../include/openssl/evp.h
--bio_b64.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
--bio_b64.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
--bio_b64.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
--bio_b64.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
--bio_b64.o: ../../include/openssl/symhacks.h ../cryptlib.h bio_b64.c
-+bio_b64.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
-+bio_b64.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
-+bio_b64.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
-+bio_b64.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
-+bio_b64.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+bio_b64.o: ../cryptlib.h bio_b64.c
- bio_enc.o: ../../e_os.h ../../include/openssl/asn1.h
- bio_enc.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- bio_enc.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
- bio_enc.o: ../../include/openssl/err.h ../../include/openssl/evp.h
--bio_enc.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
--bio_enc.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
--bio_enc.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
--bio_enc.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
--bio_enc.o: ../../include/openssl/symhacks.h ../cryptlib.h bio_enc.c
-+bio_enc.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
-+bio_enc.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
-+bio_enc.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
-+bio_enc.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
-+bio_enc.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+bio_enc.o: ../cryptlib.h bio_enc.c
- bio_md.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- bio_md.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
- bio_md.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
--bio_md.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
--bio_md.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
--bio_md.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
--bio_md.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
--bio_md.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
--bio_md.o: ../cryptlib.h bio_md.c
-+bio_md.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
-+bio_md.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
-+bio_md.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
-+bio_md.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-+bio_md.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
-+bio_md.o: ../../include/openssl/symhacks.h ../cryptlib.h bio_md.c
- bio_ok.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- bio_ok.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
- bio_ok.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
--bio_ok.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
--bio_ok.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
--bio_ok.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
--bio_ok.o: ../../include/openssl/ossl_typ.h ../../include/openssl/rand.h
--bio_ok.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
--bio_ok.o: ../../include/openssl/symhacks.h ../cryptlib.h bio_ok.c
-+bio_ok.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
-+bio_ok.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
-+bio_ok.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
-+bio_ok.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-+bio_ok.o: ../../include/openssl/rand.h ../../include/openssl/safestack.h
-+bio_ok.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+bio_ok.o: ../cryptlib.h bio_ok.c
- c_all.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- c_all.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--c_all.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--c_all.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--c_all.o: ../../include/openssl/engine.h ../../include/openssl/err.h
--c_all.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
-+c_all.o: ../../include/openssl/e_os2.h ../../include/openssl/engine.h
-+c_all.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+c_all.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
- c_all.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
- c_all.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
- c_all.o: ../../include/openssl/ossl_typ.h ../../include/openssl/pkcs7.h
-@@ -150,9 +152,8 @@ c_all.o: ../../include/openssl/x509.h ..
- c_all.o: ../cryptlib.h c_all.c
- c_allc.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- c_allc.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--c_allc.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--c_allc.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--c_allc.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+c_allc.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-+c_allc.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- c_allc.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- c_allc.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- c_allc.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -163,9 +164,8 @@ c_allc.o: ../../include/openssl/x509.h .
- c_allc.o: ../cryptlib.h c_allc.c
- c_alld.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- c_alld.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--c_alld.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--c_alld.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--c_alld.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+c_alld.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-+c_alld.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- c_alld.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- c_alld.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- c_alld.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -176,10 +176,9 @@ c_alld.o: ../../include/openssl/x509.h .
- c_alld.o: ../cryptlib.h c_alld.c
- digest.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- digest.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--digest.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--digest.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--digest.o: ../../include/openssl/engine.h ../../include/openssl/err.h
--digest.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
-+digest.o: ../../include/openssl/e_os2.h ../../include/openssl/engine.h
-+digest.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+digest.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
- digest.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
- digest.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
- digest.o: ../../include/openssl/ossl_typ.h ../../include/openssl/pkcs7.h
-@@ -190,18 +189,19 @@ digest.o: ../cryptlib.h digest.c
- e_aes.o: ../../include/openssl/aes.h ../../include/openssl/asn1.h
- e_aes.o: ../../include/openssl/bio.h ../../include/openssl/crypto.h
- e_aes.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
--e_aes.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
--e_aes.o: ../../include/openssl/modes.h ../../include/openssl/obj_mac.h
--e_aes.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
--e_aes.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
--e_aes.o: ../../include/openssl/rand.h ../../include/openssl/safestack.h
--e_aes.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
--e_aes.o: ../modes/modes_lcl.h e_aes.c evp_locl.h
-+e_aes.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
-+e_aes.o: ../../include/openssl/lhash.h ../../include/openssl/modes.h
-+e_aes.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
-+e_aes.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
-+e_aes.o: ../../include/openssl/ossl_typ.h ../../include/openssl/rand.h
-+e_aes.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
-+e_aes.o: ../../include/openssl/symhacks.h ../modes/modes_lcl.h e_aes.c
-+e_aes.o: evp_locl.h
- e_aes_cbc_hmac_sha1.o: ../../include/openssl/aes.h ../../include/openssl/asn1.h
- e_aes_cbc_hmac_sha1.o: ../../include/openssl/bio.h
- e_aes_cbc_hmac_sha1.o: ../../include/openssl/crypto.h
- e_aes_cbc_hmac_sha1.o: ../../include/openssl/e_os2.h
--e_aes_cbc_hmac_sha1.o: ../../include/openssl/evp.h
-+e_aes_cbc_hmac_sha1.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- e_aes_cbc_hmac_sha1.o: ../../include/openssl/obj_mac.h
- e_aes_cbc_hmac_sha1.o: ../../include/openssl/objects.h
- e_aes_cbc_hmac_sha1.o: ../../include/openssl/opensslconf.h
-@@ -211,20 +211,23 @@ e_aes_cbc_hmac_sha1.o: ../../include/ope
- e_aes_cbc_hmac_sha1.o: ../../include/openssl/sha.h
- e_aes_cbc_hmac_sha1.o: ../../include/openssl/stack.h
- e_aes_cbc_hmac_sha1.o: ../../include/openssl/symhacks.h e_aes_cbc_hmac_sha1.c
-+e_aes_cbc_hmac_sha1.o: evp_locl.h
- e_bf.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- e_bf.o: ../../include/openssl/blowfish.h ../../include/openssl/buffer.h
- e_bf.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
- e_bf.o: ../../include/openssl/err.h ../../include/openssl/evp.h
--e_bf.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
--e_bf.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
--e_bf.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
--e_bf.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
--e_bf.o: ../../include/openssl/symhacks.h ../cryptlib.h e_bf.c evp_locl.h
-+e_bf.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
-+e_bf.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
-+e_bf.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
-+e_bf.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
-+e_bf.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+e_bf.o: ../cryptlib.h e_bf.c evp_locl.h
- e_camellia.o: ../../include/openssl/asn1.h ../../include/openssl/bio.h
- e_camellia.o: ../../include/openssl/camellia.h ../../include/openssl/crypto.h
- e_camellia.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
--e_camellia.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
--e_camellia.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
-+e_camellia.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
-+e_camellia.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
-+e_camellia.o: ../../include/openssl/objects.h
- e_camellia.o: ../../include/openssl/opensslconf.h
- e_camellia.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
- e_camellia.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
-@@ -233,74 +236,80 @@ e_cast.o: ../../e_os.h ../../include/ope
- e_cast.o: ../../include/openssl/buffer.h ../../include/openssl/cast.h
- e_cast.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
- e_cast.o: ../../include/openssl/err.h ../../include/openssl/evp.h
--e_cast.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
--e_cast.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
--e_cast.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
--e_cast.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
--e_cast.o: ../../include/openssl/symhacks.h ../cryptlib.h e_cast.c evp_locl.h
-+e_cast.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
-+e_cast.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
-+e_cast.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
-+e_cast.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
-+e_cast.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+e_cast.o: ../cryptlib.h e_cast.c evp_locl.h
- e_des.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- e_des.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
- e_des.o: ../../include/openssl/des.h ../../include/openssl/des_old.h
- e_des.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
--e_des.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
--e_des.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
--e_des.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
--e_des.o: ../../include/openssl/ossl_typ.h ../../include/openssl/rand.h
--e_des.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
--e_des.o: ../../include/openssl/symhacks.h ../../include/openssl/ui.h
--e_des.o: ../../include/openssl/ui_compat.h ../cryptlib.h e_des.c evp_locl.h
-+e_des.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
-+e_des.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
-+e_des.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
-+e_des.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-+e_des.o: ../../include/openssl/rand.h ../../include/openssl/safestack.h
-+e_des.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+e_des.o: ../../include/openssl/ui.h ../../include/openssl/ui_compat.h
-+e_des.o: ../cryptlib.h e_des.c evp_locl.h
- e_des3.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- e_des3.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
- e_des3.o: ../../include/openssl/des.h ../../include/openssl/des_old.h
- e_des3.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
--e_des3.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
--e_des3.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
--e_des3.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
--e_des3.o: ../../include/openssl/ossl_typ.h ../../include/openssl/rand.h
--e_des3.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
--e_des3.o: ../../include/openssl/symhacks.h ../../include/openssl/ui.h
--e_des3.o: ../../include/openssl/ui_compat.h ../cryptlib.h e_des3.c evp_locl.h
-+e_des3.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
-+e_des3.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
-+e_des3.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
-+e_des3.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-+e_des3.o: ../../include/openssl/rand.h ../../include/openssl/safestack.h
-+e_des3.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+e_des3.o: ../../include/openssl/ui.h ../../include/openssl/ui_compat.h
-+e_des3.o: ../cryptlib.h e_des3.c evp_locl.h
- e_idea.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- e_idea.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
- e_idea.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
--e_idea.o: ../../include/openssl/evp.h ../../include/openssl/idea.h
--e_idea.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
--e_idea.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
--e_idea.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
--e_idea.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
--e_idea.o: ../../include/openssl/symhacks.h ../cryptlib.h e_idea.c evp_locl.h
-+e_idea.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
-+e_idea.o: ../../include/openssl/idea.h ../../include/openssl/lhash.h
-+e_idea.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
-+e_idea.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
-+e_idea.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
-+e_idea.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+e_idea.o: ../cryptlib.h e_idea.c evp_locl.h
- e_null.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- e_null.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
- e_null.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
--e_null.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
--e_null.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
--e_null.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
--e_null.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
--e_null.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
--e_null.o: ../cryptlib.h e_null.c
-+e_null.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
-+e_null.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
-+e_null.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
-+e_null.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-+e_null.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
-+e_null.o: ../../include/openssl/symhacks.h ../cryptlib.h e_null.c
- e_old.o: e_old.c
- e_rc2.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- e_rc2.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
- e_rc2.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
--e_rc2.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
--e_rc2.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
--e_rc2.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
--e_rc2.o: ../../include/openssl/ossl_typ.h ../../include/openssl/rc2.h
--e_rc2.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
--e_rc2.o: ../../include/openssl/symhacks.h ../cryptlib.h e_rc2.c evp_locl.h
-+e_rc2.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
-+e_rc2.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
-+e_rc2.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
-+e_rc2.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-+e_rc2.o: ../../include/openssl/rc2.h ../../include/openssl/safestack.h
-+e_rc2.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+e_rc2.o: ../cryptlib.h e_rc2.c evp_locl.h
- e_rc4.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- e_rc4.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
- e_rc4.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
--e_rc4.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
--e_rc4.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
--e_rc4.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
--e_rc4.o: ../../include/openssl/ossl_typ.h ../../include/openssl/rc4.h
--e_rc4.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
--e_rc4.o: ../../include/openssl/symhacks.h ../cryptlib.h e_rc4.c evp_locl.h
-+e_rc4.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
-+e_rc4.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
-+e_rc4.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
-+e_rc4.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-+e_rc4.o: ../../include/openssl/rc4.h ../../include/openssl/safestack.h
-+e_rc4.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+e_rc4.o: ../cryptlib.h e_rc4.c evp_locl.h
- e_rc4_hmac_md5.o: ../../include/openssl/asn1.h ../../include/openssl/bio.h
- e_rc4_hmac_md5.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
--e_rc4_hmac_md5.o: ../../include/openssl/evp.h ../../include/openssl/md5.h
--e_rc4_hmac_md5.o: ../../include/openssl/obj_mac.h
-+e_rc4_hmac_md5.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
-+e_rc4_hmac_md5.o: ../../include/openssl/md5.h ../../include/openssl/obj_mac.h
- e_rc4_hmac_md5.o: ../../include/openssl/objects.h
- e_rc4_hmac_md5.o: ../../include/openssl/opensslconf.h
- e_rc4_hmac_md5.o: ../../include/openssl/opensslv.h
-@@ -308,29 +317,24 @@ e_rc4_hmac_md5.o: ../../include/openssl/
- e_rc4_hmac_md5.o: ../../include/openssl/safestack.h
- e_rc4_hmac_md5.o: ../../include/openssl/stack.h
- e_rc4_hmac_md5.o: ../../include/openssl/symhacks.h e_rc4_hmac_md5.c
--e_rc5.o: ../../e_os.h ../../include/openssl/bio.h
--e_rc5.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--e_rc5.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
--e_rc5.o: ../../include/openssl/lhash.h ../../include/openssl/opensslconf.h
--e_rc5.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
--e_rc5.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
--e_rc5.o: ../../include/openssl/symhacks.h ../cryptlib.h e_rc5.c
-+e_rc5.o: e_rc5.c
- e_seed.o: ../../include/openssl/asn1.h ../../include/openssl/bio.h
- e_seed.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
- e_seed.o: ../../include/openssl/err.h ../../include/openssl/evp.h
--e_seed.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
--e_seed.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
--e_seed.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
--e_seed.o: ../../include/openssl/safestack.h ../../include/openssl/seed.h
--e_seed.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
--e_seed.o: e_seed.c evp_locl.h
-+e_seed.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
-+e_seed.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
-+e_seed.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
-+e_seed.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
-+e_seed.o: ../../include/openssl/seed.h ../../include/openssl/stack.h
-+e_seed.o: ../../include/openssl/symhacks.h e_seed.c evp_locl.h
- e_xcbc_d.o: ../../e_os.h ../../include/openssl/asn1.h
- e_xcbc_d.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- e_xcbc_d.o: ../../include/openssl/crypto.h ../../include/openssl/des.h
- e_xcbc_d.o: ../../include/openssl/des_old.h ../../include/openssl/e_os2.h
- e_xcbc_d.o: ../../include/openssl/err.h ../../include/openssl/evp.h
--e_xcbc_d.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
--e_xcbc_d.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
-+e_xcbc_d.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
-+e_xcbc_d.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
-+e_xcbc_d.o: ../../include/openssl/opensslconf.h
- e_xcbc_d.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
- e_xcbc_d.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
- e_xcbc_d.o: ../../include/openssl/symhacks.h ../../include/openssl/ui.h
-@@ -339,28 +343,27 @@ e_xcbc_d.o: evp_locl.h
- encode.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- encode.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
- encode.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
--encode.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
--encode.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
--encode.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
--encode.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
--encode.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
--encode.o: ../cryptlib.h encode.c
-+encode.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
-+encode.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
-+encode.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
-+encode.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-+encode.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
-+encode.o: ../../include/openssl/symhacks.h ../cryptlib.h encode.c
- evp_acnf.o: ../../e_os.h ../../include/openssl/asn1.h
- evp_acnf.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- evp_acnf.o: ../../include/openssl/conf.h ../../include/openssl/crypto.h
- evp_acnf.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
--evp_acnf.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
--evp_acnf.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
--evp_acnf.o: ../../include/openssl/opensslconf.h
-+evp_acnf.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
-+evp_acnf.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
-+evp_acnf.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- evp_acnf.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
- evp_acnf.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
- evp_acnf.o: ../../include/openssl/symhacks.h ../cryptlib.h evp_acnf.c
- evp_enc.o: ../../e_os.h ../../include/openssl/asn1.h
- evp_enc.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- evp_enc.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
--evp_enc.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
--evp_enc.o: ../../include/openssl/ecdsa.h ../../include/openssl/engine.h
--evp_enc.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+evp_enc.o: ../../include/openssl/engine.h ../../include/openssl/err.h
-+evp_enc.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- evp_enc.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- evp_enc.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- evp_enc.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -372,24 +375,17 @@ evp_enc.o: ../cryptlib.h evp_enc.c evp_l
- evp_err.o: ../../include/openssl/asn1.h ../../include/openssl/bio.h
- evp_err.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
- evp_err.o: ../../include/openssl/err.h ../../include/openssl/evp.h
--evp_err.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
--evp_err.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
--evp_err.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
--evp_err.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
--evp_err.o: ../../include/openssl/symhacks.h evp_err.c
--evp_fips.o: ../../include/openssl/asn1.h ../../include/openssl/bio.h
--evp_fips.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
--evp_fips.o: ../../include/openssl/evp.h ../../include/openssl/obj_mac.h
--evp_fips.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
--evp_fips.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
--evp_fips.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
--evp_fips.o: ../../include/openssl/symhacks.h evp_fips.c
-+evp_err.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
-+evp_err.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
-+evp_err.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
-+evp_err.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
-+evp_err.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+evp_err.o: evp_err.c
- evp_key.o: ../../e_os.h ../../include/openssl/asn1.h
- evp_key.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- evp_key.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
--evp_key.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
--evp_key.o: ../../include/openssl/ecdsa.h ../../include/openssl/err.h
--evp_key.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
-+evp_key.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+evp_key.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
- evp_key.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
- evp_key.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
- evp_key.o: ../../include/openssl/ossl_typ.h ../../include/openssl/pkcs7.h
-@@ -401,17 +397,17 @@ evp_lib.o: ../../e_os.h ../../include/op
- evp_lib.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- evp_lib.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
- evp_lib.o: ../../include/openssl/err.h ../../include/openssl/evp.h
--evp_lib.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
--evp_lib.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
--evp_lib.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
--evp_lib.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
--evp_lib.o: ../../include/openssl/symhacks.h ../cryptlib.h evp_lib.c
-+evp_lib.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
-+evp_lib.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
-+evp_lib.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
-+evp_lib.o: ../../include/openssl/ossl_typ.h ../../include/openssl/safestack.h
-+evp_lib.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+evp_lib.o: ../cryptlib.h evp_lib.c
- evp_pbe.o: ../../e_os.h ../../include/openssl/asn1.h
- evp_pbe.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- evp_pbe.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
--evp_pbe.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
--evp_pbe.o: ../../include/openssl/ecdsa.h ../../include/openssl/err.h
--evp_pbe.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
-+evp_pbe.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+evp_pbe.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
- evp_pbe.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
- evp_pbe.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
- evp_pbe.o: ../../include/openssl/ossl_typ.h ../../include/openssl/pkcs12.h
-@@ -422,9 +418,8 @@ evp_pbe.o: ../../include/openssl/x509_vf
- evp_pkey.o: ../../e_os.h ../../include/openssl/asn1.h
- evp_pkey.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- evp_pkey.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
--evp_pkey.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
--evp_pkey.o: ../../include/openssl/ecdsa.h ../../include/openssl/err.h
--evp_pkey.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
-+evp_pkey.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+evp_pkey.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
- evp_pkey.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
- evp_pkey.o: ../../include/openssl/opensslconf.h
- evp_pkey.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -436,9 +431,8 @@ evp_pkey.o: ../asn1/asn1_locl.h ../crypt
- m_dss.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- m_dss.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
- m_dss.o: ../../include/openssl/dsa.h ../../include/openssl/e_os2.h
--m_dss.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
--m_dss.o: ../../include/openssl/ecdsa.h ../../include/openssl/err.h
--m_dss.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
-+m_dss.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+m_dss.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
- m_dss.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
- m_dss.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
- m_dss.o: ../../include/openssl/ossl_typ.h ../../include/openssl/pkcs7.h
-@@ -449,9 +443,8 @@ m_dss.o: ../cryptlib.h m_dss.c
- m_dss1.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- m_dss1.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
- m_dss1.o: ../../include/openssl/dsa.h ../../include/openssl/e_os2.h
--m_dss1.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
--m_dss1.o: ../../include/openssl/ecdsa.h ../../include/openssl/err.h
--m_dss1.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
-+m_dss1.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+m_dss1.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
- m_dss1.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
- m_dss1.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
- m_dss1.o: ../../include/openssl/ossl_typ.h ../../include/openssl/pkcs7.h
-@@ -459,31 +452,23 @@ m_dss1.o: ../../include/openssl/safestac
- m_dss1.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
- m_dss1.o: ../../include/openssl/x509.h ../../include/openssl/x509_vfy.h
- m_dss1.o: ../cryptlib.h m_dss1.c
--m_ecdsa.o: ../../e_os.h ../../include/openssl/asn1.h
--m_ecdsa.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
--m_ecdsa.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
--m_ecdsa.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
--m_ecdsa.o: ../../include/openssl/ecdsa.h ../../include/openssl/err.h
--m_ecdsa.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
--m_ecdsa.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
--m_ecdsa.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
--m_ecdsa.o: ../../include/openssl/ossl_typ.h ../../include/openssl/pkcs7.h
--m_ecdsa.o: ../../include/openssl/safestack.h ../../include/openssl/sha.h
--m_ecdsa.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
--m_ecdsa.o: ../../include/openssl/x509.h ../../include/openssl/x509_vfy.h
--m_ecdsa.o: ../cryptlib.h m_ecdsa.c
--m_md2.o: ../../e_os.h ../../include/openssl/bio.h
-+m_ecdsa.o: m_ecdsa.c
-+m_md2.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- m_md2.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
- m_md2.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
--m_md2.o: ../../include/openssl/lhash.h ../../include/openssl/opensslconf.h
--m_md2.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
--m_md2.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
--m_md2.o: ../../include/openssl/symhacks.h ../cryptlib.h m_md2.c
-+m_md2.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
-+m_md2.o: ../../include/openssl/lhash.h ../../include/openssl/md2.h
-+m_md2.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
-+m_md2.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
-+m_md2.o: ../../include/openssl/ossl_typ.h ../../include/openssl/pkcs7.h
-+m_md2.o: ../../include/openssl/rsa.h ../../include/openssl/safestack.h
-+m_md2.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
-+m_md2.o: ../../include/openssl/symhacks.h ../../include/openssl/x509.h
-+m_md2.o: ../../include/openssl/x509_vfy.h ../cryptlib.h evp_locl.h m_md2.c
- m_md4.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- m_md4.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--m_md4.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--m_md4.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--m_md4.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+m_md4.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-+m_md4.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- m_md4.o: ../../include/openssl/lhash.h ../../include/openssl/md4.h
- m_md4.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
- m_md4.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
-@@ -494,9 +479,8 @@ m_md4.o: ../../include/openssl/symhacks.
- m_md4.o: ../../include/openssl/x509_vfy.h ../cryptlib.h evp_locl.h m_md4.c
- m_md5.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- m_md5.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--m_md5.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--m_md5.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--m_md5.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+m_md5.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-+m_md5.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- m_md5.o: ../../include/openssl/lhash.h ../../include/openssl/md5.h
- m_md5.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
- m_md5.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
-@@ -505,26 +489,17 @@ m_md5.o: ../../include/openssl/rsa.h ../
- m_md5.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
- m_md5.o: ../../include/openssl/symhacks.h ../../include/openssl/x509.h
- m_md5.o: ../../include/openssl/x509_vfy.h ../cryptlib.h evp_locl.h m_md5.c
--m_mdc2.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
-+m_mdc2.o: ../../e_os.h ../../include/openssl/bio.h
- m_mdc2.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--m_mdc2.o: ../../include/openssl/des.h ../../include/openssl/des_old.h
--m_mdc2.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--m_mdc2.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--m_mdc2.o: ../../include/openssl/err.h ../../include/openssl/evp.h
--m_mdc2.o: ../../include/openssl/lhash.h ../../include/openssl/mdc2.h
--m_mdc2.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
--m_mdc2.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
--m_mdc2.o: ../../include/openssl/ossl_typ.h ../../include/openssl/pkcs7.h
--m_mdc2.o: ../../include/openssl/rsa.h ../../include/openssl/safestack.h
--m_mdc2.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
--m_mdc2.o: ../../include/openssl/symhacks.h ../../include/openssl/ui.h
--m_mdc2.o: ../../include/openssl/ui_compat.h ../../include/openssl/x509.h
--m_mdc2.o: ../../include/openssl/x509_vfy.h ../cryptlib.h evp_locl.h m_mdc2.c
-+m_mdc2.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-+m_mdc2.o: ../../include/openssl/lhash.h ../../include/openssl/opensslconf.h
-+m_mdc2.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-+m_mdc2.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
-+m_mdc2.o: ../../include/openssl/symhacks.h ../cryptlib.h m_mdc2.c
- m_null.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- m_null.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--m_null.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--m_null.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--m_null.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+m_null.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-+m_null.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- m_null.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- m_null.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- m_null.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -535,9 +510,8 @@ m_null.o: ../../include/openssl/x509_vfy
- m_ripemd.o: ../../e_os.h ../../include/openssl/asn1.h
- m_ripemd.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- m_ripemd.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
--m_ripemd.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
--m_ripemd.o: ../../include/openssl/ecdsa.h ../../include/openssl/err.h
--m_ripemd.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
-+m_ripemd.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+m_ripemd.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
- m_ripemd.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
- m_ripemd.o: ../../include/openssl/opensslconf.h
- m_ripemd.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -549,9 +523,8 @@ m_ripemd.o: ../../include/openssl/x509_v
- m_ripemd.o: m_ripemd.c
- m_sha.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- m_sha.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--m_sha.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--m_sha.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--m_sha.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+m_sha.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-+m_sha.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- m_sha.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- m_sha.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- m_sha.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -562,9 +535,8 @@ m_sha.o: ../../include/openssl/x509.h ..
- m_sha.o: ../cryptlib.h evp_locl.h m_sha.c
- m_sha1.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- m_sha1.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--m_sha1.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--m_sha1.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--m_sha1.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+m_sha1.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-+m_sha1.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- m_sha1.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- m_sha1.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- m_sha1.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -576,9 +548,8 @@ m_sha1.o: ../cryptlib.h m_sha1.c
- m_sigver.o: ../../e_os.h ../../include/openssl/asn1.h
- m_sigver.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- m_sigver.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
--m_sigver.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
--m_sigver.o: ../../include/openssl/ecdsa.h ../../include/openssl/err.h
--m_sigver.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
-+m_sigver.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+m_sigver.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
- m_sigver.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
- m_sigver.o: ../../include/openssl/opensslconf.h
- m_sigver.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -589,9 +560,8 @@ m_sigver.o: ../../include/openssl/x509_v
- m_sigver.o: m_sigver.c
- m_wp.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- m_wp.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--m_wp.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--m_wp.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--m_wp.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+m_wp.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-+m_wp.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- m_wp.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- m_wp.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- m_wp.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -602,9 +572,8 @@ m_wp.o: ../../include/openssl/x509.h ../
- m_wp.o: ../cryptlib.h evp_locl.h m_wp.c
- names.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- names.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--names.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--names.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--names.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+names.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-+names.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- names.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- names.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- names.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -615,9 +584,8 @@ names.o: ../../include/openssl/x509_vfy.
- p5_crpt.o: ../../e_os.h ../../include/openssl/asn1.h
- p5_crpt.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- p5_crpt.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
--p5_crpt.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
--p5_crpt.o: ../../include/openssl/ecdsa.h ../../include/openssl/err.h
--p5_crpt.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
-+p5_crpt.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+p5_crpt.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
- p5_crpt.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
- p5_crpt.o: ../../include/openssl/opensslconf.h ../../include/openssl/opensslv.h
- p5_crpt.o: ../../include/openssl/ossl_typ.h ../../include/openssl/pkcs7.h
-@@ -628,9 +596,8 @@ p5_crpt.o: ../cryptlib.h p5_crpt.c
- p5_crpt2.o: ../../e_os.h ../../include/openssl/asn1.h
- p5_crpt2.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- p5_crpt2.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
--p5_crpt2.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
--p5_crpt2.o: ../../include/openssl/ecdsa.h ../../include/openssl/err.h
--p5_crpt2.o: ../../include/openssl/evp.h ../../include/openssl/hmac.h
-+p5_crpt2.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+p5_crpt2.o: ../../include/openssl/fips.h ../../include/openssl/hmac.h
- p5_crpt2.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- p5_crpt2.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- p5_crpt2.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -641,9 +608,8 @@ p5_crpt2.o: ../../include/openssl/x509_v
- p5_crpt2.o: p5_crpt2.c
- p_dec.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- p_dec.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--p_dec.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--p_dec.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--p_dec.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+p_dec.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-+p_dec.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- p_dec.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- p_dec.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- p_dec.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -654,9 +620,8 @@ p_dec.o: ../../include/openssl/symhacks.
- p_dec.o: ../../include/openssl/x509_vfy.h ../cryptlib.h p_dec.c
- p_enc.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- p_enc.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--p_enc.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--p_enc.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--p_enc.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+p_enc.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-+p_enc.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- p_enc.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- p_enc.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- p_enc.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -670,9 +635,8 @@ p_lib.o: ../../include/openssl/asn1_mac.
- p_lib.o: ../../include/openssl/bn.h ../../include/openssl/buffer.h
- p_lib.o: ../../include/openssl/crypto.h ../../include/openssl/dh.h
- p_lib.o: ../../include/openssl/dsa.h ../../include/openssl/e_os2.h
--p_lib.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
--p_lib.o: ../../include/openssl/ecdsa.h ../../include/openssl/engine.h
--p_lib.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+p_lib.o: ../../include/openssl/engine.h ../../include/openssl/err.h
-+p_lib.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- p_lib.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- p_lib.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- p_lib.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -683,9 +647,8 @@ p_lib.o: ../../include/openssl/x509.h ..
- p_lib.o: ../asn1/asn1_locl.h ../cryptlib.h p_lib.c
- p_open.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- p_open.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--p_open.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--p_open.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--p_open.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+p_open.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-+p_open.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- p_open.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- p_open.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- p_open.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -696,9 +659,8 @@ p_open.o: ../../include/openssl/x509.h .
- p_open.o: ../cryptlib.h p_open.c
- p_seal.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- p_seal.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--p_seal.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--p_seal.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--p_seal.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+p_seal.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-+p_seal.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- p_seal.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- p_seal.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- p_seal.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
-@@ -709,35 +671,36 @@ p_seal.o: ../../include/openssl/symhacks
- p_seal.o: ../../include/openssl/x509_vfy.h ../cryptlib.h p_seal.c
- p_sign.o: ../../e_os.h ../../include/openssl/asn1.h ../../include/openssl/bio.h
- p_sign.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
--p_sign.o: ../../include/openssl/e_os2.h ../../include/openssl/ec.h
--p_sign.o: ../../include/openssl/ecdh.h ../../include/openssl/ecdsa.h
--p_sign.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+p_sign.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
-+p_sign.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- p_sign.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- p_sign.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- p_sign.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
--p_sign.o: ../../include/openssl/pkcs7.h ../../include/openssl/safestack.h
--p_sign.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
--p_sign.o: ../../include/openssl/symhacks.h ../../include/openssl/x509.h
--p_sign.o: ../../include/openssl/x509_vfy.h ../cryptlib.h p_sign.c
-+p_sign.o: ../../include/openssl/pkcs7.h ../../include/openssl/rsa.h
-+p_sign.o: ../../include/openssl/safestack.h ../../include/openssl/sha.h
-+p_sign.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+p_sign.o: ../../include/openssl/x509.h ../../include/openssl/x509_vfy.h
-+p_sign.o: ../cryptlib.h p_sign.c
- p_verify.o: ../../e_os.h ../../include/openssl/asn1.h
- p_verify.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- p_verify.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
--p_verify.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
--p_verify.o: ../../include/openssl/ecdsa.h ../../include/openssl/err.h
--p_verify.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
-+p_verify.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+p_verify.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
- p_verify.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
- p_verify.o: ../../include/openssl/opensslconf.h
- p_verify.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
--p_verify.o: ../../include/openssl/pkcs7.h ../../include/openssl/safestack.h
--p_verify.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
--p_verify.o: ../../include/openssl/symhacks.h ../../include/openssl/x509.h
--p_verify.o: ../../include/openssl/x509_vfy.h ../cryptlib.h p_verify.c
-+p_verify.o: ../../include/openssl/pkcs7.h ../../include/openssl/rsa.h
-+p_verify.o: ../../include/openssl/safestack.h ../../include/openssl/sha.h
-+p_verify.o: ../../include/openssl/stack.h ../../include/openssl/symhacks.h
-+p_verify.o: ../../include/openssl/x509.h ../../include/openssl/x509_vfy.h
-+p_verify.o: ../cryptlib.h p_verify.c
- pmeth_fn.o: ../../e_os.h ../../include/openssl/asn1.h
- pmeth_fn.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- pmeth_fn.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
- pmeth_fn.o: ../../include/openssl/err.h ../../include/openssl/evp.h
--pmeth_fn.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
--pmeth_fn.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
-+pmeth_fn.o: ../../include/openssl/fips.h ../../include/openssl/lhash.h
-+pmeth_fn.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
-+pmeth_fn.o: ../../include/openssl/opensslconf.h
- pmeth_fn.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
- pmeth_fn.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
- pmeth_fn.o: ../../include/openssl/symhacks.h ../cryptlib.h evp_locl.h
-@@ -746,9 +709,9 @@ pmeth_gn.o: ../../e_os.h ../../include/o
- pmeth_gn.o: ../../include/openssl/bio.h ../../include/openssl/bn.h
- pmeth_gn.o: ../../include/openssl/buffer.h ../../include/openssl/crypto.h
- pmeth_gn.o: ../../include/openssl/e_os2.h ../../include/openssl/err.h
--pmeth_gn.o: ../../include/openssl/evp.h ../../include/openssl/lhash.h
--pmeth_gn.o: ../../include/openssl/obj_mac.h ../../include/openssl/objects.h
--pmeth_gn.o: ../../include/openssl/opensslconf.h
-+pmeth_gn.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
-+pmeth_gn.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
-+pmeth_gn.o: ../../include/openssl/objects.h ../../include/openssl/opensslconf.h
- pmeth_gn.o: ../../include/openssl/opensslv.h ../../include/openssl/ossl_typ.h
- pmeth_gn.o: ../../include/openssl/safestack.h ../../include/openssl/stack.h
- pmeth_gn.o: ../../include/openssl/symhacks.h ../cryptlib.h evp_locl.h
-@@ -756,9 +719,8 @@ pmeth_gn.o: pmeth_gn.c
- pmeth_lib.o: ../../e_os.h ../../include/openssl/asn1.h
- pmeth_lib.o: ../../include/openssl/bio.h ../../include/openssl/buffer.h
- pmeth_lib.o: ../../include/openssl/crypto.h ../../include/openssl/e_os2.h
--pmeth_lib.o: ../../include/openssl/ec.h ../../include/openssl/ecdh.h
--pmeth_lib.o: ../../include/openssl/ecdsa.h ../../include/openssl/engine.h
--pmeth_lib.o: ../../include/openssl/err.h ../../include/openssl/evp.h
-+pmeth_lib.o: ../../include/openssl/engine.h ../../include/openssl/err.h
-+pmeth_lib.o: ../../include/openssl/evp.h ../../include/openssl/fips.h
- pmeth_lib.o: ../../include/openssl/lhash.h ../../include/openssl/obj_mac.h
- pmeth_lib.o: ../../include/openssl/objects.h
- pmeth_lib.o: ../../include/openssl/opensslconf.h
-diff -up openssl-1.0.1-beta3/crypto/evp/m_dss1.c.fips openssl-1.0.1-beta3/crypto/evp/m_dss1.c
---- openssl-1.0.1-beta3/crypto/evp/m_dss1.c.fips	2011-06-01 17:11:00.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/evp/m_dss1.c	2012-02-29 10:33:02.788294844 +0100
+diff -up openssl-1.0.1b/crypto/evp/m_dss1.c.fips openssl-1.0.1b/crypto/evp/m_dss1.c
+--- openssl-1.0.1b/crypto/evp/m_dss1.c.fips	2011-06-01 17:11:00.000000000 +0200
++++ openssl-1.0.1b/crypto/evp/m_dss1.c	2012-04-26 18:00:51.396769212 +0200
 @@ -68,8 +68,6 @@
  #include <openssl/dsa.h>
  #endif
@@ -2764,9 +1953,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/m_dss1.c.fips openssl-1.0.1-beta3/crypto
  	}
  #endif
 -#endif
-diff -up openssl-1.0.1-beta3/crypto/evp/m_dss.c.fips openssl-1.0.1-beta3/crypto/evp/m_dss.c
---- openssl-1.0.1-beta3/crypto/evp/m_dss.c.fips	2011-06-01 17:11:00.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/evp/m_dss.c	2012-02-29 10:33:02.788294844 +0100
+diff -up openssl-1.0.1b/crypto/evp/m_dss.c.fips openssl-1.0.1b/crypto/evp/m_dss.c
+--- openssl-1.0.1b/crypto/evp/m_dss.c.fips	2011-06-01 17:11:00.000000000 +0200
++++ openssl-1.0.1b/crypto/evp/m_dss.c	2012-04-26 18:00:51.396769212 +0200
 @@ -66,7 +66,6 @@
  #endif
  
@@ -2789,9 +1978,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/m_dss.c.fips openssl-1.0.1-beta3/crypto/
  	}
  #endif
 -#endif
-diff -up openssl-1.0.1-beta3/crypto/evp/m_md2.c.fips openssl-1.0.1-beta3/crypto/evp/m_md2.c
---- openssl-1.0.1-beta3/crypto/evp/m_md2.c.fips	2005-07-16 14:37:32.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/evp/m_md2.c	2012-02-29 10:33:02.789294853 +0100
+diff -up openssl-1.0.1b/crypto/evp/m_md2.c.fips openssl-1.0.1b/crypto/evp/m_md2.c
+--- openssl-1.0.1b/crypto/evp/m_md2.c.fips	2005-07-16 14:37:32.000000000 +0200
++++ openssl-1.0.1b/crypto/evp/m_md2.c	2012-04-26 18:00:51.396769212 +0200
 @@ -68,6 +68,7 @@
  #ifndef OPENSSL_NO_RSA
  #include <openssl/rsa.h>
@@ -2800,9 +1989,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/m_md2.c.fips openssl-1.0.1-beta3/crypto/
  
  static int init(EVP_MD_CTX *ctx)
  	{ return MD2_Init(ctx->md_data); }
-diff -up openssl-1.0.1-beta3/crypto/evp/m_sha1.c.fips openssl-1.0.1-beta3/crypto/evp/m_sha1.c
---- openssl-1.0.1-beta3/crypto/evp/m_sha1.c.fips	2011-05-29 01:01:26.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/evp/m_sha1.c	2012-02-29 10:33:02.789294853 +0100
+diff -up openssl-1.0.1b/crypto/evp/m_sha1.c.fips openssl-1.0.1b/crypto/evp/m_sha1.c
+--- openssl-1.0.1b/crypto/evp/m_sha1.c.fips	2011-05-29 01:01:26.000000000 +0200
++++ openssl-1.0.1b/crypto/evp/m_sha1.c	2012-04-26 18:00:51.396769212 +0200
 @@ -59,8 +59,6 @@
  #include <stdio.h>
  #include "cryptlib.h"
@@ -2867,9 +2056,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/m_sha1.c.fips openssl-1.0.1-beta3/crypto
  #endif	/* ifndef OPENSSL_NO_SHA512 */
  
 -#endif
-diff -up openssl-1.0.1-beta3/crypto/evp/p_sign.c.fips openssl-1.0.1-beta3/crypto/evp/p_sign.c
---- openssl-1.0.1-beta3/crypto/evp/p_sign.c.fips	2011-06-09 18:02:39.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/evp/p_sign.c	2012-02-29 10:33:02.789294853 +0100
+diff -up openssl-1.0.1b/crypto/evp/p_sign.c.fips openssl-1.0.1b/crypto/evp/p_sign.c
+--- openssl-1.0.1b/crypto/evp/p_sign.c.fips	2011-06-09 18:02:39.000000000 +0200
++++ openssl-1.0.1b/crypto/evp/p_sign.c	2012-04-26 18:00:51.396769212 +0200
 @@ -61,6 +61,7 @@
  #include <openssl/evp.h>
  #include <openssl/objects.h>
@@ -2901,9 +2090,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/p_sign.c.fips openssl-1.0.1-beta3/crypto
  		if (EVP_PKEY_sign(pkctx, sigret, &sltmp, m, m_len) <= 0)
  			goto err;
  		*siglen = sltmp;
-diff -up openssl-1.0.1-beta3/crypto/evp/p_verify.c.fips openssl-1.0.1-beta3/crypto/evp/p_verify.c
---- openssl-1.0.1-beta3/crypto/evp/p_verify.c.fips	2011-06-09 18:02:39.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/evp/p_verify.c	2012-02-29 10:33:02.789294853 +0100
+diff -up openssl-1.0.1b/crypto/evp/p_verify.c.fips openssl-1.0.1b/crypto/evp/p_verify.c
+--- openssl-1.0.1b/crypto/evp/p_verify.c.fips	2011-06-09 18:02:39.000000000 +0200
++++ openssl-1.0.1b/crypto/evp/p_verify.c	2012-04-26 18:00:51.396769212 +0200
 @@ -61,6 +61,7 @@
  #include <openssl/evp.h>
  #include <openssl/objects.h>
@@ -2935,9 +2124,9 @@ diff -up openssl-1.0.1-beta3/crypto/evp/p_verify.c.fips openssl-1.0.1-beta3/cryp
  		i = EVP_PKEY_verify(pkctx, sigbuf, siglen, m, m_len);
  		err:
  		EVP_PKEY_CTX_free(pkctx);
-diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_aesavs.c.fips openssl-1.0.1-beta3/crypto/fips/cavs/fips_aesavs.c
---- openssl-1.0.1-beta3/crypto/fips/cavs/fips_aesavs.c.fips	2012-02-29 10:33:02.789294853 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/cavs/fips_aesavs.c	2012-02-29 10:33:02.789294853 +0100
+diff -up openssl-1.0.1b/crypto/fips/cavs/fips_aesavs.c.fips openssl-1.0.1b/crypto/fips/cavs/fips_aesavs.c
+--- openssl-1.0.1b/crypto/fips/cavs/fips_aesavs.c.fips	2012-04-26 18:00:51.397769234 +0200
++++ openssl-1.0.1b/crypto/fips/cavs/fips_aesavs.c	2012-04-26 18:00:51.397769234 +0200
 @@ -0,0 +1,939 @@
 +/* ====================================================================
 + * Copyright (c) 2004 The OpenSSL Project.  All rights reserved.
@@ -3878,9 +3067,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_aesavs.c.fips openssl-1.0.1-b
 +    }
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_cmactest.c.fips openssl-1.0.1-beta3/crypto/fips/cavs/fips_cmactest.c
---- openssl-1.0.1-beta3/crypto/fips/cavs/fips_cmactest.c.fips	2012-02-29 10:33:02.790294862 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/cavs/fips_cmactest.c	2012-02-29 10:33:02.790294862 +0100
+diff -up openssl-1.0.1b/crypto/fips/cavs/fips_cmactest.c.fips openssl-1.0.1b/crypto/fips/cavs/fips_cmactest.c
+--- openssl-1.0.1b/crypto/fips/cavs/fips_cmactest.c.fips	2012-04-26 18:00:51.397769234 +0200
++++ openssl-1.0.1b/crypto/fips/cavs/fips_cmactest.c	2012-04-26 18:00:51.397769234 +0200
 @@ -0,0 +1,517 @@
 +/* fips_cmactest.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -4399,9 +3588,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_cmactest.c.fips openssl-1.0.1
 +	}
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_desmovs.c.fips openssl-1.0.1-beta3/crypto/fips/cavs/fips_desmovs.c
---- openssl-1.0.1-beta3/crypto/fips/cavs/fips_desmovs.c.fips	2012-02-29 10:33:02.790294862 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/cavs/fips_desmovs.c	2012-02-29 10:33:02.790294862 +0100
+diff -up openssl-1.0.1b/crypto/fips/cavs/fips_desmovs.c.fips openssl-1.0.1b/crypto/fips/cavs/fips_desmovs.c
+--- openssl-1.0.1b/crypto/fips/cavs/fips_desmovs.c.fips	2012-04-26 18:00:51.398769255 +0200
++++ openssl-1.0.1b/crypto/fips/cavs/fips_desmovs.c	2012-04-26 18:00:51.398769255 +0200
 @@ -0,0 +1,702 @@
 +/* ====================================================================
 + * Copyright (c) 2004 The OpenSSL Project.  All rights reserved.
@@ -5105,9 +4294,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_desmovs.c.fips openssl-1.0.1-
 +    }
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_dhvs.c.fips openssl-1.0.1-beta3/crypto/fips/cavs/fips_dhvs.c
---- openssl-1.0.1-beta3/crypto/fips/cavs/fips_dhvs.c.fips	2012-02-29 10:33:02.790294862 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/cavs/fips_dhvs.c	2012-02-29 10:33:02.790294862 +0100
+diff -up openssl-1.0.1b/crypto/fips/cavs/fips_dhvs.c.fips openssl-1.0.1b/crypto/fips/cavs/fips_dhvs.c
+--- openssl-1.0.1b/crypto/fips/cavs/fips_dhvs.c.fips	2012-04-26 18:00:51.398769255 +0200
++++ openssl-1.0.1b/crypto/fips/cavs/fips_dhvs.c	2012-04-26 18:00:51.398769255 +0200
 @@ -0,0 +1,292 @@
 +/* fips/dh/fips_dhvs.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -5401,9 +4590,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_dhvs.c.fips openssl-1.0.1-bet
 +	}
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_drbgvs.c.fips openssl-1.0.1-beta3/crypto/fips/cavs/fips_drbgvs.c
---- openssl-1.0.1-beta3/crypto/fips/cavs/fips_drbgvs.c.fips	2012-02-29 10:33:02.790294862 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/cavs/fips_drbgvs.c	2012-02-29 10:33:02.790294862 +0100
+diff -up openssl-1.0.1b/crypto/fips/cavs/fips_drbgvs.c.fips openssl-1.0.1b/crypto/fips/cavs/fips_drbgvs.c
+--- openssl-1.0.1b/crypto/fips/cavs/fips_drbgvs.c.fips	2012-04-26 18:00:51.398769255 +0200
++++ openssl-1.0.1b/crypto/fips/cavs/fips_drbgvs.c	2012-04-26 18:00:51.398769255 +0200
 @@ -0,0 +1,416 @@
 +/* fips/rand/fips_drbgvs.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -5821,9 +5010,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_drbgvs.c.fips openssl-1.0.1-b
 +	}
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_dssvs.c.fips openssl-1.0.1-beta3/crypto/fips/cavs/fips_dssvs.c
---- openssl-1.0.1-beta3/crypto/fips/cavs/fips_dssvs.c.fips	2012-02-29 10:33:02.791294871 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/cavs/fips_dssvs.c	2012-02-29 10:33:02.791294871 +0100
+diff -up openssl-1.0.1b/crypto/fips/cavs/fips_dssvs.c.fips openssl-1.0.1b/crypto/fips/cavs/fips_dssvs.c
+--- openssl-1.0.1b/crypto/fips/cavs/fips_dssvs.c.fips	2012-04-26 18:00:51.398769255 +0200
++++ openssl-1.0.1b/crypto/fips/cavs/fips_dssvs.c	2012-04-26 18:00:51.398769255 +0200
 @@ -0,0 +1,537 @@
 +#include <openssl/opensslconf.h>
 +
@@ -6362,9 +5551,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_dssvs.c.fips openssl-1.0.1-be
 +    }
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_gcmtest.c.fips openssl-1.0.1-beta3/crypto/fips/cavs/fips_gcmtest.c
---- openssl-1.0.1-beta3/crypto/fips/cavs/fips_gcmtest.c.fips	2012-02-29 10:33:02.791294871 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/cavs/fips_gcmtest.c	2012-02-29 10:33:02.791294871 +0100
+diff -up openssl-1.0.1b/crypto/fips/cavs/fips_gcmtest.c.fips openssl-1.0.1b/crypto/fips/cavs/fips_gcmtest.c
+--- openssl-1.0.1b/crypto/fips/cavs/fips_gcmtest.c.fips	2012-04-26 18:00:51.399769276 +0200
++++ openssl-1.0.1b/crypto/fips/cavs/fips_gcmtest.c	2012-04-26 18:00:51.399769276 +0200
 @@ -0,0 +1,571 @@
 +/* fips/aes/fips_gcmtest.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -6937,9 +6126,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_gcmtest.c.fips openssl-1.0.1-
 +}
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_rngvs.c.fips openssl-1.0.1-beta3/crypto/fips/cavs/fips_rngvs.c
---- openssl-1.0.1-beta3/crypto/fips/cavs/fips_rngvs.c.fips	2012-02-29 10:33:02.791294871 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/cavs/fips_rngvs.c	2012-02-29 10:33:02.791294871 +0100
+diff -up openssl-1.0.1b/crypto/fips/cavs/fips_rngvs.c.fips openssl-1.0.1b/crypto/fips/cavs/fips_rngvs.c
+--- openssl-1.0.1b/crypto/fips/cavs/fips_rngvs.c.fips	2012-04-26 18:00:51.399769276 +0200
++++ openssl-1.0.1b/crypto/fips/cavs/fips_rngvs.c	2012-04-26 18:00:51.399769276 +0200
 @@ -0,0 +1,230 @@
 +/*
 + * Crude test driver for processing the VST and MCT testvector files
@@ -7171,9 +6360,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_rngvs.c.fips openssl-1.0.1-be
 +    return 0;
 +    }
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_rsagtest.c.fips openssl-1.0.1-beta3/crypto/fips/cavs/fips_rsagtest.c
---- openssl-1.0.1-beta3/crypto/fips/cavs/fips_rsagtest.c.fips	2012-02-29 10:33:02.791294871 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/cavs/fips_rsagtest.c	2012-02-29 10:33:02.791294871 +0100
+diff -up openssl-1.0.1b/crypto/fips/cavs/fips_rsagtest.c.fips openssl-1.0.1b/crypto/fips/cavs/fips_rsagtest.c
+--- openssl-1.0.1b/crypto/fips/cavs/fips_rsagtest.c.fips	2012-04-26 18:00:51.399769276 +0200
++++ openssl-1.0.1b/crypto/fips/cavs/fips_rsagtest.c	2012-04-26 18:00:51.399769276 +0200
 @@ -0,0 +1,390 @@
 +/* fips_rsagtest.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -7565,9 +6754,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_rsagtest.c.fips openssl-1.0.1
 +	}
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_rsastest.c.fips openssl-1.0.1-beta3/crypto/fips/cavs/fips_rsastest.c
---- openssl-1.0.1-beta3/crypto/fips/cavs/fips_rsastest.c.fips	2012-02-29 10:33:02.792294880 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/cavs/fips_rsastest.c	2012-02-29 10:33:02.792294880 +0100
+diff -up openssl-1.0.1b/crypto/fips/cavs/fips_rsastest.c.fips openssl-1.0.1b/crypto/fips/cavs/fips_rsastest.c
+--- openssl-1.0.1b/crypto/fips/cavs/fips_rsastest.c.fips	2012-04-26 18:00:51.400769298 +0200
++++ openssl-1.0.1b/crypto/fips/cavs/fips_rsastest.c	2012-04-26 18:00:51.400769298 +0200
 @@ -0,0 +1,370 @@
 +/* fips_rsastest.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -7939,9 +7128,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_rsastest.c.fips openssl-1.0.1
 +	return ret;
 +	}
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_rsavtest.c.fips openssl-1.0.1-beta3/crypto/fips/cavs/fips_rsavtest.c
---- openssl-1.0.1-beta3/crypto/fips/cavs/fips_rsavtest.c.fips	2012-02-29 10:33:02.792294880 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/cavs/fips_rsavtest.c	2012-02-29 10:33:02.792294880 +0100
+diff -up openssl-1.0.1b/crypto/fips/cavs/fips_rsavtest.c.fips openssl-1.0.1b/crypto/fips/cavs/fips_rsavtest.c
+--- openssl-1.0.1b/crypto/fips/cavs/fips_rsavtest.c.fips	2012-04-26 18:00:51.400769298 +0200
++++ openssl-1.0.1b/crypto/fips/cavs/fips_rsavtest.c	2012-04-26 18:00:51.400769298 +0200
 @@ -0,0 +1,377 @@
 +/* fips_rsavtest.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -8320,9 +7509,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_rsavtest.c.fips openssl-1.0.1
 +	return ret;
 +	}
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_shatest.c.fips openssl-1.0.1-beta3/crypto/fips/cavs/fips_shatest.c
---- openssl-1.0.1-beta3/crypto/fips/cavs/fips_shatest.c.fips	2012-02-29 10:33:02.792294880 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/cavs/fips_shatest.c	2012-02-29 10:33:02.792294880 +0100
+diff -up openssl-1.0.1b/crypto/fips/cavs/fips_shatest.c.fips openssl-1.0.1b/crypto/fips/cavs/fips_shatest.c
+--- openssl-1.0.1b/crypto/fips/cavs/fips_shatest.c.fips	2012-04-26 18:00:51.400769298 +0200
++++ openssl-1.0.1b/crypto/fips/cavs/fips_shatest.c	2012-04-26 18:00:51.400769298 +0200
 @@ -0,0 +1,388 @@
 +/* fips_shatest.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -8712,9 +7901,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_shatest.c.fips openssl-1.0.1-
 +	}
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_utl.h.fips openssl-1.0.1-beta3/crypto/fips/cavs/fips_utl.h
---- openssl-1.0.1-beta3/crypto/fips/cavs/fips_utl.h.fips	2012-02-29 10:33:02.792294880 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/cavs/fips_utl.h	2012-02-29 10:33:02.792294880 +0100
+diff -up openssl-1.0.1b/crypto/fips/cavs/fips_utl.h.fips openssl-1.0.1b/crypto/fips/cavs/fips_utl.h
+--- openssl-1.0.1b/crypto/fips/cavs/fips_utl.h.fips	2012-04-26 18:00:51.400769298 +0200
++++ openssl-1.0.1b/crypto/fips/cavs/fips_utl.h	2012-04-26 18:00:51.400769298 +0200
 @@ -0,0 +1,343 @@
 +/* ====================================================================
 + * Copyright (c) 2007 The OpenSSL Project.  All rights reserved.
@@ -9059,9 +8248,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/cavs/fips_utl.h.fips openssl-1.0.1-beta
 +#endif
 +    }
 +
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_aes_selftest.c.fips openssl-1.0.1-beta3/crypto/fips/fips_aes_selftest.c
---- openssl-1.0.1-beta3/crypto/fips/fips_aes_selftest.c.fips	2012-02-29 10:33:02.793294889 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_aes_selftest.c	2012-02-29 10:33:02.793294889 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_aes_selftest.c.fips openssl-1.0.1b/crypto/fips/fips_aes_selftest.c
+--- openssl-1.0.1b/crypto/fips/fips_aes_selftest.c.fips	2012-04-26 18:00:51.401769321 +0200
++++ openssl-1.0.1b/crypto/fips/fips_aes_selftest.c	2012-04-26 18:00:51.401769321 +0200
 @@ -0,0 +1,359 @@
 +/* ====================================================================
 + * Copyright (c) 2003 The OpenSSL Project.  All rights reserved.
@@ -9422,9 +8611,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_aes_selftest.c.fips openssl-1.0.1-
 +	}
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/fips.c.fips openssl-1.0.1-beta3/crypto/fips/fips.c
---- openssl-1.0.1-beta3/crypto/fips/fips.c.fips	2012-02-29 10:33:02.793294889 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips.c	2012-02-29 10:33:02.793294889 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips.c.fips openssl-1.0.1b/crypto/fips/fips.c
+--- openssl-1.0.1b/crypto/fips/fips.c.fips	2012-04-26 18:00:51.401769321 +0200
++++ openssl-1.0.1b/crypto/fips/fips.c	2012-04-26 18:00:51.401769321 +0200
 @@ -0,0 +1,489 @@
 +/* ====================================================================
 + * Copyright (c) 2003 The OpenSSL Project.  All rights reserved.
@@ -9915,9 +9104,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips.c.fips openssl-1.0.1-beta3/crypto/
 +
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_cmac_selftest.c.fips openssl-1.0.1-beta3/crypto/fips/fips_cmac_selftest.c
---- openssl-1.0.1-beta3/crypto/fips/fips_cmac_selftest.c.fips	2012-02-29 10:33:02.793294889 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_cmac_selftest.c	2012-02-29 10:33:02.793294889 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_cmac_selftest.c.fips openssl-1.0.1b/crypto/fips/fips_cmac_selftest.c
+--- openssl-1.0.1b/crypto/fips/fips_cmac_selftest.c.fips	2012-04-26 18:00:51.401769321 +0200
++++ openssl-1.0.1b/crypto/fips/fips_cmac_selftest.c	2012-04-26 18:00:51.401769321 +0200
 @@ -0,0 +1,161 @@
 +/* ====================================================================
 + * Copyright (c) 2011 The OpenSSL Project.  All rights reserved.
@@ -10080,9 +9269,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_cmac_selftest.c.fips openssl-1.0.1
 +	return rv;
 +	}
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_des_selftest.c.fips openssl-1.0.1-beta3/crypto/fips/fips_des_selftest.c
---- openssl-1.0.1-beta3/crypto/fips/fips_des_selftest.c.fips	2012-02-29 10:33:02.793294889 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_des_selftest.c	2012-02-29 10:33:02.793294889 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_des_selftest.c.fips openssl-1.0.1b/crypto/fips/fips_des_selftest.c
+--- openssl-1.0.1b/crypto/fips/fips_des_selftest.c.fips	2012-04-26 18:00:51.401769321 +0200
++++ openssl-1.0.1b/crypto/fips/fips_des_selftest.c	2012-04-26 18:00:51.401769321 +0200
 @@ -0,0 +1,147 @@
 +/* ====================================================================
 + * Copyright (c) 2003 The OpenSSL Project.  All rights reserved.
@@ -10231,9 +9420,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_des_selftest.c.fips openssl-1.0.1-
 +    return ret;
 +    }
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_ctr.c.fips openssl-1.0.1-beta3/crypto/fips/fips_drbg_ctr.c
---- openssl-1.0.1-beta3/crypto/fips/fips_drbg_ctr.c.fips	2012-02-29 10:33:02.793294889 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_drbg_ctr.c	2012-02-29 10:33:02.793294889 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_drbg_ctr.c.fips openssl-1.0.1b/crypto/fips/fips_drbg_ctr.c
+--- openssl-1.0.1b/crypto/fips/fips_drbg_ctr.c.fips	2012-04-26 18:00:51.401769321 +0200
++++ openssl-1.0.1b/crypto/fips/fips_drbg_ctr.c	2012-04-26 18:00:51.402769343 +0200
 @@ -0,0 +1,436 @@
 +/* fips/rand/fips_drbg_ctr.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -10671,9 +9860,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_ctr.c.fips openssl-1.0.1-beta
 +
 +	return 1;
 +	}
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_hash.c.fips openssl-1.0.1-beta3/crypto/fips/fips_drbg_hash.c
---- openssl-1.0.1-beta3/crypto/fips/fips_drbg_hash.c.fips	2012-02-29 10:33:02.794294898 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_drbg_hash.c	2012-02-29 10:33:02.794294898 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_drbg_hash.c.fips openssl-1.0.1b/crypto/fips/fips_drbg_hash.c
+--- openssl-1.0.1b/crypto/fips/fips_drbg_hash.c.fips	2012-04-26 18:00:51.402769343 +0200
++++ openssl-1.0.1b/crypto/fips/fips_drbg_hash.c	2012-04-26 18:00:51.402769343 +0200
 @@ -0,0 +1,378 @@
 +/* fips/rand/fips_drbg_hash.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -11053,9 +10242,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_hash.c.fips openssl-1.0.1-bet
 +
 +	return 1;
 +	}
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_hmac.c.fips openssl-1.0.1-beta3/crypto/fips/fips_drbg_hmac.c
---- openssl-1.0.1-beta3/crypto/fips/fips_drbg_hmac.c.fips	2012-02-29 10:33:02.794294898 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_drbg_hmac.c	2012-02-29 10:33:02.794294898 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_drbg_hmac.c.fips openssl-1.0.1b/crypto/fips/fips_drbg_hmac.c
+--- openssl-1.0.1b/crypto/fips/fips_drbg_hmac.c.fips	2012-04-26 18:00:51.402769343 +0200
++++ openssl-1.0.1b/crypto/fips/fips_drbg_hmac.c	2012-04-26 18:00:51.402769343 +0200
 @@ -0,0 +1,281 @@
 +/* fips/rand/fips_drbg_hmac.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -11338,10 +10527,10 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_hmac.c.fips openssl-1.0.1-bet
 +
 +	return 1;
 +	}
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_lib.c.fips openssl-1.0.1-beta3/crypto/fips/fips_drbg_lib.c
---- openssl-1.0.1-beta3/crypto/fips/fips_drbg_lib.c.fips	2012-02-29 10:33:02.794294898 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_drbg_lib.c	2012-02-29 10:33:02.794294898 +0100
-@@ -0,0 +1,576 @@
+diff -up openssl-1.0.1b/crypto/fips/fips_drbg_lib.c.fips openssl-1.0.1b/crypto/fips/fips_drbg_lib.c
+--- openssl-1.0.1b/crypto/fips/fips_drbg_lib.c.fips	2012-04-26 18:00:51.402769343 +0200
++++ openssl-1.0.1b/crypto/fips/fips_drbg_lib.c	2012-04-26 18:00:51.402769343 +0200
+@@ -0,0 +1,578 @@
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
 + * project.
 + */
@@ -11501,6 +10690,8 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_lib.c.fips openssl-1.0.1-beta
 +		return dctx->get_entropy(dctx, pout, entropy, min_len, max_len);
 +	rv = dctx->get_entropy(dctx, &tout, entropy + bl,
 +				min_len + bl, max_len + bl);
++	if (tout == NULL)
++		return 0;
 +	*pout = tout + bl;
 +	if (rv < (min_len + bl) || (rv % bl))
 +		return 0;
@@ -11918,9 +11109,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_lib.c.fips openssl-1.0.1-beta
 +	memcpy(dctx->lb, out, dctx->blocklength);
 +	return 1;
 +	}
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_rand.c.fips openssl-1.0.1-beta3/crypto/fips/fips_drbg_rand.c
---- openssl-1.0.1-beta3/crypto/fips/fips_drbg_rand.c.fips	2012-02-29 10:33:02.794294898 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_drbg_rand.c	2012-02-29 10:33:02.794294898 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_drbg_rand.c.fips openssl-1.0.1b/crypto/fips/fips_drbg_rand.c
+--- openssl-1.0.1b/crypto/fips/fips_drbg_rand.c.fips	2012-04-26 18:00:51.403769365 +0200
++++ openssl-1.0.1b/crypto/fips/fips_drbg_rand.c	2012-04-26 18:00:51.403769365 +0200
 @@ -0,0 +1,172 @@
 +/* fips/rand/fips_drbg_rand.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -12094,9 +11285,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_rand.c.fips openssl-1.0.1-bet
 +	return &rand_drbg_meth;
 +	}
 +
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_selftest.c.fips openssl-1.0.1-beta3/crypto/fips/fips_drbg_selftest.c
---- openssl-1.0.1-beta3/crypto/fips/fips_drbg_selftest.c.fips	2012-02-29 10:33:02.795294907 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_drbg_selftest.c	2012-02-29 10:33:02.795294907 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_drbg_selftest.c.fips openssl-1.0.1b/crypto/fips/fips_drbg_selftest.c
+--- openssl-1.0.1b/crypto/fips/fips_drbg_selftest.c.fips	2012-04-26 18:00:51.403769365 +0200
++++ openssl-1.0.1b/crypto/fips/fips_drbg_selftest.c	2012-04-26 18:00:51.403769365 +0200
 @@ -0,0 +1,862 @@
 +/* fips/rand/fips_drbg_selftest.c */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -12960,9 +12151,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_selftest.c.fips openssl-1.0.1
 +	return rv;
 +	}
 +
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_selftest.h.fips openssl-1.0.1-beta3/crypto/fips/fips_drbg_selftest.h
---- openssl-1.0.1-beta3/crypto/fips/fips_drbg_selftest.h.fips	2012-02-29 10:33:02.796294915 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_drbg_selftest.h	2012-02-29 10:33:02.796294915 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_drbg_selftest.h.fips openssl-1.0.1b/crypto/fips/fips_drbg_selftest.h
+--- openssl-1.0.1b/crypto/fips/fips_drbg_selftest.h.fips	2012-04-26 18:00:51.404769387 +0200
++++ openssl-1.0.1b/crypto/fips/fips_drbg_selftest.h	2012-04-26 18:00:51.404769387 +0200
 @@ -0,0 +1,2335 @@
 +/* ====================================================================
 + * Copyright (c) 2011 The OpenSSL Project.  All rights reserved.
@@ -15299,9 +14490,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_drbg_selftest.h.fips openssl-1.0.1
 +	0xc2,0xd6,0xfd,0xa5
 +	};
 +
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_dsa_selftest.c.fips openssl-1.0.1-beta3/crypto/fips/fips_dsa_selftest.c
---- openssl-1.0.1-beta3/crypto/fips/fips_dsa_selftest.c.fips	2012-02-29 10:33:02.796294915 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_dsa_selftest.c	2012-02-29 10:33:02.796294915 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_dsa_selftest.c.fips openssl-1.0.1b/crypto/fips/fips_dsa_selftest.c
+--- openssl-1.0.1b/crypto/fips/fips_dsa_selftest.c.fips	2012-04-26 18:00:51.404769387 +0200
++++ openssl-1.0.1b/crypto/fips/fips_dsa_selftest.c	2012-04-26 18:00:51.404769387 +0200
 @@ -0,0 +1,193 @@
 +/* ====================================================================
 + * Copyright (c) 2011 The OpenSSL Project.  All rights reserved.
@@ -15496,9 +14687,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_dsa_selftest.c.fips openssl-1.0.1-
 +	return ret;
 +	}
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_enc.c.fips openssl-1.0.1-beta3/crypto/fips/fips_enc.c
---- openssl-1.0.1-beta3/crypto/fips/fips_enc.c.fips	2012-02-29 10:33:02.796294915 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_enc.c	2012-02-29 10:33:02.796294915 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_enc.c.fips openssl-1.0.1b/crypto/fips/fips_enc.c
+--- openssl-1.0.1b/crypto/fips/fips_enc.c.fips	2012-04-26 18:00:51.405769408 +0200
++++ openssl-1.0.1b/crypto/fips/fips_enc.c	2012-04-26 18:00:51.405769408 +0200
 @@ -0,0 +1,191 @@
 +/* fipe/evp/fips_enc.c */
 +/* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
@@ -15691,9 +14882,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_enc.c.fips openssl-1.0.1-beta3/cry
 +		}
 +	}
 +
-diff -up openssl-1.0.1-beta3/crypto/fips/fips.h.fips openssl-1.0.1-beta3/crypto/fips/fips.h
---- openssl-1.0.1-beta3/crypto/fips/fips.h.fips	2012-02-29 10:33:02.797294923 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips.h	2012-02-29 10:33:02.797294923 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips.h.fips openssl-1.0.1b/crypto/fips/fips.h
+--- openssl-1.0.1b/crypto/fips/fips.h.fips	2012-04-26 18:00:51.405769408 +0200
++++ openssl-1.0.1b/crypto/fips/fips.h	2012-04-26 18:00:51.405769408 +0200
 @@ -0,0 +1,279 @@
 +/* ====================================================================
 + * Copyright (c) 2003 The OpenSSL Project.  All rights reserved.
@@ -15974,9 +15165,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips.h.fips openssl-1.0.1-beta3/crypto/
 +}
 +#endif
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_hmac_selftest.c.fips openssl-1.0.1-beta3/crypto/fips/fips_hmac_selftest.c
---- openssl-1.0.1-beta3/crypto/fips/fips_hmac_selftest.c.fips	2012-02-29 10:33:02.797294923 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_hmac_selftest.c	2012-02-29 10:33:02.797294923 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_hmac_selftest.c.fips openssl-1.0.1b/crypto/fips/fips_hmac_selftest.c
+--- openssl-1.0.1b/crypto/fips/fips_hmac_selftest.c.fips	2012-04-26 18:00:51.405769408 +0200
++++ openssl-1.0.1b/crypto/fips/fips_hmac_selftest.c	2012-04-26 18:00:51.405769408 +0200
 @@ -0,0 +1,137 @@
 +/* ====================================================================
 + * Copyright (c) 2005 The OpenSSL Project.  All rights reserved.
@@ -16115,9 +15306,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_hmac_selftest.c.fips openssl-1.0.1
 +    return 1;
 +    }
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_locl.h.fips openssl-1.0.1-beta3/crypto/fips/fips_locl.h
---- openssl-1.0.1-beta3/crypto/fips/fips_locl.h.fips	2012-02-29 10:33:02.797294923 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_locl.h	2012-02-29 10:33:02.797294923 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_locl.h.fips openssl-1.0.1b/crypto/fips/fips_locl.h
+--- openssl-1.0.1b/crypto/fips/fips_locl.h.fips	2012-04-26 18:00:51.405769408 +0200
++++ openssl-1.0.1b/crypto/fips/fips_locl.h	2012-04-26 18:00:51.405769408 +0200
 @@ -0,0 +1,71 @@
 +/* ====================================================================
 + * Copyright (c) 2011 The OpenSSL Project.  All rights reserved.
@@ -16190,9 +15381,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_locl.h.fips openssl-1.0.1-beta3/cr
 +}
 +#endif
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_md.c.fips openssl-1.0.1-beta3/crypto/fips/fips_md.c
---- openssl-1.0.1-beta3/crypto/fips/fips_md.c.fips	2012-02-29 10:33:02.797294923 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_md.c	2012-02-29 10:33:02.797294923 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_md.c.fips openssl-1.0.1b/crypto/fips/fips_md.c
+--- openssl-1.0.1b/crypto/fips/fips_md.c.fips	2012-04-26 18:00:51.405769408 +0200
++++ openssl-1.0.1b/crypto/fips/fips_md.c	2012-04-26 18:00:51.405769408 +0200
 @@ -0,0 +1,145 @@
 +/* fips/evp/fips_md.c */
 +/* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
@@ -16339,9 +15530,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_md.c.fips openssl-1.0.1-beta3/cryp
 +		return NULL;
 +		}
 +	}
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_post.c.fips openssl-1.0.1-beta3/crypto/fips/fips_post.c
---- openssl-1.0.1-beta3/crypto/fips/fips_post.c.fips	2012-02-29 10:33:02.797294923 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_post.c	2012-02-29 10:33:02.797294923 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_post.c.fips openssl-1.0.1b/crypto/fips/fips_post.c
+--- openssl-1.0.1b/crypto/fips/fips_post.c.fips	2012-04-26 18:00:51.406769429 +0200
++++ openssl-1.0.1b/crypto/fips/fips_post.c	2012-04-26 18:00:51.406769429 +0200
 @@ -0,0 +1,205 @@
 +/* ====================================================================
 + * Copyright (c) 2011 The OpenSSL Project.  All rights reserved.
@@ -16548,9 +15739,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_post.c.fips openssl-1.0.1-beta3/cr
 +	return 1;
 +	}
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_rand.c.fips openssl-1.0.1-beta3/crypto/fips/fips_rand.c
---- openssl-1.0.1-beta3/crypto/fips/fips_rand.c.fips	2012-02-29 10:33:02.798294931 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_rand.c	2012-02-29 10:33:02.798294931 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_rand.c.fips openssl-1.0.1b/crypto/fips/fips_rand.c
+--- openssl-1.0.1b/crypto/fips/fips_rand.c.fips	2012-04-26 18:00:51.406769429 +0200
++++ openssl-1.0.1b/crypto/fips/fips_rand.c	2012-04-26 18:00:51.406769429 +0200
 @@ -0,0 +1,457 @@
 +/* ====================================================================
 + * Copyright (c) 2007 The OpenSSL Project.  All rights reserved.
@@ -17009,9 +16200,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_rand.c.fips openssl-1.0.1-beta3/cr
 +}
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_rand.h.fips openssl-1.0.1-beta3/crypto/fips/fips_rand.h
---- openssl-1.0.1-beta3/crypto/fips/fips_rand.h.fips	2012-02-29 10:33:02.798294931 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_rand.h	2012-02-29 10:33:02.798294931 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_rand.h.fips openssl-1.0.1b/crypto/fips/fips_rand.h
+--- openssl-1.0.1b/crypto/fips/fips_rand.h.fips	2012-04-26 18:00:51.406769429 +0200
++++ openssl-1.0.1b/crypto/fips/fips_rand.h	2012-04-26 18:00:51.406769429 +0200
 @@ -0,0 +1,145 @@
 +/* ====================================================================
 + * Copyright (c) 2003 The OpenSSL Project.  All rights reserved.
@@ -17158,9 +16349,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_rand.h.fips openssl-1.0.1-beta3/cr
 +#endif
 +#endif
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_rand_lcl.h.fips openssl-1.0.1-beta3/crypto/fips/fips_rand_lcl.h
---- openssl-1.0.1-beta3/crypto/fips/fips_rand_lcl.h.fips	2012-02-29 10:33:02.798294931 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_rand_lcl.h	2012-02-29 10:33:02.798294931 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_rand_lcl.h.fips openssl-1.0.1b/crypto/fips/fips_rand_lcl.h
+--- openssl-1.0.1b/crypto/fips/fips_rand_lcl.h.fips	2012-04-26 18:00:51.406769429 +0200
++++ openssl-1.0.1b/crypto/fips/fips_rand_lcl.h	2012-04-26 18:00:51.406769429 +0200
 @@ -0,0 +1,219 @@
 +/* fips/rand/fips_rand_lcl.h */
 +/* Written by Dr Stephen N Henson (steve@openssl.org) for the OpenSSL
@@ -17381,9 +16572,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_rand_lcl.h.fips openssl-1.0.1-beta
 +#define FIPS_digestupdate EVP_DigestUpdate
 +#define FIPS_digestfinal EVP_DigestFinal
 +#define M_EVP_MD_size EVP_MD_size
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_rand_lib.c.fips openssl-1.0.1-beta3/crypto/fips/fips_rand_lib.c
---- openssl-1.0.1-beta3/crypto/fips/fips_rand_lib.c.fips	2012-02-29 10:33:02.798294931 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_rand_lib.c	2012-02-29 10:33:02.798294931 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_rand_lib.c.fips openssl-1.0.1b/crypto/fips/fips_rand_lib.c
+--- openssl-1.0.1b/crypto/fips/fips_rand_lib.c.fips	2012-04-26 18:00:51.407769451 +0200
++++ openssl-1.0.1b/crypto/fips/fips_rand_lib.c	2012-04-26 18:00:51.407769451 +0200
 @@ -0,0 +1,191 @@
 +/* ====================================================================
 + * Copyright (c) 2011 The OpenSSL Project.  All rights reserved.
@@ -17576,9 +16767,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_rand_lib.c.fips openssl-1.0.1-beta
 +		}
 +	return 0;
 +	}
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_rand_selftest.c.fips openssl-1.0.1-beta3/crypto/fips/fips_rand_selftest.c
---- openssl-1.0.1-beta3/crypto/fips/fips_rand_selftest.c.fips	2012-02-29 10:33:02.798294931 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_rand_selftest.c	2012-02-29 10:33:02.798294931 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_rand_selftest.c.fips openssl-1.0.1b/crypto/fips/fips_rand_selftest.c
+--- openssl-1.0.1b/crypto/fips/fips_rand_selftest.c.fips	2012-04-26 18:00:51.407769451 +0200
++++ openssl-1.0.1b/crypto/fips/fips_rand_selftest.c	2012-04-26 18:00:51.407769451 +0200
 @@ -0,0 +1,183 @@
 +/* ====================================================================
 + * Copyright (c) 2003 The OpenSSL Project.  All rights reserved.
@@ -17763,9 +16954,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_rand_selftest.c.fips openssl-1.0.1
 +	}
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_randtest.c.fips openssl-1.0.1-beta3/crypto/fips/fips_randtest.c
---- openssl-1.0.1-beta3/crypto/fips/fips_randtest.c.fips	2012-02-29 10:33:02.798294931 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_randtest.c	2012-02-29 10:33:02.799294939 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_randtest.c.fips openssl-1.0.1b/crypto/fips/fips_randtest.c
+--- openssl-1.0.1b/crypto/fips/fips_randtest.c.fips	2012-04-26 18:00:51.407769451 +0200
++++ openssl-1.0.1b/crypto/fips/fips_randtest.c	2012-04-26 18:00:51.407769451 +0200
 @@ -0,0 +1,250 @@
 +/* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
 + * All rights reserved.
@@ -18017,9 +17208,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_randtest.c.fips openssl-1.0.1-beta
 +	}
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_rsa_selftest.c.fips openssl-1.0.1-beta3/crypto/fips/fips_rsa_selftest.c
---- openssl-1.0.1-beta3/crypto/fips/fips_rsa_selftest.c.fips	2012-02-29 10:33:02.799294939 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_rsa_selftest.c	2012-02-29 10:33:02.799294939 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_rsa_selftest.c.fips openssl-1.0.1b/crypto/fips/fips_rsa_selftest.c
+--- openssl-1.0.1b/crypto/fips/fips_rsa_selftest.c.fips	2012-04-26 18:00:51.407769451 +0200
++++ openssl-1.0.1b/crypto/fips/fips_rsa_selftest.c	2012-04-26 18:00:51.407769451 +0200
 @@ -0,0 +1,444 @@
 +/* ====================================================================
 + * Copyright (c) 2003-2007 The OpenSSL Project.  All rights reserved.
@@ -18465,9 +17656,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_rsa_selftest.c.fips openssl-1.0.1-
 +	}
 +
 +#endif /* def OPENSSL_FIPS */
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_rsa_x931g.c.fips openssl-1.0.1-beta3/crypto/fips/fips_rsa_x931g.c
---- openssl-1.0.1-beta3/crypto/fips/fips_rsa_x931g.c.fips	2012-02-29 10:33:02.799294939 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_rsa_x931g.c	2012-02-29 10:33:02.799294939 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_rsa_x931g.c.fips openssl-1.0.1b/crypto/fips/fips_rsa_x931g.c
+--- openssl-1.0.1b/crypto/fips/fips_rsa_x931g.c.fips	2012-04-26 18:00:51.408769474 +0200
++++ openssl-1.0.1b/crypto/fips/fips_rsa_x931g.c	2012-04-26 18:00:51.408769474 +0200
 @@ -0,0 +1,282 @@
 +/* crypto/rsa/rsa_gen.c */
 +/* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
@@ -18751,9 +17942,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_rsa_x931g.c.fips openssl-1.0.1-bet
 +	return 0;
 +
 +	}
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_sha_selftest.c.fips openssl-1.0.1-beta3/crypto/fips/fips_sha_selftest.c
---- openssl-1.0.1-beta3/crypto/fips/fips_sha_selftest.c.fips	2012-02-29 10:33:02.799294939 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_sha_selftest.c	2012-02-29 10:33:02.799294939 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_sha_selftest.c.fips openssl-1.0.1b/crypto/fips/fips_sha_selftest.c
+--- openssl-1.0.1b/crypto/fips/fips_sha_selftest.c.fips	2012-04-26 18:00:51.408769474 +0200
++++ openssl-1.0.1b/crypto/fips/fips_sha_selftest.c	2012-04-26 18:00:51.408769474 +0200
 @@ -0,0 +1,140 @@
 +/* ====================================================================
 + * Copyright (c) 2003 The OpenSSL Project.  All rights reserved.
@@ -18895,9 +18086,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_sha_selftest.c.fips openssl-1.0.1-
 +	}
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_standalone_hmac.c.fips openssl-1.0.1-beta3/crypto/fips/fips_standalone_hmac.c
---- openssl-1.0.1-beta3/crypto/fips/fips_standalone_hmac.c.fips	2012-02-29 10:33:02.799294939 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_standalone_hmac.c	2012-02-29 10:33:02.799294939 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_standalone_hmac.c.fips openssl-1.0.1b/crypto/fips/fips_standalone_hmac.c
+--- openssl-1.0.1b/crypto/fips/fips_standalone_hmac.c.fips	2012-04-26 18:00:51.408769474 +0200
++++ openssl-1.0.1b/crypto/fips/fips_standalone_hmac.c	2012-04-26 18:00:51.408769474 +0200
 @@ -0,0 +1,180 @@
 +/* ====================================================================
 + * Copyright (c) 2003 The OpenSSL Project.  All rights reserved.
@@ -19079,9 +18270,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_standalone_hmac.c.fips openssl-1.0
 +    }
 +
 +
-diff -up openssl-1.0.1-beta3/crypto/fips/fips_test_suite.c.fips openssl-1.0.1-beta3/crypto/fips/fips_test_suite.c
---- openssl-1.0.1-beta3/crypto/fips/fips_test_suite.c.fips	2012-02-29 10:33:02.800294947 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/fips_test_suite.c	2012-02-29 10:33:02.800294947 +0100
+diff -up openssl-1.0.1b/crypto/fips/fips_test_suite.c.fips openssl-1.0.1b/crypto/fips/fips_test_suite.c
+--- openssl-1.0.1b/crypto/fips/fips_test_suite.c.fips	2012-04-26 18:00:51.408769474 +0200
++++ openssl-1.0.1b/crypto/fips/fips_test_suite.c	2012-04-26 18:00:51.408769474 +0200
 @@ -0,0 +1,588 @@
 +/* ====================================================================
 + * Copyright (c) 2003 The OpenSSL Project.  All rights reserved.
@@ -19671,9 +18862,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/fips_test_suite.c.fips openssl-1.0.1-be
 +    }
 +
 +#endif
-diff -up openssl-1.0.1-beta3/crypto/fips/Makefile.fips openssl-1.0.1-beta3/crypto/fips/Makefile
---- openssl-1.0.1-beta3/crypto/fips/Makefile.fips	2012-02-29 10:33:02.800294947 +0100
-+++ openssl-1.0.1-beta3/crypto/fips/Makefile	2012-02-29 10:33:02.800294947 +0100
+diff -up openssl-1.0.1b/crypto/fips/Makefile.fips openssl-1.0.1b/crypto/fips/Makefile
+--- openssl-1.0.1b/crypto/fips/Makefile.fips	2012-04-26 18:00:51.409769496 +0200
++++ openssl-1.0.1b/crypto/fips/Makefile	2012-04-26 18:00:51.409769496 +0200
 @@ -0,0 +1,340 @@
 +#
 +# OpenSSL/crypto/fips/Makefile
@@ -20015,9 +19206,9 @@ diff -up openssl-1.0.1-beta3/crypto/fips/Makefile.fips openssl-1.0.1-beta3/crypt
 +fips_sha_selftest.o: ../../include/openssl/safestack.h
 +fips_sha_selftest.o: ../../include/openssl/sha.h ../../include/openssl/stack.h
 +fips_sha_selftest.o: ../../include/openssl/symhacks.h fips_sha_selftest.c
-diff -up openssl-1.0.1-beta3/crypto/hmac/hmac.c.fips openssl-1.0.1-beta3/crypto/hmac/hmac.c
---- openssl-1.0.1-beta3/crypto/hmac/hmac.c.fips	2011-06-12 17:07:26.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/hmac/hmac.c	2012-02-29 10:33:02.800294947 +0100
+diff -up openssl-1.0.1b/crypto/hmac/hmac.c.fips openssl-1.0.1b/crypto/hmac/hmac.c
+--- openssl-1.0.1b/crypto/hmac/hmac.c.fips	2011-06-12 17:07:26.000000000 +0200
++++ openssl-1.0.1b/crypto/hmac/hmac.c	2012-04-26 18:00:51.409769496 +0200
 @@ -81,11 +81,6 @@ int HMAC_Init_ex(HMAC_CTX *ctx, const vo
  			EVPerr(EVP_F_HMAC_INIT_EX, EVP_R_DISABLED_FOR_FIPS);
  			return 0;
@@ -20080,9 +19271,9 @@ diff -up openssl-1.0.1-beta3/crypto/hmac/hmac.c.fips openssl-1.0.1-beta3/crypto/
  	EVP_MD_CTX_cleanup(&ctx->i_ctx);
  	EVP_MD_CTX_cleanup(&ctx->o_ctx);
  	EVP_MD_CTX_cleanup(&ctx->md_ctx);
-diff -up openssl-1.0.1-beta3/crypto/md2/md2_dgst.c.fips openssl-1.0.1-beta3/crypto/md2/md2_dgst.c
---- openssl-1.0.1-beta3/crypto/md2/md2_dgst.c.fips	2011-06-01 15:39:43.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/md2/md2_dgst.c	2012-02-29 10:33:02.800294947 +0100
+diff -up openssl-1.0.1b/crypto/md2/md2_dgst.c.fips openssl-1.0.1b/crypto/md2/md2_dgst.c
+--- openssl-1.0.1b/crypto/md2/md2_dgst.c.fips	2011-06-01 15:39:43.000000000 +0200
++++ openssl-1.0.1b/crypto/md2/md2_dgst.c	2012-04-26 18:00:51.409769496 +0200
 @@ -62,6 +62,11 @@
  #include <openssl/md2.h>
  #include <openssl/opensslv.h>
@@ -20104,9 +19295,9 @@ diff -up openssl-1.0.1-beta3/crypto/md2/md2_dgst.c.fips openssl-1.0.1-beta3/cryp
  	{
  	c->num=0;
  	memset(c->state,0,sizeof c->state);
-diff -up openssl-1.0.1-beta3/crypto/md4/md4_dgst.c.fips openssl-1.0.1-beta3/crypto/md4/md4_dgst.c
---- openssl-1.0.1-beta3/crypto/md4/md4_dgst.c.fips	2011-06-01 15:39:43.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/md4/md4_dgst.c	2012-02-29 10:33:02.801294956 +0100
+diff -up openssl-1.0.1b/crypto/md4/md4_dgst.c.fips openssl-1.0.1b/crypto/md4/md4_dgst.c
+--- openssl-1.0.1b/crypto/md4/md4_dgst.c.fips	2011-06-01 15:39:43.000000000 +0200
++++ openssl-1.0.1b/crypto/md4/md4_dgst.c	2012-04-26 18:00:51.409769496 +0200
 @@ -71,7 +71,7 @@ const char MD4_version[]="MD4" OPENSSL_V
  #define INIT_DATA_C (unsigned long)0x98badcfeL
  #define INIT_DATA_D (unsigned long)0x10325476L
@@ -20116,9 +19307,9 @@ diff -up openssl-1.0.1-beta3/crypto/md4/md4_dgst.c.fips openssl-1.0.1-beta3/cryp
  	{
  	memset (c,0,sizeof(*c));
  	c->A=INIT_DATA_A;
-diff -up openssl-1.0.1-beta3/crypto/md5/md5_dgst.c.fips openssl-1.0.1-beta3/crypto/md5/md5_dgst.c
---- openssl-1.0.1-beta3/crypto/md5/md5_dgst.c.fips	2011-06-01 15:39:43.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/md5/md5_dgst.c	2012-02-29 10:33:02.801294956 +0100
+diff -up openssl-1.0.1b/crypto/md5/md5_dgst.c.fips openssl-1.0.1b/crypto/md5/md5_dgst.c
+--- openssl-1.0.1b/crypto/md5/md5_dgst.c.fips	2011-06-01 15:39:43.000000000 +0200
++++ openssl-1.0.1b/crypto/md5/md5_dgst.c	2012-04-26 18:00:51.409769496 +0200
 @@ -71,7 +71,7 @@ const char MD5_version[]="MD5" OPENSSL_V
  #define INIT_DATA_C (unsigned long)0x98badcfeL
  #define INIT_DATA_D (unsigned long)0x10325476L
@@ -20128,9 +19319,9 @@ diff -up openssl-1.0.1-beta3/crypto/md5/md5_dgst.c.fips openssl-1.0.1-beta3/cryp
  	{
  	memset (c,0,sizeof(*c));
  	c->A=INIT_DATA_A;
-diff -up openssl-1.0.1-beta3/crypto/mdc2/mdc2dgst.c.fips openssl-1.0.1-beta3/crypto/mdc2/mdc2dgst.c
---- openssl-1.0.1-beta3/crypto/mdc2/mdc2dgst.c.fips	2011-06-01 15:39:44.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/mdc2/mdc2dgst.c	2012-02-29 10:33:02.801294956 +0100
+diff -up openssl-1.0.1b/crypto/mdc2/mdc2dgst.c.fips openssl-1.0.1b/crypto/mdc2/mdc2dgst.c
+--- openssl-1.0.1b/crypto/mdc2/mdc2dgst.c.fips	2011-06-01 15:39:44.000000000 +0200
++++ openssl-1.0.1b/crypto/mdc2/mdc2dgst.c	2012-04-26 18:00:51.691775656 +0200
 @@ -76,7 +76,7 @@
  			*((c)++)=(unsigned char)(((l)>>24L)&0xff))
  
@@ -20140,9 +19331,9 @@ diff -up openssl-1.0.1-beta3/crypto/mdc2/mdc2dgst.c.fips openssl-1.0.1-beta3/cry
  	{
  	c->num=0;
  	c->pad_type=1;
-diff -up openssl-1.0.1-beta3/crypto/o_init.c.fips openssl-1.0.1-beta3/crypto/o_init.c
---- openssl-1.0.1-beta3/crypto/o_init.c.fips	2011-05-26 16:19:19.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/o_init.c	2012-02-29 10:33:02.801294956 +0100
+diff -up openssl-1.0.1b/crypto/o_init.c.fips openssl-1.0.1b/crypto/o_init.c
+--- openssl-1.0.1b/crypto/o_init.c.fips	2011-05-26 16:19:19.000000000 +0200
++++ openssl-1.0.1b/crypto/o_init.c	2012-04-26 18:00:51.696775766 +0200
 @@ -55,28 +55,63 @@
  #include <e_os.h>
  #include <openssl/err.h>
@@ -20211,9 +19402,9 @@ diff -up openssl-1.0.1-beta3/crypto/o_init.c.fips openssl-1.0.1-beta3/crypto/o_i
 +	{
 +	OPENSSL_init_library();
 +	}
-diff -up openssl-1.0.1-beta3/crypto/opensslconf.h.in.fips openssl-1.0.1-beta3/crypto/opensslconf.h.in
---- openssl-1.0.1-beta3/crypto/opensslconf.h.in.fips	2005-12-16 11:37:23.000000000 +0100
-+++ openssl-1.0.1-beta3/crypto/opensslconf.h.in	2012-02-29 10:33:02.801294956 +0100
+diff -up openssl-1.0.1b/crypto/opensslconf.h.in.fips openssl-1.0.1b/crypto/opensslconf.h.in
+--- openssl-1.0.1b/crypto/opensslconf.h.in.fips	2005-12-16 11:37:23.000000000 +0100
++++ openssl-1.0.1b/crypto/opensslconf.h.in	2012-04-26 18:00:51.702775897 +0200
 @@ -1,5 +1,20 @@
  /* crypto/opensslconf.h.in */
  
@@ -20235,9 +19426,9 @@ diff -up openssl-1.0.1-beta3/crypto/opensslconf.h.in.fips openssl-1.0.1-beta3/cr
  /* Generate 80386 code? */
  #undef I386_ONLY
  
-diff -up openssl-1.0.1-beta3/crypto/pkcs12/p12_crt.c.fips openssl-1.0.1-beta3/crypto/pkcs12/p12_crt.c
---- openssl-1.0.1-beta3/crypto/pkcs12/p12_crt.c.fips	2009-03-09 14:08:04.000000000 +0100
-+++ openssl-1.0.1-beta3/crypto/pkcs12/p12_crt.c	2012-02-29 10:33:02.801294956 +0100
+diff -up openssl-1.0.1b/crypto/pkcs12/p12_crt.c.fips openssl-1.0.1b/crypto/pkcs12/p12_crt.c
+--- openssl-1.0.1b/crypto/pkcs12/p12_crt.c.fips	2009-03-09 14:08:04.000000000 +0100
++++ openssl-1.0.1b/crypto/pkcs12/p12_crt.c	2012-04-26 18:00:51.708776028 +0200
 @@ -59,6 +59,10 @@
  #include <stdio.h>
  #include "cryptlib.h"
@@ -20264,9 +19455,9 @@ diff -up openssl-1.0.1-beta3/crypto/pkcs12/p12_crt.c.fips openssl-1.0.1-beta3/cr
  	if (!nid_key)
  		nid_key = NID_pbe_WithSHA1And3_Key_TripleDES_CBC;
  	if (!iter)
-diff -up openssl-1.0.1-beta3/crypto/rand/md_rand.c.fips openssl-1.0.1-beta3/crypto/rand/md_rand.c
---- openssl-1.0.1-beta3/crypto/rand/md_rand.c.fips	2011-01-26 15:55:23.000000000 +0100
-+++ openssl-1.0.1-beta3/crypto/rand/md_rand.c	2012-02-29 10:33:02.801294956 +0100
+diff -up openssl-1.0.1b/crypto/rand/md_rand.c.fips openssl-1.0.1b/crypto/rand/md_rand.c
+--- openssl-1.0.1b/crypto/rand/md_rand.c.fips	2011-01-26 15:55:23.000000000 +0100
++++ openssl-1.0.1b/crypto/rand/md_rand.c	2012-04-26 18:00:51.713776137 +0200
 @@ -389,7 +389,10 @@ static int ssleay_rand_bytes(unsigned ch
  	CRYPTO_w_unlock(CRYPTO_LOCK_RAND2);
  	crypto_lock_rand = 1;
@@ -20279,9 +19470,9 @@ diff -up openssl-1.0.1-beta3/crypto/rand/md_rand.c.fips openssl-1.0.1-beta3/cryp
  		{
  		RAND_poll();
  		initialized = 1;
-diff -up openssl-1.0.1-beta3/crypto/rand/rand.h.fips openssl-1.0.1-beta3/crypto/rand/rand.h
---- openssl-1.0.1-beta3/crypto/rand/rand.h.fips	2012-02-29 10:33:02.283290504 +0100
-+++ openssl-1.0.1-beta3/crypto/rand/rand.h	2012-02-29 10:33:02.802294965 +0100
+diff -up openssl-1.0.1b/crypto/rand/rand.h.fips openssl-1.0.1b/crypto/rand/rand.h
+--- openssl-1.0.1b/crypto/rand/rand.h.fips	2012-04-26 18:00:50.809756388 +0200
++++ openssl-1.0.1b/crypto/rand/rand.h	2012-04-26 18:00:51.714776159 +0200
 @@ -133,15 +133,33 @@ void ERR_load_RAND_strings(void);
  /* Error codes for the RAND functions. */
  
@@ -20320,9 +19511,9 @@ diff -up openssl-1.0.1-beta3/crypto/rand/rand.h.fips openssl-1.0.1-beta3/crypto/
  
  #ifdef  __cplusplus
  }
-diff -up openssl-1.0.1-beta3/crypto/ripemd/rmd_dgst.c.fips openssl-1.0.1-beta3/crypto/ripemd/rmd_dgst.c
---- openssl-1.0.1-beta3/crypto/ripemd/rmd_dgst.c.fips	2011-06-01 15:39:44.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/ripemd/rmd_dgst.c	2012-02-29 10:33:02.802294965 +0100
+diff -up openssl-1.0.1b/crypto/ripemd/rmd_dgst.c.fips openssl-1.0.1b/crypto/ripemd/rmd_dgst.c
+--- openssl-1.0.1b/crypto/ripemd/rmd_dgst.c.fips	2011-06-01 15:39:44.000000000 +0200
++++ openssl-1.0.1b/crypto/ripemd/rmd_dgst.c	2012-04-26 18:00:51.715776181 +0200
 @@ -70,7 +70,7 @@ const char RMD160_version[]="RIPE-MD160"
       void ripemd160_block(RIPEMD160_CTX *c, unsigned long *p,size_t num);
  #  endif
@@ -20332,9 +19523,9 @@ diff -up openssl-1.0.1-beta3/crypto/ripemd/rmd_dgst.c.fips openssl-1.0.1-beta3/c
  	{
  	memset (c,0,sizeof(*c));
  	c->A=RIPEMD160_A;
-diff -up openssl-1.0.1-beta3/crypto/rsa/rsa_crpt.c.fips openssl-1.0.1-beta3/crypto/rsa/rsa_crpt.c
---- openssl-1.0.1-beta3/crypto/rsa/rsa_crpt.c.fips	2011-06-02 20:22:42.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/rsa/rsa_crpt.c	2012-02-29 10:33:02.802294965 +0100
+diff -up openssl-1.0.1b/crypto/rsa/rsa_crpt.c.fips openssl-1.0.1b/crypto/rsa/rsa_crpt.c
+--- openssl-1.0.1b/crypto/rsa/rsa_crpt.c.fips	2011-06-02 20:22:42.000000000 +0200
++++ openssl-1.0.1b/crypto/rsa/rsa_crpt.c	2012-04-26 18:00:51.715776181 +0200
 @@ -90,10 +90,9 @@ int RSA_private_encrypt(int flen, const
  	     RSA *rsa, int padding)
  	{
@@ -20361,9 +19552,9 @@ diff -up openssl-1.0.1-beta3/crypto/rsa/rsa_crpt.c.fips openssl-1.0.1-beta3/cryp
  		return -1;
  		}
  #endif
-diff -up openssl-1.0.1-beta3/crypto/rsa/rsa_eay.c.fips openssl-1.0.1-beta3/crypto/rsa/rsa_eay.c
---- openssl-1.0.1-beta3/crypto/rsa/rsa_eay.c.fips	2011-10-19 16:58:59.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/rsa/rsa_eay.c	2012-02-29 10:33:02.802294965 +0100
+diff -up openssl-1.0.1b/crypto/rsa/rsa_eay.c.fips openssl-1.0.1b/crypto/rsa/rsa_eay.c
+--- openssl-1.0.1b/crypto/rsa/rsa_eay.c.fips	2011-10-19 16:58:59.000000000 +0200
++++ openssl-1.0.1b/crypto/rsa/rsa_eay.c	2012-04-26 18:00:51.716776203 +0200
 @@ -114,6 +114,10 @@
  #include <openssl/bn.h>
  #include <openssl/rsa.h>
@@ -20510,9 +19701,9 @@ diff -up openssl-1.0.1-beta3/crypto/rsa/rsa_eay.c.fips openssl-1.0.1-beta3/crypt
  	rsa->flags|=RSA_FLAG_CACHE_PUBLIC|RSA_FLAG_CACHE_PRIVATE;
  	return(1);
  	}
-diff -up openssl-1.0.1-beta3/crypto/rsa/rsa_err.c.fips openssl-1.0.1-beta3/crypto/rsa/rsa_err.c
---- openssl-1.0.1-beta3/crypto/rsa/rsa_err.c.fips	2011-10-10 01:13:50.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/rsa/rsa_err.c	2012-02-29 10:33:02.802294965 +0100
+diff -up openssl-1.0.1b/crypto/rsa/rsa_err.c.fips openssl-1.0.1b/crypto/rsa/rsa_err.c
+--- openssl-1.0.1b/crypto/rsa/rsa_err.c.fips	2011-10-10 01:13:50.000000000 +0200
++++ openssl-1.0.1b/crypto/rsa/rsa_err.c	2012-04-26 18:00:51.717776225 +0200
 @@ -121,6 +121,8 @@ static ERR_STRING_DATA RSA_str_functs[]=
  {ERR_FUNC(RSA_F_RSA_PUBLIC_ENCRYPT),	"RSA_public_encrypt"},
  {ERR_FUNC(RSA_F_RSA_PUB_DECODE),	"RSA_PUB_DECODE"},
@@ -20522,9 +19713,9 @@ diff -up openssl-1.0.1-beta3/crypto/rsa/rsa_err.c.fips openssl-1.0.1-beta3/crypt
  {ERR_FUNC(RSA_F_RSA_SIGN),	"RSA_sign"},
  {ERR_FUNC(RSA_F_RSA_SIGN_ASN1_OCTET_STRING),	"RSA_sign_ASN1_OCTET_STRING"},
  {ERR_FUNC(RSA_F_RSA_VERIFY),	"RSA_verify"},
-diff -up openssl-1.0.1-beta3/crypto/rsa/rsa_gen.c.fips openssl-1.0.1-beta3/crypto/rsa/rsa_gen.c
---- openssl-1.0.1-beta3/crypto/rsa/rsa_gen.c.fips	2011-06-09 15:18:07.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/rsa/rsa_gen.c	2012-02-29 10:33:02.803294974 +0100
+diff -up openssl-1.0.1b/crypto/rsa/rsa_gen.c.fips openssl-1.0.1b/crypto/rsa/rsa_gen.c
+--- openssl-1.0.1b/crypto/rsa/rsa_gen.c.fips	2011-06-09 15:18:07.000000000 +0200
++++ openssl-1.0.1b/crypto/rsa/rsa_gen.c	2012-04-26 18:00:51.718776246 +0200
 @@ -69,6 +69,78 @@
  #include <openssl/rsa.h>
  #ifdef OPENSSL_FIPS
@@ -20666,9 +19857,9 @@ diff -up openssl-1.0.1-beta3/crypto/rsa/rsa_gen.c.fips openssl-1.0.1-beta3/crypt
  	ok=1;
  err:
  	if (ok == -1)
-diff -up openssl-1.0.1-beta3/crypto/rsa/rsa.h.fips openssl-1.0.1-beta3/crypto/rsa/rsa.h
---- openssl-1.0.1-beta3/crypto/rsa/rsa.h.fips	2012-02-29 10:33:02.577293030 +0100
-+++ openssl-1.0.1-beta3/crypto/rsa/rsa.h	2012-02-29 10:33:02.803294974 +0100
+diff -up openssl-1.0.1b/crypto/rsa/rsa.h.fips openssl-1.0.1b/crypto/rsa/rsa.h
+--- openssl-1.0.1b/crypto/rsa/rsa.h.fips	2012-04-26 18:00:51.140763619 +0200
++++ openssl-1.0.1b/crypto/rsa/rsa.h	2012-04-26 18:00:51.718776246 +0200
 @@ -164,6 +164,8 @@ struct rsa_st
  # define OPENSSL_RSA_MAX_MODULUS_BITS	16384
  #endif
@@ -20753,9 +19944,9 @@ diff -up openssl-1.0.1-beta3/crypto/rsa/rsa.h.fips openssl-1.0.1-beta3/crypto/rs
  #define RSA_R_OPERATION_NOT_SUPPORTED_FOR_THIS_KEYTYPE	 148
  #define RSA_R_PADDING_CHECK_FAILED			 114
  #define RSA_R_P_NOT_PRIME				 128
-diff -up openssl-1.0.1-beta3/crypto/rsa/rsa_lib.c.fips openssl-1.0.1-beta3/crypto/rsa/rsa_lib.c
---- openssl-1.0.1-beta3/crypto/rsa/rsa_lib.c.fips	2011-06-20 21:41:13.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/rsa/rsa_lib.c	2012-02-29 10:33:02.803294974 +0100
+diff -up openssl-1.0.1b/crypto/rsa/rsa_lib.c.fips openssl-1.0.1b/crypto/rsa/rsa_lib.c
+--- openssl-1.0.1b/crypto/rsa/rsa_lib.c.fips	2011-06-20 21:41:13.000000000 +0200
++++ openssl-1.0.1b/crypto/rsa/rsa_lib.c	2012-04-26 18:00:51.719776267 +0200
 @@ -84,6 +84,13 @@ RSA *RSA_new(void)
  
  void RSA_set_default_method(const RSA_METHOD *meth)
@@ -20831,9 +20022,9 @@ diff -up openssl-1.0.1-beta3/crypto/rsa/rsa_lib.c.fips openssl-1.0.1-beta3/crypt
  	if (!CRYPTO_new_ex_data(CRYPTO_EX_INDEX_RSA, ret, &ret->ex_data))
  		{
  #ifndef OPENSSL_NO_ENGINE
-diff -up openssl-1.0.1-beta3/crypto/rsa/rsa_pmeth.c.fips openssl-1.0.1-beta3/crypto/rsa/rsa_pmeth.c
---- openssl-1.0.1-beta3/crypto/rsa/rsa_pmeth.c.fips	2012-02-15 15:14:01.000000000 +0100
-+++ openssl-1.0.1-beta3/crypto/rsa/rsa_pmeth.c	2012-02-29 10:34:56.290320046 +0100
+diff -up openssl-1.0.1b/crypto/rsa/rsa_pmeth.c.fips openssl-1.0.1b/crypto/rsa/rsa_pmeth.c
+--- openssl-1.0.1b/crypto/rsa/rsa_pmeth.c.fips	2012-02-15 15:14:01.000000000 +0100
++++ openssl-1.0.1b/crypto/rsa/rsa_pmeth.c	2012-04-26 18:00:51.720776289 +0200
 @@ -206,22 +206,6 @@ static int pkey_rsa_sign(EVP_PKEY_CTX *c
  					RSA_R_INVALID_DIGEST_LENGTH);
  			return -1;
@@ -20877,9 +20068,9 @@ diff -up openssl-1.0.1-beta3/crypto/rsa/rsa_pmeth.c.fips openssl-1.0.1-beta3/cry
  		if (rctx->pad_mode == RSA_PKCS1_PADDING)
  			return RSA_verify(EVP_MD_type(rctx->md), tbs, tbslen,
  					sig, siglen, rsa);
-diff -up openssl-1.0.1-beta3/crypto/rsa/rsa_sign.c.fips openssl-1.0.1-beta3/crypto/rsa/rsa_sign.c
---- openssl-1.0.1-beta3/crypto/rsa/rsa_sign.c.fips	2012-02-15 15:00:09.000000000 +0100
-+++ openssl-1.0.1-beta3/crypto/rsa/rsa_sign.c	2012-02-29 10:37:54.916857424 +0100
+diff -up openssl-1.0.1b/crypto/rsa/rsa_sign.c.fips openssl-1.0.1b/crypto/rsa/rsa_sign.c
+--- openssl-1.0.1b/crypto/rsa/rsa_sign.c.fips	2012-02-15 15:00:09.000000000 +0100
++++ openssl-1.0.1b/crypto/rsa/rsa_sign.c	2012-04-26 18:00:51.720776289 +0200
 @@ -138,7 +138,8 @@ int RSA_sign(int type, const unsigned ch
  		i2d_X509_SIG(&sig,&p);
  		s=tmps;
@@ -20911,9 +20102,9 @@ diff -up openssl-1.0.1-beta3/crypto/rsa/rsa_sign.c.fips openssl-1.0.1-beta3/cryp
  
  	if (i <= 0) goto err;
  	/* Oddball MDC2 case: signature can be OCTET STRING.
-diff -up openssl-1.0.1-beta3/crypto/sha/sha256.c.fips openssl-1.0.1-beta3/crypto/sha/sha256.c
---- openssl-1.0.1-beta3/crypto/sha/sha256.c.fips	2011-06-01 15:39:44.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/sha/sha256.c	2012-02-29 10:33:02.804294983 +0100
+diff -up openssl-1.0.1b/crypto/sha/sha256.c.fips openssl-1.0.1b/crypto/sha/sha256.c
+--- openssl-1.0.1b/crypto/sha/sha256.c.fips	2011-06-01 15:39:44.000000000 +0200
++++ openssl-1.0.1b/crypto/sha/sha256.c	2012-04-26 18:00:51.721776312 +0200
 @@ -12,12 +12,19 @@
  
  #include <openssl/crypto.h>
@@ -20944,9 +20135,9 @@ diff -up openssl-1.0.1-beta3/crypto/sha/sha256.c.fips openssl-1.0.1-beta3/crypto
  	memset (c,0,sizeof(*c));
  	c->h[0]=0x6a09e667UL;	c->h[1]=0xbb67ae85UL;
  	c->h[2]=0x3c6ef372UL;	c->h[3]=0xa54ff53aUL;
-diff -up openssl-1.0.1-beta3/crypto/sha/sha512.c.fips openssl-1.0.1-beta3/crypto/sha/sha512.c
---- openssl-1.0.1-beta3/crypto/sha/sha512.c.fips	2011-11-14 21:58:01.000000000 +0100
-+++ openssl-1.0.1-beta3/crypto/sha/sha512.c	2012-02-29 10:33:02.804294983 +0100
+diff -up openssl-1.0.1b/crypto/sha/sha512.c.fips openssl-1.0.1b/crypto/sha/sha512.c
+--- openssl-1.0.1b/crypto/sha/sha512.c.fips	2011-11-14 21:58:01.000000000 +0100
++++ openssl-1.0.1b/crypto/sha/sha512.c	2012-04-26 18:00:51.722776334 +0200
 @@ -5,6 +5,10 @@
   * ====================================================================
   */
@@ -20978,9 +20169,9 @@ diff -up openssl-1.0.1-beta3/crypto/sha/sha512.c.fips openssl-1.0.1-beta3/crypto
  	c->h[0]=U64(0x6a09e667f3bcc908);
  	c->h[1]=U64(0xbb67ae8584caa73b);
  	c->h[2]=U64(0x3c6ef372fe94f82b);
-diff -up openssl-1.0.1-beta3/crypto/sha/sha.h.fips openssl-1.0.1-beta3/crypto/sha/sha.h
---- openssl-1.0.1-beta3/crypto/sha/sha.h.fips	2012-02-29 10:33:02.108288997 +0100
-+++ openssl-1.0.1-beta3/crypto/sha/sha.h	2012-02-29 10:33:02.804294983 +0100
+diff -up openssl-1.0.1b/crypto/sha/sha.h.fips openssl-1.0.1b/crypto/sha/sha.h
+--- openssl-1.0.1b/crypto/sha/sha.h.fips	2012-04-26 18:00:50.616752170 +0200
++++ openssl-1.0.1b/crypto/sha/sha.h	2012-04-26 18:00:51.722776334 +0200
 @@ -116,9 +116,6 @@ unsigned char *SHA(const unsigned char *
  void SHA_Transform(SHA_CTX *c, const unsigned char *data);
  #endif
@@ -21013,9 +20204,9 @@ diff -up openssl-1.0.1-beta3/crypto/sha/sha.h.fips openssl-1.0.1-beta3/crypto/sh
  int SHA384_Init(SHA512_CTX *c);
  int SHA384_Update(SHA512_CTX *c, const void *data, size_t len);
  int SHA384_Final(unsigned char *md, SHA512_CTX *c);
-diff -up openssl-1.0.1-beta3/crypto/sha/sha_locl.h.fips openssl-1.0.1-beta3/crypto/sha/sha_locl.h
---- openssl-1.0.1-beta3/crypto/sha/sha_locl.h.fips	2012-02-29 10:33:02.114289051 +0100
-+++ openssl-1.0.1-beta3/crypto/sha/sha_locl.h	2012-02-29 10:33:02.804294983 +0100
+diff -up openssl-1.0.1b/crypto/sha/sha_locl.h.fips openssl-1.0.1b/crypto/sha/sha_locl.h
+--- openssl-1.0.1b/crypto/sha/sha_locl.h.fips	2012-04-26 18:00:50.622752302 +0200
++++ openssl-1.0.1b/crypto/sha/sha_locl.h	2012-04-26 18:00:51.723776356 +0200
 @@ -123,11 +123,14 @@ void sha1_block_data_order (SHA_CTX *c,
  #define INIT_DATA_h4 0xc3d2e1f0UL
  
@@ -21032,9 +20223,9 @@ diff -up openssl-1.0.1-beta3/crypto/sha/sha_locl.h.fips openssl-1.0.1-beta3/cryp
  	memset (c,0,sizeof(*c));
  	c->h0=INIT_DATA_h0;
  	c->h1=INIT_DATA_h1;
-diff -up openssl-1.0.1-beta3/crypto/whrlpool/wp_dgst.c.fips openssl-1.0.1-beta3/crypto/whrlpool/wp_dgst.c
---- openssl-1.0.1-beta3/crypto/whrlpool/wp_dgst.c.fips	2011-06-01 15:39:45.000000000 +0200
-+++ openssl-1.0.1-beta3/crypto/whrlpool/wp_dgst.c	2012-02-29 10:33:02.805294992 +0100
+diff -up openssl-1.0.1b/crypto/whrlpool/wp_dgst.c.fips openssl-1.0.1b/crypto/whrlpool/wp_dgst.c
+--- openssl-1.0.1b/crypto/whrlpool/wp_dgst.c.fips	2011-06-01 15:39:45.000000000 +0200
++++ openssl-1.0.1b/crypto/whrlpool/wp_dgst.c	2012-04-26 18:00:51.724776378 +0200
 @@ -55,7 +55,7 @@
  #include <openssl/crypto.h>
  #include <string.h>
@@ -21044,9 +20235,9 @@ diff -up openssl-1.0.1-beta3/crypto/whrlpool/wp_dgst.c.fips openssl-1.0.1-beta3/
  	{
  	memset (c,0,sizeof(*c));
  	return(1);
-diff -up openssl-1.0.1-beta3/Makefile.org.fips openssl-1.0.1-beta3/Makefile.org
---- openssl-1.0.1-beta3/Makefile.org.fips	2012-02-29 10:33:02.746294484 +0100
-+++ openssl-1.0.1-beta3/Makefile.org	2012-02-29 10:33:02.805294992 +0100
+diff -up openssl-1.0.1b/Makefile.org.fips openssl-1.0.1b/Makefile.org
+--- openssl-1.0.1b/Makefile.org.fips	2012-04-26 18:00:51.350768207 +0200
++++ openssl-1.0.1b/Makefile.org	2012-04-26 18:00:51.724776378 +0200
 @@ -136,6 +136,9 @@ FIPSCANLIB=
  
  BASEADDR=
@@ -21074,9 +20265,9 @@ diff -up openssl-1.0.1-beta3/Makefile.org.fips openssl-1.0.1-beta3/Makefile.org
  		THIS=$${THIS:-$@} MAKEFILE=Makefile MAKEOVERRIDES=
  # MAKEOVERRIDES= effectively "equalizes" GNU-ish and SysV-ish make flavors,
  # which in turn eliminates ambiguities in variable treatment with -e.
-diff -up openssl-1.0.1-beta3/ssl/ssl_algs.c.fips openssl-1.0.1-beta3/ssl/ssl_algs.c
---- openssl-1.0.1-beta3/ssl/ssl_algs.c.fips	2012-01-15 14:42:50.000000000 +0100
-+++ openssl-1.0.1-beta3/ssl/ssl_algs.c	2012-02-29 10:33:02.805294992 +0100
+diff -up openssl-1.0.1b/ssl/ssl_algs.c.fips openssl-1.0.1b/ssl/ssl_algs.c
+--- openssl-1.0.1b/ssl/ssl_algs.c.fips	2012-01-15 14:42:50.000000000 +0100
++++ openssl-1.0.1b/ssl/ssl_algs.c	2012-04-26 18:00:51.725776399 +0200
 @@ -64,6 +64,12 @@
  int SSL_library_init(void)
  	{
