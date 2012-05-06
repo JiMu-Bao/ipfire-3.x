@@ -5,7 +5,7 @@
 
 name       = nss_ldap
 version    = 265
-release    = 4
+release    = 5
 
 groups     = System/Base
 url        = http://www.padl.com/
@@ -20,7 +20,7 @@ description
 	RPCs, services, and shadow passwords.
 end
 
-source_dl  =
+source_dl  = http://www.padl.com/download/
 
 patches = \
 	nss_ldap-265-depth.patch \
@@ -74,8 +74,10 @@ build
 		# Remove awkward directory
 		rm -rvf %{BUILDROOT}/usr/usr
 
-		ln -svf libnss_ldap-%{version}.so %{BUILDROOT}%{libdir}/libnss_ldap.so
-		ln -svf libnss_ldap.so.2 %{BUILDROOT}%{libdir}/libnss_ldap.so
+		if [ -e "%{BUILDROOT}%{libdir}/libnss_ldap-%{version}.so" ]; then
+			ln -svf libnss_ldap-%{version}.so %{BUILDROOT}%{libdir}/libnss_ldap.so.2
+			ln -svf libnss_ldap.so.2 %{BUILDROOT}%{libdir}/libnss_ldap.so
+		fi
 
 		rm -vf %{BUILDROOT}/etc/nsswitch.ldap
 
