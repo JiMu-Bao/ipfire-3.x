@@ -5,8 +5,8 @@
 
 name       = python
 major_ver  = 2.7
-version    = %{major_ver}.2
-release    = 7
+version    = %{major_ver}.3
+release    = 1
 thisapp    = Python-%{version}
 
 groups     = Development/Languages
@@ -48,7 +48,7 @@ build
 	prepare_cmds
 		# Apply patches for x86_64.
 		if [ "$(uname -m)" = "x86_64" ]; then
-			patch -Np1 -i %{DIR_SOURCE}/python-2.7.1-lib64.patch
+			patch -Np1 -i %{DIR_SOURCE}/python-2.7.3-lib64.patch
 			patch -Np1 -i %{DIR_SOURCE}/python-2.7-lib64-sysconfig.patch
 		fi
 

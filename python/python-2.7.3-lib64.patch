@@ -58,10 +58,10 @@ diff -up Python-2.7.1/Lib/site.py.lib64 Python-2.7.1/Lib/site.py
 diff -up Python-2.7.1/Lib/test/test_site.py.lib64 Python-2.7.1/Lib/test/test_site.py
 --- Python-2.7.1/Lib/test/test_site.py.lib64	2010-11-21 08:34:58.000000000 -0500
 +++ Python-2.7.1/Lib/test/test_site.py	2010-12-23 15:55:19.782935931 -0500
-@@ -169,17 +169,20 @@ class HelperFunctionsTests(unittest.Test
-             wanted = os.path.join('xoxo', 'Lib', 'site-packages')
-             self.assertEqual(dirs[0], wanted)
+@@ -241,18 +241,22 @@
+             self.assertEqual(dirs[2], wanted)
          elif os.sep == '/':
+             # OS X non-framwework builds, Linux, FreeBSD, etc
 -            self.assertEqual(len(dirs), 2)
 +            self.assertEquals(len(dirs), 3)
 +            wanted = os.path.join('xoxo', 'lib64', 'python' + sys.version[:3],
@@ -75,6 +75,7 @@ diff -up Python-2.7.1/Lib/test/test_site.py.lib64 Python-2.7.1/Lib/test/test_sit
 -            self.assertEqual(dirs[1], wanted)
 +            self.assertEquals(dirs[2], wanted)
          else:
+             # other platforms
 -            self.assertEqual(len(dirs), 2)
 -            self.assertEqual(dirs[0], 'xoxo')
 -            wanted = os.path.join('xoxo', 'lib', 'site-packages')
@@ -83,9 +84,10 @@ diff -up Python-2.7.1/Lib/test/test_site.py.lib64 Python-2.7.1/Lib/test/test_sit
 +            self.assertEquals(dirs[0], 'xoxo')
 +            wanted = os.path.join('xoxo', 'lib64', 'site-packages')
 +            self.assertEquals(dirs[1], wanted)
++
  
-         # let's try the specific Apple location
-         if (sys.platform == "darwin" and
+ class PthFile(object):
+     """Helper class for handling testing of .pth files"""
 diff -up Python-2.7.1/Makefile.pre.in.lib64 Python-2.7.1/Makefile.pre.in
 --- Python-2.7.1/Makefile.pre.in.lib64	2010-12-23 15:51:19.407063264 -0500
 +++ Python-2.7.1/Makefile.pre.in	2010-12-23 15:51:19.426063917 -0500
