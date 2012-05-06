@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = strongswan
-version    = 4.6.2
-release    = 2
+version    = 4.6.3
+release    = 1
 
 groups     = Networking/VPN
 url        = http://www.strongswan.org/
