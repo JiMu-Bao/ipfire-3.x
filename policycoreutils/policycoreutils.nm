@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = policycoreutils
-version    = 2.1.8
-release    = 4
+version    = 2.1.11
+release    = 1
 
 groups     = System/Base
 url        = http://www.selinuxproject.org
@@ -19,7 +19,7 @@ description
 	to switch roles.
 end
 
-sepolgen_ver = 1.1.3
+sepolgen_ver = 1.1.6
 
 sources = \
 	%{thisapp}.tgz \
@@ -27,9 +27,7 @@ sources = \
 
 # We have to apply policycoreutils-sepolgen.patch at a later time.
 patches = \
-	policycoreutils-gui.patch \
-	policycoreutils-po.patch \
-	policycoreutils-rhat.patch
+	policycoreutils-rhat.patch2
 
 build
 	requires
@@ -51,17 +49,21 @@ build
 
 	# Manually add policycoreutils-sepolgen.patch because it has to be applied to the sepolgen source.
 	prepare_cmds
-		cd %{DIR_SRC}/sepolgen-%{sepolgen_ver} && patch -Np1 -i %{DIR_PATCHES}/policycoreutils-sepolgen.patch
+		cd %{DIR_SRC}/sepolgen-%{sepolgen_ver} && patch -Np2 -i %{DIR_PATCHES}/policycoreutils-sepolgen.patch2
 	end
 
 	make_build_targets += \
 		LSPP_PRIV=y \
+		BINDIR=%{bindir} \
+		SBINDIR=%{sbindir} \
 		LIBDIR=%{libdir} \
 		CFLAGS="%{CFLAGS}" \
 		all
 
 	make_install_targets +=\
 		LSPP_PRIV=y \
+		BINDIR=%{BUILDROOT}%{bindir} \
+		SBINDIR=%{BUILDROOT}%{sbindir} \
 		LIBDIR=%{BUILDROOT}%{libdir}
 
 	# Build sepolgen.
@@ -80,9 +82,6 @@ build
 		# Remove unneeded stuff.
 		rm -vrf %{BUILDROOT}/etc/{rc.d,xdg,sysconfig}
 
-		# Fix absolute symlink
-		ln -svf ../../sbin/load_policy %{BUILDROOT}/usr/sbin/load_policy
-
 		# Remove unneeded sandbox stuff - they are to create graphical sandboxes.
 		rm -vrf %{BUILDROOT}/usr/sbin/seunshare
 		rm -vrf %{BUILDROOT}/usr/share/sandbox
@@ -93,10 +92,28 @@ end
 
 packages
 	package %{name}
+		provides
+			/bin/sepolgen
+
+			/sbin/fixfiles
+			/sbin/load_policy
+			/sbin/restorecon
+			/sbin/semodule
+			/sbin/sestatus
+			/sbin/setfiles
+		end
+	end
 
 	package python-%{name}
 		summary = SELinux policy core python utilities.
 		description = %{summary}
+
+		provides
+			/bin/audit2allow
+			/bin/sandbox
+
+			/sbin/semanage
+		end
 
 		requires
 			policycoreutils>=%{thisver}
@@ -107,14 +124,14 @@ packages
 		end
 
 		files
-			/usr/bin/audit2allow
-			/usr/bin/audit2why
-			/usr/bin/chcat
-			/usr/bin/sandbox
-			/usr/bin/sepolgen-ifgen
-			/usr/bin/sepolgen-ifgen-attr-helper
+			%{bindir}/audit2allow
+			%{bindir}/audit2why
+			%{bindir}/chcat
+			%{bindir}/sandbox
+			%{bindir}/sepolgen-ifgen
+			%{bindir}/sepolgen-ifgen-attr-helper
 			%{libdir}/python*
-			/usr/sbin/semanage
+			%{sbindir}/semanage
 			/usr/share/man/man1/audit2allow.1
 			/usr/share/man/man1/audit2why.1
 			/usr/share/man/man8/chcat.8
