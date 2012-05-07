@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = strace
-version    = 4.5.19
+version    = 4.7
 release    = 1
 
 groups     = Development/Debuggers
@@ -20,8 +20,8 @@ description
 	purposes.
 end
 
-source_dl  = http://downloads.sourceforge.net/project/%{name}/%{name}/%{thisapp}
-sources    = %{thisapp}.tar.bz2
+source_dl  = http://downloads.sourceforge.net/project/%{name}/%{name}/%{version}/
+sources    = %{thisapp}.tar.xz
 
 build
 	configure_options += \
