@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = mesa
-version    = 7.8.2
-release    = 3
+version    = 7.11.2
+release    = 1
 
 groups     = Development/Tools
 url        = http://www.mesa3d.org
@@ -16,12 +16,15 @@ description
 	Mesa libGL runtime libraries and DRI drivers.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.freedesktop.org/pub/mesa/%{version}/
 sources    = MesaLib-%{version}.tar.bz2
 
 build
 	requires
+		bison
 		expat-devel
+		flex
+		gcc-c++
 		pkg-config
 		libX11-devel
 		libXdamage-devel
@@ -31,6 +34,7 @@ build
 		libdrm-devel
 		libselinux-devel
 		libxcb-devel
+		makedepend
 		xorg-x11-proto-devel
 	end
 
@@ -38,25 +42,31 @@ build
 
 	CFLAGS += -Wl,-z,lazy
 
+	if "%{DISTRO_PLATFORM}" == "x86"
+		platform_drivers = ,i915,i965
+	end
+
 	configure_options += \
 		--enable-pic \
+		--enable-selinux \
+		--enable-pic \
 		--with-driver=dri \
-		--with-state-tracker=dri,glx \
+		--with-dri-drivers="nouveau,radeon,r200%{platform_drivers}" \
+		--with-gallium-drivers=swrast \
+		--disable-asm \
 		--disable-glw \
 		--disable-glu \
 		--disable-glut \
-		--disable-gl-osmesa \
-		--disable-gallium \
-		--disable-gallium-intel \
-		--disable-gallium-svga \
-		--disable-gallium-radeon \
-		--disable-gallium-nouveau \
+		--disable-gallium-llvm \
+		--disable-gallium-egl \
 		--disable-egl \
+		--disable-static \
 		--without-demos
-end
 
-quality-agent
-	permit_not_full_relro = yes
+	prepare_cmds
+		# Defaults to dri (not xlib) for libGL on all arches.
+		sed -i 's/^default_driver.*$/default_driver="dri"/' configure.ac
+	end
 end
 
 packages
