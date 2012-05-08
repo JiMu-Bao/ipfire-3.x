@@ -1,0 +1,36 @@
+diff -up powertop-1.98/parameters/persistent.cpp.orig powertop-1.98/parameters/persistent.cpp
+--- powertop-1.98/parameters/persistent.cpp.orig	2011-05-11 06:48:37.000000000 +0200
++++ powertop-1.98/parameters/persistent.cpp	2011-12-02 19:48:45.056747667 +0100
+@@ -122,22 +122,23 @@ void save_parameters(const char *filenam
+ 
+ //	printf("result size is %i, #parameters is %i \n", (int)past_results.size(), (int)all_parameters.parameters.size());
+ 
+-	if (!global_power_valid())
+-		return;
+ 
+ 	file.open(filename, ios::out);
+ 	if (!file) {
+ 		cout << _("Cannot save to file ") << filename << "\n";
+ 		return;
+ 	}
+-	
+-	map<string, int>::iterator it;
+ 
+-	for (it = param_index.begin(); it != param_index.end(); it++) {
+-		int index;
+-		index = it->second;
+-		file << it->first << "\t" << setprecision(9) << all_parameters.parameters[index] << "\n";
+-	}	
++	if (global_power_valid())
++	{
++		map<string, int>::iterator it;
++
++		for (it = param_index.begin(); it != param_index.end(); it++) {
++			int index;
++			index = it->second;
++			file << it->first << "\t" << setprecision(9) << all_parameters.parameters[index] << "\n";
++		}	
++	}
+ 	file.close();
+ }
+ 
