@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = powertop
-version    = 1.13
+version    = 1.98
 release    = 1
 
 groups     = Applications/System
@@ -17,12 +17,16 @@ description
 	computer use more power than necessary while it is idle.
 end
 
-source_dl  =
+source_dl  = http://www.kernel.org/pub/linux/status/powertop/
 
 build
 	requires
+		gcc-c++
 		gettext
+		libnl-devel
 		ncurses-devel
+		pciutils-devel
+		zlib-devel
 	end
 end
 

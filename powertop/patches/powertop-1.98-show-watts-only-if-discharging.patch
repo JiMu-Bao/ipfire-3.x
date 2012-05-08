@@ -1,0 +1,12 @@
+diff -up powertop-1.98/measurement/measurement.cpp.orig powertop-1.98/measurement/measurement.cpp
+--- powertop-1.98/measurement/measurement.cpp.orig	2012-04-17 15:47:59.000000000 +0200
++++ powertop-1.98/measurement/measurement.cpp	2012-04-17 15:49:31.690862740 +0200
+@@ -130,7 +130,7 @@ void power_supply_callback(const char *d
+ 	while (file) {
+ 		file.getline(line, 4096);
+ 
+-		if (strstr(line, "POWER_SUPPLY_STATUS") && strstr(line, "POWER_SUPPLY_STATUS"))
++		if (strstr(line, "POWER_SUPPLY_STATUS") && strstr(line, "Discharging"))
+ 		      discharging = true;
+ 	}
+ 	file.close();

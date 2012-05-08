@@ -1,0 +1,25 @@
+diff -up powertop-1.98/measurement/power_supply.cpp.orig powertop-1.98/measurement/power_supply.cpp
+--- powertop-1.98/measurement/power_supply.cpp.orig	2012-03-07 15:04:52.592471296 +0100
++++ powertop-1.98/measurement/power_supply.cpp	2012-03-07 15:07:27.743785210 +0100
+@@ -157,7 +157,7 @@ void power_supply::measure(void)
+ 	file.close();
+ 
+ 	if(_voltage) {
+-		_voltage = _voltage / 1000.0;
++		_voltage = _voltage / 1e6f;
+ 		voltage = _voltage;
+ 	} else {
+ 		voltage = 0.0;
+@@ -165,10 +165,10 @@ void power_supply::measure(void)
+ 
+ 	if(_power_rate)
+ 	{
+-		rate = _power_rate / 1000000.0;
++		rate = _power_rate / 1e6f;
+ 	}
+ 	else if(_current_rate) {
+-		_current_rate = _current_rate / 1000.0;
++		_current_rate = _current_rate / 1e6f;
+ 		rate = _current_rate * _voltage;
+ 	} else {
+ 		rate = 0.0;
