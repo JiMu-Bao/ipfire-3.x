@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = grep
-version    = 2.11
-release    = 2
+version    = 2.12
+release    = 1
 
 groups     = Applications/Text
 url        = http://www.gnu.org/software/grep/
