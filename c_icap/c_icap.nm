@@ -5,7 +5,7 @@
 
 name       = c_icap
 version    = 0.1.7
-release    = 2
+release    = 3
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
@@ -33,7 +33,7 @@ build
 	configure_options += \
 		--enable-large-files \
 		--enable-ipv6 \
-		--sysconfdir=/etc \
+		--sysconfdir=/etc/c-icap \
 		--localstatedir=/var
 
 	prepare_cmds
@@ -50,6 +50,13 @@ end
 packages
 	package %{name}
 		requires = %{name}_modules
+
+		configfiles
+			/etc/c-icap/c-icap.conf
+			/etc/c-icap/c-icap.conf.default
+			/etc/c-icap/c-icap.magic
+			/etc/c-icap/c-icap.magic.default
+		end
 	end
 
 	package %{name}-debuginfo
