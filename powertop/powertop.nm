@@ -4,20 +4,24 @@
 ###############################################################################
 
 name       = powertop
-version    = 1.98
+version    = 2.0
 release    = 1
 
 groups     = Applications/System
-url        = http://www.lesswatts.org/
+url        = https://01.org/powertop/
 license    = GPLv2
 summary    = Power consumption monitor.
 
 description
-	PowerTOP is a tool that finds the software component(s) that make your
-	computer use more power than necessary while it is idle.
+	PowerTOP is a Linux tool to diagnose issues with power consumption and
+	power management. In addition to being a diagnostic tool, PowerTOP also
+	has an interactive mode where the user can experiment various power
+	management settings for cases where the Linux distribution has not
+	enabled these settings.
 end
 
-source_dl  = http://www.kernel.org/pub/linux/status/powertop/
+source_dl  = https://01.org/powertop/sites/default/files/downloads/
+sources    = %{thisapp}.tar.bz2
 
 build
 	requires
