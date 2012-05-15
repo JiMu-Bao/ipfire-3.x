@@ -5,7 +5,7 @@
 
 name       = openssl
 version    = 1.0.1b
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -76,17 +76,18 @@ build
 			no-idea \
 			no-mdc2 \
 			no-rc5 \
-			no-ec no-ecdh no-ecdsa \
+			no-ec no-ec2m no-ecdh no-ecdsa \
 			no-srp \
 			-DSSL_FORBID_ENULL \
 			 %{ssl_arch} \
 			fips
 
 		# Build.
-		make depend all build-shared RPM_OPT_FLAGS="%{CFLAGS}" #%{PARALLELISMFLAGS}
+		make depend
+		make all
 
 		# Generate hashes for the included certs.
-		make rehash build-shared
+		make rehash
 	end
 
 	test
