@@ -5,8 +5,8 @@
 
 name       = libsolv
 version    = 0.0.0
-git_ver    = 0db9d7f
-release    = 3.git%{git_ver}
+git_ver    = c02d759
+release    = 4.git%{git_ver}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -33,27 +33,15 @@ build
 	end
 
 	prepare_cmds
-		# Remove -Werror from gcc command line.
-		find . -name CMakeLists.txt | xargs sed -e "s/-Werror//g" -i
-
-		# Do not build bindings, examples and tools.
-		sed "/bindings/d" -i CMakeLists.txt
-		sed "/examples/d" -i CMakeLists.txt
-		sed "/tools/d" -i CMakeLists.txt
-
 		# Make sure that libsatsolverext is linked properly to all needed
 		# libraries.
 		echo "TARGET_LINK_LIBRARIES(libsolvext libsolv \${EXPAT_LIBRARY} \${ZLIB_LIBRARY})" \
 			>> ext/CMakeLists.txt
-
-		# Remove the RPM stuff when we build with -DFEDORA=1 because we
-		# do not support RPM.
-		sed -e "s/DEBIAN/FEDORA/g" -i ext/CMakeLists.txt
 	end
 
 	build
 		mkdir build
-		cd build && cmake .. -DFEDORA=1 \
+		cd build && cmake .. \
 			-DCMAKE_INSTALL_PREFIX=/usr \
 			-DCMAKE_BUILD_TYPE=Release \
 			-DCMAKE_SKIP_RPATH=1
@@ -62,9 +50,6 @@ build
 
 	install
 		cd build && make install DESTDIR=%{BUILDROOT}
-
-		# Remove unusable header.
-		rm -vf %{BUILDROOT}/usr/include/solv/repo_rpmdb.h
 	end
 end
 
