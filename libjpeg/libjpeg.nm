@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libjpeg
-version    = 1.1.1
+version    = 1.2.0
 release    = 1
 thisapp    = libjpeg-turbo-%{version}
 
@@ -14,12 +14,12 @@ license    = wxWidgets
 summary    = A MMX/SSE2 accelerated library for manipulating JPEG image files.
 
 description
-	The libjpeg-turbo-utils package contains simple client programs for \
-	accessing the libjpeg functions. It contains cjpeg, djpeg, jpegtran,\
-	rdjpgcom and wrjpgcom. Cjpeg compresses an image file into JPEG format. \
-	Djpeg decompresses a JPEG file into a regular image file. Jpegtran \
-	can perform various useful transformations on JPEG files. Rdjpgcom \
-	displays any text comments included in a JPEG file. Wrjpgcom inserts \
+	The libjpeg-turbo-utils package contains simple client programs for
+	accessing the libjpeg functions. It contains cjpeg, djpeg, jpegtran,
+	rdjpgcom and wrjpgcom. Cjpeg compresses an image file into JPEG format.
+	Djpeg decompresses a JPEG file into a regular image file. Jpegtran
+	can perform various useful transformations on JPEG files. Rdjpgcom
+	displays any text comments included in a JPEG file. Wrjpgcom inserts
 	text comments into a JPEG file.
 end
 
