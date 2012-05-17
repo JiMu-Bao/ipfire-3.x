@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = sudo
-version    = 1.8.3p2
+version    = 1.8.5
 release    = 1
 
 groups     = Applications/System
-url        = http://www.sudo.ws/sudo/download.html
+url        = http://www.sudo.ws/
 license    = BSD
 summary    = Allows restricted root access for specified users.
 
@@ -59,6 +59,10 @@ end
 packages
 	package %{name}
 		groups += Base
+
+		configfiles
+			/etc/sudoers
+		end
 	end
 
 	package %{name}-debuginfo
