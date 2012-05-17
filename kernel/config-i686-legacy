@@ -31,6 +31,7 @@ CONFIG_OF=y
 # Device Tree and Open Firmware support
 #
 CONFIG_PROC_DEVICETREE=y
+# CONFIG_OF_SELFTEST is not set
 CONFIG_OF_PROMTREE=y
 CONFIG_OF_ADDRESS=y
 CONFIG_OF_IRQ=y
@@ -92,12 +93,12 @@ CONFIG_FB_SYS_FOPS=m
 # CONFIG_LEDS_NET5501 is not set
 
 #
-# Virtio drivers
+# Microsoft Hyper-V guest support
 #
 # CONFIG_FB_OLPC_DCON is not set
 
 #
-# Speakup console speech
+# Android
 #
 CONFIG_XO1_RFKILL=m
 

@@ -45,6 +45,8 @@ for line in f.readlines():
 				not _section.endswith("Kernel Configuration") and \
 				not _section.startswith("Automatically generated file;"):
 			section = _section
+	elif not line:
+		section = None
 
 	option = None
 	value  = None

@@ -85,7 +85,6 @@ CONFIG_ARCH_VERSATILE=y
 # CONFIG_ARCH_S5PV210 is not set
 # CONFIG_ARCH_EXYNOS is not set
 # CONFIG_ARCH_SHARK is not set
-# CONFIG_ARCH_TCC_926 is not set
 # CONFIG_ARCH_U300 is not set
 # CONFIG_ARCH_U8500 is not set
 # CONFIG_ARCH_NOMADIK is not set
@@ -125,12 +124,16 @@ CONFIG_CPU_USE_DOMAINS=y
 #
 # Processor Features
 #
+# CONFIG_ARCH_PHYS_ADDR_T_64BIT is not set
 CONFIG_ARM_THUMB=y
 # CONFIG_CPU_ICACHE_DISABLE is not set
 # CONFIG_CPU_DCACHE_DISABLE is not set
 # CONFIG_CPU_DCACHE_WRITETHROUGH is not set
 # CONFIG_CPU_CACHE_ROUND_ROBIN is not set
+# CONFIG_CACHE_L2X0 is not set
 CONFIG_ARM_L1_CACHE_SHIFT=5
+CONFIG_ARM_NR_BANKS=8
+CONFIG_MULTI_IRQ_HANDLER=y
 CONFIG_ARM_VIC=y
 CONFIG_ARM_VIC_NR=2
 CONFIG_ICST=y
@@ -142,6 +145,8 @@ CONFIG_PL330=y
 CONFIG_ARM_AMBA=y
 CONFIG_PCI_SYSCALL=y
 # CONFIG_ARCH_SUPPORTS_MSI is not set
+# CONFIG_PCI_PRI is not set
+# CONFIG_PCI_PASID is not set
 
 #
 # Kernel Features
@@ -150,6 +155,7 @@ CONFIG_VMSPLIT_3G=y
 # CONFIG_VMSPLIT_2G is not set
 # CONFIG_VMSPLIT_1G is not set
 CONFIG_PAGE_OFFSET=0xC0000000
+CONFIG_ARCH_NR_GPIO=0
 CONFIG_HZ=100
 CONFIG_AEABI=y
 # CONFIG_OABI_COMPAT is not set
@@ -222,6 +228,7 @@ CONFIG_OF=y
 # Device Tree and Open Firmware support
 #
 CONFIG_PROC_DEVICETREE=y
+# CONFIG_OF_SELFTEST is not set
 CONFIG_OF_FLATTREE=y
 CONFIG_OF_EARLY_FLATTREE=y
 CONFIG_OF_ADDRESS=y
@@ -233,7 +240,12 @@ CONFIG_OF_NET=y
 CONFIG_OF_MDIO=y
 CONFIG_OF_PCI=y
 CONFIG_OF_PCI_IRQ=y
+# CONFIG_BLK_DEV_PCIESSD_MTIP32XX is not set
 # CONFIG_MG_DISK is not set
+
+#
+# Misc devices
+#
 # CONFIG_SENSORS_LIS3LV02D is not set
 # CONFIG_ATMEL_PWM is not set
 # CONFIG_SGI_IOC4 is not set
@@ -243,7 +255,8 @@ CONFIG_OF_PCI_IRQ=y
 # SCSI Transports
 #
 # CONFIG_SCSI_ACARD is not set
-CONFIG_SCSI_NSP32=m
+# CONFIG_SCSI_ADVANSYS is not set
+# CONFIG_SCSI_NSP32 is not set
 
 #
 # IEEE 1394 (FireWire) support
@@ -251,7 +264,7 @@ CONFIG_SCSI_NSP32=m
 # CONFIG_ATM_HE is not set
 
 #
-# CAIF transport drivers
+# Distributed Switch Architecture drivers
 #
 CONFIG_DM9000=m
 # CONFIG_DM9000_FORCE_SIMPLE_PHY_POLL is not set
@@ -272,6 +285,11 @@ CONFIG_SMSC911X=m
 # ISDN feature submodules
 #
 # CONFIG_ISDN_DRV_LOOP is not set
+
+#
+# Input Device Drivers
+#
+# CONFIG_KEYBOARD_SAMSUNG is not set
 
 #
 # Hardware I/O ports
@@ -371,7 +389,6 @@ CONFIG_FB_ARMCLCD=m
 CONFIG_SND_ARM=y
 CONFIG_SND_ARMAACI=m
 CONFIG_SND_SOC=m
-# CONFIG_SND_SOC_CACHE_LZO is not set
 CONFIG_SND_SOC_I2C_AND_SPI=m
 # CONFIG_SND_SOC_ALL_CODECS is not set
 
@@ -408,12 +425,12 @@ CONFIG_RTC_DRV_PL031=m
 CONFIG_PL330_DMA=y
 
 #
-# Virtio drivers
+# Microsoft Hyper-V guest support
 #
 # CONFIG_DRM_NOUVEAU is not set
 
 #
-# Speakup console speech
+# Android
 #
 CONFIG_CLKDEV_LOOKUP=y
 
@@ -438,6 +455,11 @@ CONFIG_OLD_MCOUNT=y
 # CONFIG_DEBUG_USER is not set
 # CONFIG_DEBUG_LL is not set
 # CONFIG_OC_ETM is not set
+
+#
+# Executable Protections
+#
+# CONFIG_GRKERNSEC_SETXID is not set
 
 #
 # Miscellaneous hardening features
