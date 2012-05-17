@@ -6,7 +6,7 @@
 name       = grub
 version    = 2.00
 prerelease = beta5
-release    = 0.1.%{prerelease}
+release    = 0.2.%{prerelease}
 thisapp    = %{name}-%{version}~%{prerelease}
 sup_arches = x86_64 i686
 
@@ -113,7 +113,7 @@ end
 
 quality-agent
 	whitelist_nx
-		/usr/bin/*
+		/usr/bin/*|/usr/sbin/*
 	end
 end
 
