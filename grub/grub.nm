@@ -4,8 +4,10 @@
 ###############################################################################
 
 name       = grub
-version    = 1.99
-release    = 6
+version    = 2.00
+prerelease = beta5
+release    = 0.1.%{prerelease}
+thisapp    = %{name}-%{version}~%{prerelease}
 sup_arches = x86_64 i686
 
 groups     = System/Boot
@@ -20,7 +22,8 @@ description
 	systems.
 end
 
-source_dl  = http://ftp.gnu.org/gnu/grub/
+source_dl  = http://ftp.gnu.org/gnu/grub/ ftp://alpha.gnu.org/gnu/grub/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -28,6 +31,7 @@ build
 		autogen
 		automake
 		bison
+		bzip2-devel
 		flex
 		freetype-devel
 		gettext
@@ -37,17 +41,9 @@ build
 	end
 
 	prepare_cmds
-		# Replace pkglib_DATA (automake 1.11.2 incompatibility)
-		sed -i -e "s/pkglib_DATA/pkgdata_DATA/g" \
-			-e "s/pkglib_SCRIPTS/pkgdata_SCRIPTS/g" \
-			Makefile* */Makefile* \
-			gentpl.py util/grub-*.in
-
-		./autogen.sh
-
 		# Create a copy of the source tree to build
 		# an EFI enabled version of grub.
-		cp -R . %{DIR_SRC}/%{thisapp}-efi
+		cp -pR . %{DIR_SRC}/%{thisapp}-efi
 	end
 
 	# As the modules contain always 32 bit code, they
@@ -73,7 +69,6 @@ build
 		./configure \
 			%{configure_options} \
 			--with-platform=efi \
-			--program-transform-name=s,grub,grub-efi, \
 			CFLAGS="$(echo %{CFLAGS} | sed \
 				-e 's/-O.//g' \
 				-e 's/-fstack-protector//g' \
@@ -98,10 +93,6 @@ build
 		cd ../%{thisapp}-efi
 		make install DESTDIR=%{BUILDROOT}
 
-		mv -v %{BUILDROOT}/etc/bash_completion.d/grub{,-efi}
-		sed -e "s,grub/grub-mkconfig_lib,grub-efi/grub-mkconfig_lib," \
-			-i %{BUILDROOT}%{sbindir}/grub-efi-mkconfig
-
 		install -m 755 -d %{BUILDROOT}/boot/efi/EFI/%{DISTRO_SNAME}/
 		install -d %{BUILDROOT}/boot/efi/EFI/%{DISTRO_SNAME}/grub-efi
 		touch %{BUILDROOT}/boot/efi/EFI/%{DISTRO_SNAME}/grub-efi/grub.cfg
@@ -111,21 +102,18 @@ build
 		cd -
 		make install DESTDIR=%{BUILDROOT}
 
-		# Install theme file
-		install -m 0744 %{DIR_SOURCE}/05_theme %{BUILDROOT}/etc/grub.d/
-
-		# Install splash background
-		mkdir -pv %{BUILDROOT}/boot/grub
-		install %{DIR_SOURCE}/splash.png %{BUILDROOT}/boot/grub
-
 		# Install empty configuration file.
+		mkdir -pv %{BUILDROOT}/boot/grub
 		touch %{BUILDROOT}/boot/grub/grub.cfg
+		ln -svf ../boot/grub/grub.cfg %{BUILDROOT}%{sysconfdir}/grub2.cfg
 	end
+
+	debuginfo_strict_build_id = false
 end
 
 quality-agent
 	whitelist_nx
-		/sbin/*|/usr/bin/*
+		/usr/bin/*
 	end
 end
 
@@ -135,6 +123,7 @@ packages
 			gettext
 			os-prober
 			/usr/share/X11/fonts/misc/unifont.pcf.gz
+			system-logos
 		end
 
 		configfiles
@@ -165,11 +154,7 @@ packages
 
 		files
 			/boot/efi
-			/etc/bash_completion.d/grub-efi
 			/etc/grub-efi.cfg
-			%{sbindir}/grub-efi-*
-			%{bindir}/grub-efi-*
-			%{prefix}/lib/grub-efi
 		end
 	end
 
