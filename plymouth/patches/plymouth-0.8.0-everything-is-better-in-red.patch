@@ -6,7 +6,7 @@ diff -up plymouth-0.8.0/src/plugins/splash/text/plugin.c.red plymouth-0.8.0/src/
    ply_terminal_set_color_hex_value (terminal,
                                      PLY_TERMINAL_COLOR_BLUE,
 -                                    0x0073B3);
-+                                    0x880400);
++                                    0xCC0A00);
    ply_terminal_set_color_hex_value (terminal,
                                      PLY_TERMINAL_COLOR_BROWN,
 -                                    0x00457E);
