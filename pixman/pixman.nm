@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = pixman
-version    = 0.18.4
-release    = 2
+version    = 0.25.6
+release    = 1
 
 groups     = System/Libraries
-url        = http://xorg.freedesktop.org/archive/individual/lib/
+url        = http://www.X.org/
 license    = MIT
 summary    = Pixel manipulation library.
 
@@ -16,18 +16,21 @@ description
 	Pixman is a pixel manipulation library for X and cairo.
 end
 
-source_dl  =
+source_dl  = http://xorg.freedesktop.org/archive/individual/lib/
 
 build
 	requires
+		libpng-devel
 		perl
 		pkg-config
 	end
+
+	configure_options += \
+		--disable-arm-iwmmxt
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
