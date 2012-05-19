@@ -1,0 +1,50 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = unicode-ucd
+version    = 6.1.0
+release    = 1
+arch       = noarch
+
+groups     = Development/System 
+url        = http://www.unicode.org/ucd/
+license    = MIT
+summary    = Unicode Character Database.
+
+description
+	The Unicode Character Database (UCD) consists of a number of data files listing
+	Unicode character properties and related data. It also includes data files
+	containing test data for conformance to several important Unicode algorithms.
+end
+
+source_dl  = http://www.unicode.org/Public/zipped/%{version}/
+sources    = UCD.zip
+
+build
+	requires
+		unzip>=6.0-3
+	end
+
+	prepare
+		# Manually create DIR_APP because the 
+		# soucre archive doesn't contain any folder.
+		mkdir -pv %{DIR_APP}
+
+		# Manually extract zip compressed source archive.
+		cd %{DIR_APP} && unzip %{DIR_DL}/%{sources}
+	end
+
+	build = # Nothing to do
+
+	install
+		# Create install folder and copy files.
+		mkdir -pv %{BUILDROOT}%{datadir}/unicode/ucd/
+		cp -arvf . %{BUILDROOT}%{datadir}/unicode/ucd/
+	end
+end
+
+packages
+	package %{name}
+end
