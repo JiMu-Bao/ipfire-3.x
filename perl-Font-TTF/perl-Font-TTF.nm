@@ -1,0 +1,60 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-Font-TTF
+version    = 0.48
+release    = 1
+arch       = noarch
+thisapp    = Font-TTF-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/Font-TTF/
+license    = Artistic 2.0
+summary    = Perl library for modifying TTF font files.
+
+description
+	Perl module for TrueType font hacking. Supports reading, processing and writing
+	of the following tables: GDEF, GPOS, GSUB, LTSH, OS/2, PCLT, bsln, cmap, cvt,
+	fdsc, feat, fpgm, glyf, hdmx, head, hhea, hmtx, kern, loca, maxp, mort, name,
+	post, prep, prop, vhea, vmtx and the reading and writing of all other table
+	types.
+end
+
+source_dl  = http://search.cpan.org/CPAN/authors/id/M/MH/MHOSKEN/
+
+build
+	requires
+		perl(ExtUtils::MakeMaker)
+		perl(ExtUtils::ParseXS)
+		perl(Test::Simple)
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{CFLAGS}"
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make test
+	end
+
+	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+end
+
+packages
+	package %{name}
+		filter_requires
+			Win32
+		end
+
+		requires
+			perl
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
