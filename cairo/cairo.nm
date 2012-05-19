@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = cairo
-version    = 1.10.2
-release    = 3
+version    = 1.12.2
+release    = 1
 
 groups     = System/Graphics
 url        = http://cairographics.org
@@ -18,17 +18,26 @@ description
 end
 
 source_dl  = http://cairographics.org/releases/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
 		binutils>=2.21.51.0.8-2
 		fontconfig-devel
 		freetype-devel
+		libX11-devel
+		libxml2-devel
 		libpng-devel
-		pixman-devel
+		pixman-devel>=0.22
 		pkg-config
 		zlib-devel
 	end
+
+	configure_options += \
+		--enable-freetype \
+		--enable-xlib \
+		--enable-xml \
+		--disable-static
 end
 
 packages
