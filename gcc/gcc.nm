@@ -7,8 +7,8 @@
 build_cloog_ppl = 1
 
 name       = gcc
-version    = 4.6.3
-release    = 6
+version    = 4.7.0
+release    = 0.1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -27,21 +27,6 @@ required_binutils_version = 2.21.51.0.8-1
 source_dl  = http://ftp.gnu.org/gnu/gcc/%{thisapp}/
 sources    = %{thisapp}.tar.gz
 
-patches = \
-	gcc46-hack.patch0 \
-	gcc46-c++-builtin-redecl.patch0 \
-	gcc46-pr33763.patch0 \
-	gcc46-libgomp-omp_h-multilib.patch0 \
-	gcc46-libtool-no-rpath.patch0 \
-	gcc46-cloog-dl.patch0 \
-	gcc46-pr38757.patch0 \
-	gcc46-no-add-needed.patch0 \
-	gcc46-unwind-debughook-sdt.patch0 \
-	gcc46-ppl-0.10.patch \
-	gcc46-Woverlength-string.patch0 \
-	gcc46-Woverlength-string-asm.patch0 \
-	gcc-4.6.3-piepatches-20120408.patch
-
 build
 	requires
 		autogen
@@ -56,6 +41,7 @@ build
 		libffi-devel
 		libmpc-devel
 		mpfr-devel
+		perl
 		texinfo
 		zlib-devel
 	end
@@ -144,18 +130,23 @@ build
 			-e "s/-fno-exceptions/& -fno-asynchronous-unwind-tables/"
 
 		# we want to be able to control the pie patch logic via something other
-		# than ALL_CFLAGS...
+		# than ALL_CFLAGS and ALL_CXXFLAGS...
 		sed -i gcc/Makefile.in \
 			-e '/^ALL_CFLAGS/iHARD_CFLAGS = ' \
-			-e 's|^ALL_CFLAGS = |ALL_CFLAGS = $(HARD_CFLAGS) |'
+			-e 's|^ALL_CFLAGS = |ALL_CFLAGS = $(HARD_CFLAGS) |' \
+			-e '/^ALL_CXXFLAGS/iHARD_CFLAGS = ' \
+			-e 's|^ALL_CXXFLAGS = |ALL_CXXFLAGS = $(HARD_CFLAGS) |'
 
 		# Enable the GCC hardening by default.
 		sed -i gcc/Makefile.in \
 			-e "s|^HARD_CFLAGS = |HARD_CFLAGS = %{HARD_CFLAGS} |"
 
 		# Compile the compiler with -fPIC as well.
+		# However, genautomata crashes with a "Bus Error" when compiled
+		# with PIC.
 		sed -i gcc/Makefile.in \
-			-e "s|^ESP_NOPIE_CFLAGS = .*|ESP_NOPIE_CFLAGS =|"
+			-e "s|^ESP_NOPIE_CFLAGS = .*|ESP_NOPIE_CFLAGS =|" \
+			-e 's|^build/genautomata$(build_exeext) .*|& -fno-PIC|'
 
 		# Default to -gdwarf-4 -fno-debug-types-section rather than -gdwarf-2
 		sed -i gcc/common.opt \
@@ -197,6 +188,8 @@ build
 			--enable-languages=c,c++,lto \
 			--enable-bootstrap \
 			--enable-checking=release \
+			--disable-build-with-cxx \
+			--disable-build-poststage1-with-cxx \
 			--disable-werror \
 			--disable-libssp \
 			--disable-static \
@@ -205,10 +198,19 @@ build
 			--disable-libunwind-exceptions \
 			--enable-gnu-unique-object \
 			--enable-linker-build-id \
+			--with-linker-hash-style=gnu \
 			%{configure_options}
 
 		# GCC does not support a parallel build.
 		make %{make_bootstrap} BOOT_CFLAGS="${CFLAGS}"
+
+		# Generate man pages.
+		perl -pi -e 's/head3/head2/' ../contrib/texi2pod.pl
+		for i in %{DIR_APP}/gcc/doc/*.texi; do
+			cp -a $i $i.orig; sed 's/ftable/table/' $i.orig > $i
+		done
+		make -C gcc generated-manpages
+		for i in %{DIR_APP}/gcc/doc/*.texi; do mv -f $i.orig $i; done
 	end
 
 	#test
@@ -264,7 +266,7 @@ build
 		chmod 755 %{BUILDROOT}%{libdir}/libgomp.so.1.*
 
 		# libstdc++
-		ln -svf ../../../libstdc++.so.6.0.16 ${FULLPATH}/libstdc++.so
+		ln -svf ../../../libstdc++.so.6.0.17 ${FULLPATH}/libstdc++.so
 
 		# libmudflap
 		ln -svf ../../../libmudflap.so.0.0.0 ${FULLPATH}/libmudflap.so
@@ -276,6 +278,11 @@ build
 			ln -svf ../../../libquadmath.so.0.0.0 ${FULLPATH}/libquadmath.so
 			chmod 755 %{BUILDROOT}%{libdir}/libquadmath.so.0.*
 		fi
+
+		# libitm
+		mv -vf %{BUILDROOT}%{libdir}/libitm.spec ${FULLPATH}/
+		ln -svf ../../../libitm.so.1.0.0 ${FULLPATH}/libitm.so
+		chmod 755 %{BUILDROOT}%{libdir}/libitm.so.1.*
 	end
 
 	keep_libraries
@@ -481,6 +488,37 @@ packages
 				%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/quadmath_weak.h
 				%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/libquadmath.so
 			end
+		end
+	end
+
+	package libitm
+		summary = The GNU Transactional Memory library.
+		description
+			This package contains the GNU Transactional Memory library
+			which is a GCC transactional memory support runtime library.
+		end
+
+		files
+			%{libdir}/libitm.so.1*
+		end
+	end
+
+	package libitm-devel
+		summary = The GNU Transactional Memory support.
+		description
+			This package contains headers and support files for the
+			GNU Transactional Memory library.
+		end
+
+		requires
+			gcc = %{thisver}
+			libitm = %{thisver}
+		end
+
+		files
+			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/itm.h
+			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/itm_weak.h
+			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/libitm.so
 		end
 	end
 
