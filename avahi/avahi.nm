@@ -5,7 +5,7 @@
 
 name       = avahi
 version    = 0.6.30
-release    = 2
+release    = 3
 
 groups     = Networking/Zeroconf
 url        = http://avahi.org/
@@ -38,10 +38,12 @@ build
 		pkg-config
 		python-devel
 		python-dbus
+		systemd-units
 	end
 
 	configure_options += \
 		--with-distro=none \
+		--with-systemdsystemunitdir=%{unitdir} \
 		--disable-gdbm \
 		--disable-qt3 \
 		--disable-qt4 \
@@ -53,7 +55,31 @@ end
 
 packages
 	package %{name}
-		requires = libdaemon>=0.14
+		requires
+			libdaemon>=0.14
+		end
+
+		# Just search for new unit files that were just installed.
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		# Disable the service that is to be removed and stop it if it is still running.
+		script preun
+			systemctl --no-reload disable avahi-daemon.service >/dev/null 2>&1 || :
+			systemctl stop avahi-daemon.service avahi-dnsconfd.service >/dev/null 2>&1 || :
+		end
+
+		# Just tell systemd that unitfiles have been removed.
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		# Try to restart the service if it is running.
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart avahi-daemon.service avahi-dnsconfd.service >/dev/null 2>&1 || :
+		end
 	end
 
 	package %{name}-devel
