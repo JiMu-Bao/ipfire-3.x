@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = man-pages
-version    = 3.38
-release    = 2
+version    = 3.40
+release    = 1
 arch       = noarch
 
 groups     = Base Documentation
@@ -18,7 +18,8 @@ description
 	Documentation Project (LDP).
 end
 
-source_dl  = %{url}
+source_dl  = http://www.kernel.org/pub/linux/docs/man-pages/
+sources    = %{thisapp}.tar.xz
 
 build
 	prepare_cmds
