@@ -4,10 +4,13 @@
 ###############################################################################
 
 name       = sip
-version    = %{major_ver}.13
-major_ver  = 4
+version    = %{major_ver}.%{minor_ver}.%{rev_ver}
 release    = 1
 epoch      = 1
+
+major_ver  = 4
+minor_ver  = 13
+rev_ver    = 2
 
 groups     = Development/Tools
 url        = http://www.riverbankcomputing.com/software/sip/intro
