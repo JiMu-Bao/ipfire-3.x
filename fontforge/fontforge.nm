@@ -5,7 +5,7 @@
 
 name       = fontforge
 version    = 20110222
-release    = 1
+release    = 2
 
 groups     = Applications/Publishing
 url        = http://fontforge.sourceforge.net/
@@ -30,9 +30,10 @@ build
 		libjpeg-devel
 		libpng-devel
 		libtiff-devel
+		libXft-devel
 		libXt-devel
 		libxml2-devel
-		pango-devel
+		pango-devel>=1.29.5-2
 		python-devel
 		xorg-x11-proto-devel
 	end
