@@ -6,7 +6,7 @@
 name       = grub
 version    = 2.00
 prerelease = beta5
-release    = 0.2.%{prerelease}
+release    = 0.3.%{prerelease}
 thisapp    = %{name}-%{version}~%{prerelease}
 sup_arches = x86_64 i686
 
@@ -86,7 +86,7 @@ build
 			-o grub.efi \
 			-d grub-core part_gpt hfsplus fat ext2 btrfs normal chain \
 			boot configfile linux appleldr minicmd loadbios reboot halt \
-			search font gfxterm echo video efi_gop efi_uga
+			search font gfxterm echo video all_video
 	end
 
 	install
@@ -155,6 +155,7 @@ packages
 		files
 			/boot/efi
 			/etc/grub-efi.cfg
+			/usr/lib/grub/i386-efi
 		end
 	end
 
