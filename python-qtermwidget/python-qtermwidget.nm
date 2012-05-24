@@ -5,7 +5,7 @@
 
 name       = python-qtermwidget
 version    = 0.1.2
-release    = 2
+release    = 3
 
 groups     = Development/Languages
 url        = http://code.google.com/p/pyqt4-extrawidgets/downloads/list
