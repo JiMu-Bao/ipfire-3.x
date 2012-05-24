@@ -6,7 +6,7 @@
 name       = pango
 major	   = 1.29
 version    = %{major}.5
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.pango.org/
@@ -29,6 +29,7 @@ build
 		gcc-c++
 		glib2-devel
 		glibc-devel
+		libXft-devel
 		perl
 		pkg-config
 	end
