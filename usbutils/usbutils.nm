@@ -5,8 +5,8 @@
 
 name       = usbutils
 epoch      = 1
-version    = 003
-release    = 2
+version    = 005
+release    = 1
 
 groups     = System/Tools
 url        = http://www.linux-usb.org/
@@ -21,14 +21,19 @@ source_dl  = http://www.kernel.org/pub/linux/utils/usb/usbutils/
 
 build
 	requires
+		autoconf
+		automake
+		hwdata
 		libusb-devel
 		pkg-config
 		zlib-devel
 	end
 
-	install_cmds
-		rm -fv %{BUILDROOT}/usr/share/usb.ids.gz
+	prepare_cmds
+		./autogen.sh
+	end
 
+	install_cmds
 		# Removing lsusb.py.
 		rm -rfv %{BUILDROOT}/usr/bin/lsusb.py
 	end
@@ -39,6 +44,16 @@ packages
 		requires
 			/usr/share/hwdata/usb.ids
 		end
+	end
+
+	package %{name}-libs
+		template LIBS
+	end
+
+	package %{name}-devel
+		template DEVEL
+
+		requires = %{name}-libs = %{epoch}:%{thisver}
 	end
 
 	package %{name}-debuginfo
