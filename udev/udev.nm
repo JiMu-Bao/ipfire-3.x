@@ -5,7 +5,7 @@
 
 name       = udev
 version    = 182
-release    = 4
+release    = 5
 
 groups     = System/Base
 url        = ftp://ftp.kernel.org/pub/linux/utils/kernel/hotplug/
@@ -38,7 +38,7 @@ build
 		pciutils
 		shadow-utils
 		systemd-units
-		usbutils-devel >= 1:005
+		usbutils >= 1:005
 	end
 
 	configure_options += \
