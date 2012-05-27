@@ -1,0 +1,21 @@
+[Unit]
+Description=DHCP client daemon for IPv4 on %I
+BindTo=dev-%I.device
+After=dev-%I.device
+
+[Service]
+Restart=on-failure
+ExecStartPre=/usr/lib/network/dhclient-helper start %I ipv4
+ExecStart=/usr/sbin/dhclient -d %I -4 \
+	-cf /run/network/dhclient/%I/dhclient4.conf \
+	-lf /var/lib/dhclient/dhclient-%I.leases \
+	-pf /run/network/dhclient/%I/dhclient4.pid
+ExecStop=/usr/lib/network/dhclient-helper stop %I ipv4
+
+# This could be used if you want to release a lease.
+#ExecStop=/usr/sbin/dhclient -d -r %I -4 \
+#	-cf /run/network/dhclient/%I/dhclient4.conf \
+#	-lf /var/lib/dhclient/dhclient-%I.leases \
+#	-pf /run/network/dhclient/%I/dhclient4.pid
+
+UtmpIdentifier=%I
