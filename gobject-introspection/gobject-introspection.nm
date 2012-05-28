@@ -4,8 +4,11 @@
 ###############################################################################
 
 name       = gobject-introspection
-version    = 0.9.12
+version    = %{major_ver}.%{minor_ver}
 release    = 1
+
+major_ver  = 1.31
+minor_ver  = 22
 
 groups     = Development/Libraries
 url        = http://live.gnome.org/GObjectIntrospection
@@ -19,7 +22,8 @@ description
 	other things.
 end
 
-source_dl  =
+source_dl  = http://ftp.gnome.org/pub/GNOME/sources/%{name}/%{major_ver}/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -33,7 +37,6 @@ build
 	end
 
 	configure_options += \
-		--sbindir=/sbin \
 		--disable-static
 
 	test
@@ -43,7 +46,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-libs
 		template LIBS
