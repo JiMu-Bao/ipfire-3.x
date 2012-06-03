@@ -14,7 +14,7 @@ DISTRO_COLOR    = 0;31
 
 name       = %{DISTRO_SNAME}-release
 version    = %{DISTRO_VERSION}
-release    = 3
+release    = 4
 epoch      = 3
 arch       = noarch
 
@@ -59,7 +59,7 @@ build
 		ID=%{DISTRO_SNAME}
 		VERSION_ID=%{DISTRO_RELEASE}
 		PRETTY_NAME="%{DISTRO_NAME} %{DISTRO_VERSION} (%{DISTRO_CODENAME})"
-		ANSI_COLOR=%{DISTRO_COLOR}
+		ANSI_COLOR="%{DISTRO_COLOR}"
 		EOF
 
 		# Install default repositories.
