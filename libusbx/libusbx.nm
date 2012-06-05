@@ -3,13 +3,12 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = libusb
-version    = 1.0.8
+name       = libusbx
+version    = 1.0.11
 release    = 1
 
-maintainer =
 groups     = System/Libraries
-url        = http://sourceforge.net/projects/libusb/
+url        = http://sourceforge.net/apps/mediawiki/libusbx/
 license    = LGPLv2+
 summary    = A library which allows userspace access to USB devices.
 
@@ -17,15 +16,19 @@ description
 	This package provides a way for applications to access USB devices.
 end
 
+source_dl  = http://downloads.sourceforge.net/libusbx/
 sources    = %{thisapp}.tar.bz2
 
 build
 	configure_options += \
-		--disable-static
+		--disable-static \
+		--enable-examples-build
 end
 
 packages
 	package %{name}
+		provides  = libusb = %{thisver}
+		obsoletes = libusb < %{thisver}
 	end
 
 	package %{name}-devel
