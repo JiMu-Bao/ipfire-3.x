@@ -5,7 +5,7 @@
 
 name       = vim
 version    = 7.3
-release    = 2
+release    = 3
 
 groups     = Applications/Editors
 url        = http://www.vim.org
@@ -21,18 +21,27 @@ end
 source_dl  = ftp://ftp.vim.org/pub/vim/unix/
 sources    = %{thisapp}.tar.bz2
 
-DIR_APP        = %{DIR_SRC}/%{name}73
 
 build
+	DIR_APP = %{DIR_SRC}/%{name}73
+
 	requires
 		libacl-devel
 		libselinux-devel
 		ncurses-devel
+		python-devel
 	end
 
 	configure_options += \
+		--with-features=huge \
+		--enable-pythoninterp \
+		--enable-gui=no \
 		--enable-multibyte \
-		--enable-selinux
+		--enable-cscope \
+		--enable-selinux \
+		--with-tlib=ncurses \
+		--with-modified-by="<bugzilla@ipfire.org>" \
+		--with-compiled-by="<bugzilla@ipfire.org>"
 
 	configure_cmds
 		echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
