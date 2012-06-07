@@ -5,7 +5,7 @@
 
 name       = man-db
 version    = 2.6.1
-release    = 2
+release    = 3
 
 groups     = Documentation
 url        = http://savannah.nongnu.org/projects/man-db
@@ -31,23 +31,22 @@ build
 	end
 
 	configure_options += \
+		--with-sections="1 1p 8 2 3 3p 4 5 6 7 9 0p n l p o 1x 2x 3x 4x 5x 6x 7x 8x" \
 		--disable-setuid \
-		--with-browser=%{bindir}/lynx \
-		--with-col=%{bindir}/col \
-		--with-vgrind=%{bindir}/vgrind \
-		--with-grap=%{bindir}/grap \
-		--disable-rpath
-
-	prepare_cmds
-		sed -i -e '\%\t/usr/man%d' -e '\%\t/usr/local/man%d' \
-			src/man_db.conf.in
-	end
+		--with-browser=elinks
 
 	install_cmds
-		# Move some libs
-		mv -v %{BUILDROOT}%{libdir}/man-db/* %{BUILDROOT}%{libdir}/
-		rm -rf %{BUILDROOTi}%{libdir}/man-db/
+		# Move the libs to /usr/lib, but don't keep the symlinks so nothing
+		# will link against libman and libmandb as they are not stable.
+		mv -v %{BUILDROOT}%{libdir}/man-db/libman{,db}-%{version}.so %{BUILDROOT}%{libdir}
+		rm -rf %{BUILDROOT}%{libdir}/man-db/
 
+		# Create cron job to regularly update the man page database.
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/cron.daily
+		install -v -m 755 %{DIR_SOURCE}/man-db.cron %{BUILDROOT}%{sysconfdir}/cron.daily
+
+		# Create cache directory.
+		mkdir -pv %{BUILDROOT}/var/cache/man
 	end
 end
 
@@ -64,6 +63,16 @@ packages
 		# This package also should be known as man.
 		provides
 			man
+		end
+
+		script posttransin
+			# Update the database right now.
+			%{sysconfdir}/cron.daily/man-db.cron
+		end
+
+		script posttransup
+			# Update the database right now.
+			%{sysconfdir}/cron.daily/man-db.cron
 		end
 	end
 
