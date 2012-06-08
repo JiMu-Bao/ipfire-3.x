@@ -5,8 +5,8 @@
 
 name       = mstpd
 version    = 0.01
-svn_ver    = 28
-release    = 0.4-svn%{svn_ver}.1
+svn_ver    = 30
+release    = 0.5-svn%{svn_ver}.1
 thisapp    = %{name}-%{version}-svn%{svn_ver}
 
 groups     = Networking/Tools
@@ -41,7 +41,6 @@ packages
 
 		script postin
 			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-			/bin/systemctl --no-reload enable mstpd.service >/dev/null 2>&1 || :
 		end
 
 		script preun

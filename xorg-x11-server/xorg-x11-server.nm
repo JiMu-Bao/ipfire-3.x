@@ -5,7 +5,7 @@
 
 name       = xorg-x11-server
 version    = 1.8.2
-release    = 5.1
+release    = 6
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = X/Server

@@ -5,7 +5,7 @@
 
 name       = dhcp
 version    = 4.2.2
-release    = 2
+release    = 4
 
 groups     = Networking/Daemons
 url        = http://isc.org/products/DHCP/
@@ -66,6 +66,7 @@ build
 		libtool
 		openldap-devel
 		libcap-ng-devel
+		systemd-units
 	end
 
 	CFLAGS += \
@@ -179,11 +180,25 @@ packages
 		end
 
 		files
+			%{unitdir}/dhclient*.service
 			/sbin
 			/usr/share/man/man5/dhclient*
 			/usr/share/man/man8/dhclient*
 			/var/lib/dhclient
 		end
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
 	end
 
 	package %{name}-common

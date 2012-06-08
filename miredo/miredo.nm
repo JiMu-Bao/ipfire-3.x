@@ -1,0 +1,151 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = miredo
+version    = 1.2.5
+release    = 1
+
+groups     = Network/VPN
+url        = http://www.remlab.net/miredo/
+license    = GPLv2+
+summary    = Tunneling of IPv6 over UDP through NATs.
+
+description
+	Miredo is an implementation of the "Teredo: Tunneling IPv6 over UDP
+	through NATs" proposed Internet standard (RFC4380). It can serve
+	either as a Teredo client, a stand-alone Teredo relay, or a Teredo
+	server, please install the miredo-server or miredo-client aproprietly.
+	It is meant to provide IPv6 connectivity to hosts behind NAT
+	devices, most of which do not support IPv6, and not even
+	IPv6-over-IPv4 (including 6to4).
+end
+
+source_dl  = http://www.remlab.net/files/miredo/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		libcap-devel
+		shadow-utils
+		systemd-units
+	end
+
+	configure_options += \
+		--disable-static \
+		--disable-rpath \
+		--enable-miredo-user
+
+	install_cmds
+		install -v -m 755 %{DIR_SOURCE}/client-hook \
+			%{BUILDROOT}%{sysconfdir}/miredo/client-hook
+
+		touch %{BUILDROOT}%{sysconfdir}/miredo/miredo-server.conf
+	end
+end
+
+packages
+	package %{name}-client
+		summary = This is the client part of miredo.
+
+		# There is not "miredo" package, so the -client
+		# package has an alias for it.
+		provides = miredo = %{thisver}
+
+		requires
+			%{name}-libs = %{thisver}
+			network
+		end
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart miredo-client.service >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl --no-reload disable miredo-client.service >/dev/null 2>&1 || :
+			systemctl stop miredo-client.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		configfiles
+			%{sysconfdir}/miredo/miredo.conf
+		end
+
+		files
+			%{sysconfdir}/miredo/client-hook
+			%{sysconfdir}/miredo/miredo.conf
+			%{sbindir}/miredo
+			%{unitdir}/miredo-client@.service
+			%{mandir}/man?/miredo.*
+		end
+	end
+
+	package %{name}-server
+		summary = This is the server part of miredo.
+
+		requires = %{name}-libs = %{thisver}
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart miredo-server.service >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl --no-reload disable miredo-server.service >/dev/null 2>&1 || :
+			systemctl stop miredo-server.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		configfiles
+			%{sysconfdir}/miredo/miredo-server.conf
+		end
+
+		files
+			%{bindir}/teredo-mire
+			%{sbindir}/miredo-server
+			%{sbindir}/miredo-checkconf
+			%{unitdir}/miredo-server.service
+			%{mandir}/man?/teredo-mire*
+			%{mandir}/man?/miredo-server*
+			%{mandir}/man?/miredo-checkconf*
+		end
+	end
+
+	package %{name}-libs
+		template LIBS
+
+		files += %{libdir}/miredo
+
+		script prein
+			getent group miredo >/dev/null || groupadd -r miredo
+			getent passwd miredo >/dev/null || useradd -r -g miredo \
+				-d %{sysconfdir}/miredo -s /sbin/nologin -c "Miredo Daemon" miredo
+		end
+	end
+
+	package %{name}-devel
+		template DEVEL
+
+		requires = %{name}-libs = %{thisver}
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

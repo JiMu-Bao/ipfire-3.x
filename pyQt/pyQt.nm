@@ -4,9 +4,8 @@
 ###############################################################################
 
 name       = pyQt
-version    = 4.8.6
-release    = 2
-epoch      = 0
+version    = 4.9.1
+release    = 1
 
 groups     = Development/Languages
 url        = http://www.riverbankcomputing.com/software/pyqt/
@@ -26,8 +25,8 @@ build
 		libX11-devel
 		libXext-devel
 		python-devel
-		qt-devel
-		sip-devel>=4.13
+		qt-devel>=4.8.1
+		sip-devel>=4.13.1
 	end
 
 	DIR_APP = %{DIR_SRC}/PyQt-x11-gpl-%{version}
@@ -61,10 +60,10 @@ packages
 		template DEVEL
 
 		files
-			/usr/bin
-			/usr/lib/python*/site-packages/PyQt4/pyqtconfig*
-			/usr/lib/python*/site-packages/PyQt4/uic/pyuic.py*
-			/usr/share/sip
+			%{bindir}
+			%{libdir}/python*/site-packages/PyQt4/pyqtconfig*
+			%{libdir}/python*/site-packages/PyQt4/uic/pyuic.py*
+			%{datadir}/sip
 		end
 	end
 

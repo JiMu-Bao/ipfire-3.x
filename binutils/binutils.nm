@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = binutils
-version    = 2.22
-release    = 3
+version    = 2.22.52.0.3
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Tools
@@ -18,7 +18,10 @@ description
 	tools for the manipulation of object code in various object file formats.
 end
 
-source_dl  = http://ftp.gnu.org/gnu/binutils/
+source_dl
+	http://ftp.gnu.org/gnu/binutils/
+	ftp://ftp.kernel.org/pub/linux/devel/binutils
+end
 
 build
 	requires
@@ -59,20 +62,26 @@ build
 		make tooldir=/usr %{PARALLELISMFLAGS}
 	end
 
-	#def test
-	#	# Apply a sed substitution to prevent a testsuite error:
-	#	sed -i 's/getline/get_line/' libiberty/testsuite/test-demangle.c
-	#	cd %{DIR_SRC}/binutils-build && make check
-	#end
+	test
+		cd %{DIR_SRC}/binutils-build
+		make -k check </dev/null || :
+
+		echo "==== RESULTS ===="
+		cat {gas/testsuite/gas,ld/ld,binutils/binutils}.sum
+	end
 
 	install
-		cd %{DIR_SRC}/binutils-build && make tooldir=/usr install DESTDIR=%{BUILDROOT}
+		cd %{DIR_SRC}/binutils-build
+		make tooldir=/usr install DESTDIR=%{BUILDROOT}
 
 		cp -fv %{DIR_APP}/include/libiberty.h %{BUILDROOT}/usr/include
 
 		# Prevent packages from linking against libbfd and libopcodes,
 		# because they change too often.
 		rm -rfv %{BUILDROOT}%{libdir}/lib{bfd,opcodes}.so
+
+		# Remove Windows/Novell only man pages.
+		rm -vf %{BUILDROOT}%{mandir}/man1/{dlltool,nlmconv,windres}*
 	end
 
 	# Keep static version of libiberty.

@@ -5,7 +5,7 @@
 
 name       = python-qtermwidget
 version    = 0.1.2
-release    = 2
+release    = 3
 
 groups     = Development/Languages
 url        = http://code.google.com/p/pyqt4-extrawidgets/downloads/list
@@ -16,7 +16,7 @@ description
 	PyQt4 Bindings for QTermWidget.
 end
 
-source_dl  =
+source_dl  = http://pyqt4-extrawidgets.googlecode.com/files/
 sources    = qtermwidget-%{version}.tar.gz
 
 build
@@ -24,10 +24,9 @@ build
 		gcc-c++
 		libX11-devel
 		libXext-devel
-		pyQt
-		pyQt-devel
+		pyQt-devel>=4.9.1
 		python-devel
-		qt
+		qt-devel>=4.8.1
 		qtermwidget-devel
 		sip-devel
 	end

@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = qt
-version    = 4.7.0
-release    = 4
+version    = 4.8.1
+release    = 1
 
 groups     = System/Libraries
-url        = http://www.qtsoftware.com/
+url        = http://qt-project.org/
 license    = LGPLv2 with exceptions or GPLv3 with exceptions
 summary    = Qt toolkit.
 
@@ -16,11 +16,12 @@ description
 	Qt is a software toolkit for developing applications.
 end
 
-source_dl  =
+source_dl  = http://releases.qt-project.org/qt4/source/
 sources    = %{name}-everywhere-opensource-src-%{version}.tar.gz
 
 build
 	requires
+		/usr/bin/perl
 		fontconfig-devel
 		freetype-devel
 		gcc-c++
@@ -34,6 +35,7 @@ build
 		libXrandr-devel
 		libXrender-devel
 		libXi-devel
+		openssl-devel
 		pcre-devel
 		pkg-config
 		xorg-x11-proto-devel
@@ -64,7 +66,6 @@ build
 		-no-multimedia \
 		-no-nas-sound \
 		-no-nis \
-		-no-openssl \
 		-no-opengl \
 		-no-openvg \
 		-no-qt3support \
@@ -96,12 +97,17 @@ build
 		-no-mmx \
 		-no-sse \
 		-no-sse2 \
+		-no-sse3 \
+		-no-ssse3 \
+		-no-sse4.1 \
+		-no-sse4.2 \
 		-no-3dnow \
 		-system-libjpeg \
 		-system-libmng \
 		-system-libpng \
 		-system-libtiff \
 		-system-zlib \
+		-openssl-linked \
 		-nomake demos \
 		-nomake docs \
 		-nomake examples

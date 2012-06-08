@@ -5,7 +5,7 @@
 
 name       = openssh
 version    = 5.9p1
-release    = 5
+release    = 6
 
 groups     = Application/Internet
 url        = http://www.openssh.com/portable.html
@@ -164,7 +164,10 @@ packages
 		summary = OpenSSH server applications.
 		description = %{summary}
 
-		requires = openssh = %{thisver}
+		requires
+			audit
+			openssh = %{thisver}
+		end
 
 		files
 			%{sysconfdir}/pam.d/sshd

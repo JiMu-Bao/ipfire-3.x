@@ -5,7 +5,7 @@
 
 name       = usbutils
 epoch      = 1
-version    = 003
+version    = 005
 release    = 3
 
 groups     = System/Tools
@@ -21,13 +21,18 @@ source_dl  = http://www.kernel.org/pub/linux/utils/usb/usbutils/
 
 build
 	requires
+		autoconf
+		automake
+		hwdata
 		libusbx-devel
 		zlib-devel
 	end
 
-	install_cmds
-		rm -fv %{BUILDROOT}/usr/share/usb.ids.gz
+	prepare_cmds
+		./autogen.sh
+	end
 
+	install_cmds
 		# Removing lsusb.py.
 		rm -rfv %{BUILDROOT}/usr/bin/lsusb.py
 	end

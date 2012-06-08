@@ -8,8 +8,7 @@
 [Unit]
 Description=WLAN AP on %I
 BindTo=dev-%I.device
-After=dev-%I.device network.service
-Requires=network.service
+After=dev-%I.device
 
 [Service]
 ExecStart=/usr/bin/hostapd -dd -P /run/network/hostapd/%I/pid /run/network/hostapd/%I/config

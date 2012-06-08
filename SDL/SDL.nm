@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = SDL
-version    = 1.2.14
+version    = 1.2.15
 release    = 1
 
 groups     = System/Libraries
@@ -22,18 +22,40 @@ source_dl  = http://www.libsdl.org/release/
 
 build
 	requires
-		directfb-devel
 		libusb-compat-devel
-		pkg-config
+		libX11-devel
+		libXext-devel
+		libXrandr-devel
+		libXrender-devel
+		mesa-devel
 	end
+
+	if "%{DISTRO_PLATFORM}" == "x86"
+		requires += nasm
+	end
+
+	configure_options += \
+		--disable-video-svga \
+		--disable-video-ggi \
+		--disable-video-aalib \
+		--disable-video-ps3 \
+		--enable-sdl-dlopen
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
+
+		requires
+			libX11-devel
+			libXext-devel
+			libXrandr-devel
+			libXrender-devel
+			mesa-devel
+			SDL = %{thisver}
+		end
 	end
 
 	package %{name}-debuginfo

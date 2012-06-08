@@ -5,7 +5,7 @@
 
 name       = c_icap_modules
 version    = 0.1.6
-release    = 1
+release    = 2
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
@@ -25,14 +25,14 @@ build
 	requires
 		autoconf
 		automake
-		c_icap
+		c_icap >= 0.1.7-3
 		clamav-devel
 		db4-devel
 		libtool-devel
 	end
 
 	configure_options += \
-		--sysconfdir=/etc \
+		--sysconfdir=/etc/c-icap \
 		--localstatedir=/var
 
 	prepare_cmds
@@ -40,13 +40,19 @@ build
 	end
 
 	install
-		mkdir -pv %{BUILDROOT}/etc
+		mkdir -pv %{BUILDROOT}/etc/c-icap
 		make install DESTDIR=%{BUILDROOT}
 	end
 end
 
 packages
 	package %{name}
+		configfiles
+			/etc/c-icap/srv_clamav.conf
+			/etc/c-icap/srv_clamav.conf.default
+			/etc/c-icap/srv_url_check.conf
+			/etc/c-icap/srv_url_check.conf.default
+		end
 	end
 
 	package %{name}-debuginfo

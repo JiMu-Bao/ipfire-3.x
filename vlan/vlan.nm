@@ -5,7 +5,7 @@
 
 name       = vlan
 version    = 1.9
-release    = 1
+release    = 2
 
 groups     = Networking/Tools
 url        = http://www.candelatech.com/~greear/vlan.html
@@ -24,20 +24,23 @@ build
 	# Parallelism cannot be used here.
 	PARALLELISMFLAGS = -j1
 
-	make_build_targets += \
-		purge \
-		vconfig \
-		CCFLAGS="%{CFLAGS}"
+	prepare_cmds
+		make purge
+	end
+
+	make_build_targets = vconfig CCFLAGS="%{CFLAGS}" STRIP=/bin/true
 
 	install
-		mkdir -pv %{BUILDROOT}/sbin
-		install -c -p -m 0755 vconfig %{BUILDROOT}/sbin
+		mkdir -pv %{BUILDROOT}%{sbindir}
+		install -D -m 0755 vconfig %{BUILDROOT}%{sbindir}
+
+		mkdir -pv %{BUILDROOT}%{mandir}/man8
+		install -D -m 0644 vconfig.8 %{BUILDROOT}%{mandir}/man8
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO

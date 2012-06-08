@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = iptables
-version    = 1.4.13
+version    = 1.4.14
 release    = 1
 
 groups     = Networking/Tools
