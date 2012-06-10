@@ -4,35 +4,71 @@
 ###############################################################################
 
 name       = cronie
-version    = 1.4.7
+version    = 1.4.8
 release    = 1
 
 groups     = System/Environment/Base
-url        = https://fedorahosted.org/releases/c/r/cronie/
+url        = https://fedorahosted.org/cronie/
 license    = MIT and BSD and ISC and GPLv2
 summary    = Cron daemon for executing programs at set times
 
 description
-	Cronie contains the standard UNIX daemon crond that runs specified programs at \
-	scheduled times and related tools. It is a fork of the \
-	original vixie-cron and has security and configuration enhancements like \
+	Cronie contains the standard UNIX daemon crond that runs specified programs at
+	scheduled times and related tools. It is a fork of the
+	original vixie-cron and has security and configuration enhancements like
 	the ability to use pam and SELinux.
 end
 
-source_dl  =
+source_dl  = https://fedorahosted.org/releases/c/r/cronie/
 
 build
 	requires
+		audit-devel
 		bison
 		libcap-devel
 		libedit-devel
+		libselinux-devel
+		pam-devel
 		readline-devel
 		texinfo
+	end
+
+	configure_options += \
+		--with-pam \
+		--with-audit \
+		--with-selinux
+
+	install_cmds
+		mkdir -pv %{BUILDROOT}%{localstatedir}/spool/cron
 	end
 end
 
 packages
 	package %{name}
+		# Just search for new unit files that were just installed.
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+
+			# Enable cronie on startup.
+			systemctl enable cronie.service >/dev/null 2>&1 || :
+		end
+
+		# Disable the service that is to be removed and stop it if it is still running.
+		script preun
+			systemctl --no-reload disable cronie.service >/dev/null 2>&1 || :
+			systemctl stop cronie.service >/dev/null 2>&1 || :
+		end
+
+		# Just tell systemd that unitfiles have been removed.
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		# Try to restart the service if it is running.
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart cronie.service >/dev/null 2>&1 || :
+		end
 	end
 
 	package %{name}-debuginfo
