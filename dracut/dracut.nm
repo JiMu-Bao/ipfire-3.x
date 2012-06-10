@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = dracut
-version    = 018
-release    = 2
+version    = 019
+release    = 1
 arch       = noarch
 
 groups     = System/Boot
@@ -22,6 +22,7 @@ sources    = %{thisapp}.tar.xz
 
 build
 	requires
+		asciidoc
 		docbook-utils
 		docbook-xsl
 	end
@@ -47,8 +48,8 @@ build
 		cp -vf %{DIR_SOURCE}/ipfire.conf %{BUILDROOT}/etc/dracut.conf.d/ipfire.conf
 
 		# Save package version.
-		echo "%{name}-%{version}-%{release}" > \
-			%{BUILDROOT}%{dracutlibdir}/modules.d/10rpmversion/dracut-version
+		echo "DRACUT_VERSION=%{version}-%{release}" > \
+			%{BUILDROOT}/%{dracutlibdir}/dracut-version.sh
 
 		# Remove Gentoo specific module.
 		rm -rvf %{BUILDROOT}%{dracutlibdir}/modules.d/50gensplash
