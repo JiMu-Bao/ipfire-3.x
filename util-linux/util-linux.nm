@@ -6,7 +6,7 @@
 name       = util-linux
 major_ver  = 2.21
 version    = %{major_ver}
-release    = 2
+release    = 3
 
 groups     = System/Base
 url        = http://kernel.org/~kzak/util-linux/
@@ -206,7 +206,7 @@ packages
 		description = %{summary}
 
 		files
-			%{includedir}/mount/
+			%{includedir}/libmount/
 			%{libdir}/libmount.so
 			%{libdir}/pkgconfig/mount.pc
 			%{mandir}/man3/*mount*
