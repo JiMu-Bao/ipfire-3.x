@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = radvd
-version    = 1.8.5
+version    = 1.9
 release    = 1
 
 groups     = System/Daemons
@@ -25,9 +25,10 @@ source_dl  = http://www.litech.org/radvd/dist/
 
 build
 	requires
+		bison
 		flex
 		flex-devel
-		bison
+		libdaemon-devel
 		shadow-utils
 	end
 
