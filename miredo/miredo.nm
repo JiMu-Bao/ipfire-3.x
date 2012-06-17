@@ -5,7 +5,7 @@
 
 name       = miredo
 version    = 1.2.5
-release    = 1
+release    = 2
 
 groups     = Network/VPN
 url        = http://www.remlab.net/miredo/
@@ -64,12 +64,6 @@ packages
 
 		script postup
 			systemctl daemon-reload >/dev/null 2>&1 || :
-			systemctl try-restart miredo-client.service >/dev/null 2>&1 || :
-		end
-
-		script preun
-			systemctl --no-reload disable miredo-client.service >/dev/null 2>&1 || :
-			systemctl stop miredo-client.service >/dev/null 2>&1 || :
 		end
 
 		script postun
@@ -130,7 +124,7 @@ packages
 	package %{name}-libs
 		template LIBS
 
-		files += %{libdir}/miredo
+		files += %{prefix}/lib/miredo
 
 		script prein
 			getent group miredo >/dev/null || groupadd -r miredo
