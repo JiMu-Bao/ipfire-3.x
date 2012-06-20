@@ -5,7 +5,7 @@
 
 name       = avahi
 version    = 0.6.30
-release    = 3
+release    = 4
 
 groups     = Networking/Zeroconf
 url        = http://avahi.org/
@@ -13,12 +13,12 @@ license    = LGPLv2+
 summary    = Local network service discovery
 
 description
-	Avahi is a system which facilitates service discovery on \
-	a local network -- this means that you can plug your laptop or \
-	computer into a network and instantly be able to view other people who \
-	you can chat with, find printers to print to or find files being \
-	shared. This kind of technology is already found in MacOS X (branded \
-	'Rendezvous', 'Bonjour' and sometimes 'ZeroConf') and is very \
+	Avahi is a system which facilitates service discovery on
+	a local network -- this means that you can plug your laptop or
+	computer into a network and instantly be able to view other people who
+	you can chat with, find printers to print to or find files being
+	shared. This kind of technology is already found in MacOS X (branded
+	'Rendezvous', 'Bonjour' and sometimes 'ZeroConf') and is very
 	convenient.
 end
 
@@ -59,9 +59,23 @@ packages
 			libdaemon>=0.14
 		end
 
+		prerequires += shadow-utils
+
+		# Create avahi user and group.
+		script prein
+			getent group avahi >/dev/null || groupadd -r avahi
+			getent passwd avahi >/dev/null || \
+				useradd -r -g avahi -d /run/avahi-daemon -s /sbin/nologin \
+				-c "Avahi mDNS/DNS-SD Stack" avahi
+			exit  0
+		end
+
 		# Just search for new unit files that were just installed.
 		script postin
 			systemctl daemon-reload >/dev/null 2>&1 || :
+
+			# Reload dbus configuration.
+			systemctl reload dbus.service >/dev/null 2>&1 || :
 		end
 
 		# Disable the service that is to be removed and stop it if it is still running.
@@ -78,6 +92,10 @@ packages
 		# Try to restart the service if it is running.
 		script postup
 			systemctl daemon-reload >/dev/null 2>&1 || :
+
+			# Reload dbus configuration.
+			systemctl reload dbus.service >/dev/null 2>&1 || :
+
 			systemctl try-restart avahi-daemon.service avahi-dnsconfd.service >/dev/null 2>&1 || :
 		end
 	end

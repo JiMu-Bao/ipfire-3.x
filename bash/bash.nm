@@ -5,7 +5,7 @@
 
 name       = bash
 version    = 4.2
-release    = 9
+release    = 10
 
 groups     = System/Tools
 url        = http://www.gnu.org/software/bash/
@@ -29,6 +29,7 @@ build
 		filesystem >= 002
 		ncurses-devel
 		readline-devel
+		texinfo
 	end
 
 	prepare_cmds

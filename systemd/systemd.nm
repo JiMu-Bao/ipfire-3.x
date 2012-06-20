@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = systemd
-version    = 44
-release    = 6
+version    = 185
+release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -27,28 +27,32 @@ build
 		audit-devel
 		automake
 		autoconf
-		cryptsetup-luks-devel
+		cryptsetup-luks-devel >= 1.4.2
 		dbus-devel
 		docbook-utils
 		docbook-xsl
-		gperf
 		gettext-devel
+		glib2-devel
+		gobject-introspection-devel >= 1.31
+		gperf
+		hwdata
 		intltool
 		kmod-devel >= 5
 		libacl-devel
+		libblkid-devel
 		libcap-devel
 		libselinux-devel
 		libtool
-		libudev-devel >= 172
 		pam-devel
+		pciutils-devel
+		usbutils
 		vala
 		xz-devel
 	end
 
 	configure_options += \
-		--libexecdir=%{libdir} \
-		--with-udevrulesdir=%{prefix}/lib/udev/rules.d \
-		--with-distro=ipfire
+		--with-distro=ipfire \
+		--disable-static
 
 	prepare_cmds
 		./autogen.sh ac
@@ -86,6 +90,10 @@ build
 		rm -rfv %{BUILDROOT}%{unitdir}/runlevel*
 		rm -rfv %{BUILDROOT}%{unitdir}/graphical.target
 
+		# Remove service files for utmp update.
+		rm -rvf %{BUILDROOT}%{unitdir}/systemd-update-utmp-*.service
+		rm -rvf %{BUILDROOT}%{unitdir}/shutdown.target.wants/systemd-update-utmp-*.service
+
 		# Set default target to multi-user
 		ln -svf multi-user.target %{BUILDROOT}%{unitdir}/default.target
 
@@ -105,14 +113,16 @@ end
 
 packages
 	package %{name}
+		groups += Base
+
 		prerequires += authconfig
 
 		requires
 			dbus
+			hwdata
 			python-cairo
 			python-dbus
 			%{name}-units=%{thisver}
-			udev>=172
 			util-linux>=2.19
 		end
 
@@ -123,11 +133,37 @@ packages
 			/sbin/poweroff
 			/sbin/reboot
 			/sbin/shutdown
+
+			udev = %{thisver}
 		end
 
 		conflicts
+			dracut < 019
 			filesystem < 002
 			upstart
+		end
+
+		obsoletes
+			udev < 183
+		end
+
+		configfiles
+			/etc/locale.conf
+			/etc/machine-id
+			/etc/systemd/journald.conf
+			/etc/systemd/logind.conf
+			/etc/systemd/system.conf
+			/etc/systemd/user.conf
+			/etc/udev/udev.conf
+			/etc/vconsole.conf
+		end
+
+		script prein
+			# Create groups for udev.
+			getent group cdrom >/dev/null || groupadd -g 11 cdrom || :
+			getent group tape >/dev/null || groupadd -g 33 tape || :
+			getent group dialout >/dev/null || groupadd -g 18 dialout || :
+			getent group floppy >/dev/null || groupadd -g 19 floppy || :
 		end
 
 		script postin
@@ -153,10 +189,21 @@ packages
 				>/dev/null 2>&1 || :
 		end
 
+		script preup
+			# Be sure to stop the old udev before updating.
+			/usr/bin/systemctl stop udev.service udev-trigger.service \
+				udev-control.socket udev-kernel.socket >/dev/null 2>&1 || :
+		end
+
 		script postup
 			# Restart login service after update
 			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
 			/usr/bin/systemctl try-restart systemd-logind.service >/dev/null 2>&1 || :
+		end
+
+		# Be sure to start the new udev after everything is done.
+		script posttransup
+			/usr/bin/systemctl start systemd-udev.service  >/dev/null 2>&1 || :
 		end
 	end
 
@@ -201,6 +248,45 @@ packages
 		template DEVEL
 
 		files += %{prefix}/lib/pakfire/macros/
+	end
+
+	package libudev
+		summary = Libraries for adding libudev support to applications.
+		description
+			This package contains the libraries that make it easier to use libudev
+			functionality from applications.
+		end
+		license = LGPLv2+
+
+		conflicts
+			filesystem < 002
+		end
+
+		files
+			%{libdir}/libgudev*.so.*
+			%{libidr}/girepository*/
+		end
+	end
+
+	package libudev-devel
+		summary = Header files for adding libudev support to applications.
+		description
+			This package contains the header and pkg-config files for developing
+			applications using libudev functionality.
+		end
+		license = LGPLv2+
+
+		conflicts
+			filesystem < 002
+		end
+
+		files
+			%{libdir}/libgudev*.so
+			%{libdir}/pkgconfig/gudev*
+			%{includedir}/gudev*
+			%{datadir}/gir-*
+			%{datadir}/gtk-doc/html/gudev
+		end
 	end
 
 	package %{name}-debuginfo

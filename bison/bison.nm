@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = bison
-version    = 2.5
-release    = 3
+version    = 2.5.1
+release    = 1
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/bison/
