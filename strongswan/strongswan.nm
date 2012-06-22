@@ -4,13 +4,14 @@
 ###############################################################################
 
 name       = strongswan
-version    = 4.6.3
-release    = 1
+version    = 5.0.0
+release    = 0.1.rc1
+thisapp    = %{name}-%{version}rc1
 
 groups     = Networking/VPN
 url        = http://www.strongswan.org/
 license    = GPL
-summary    = IPsec and IKEv1 implementation for Linux 2.4 and 2.6 kernels.
+summary    = IPsec (IKEv1 + IKEv2) implementation for Linux.
 
 description
 	StrongSwan is a complete IPsec and IKEv1 implementation for
@@ -20,6 +21,7 @@ description
 end
 
 source_dl  = http://download.strongswan.org/
+sources    = %{thisapp}.tar.bz2
 
 build
 	requires
