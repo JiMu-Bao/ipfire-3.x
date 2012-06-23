@@ -5,7 +5,7 @@
 
 name       = ppp
 version    = 2.4.5
-release    = 4
+release    = 5
 
 groups     = System/Daemons
 url        = ftp://ftp.samba.org/pub/ppp/
@@ -28,6 +28,7 @@ build
 		linux-atm-devel
 		openssl-devel
 		pam-devel
+		systemd-units
 	end
 
 	# Explicitely add -fPIC to CFLAGS.
@@ -63,6 +64,18 @@ end
 
 packages
 	package %{name}
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+	end
 
 	package %{name}-devel
 		template DEVEL
