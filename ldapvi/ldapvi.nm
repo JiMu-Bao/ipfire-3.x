@@ -5,7 +5,7 @@
 
 name       = ldapvi
 version    = 1.7
-release    = 1
+release    = 2
 
 groups     = Applications/Editors
 url        = http://www.lichteblau.com/ldapvi/
@@ -35,10 +35,6 @@ build
 		for i in $(find . -name "*.[ch]"); do \
 			sed -e "s/getline/_&/g" -i $i
 		done
-	end
-
-	install
-		make install prefix=%{BUILDROOT}/usr
 	end
 end
 
