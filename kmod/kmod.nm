@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kmod
-version    = 7
-release    = 3
+version    = 9
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Kernel
@@ -33,7 +33,9 @@ build
 		--with-xz \
 		--with-zlib
 
-	# The testsuite does generate lots of errors.
+	test
+		make check
+	end
 
 	install_cmds
 		mkdir -pv %{BUILDROOT}%{prefix}/lib/modprobe.d
