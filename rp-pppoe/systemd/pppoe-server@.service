@@ -1,0 +1,11 @@
+[Unit]
+Description=PPPoE server daemon on %I
+BindTo=dev-%I.device
+After=dev-%I.device
+
+[Service]
+ExecStart=/usr/lib/network/pppoe-server %I
+ExecStopPost=/usr/lib/network/pppoe-server %I cleanup
+Restart=failure
+UtmpIdentifier=%I
+KillMode=process

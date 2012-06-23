@@ -1,0 +1,75 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = rp-pppoe
+version    = 3.10
+release    = 1
+
+groups     = Networking/Dialin
+url        = http://www.roaringpenguin.com/pppoe/
+license    = GPLv2+
+summary    = Administration tools for PPPoE connections.
+
+description
+	PPPoE (Point-to-Point Protocol over Ethernet) is a protocol used by
+	many ADSL Internet Service Providers.
+	This package contains a set of tools to build your own PPPoE server.
+end
+
+source_dl  = http://www.roaringpenguin.com/files/download/
+
+build
+	requires
+		autoconf
+		automake
+		iproute2
+		libtool
+		ppp-devel
+	end
+
+	DIR_APP := %{DIR_APP}/src
+	CFLAGS += -D_GNU_SOURCE -fno-strict-aliasing
+
+	prepare_cmds
+		# PLUGIN_DIR defaults to /etc/ppp/plugins, which is not what we want.
+		sed -i Makefile.in \
+			-e "s@^PLUGIN_DIR=.*@PLUGIN_DIR=%{libdir}/pppd/$(pppd --version | awk '{ print $NF }')@"
+
+		# Always enable kernel mode PPPoE for the server, because we
+		# don't ship the userspace component.
+		sed -i pppoe-server.c \
+			-e "s/UseLinuxKernelModePPPoE = 0/UseLinuxKernelModePPPoE = 1/"
+
+		autoconf
+	end
+
+	# Force support for kernel-mode PPPoE.
+	#configure_options += \
+	#	ac_cv_header_linux_if_pppox_h=yes
+
+	install_cmds
+		# Remove all the client components because we only support the
+		# rp-pppoe plugin that comes with pppd.
+		rm -rvf %{BUILDROOT}%{sysconfdir}
+		rm -vf %{BUILDROOT}%{sbindir}/pppoe
+		rm -vf %{BUILDROOT}%{sbindir}/pppoe-{connect,start,stop,status,setup}
+		rm -vf %{BUILDROOT}%{mandir}/man*/pppoe-{connect,start,stop,status,setup}*
+		rm -vf %{BUILDROOT}%{mandir}/man*/pppoe.{,conf}*
+		rm -rvf ${BUILDROOT}%{libdir}
+	end
+end
+
+packages
+	package %{name}
+		requires
+			iproute2
+			ppp
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
