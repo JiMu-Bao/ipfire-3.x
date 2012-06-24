@@ -5,7 +5,7 @@
 
 name       = nettle
 version    = 2.4
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.lysator.liu.se/~nisse/nettle/
@@ -33,6 +33,12 @@ build
 
 	test
 		make check
+	end
+
+	install_cmds
+		# Fix library permissions.
+		chmod 755 %{BUILDROOT}%{libdir}/libhogweed.so.*
+		chmod 755 %{BUILDROOT}%{libdir}/libnettle.so.*
 	end
 end
 
