@@ -5,7 +5,7 @@
 
 name       = strongswan
 version    = 5.0.0
-release    = 0.1.rc1
+release    = 0.2.rc1
 thisapp    = %{name}-%{version}rc1
 
 groups     = Networking/VPN
@@ -32,21 +32,21 @@ build
 		libcap-devel
 		libcurl-devel
 		libgcrypt-devel
+		libtool
 		openldap-devel
+		openssl-devel
 		perl
 		sqlite-devel
+		systemd-devel
+		systemd-units
 	end
 
 	configure_options += \
-		--sysconfdir=/etc \
-		--libexecdir=/usr/lib \
-		--with-user=nobody \
-		--with-group=nobody \
 		--enable-curl \
 		--enable-ldap \
+		--enable-openssl \
 		--enable-sqlite \
 		--enable-gcrypt \
-		--enable-cisco-quirks \
 		--with-capabilities=libcap
 
 	if "%{DISTRO_ARCH}" == "i686"
@@ -56,18 +56,37 @@ build
 	test
 		make check
 	end
-end
 
-# Plugins and many other files are installed in /usr/lib/ipsec
-# and loaded by using a RPATH.
-quality-agent
-	whitelist_rpath
-		/usr/lib/ipsec
+	install_cmds
+		# Make the shared libraries available to the runtime linker.
+		# (RPATH issues, whatever...)
+		cd %{BUILDROOT}%{libdir}
+		for lib in libcharon.so.0 libhydra.so.0 libstrongswan.so.0; do
+			ln -svf ipsec/${lib} .
+		done
 	end
 end
 
 packages
 	package %{name}
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl reload-or-try-restart strongswan.service >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl disable --no-reload strongswan.service >/dev/null 2>&1 || :
+			systemctl stop strongswan.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
