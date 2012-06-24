@@ -5,7 +5,7 @@
 
 name       = attr
 version    = 2.4.43
-release    = 6
+release    = 7
 
 groups     = System/Filesystems
 url        = http://oss.sgi.com/projects/xfs/
@@ -36,6 +36,9 @@ build
 		# Fix absolute symlink.
 		rm -rvf %{BUILDROOT}%{libdir}/libattr.so
 		ln -svf libattr.so.1 %{BUILDROOT}%{libdir}/libattr.so
+
+		# Fix library permissions.
+		chmod 755 %{BUILDROOT}%{libdir}/libattr.so.*
 	end
 end
 
