@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = binutils
-version    = 2.22.52.0.3
-release    = 2
+version    = 2.22.52.0.4
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Tools

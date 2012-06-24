@@ -1466,15 +1466,6 @@
 + 18000[0-9a-f]{2}:	48 00 00 08 	b       .*
 + 18000[0-9a-f]{2}:	38 63 90 08 	addi    r3,r3,-28664
  #pass
---- binutils-2.22/ld/testsuite/ld-powerpc/tlsso32.d
-+++ binutils-2.22/ld/testsuite/ld-powerpc/tlsso32.d
-@@ -42,5 +42,5 @@ Disassembly of section \.got:
- .* <\.got>:
- 	\.\.\.
- .*:	4e 80 00 21 	blrl
--.*:	00 01 03 ec 	.*
-+.*:	00 01 [0-9a-f]{2} [0-9a-f]{2} 	.*
- 	\.\.\.
 --- binutils-2.22/ld/testsuite/ld-powerpc/tlsso32.g
 +++ binutils-2.22/ld/testsuite/ld-powerpc/tlsso32.g
 @@ -9,5 +9,5 @@
@@ -1484,37 +1475,6 @@
 -.* 00000000 4e800021 000103ec 00000000  .*
 +.* 00000000 4e800021 00010[0-9a-f]{3} 00000000  .*
  .* 00000000                             .*
---- binutils-2.22/ld/testsuite/ld-powerpc/tlsso32.r
-+++ binutils-2.22/ld/testsuite/ld-powerpc/tlsso32.r
-@@ -35,6 +35,7 @@ Program Headers:
-  +LOAD .* RWE 0x10000
-  +DYNAMIC .* RW +0x4
-  +TLS .* 0x0+1c 0x0+38 R +0x4
-+ +PAX_FLAGS +0x0+ 0x0+ 0x0+ 0x0+ 0x0+ +0x[48]
- 
-  Section to Segment mapping:
-  +Segment Sections\.\.\.
-@@ -42,6 +43,7 @@ Program Headers:
-  +01 +\.tdata \.dynamic \.got \.plt 
-  +02 +\.dynamic 
-  +03 +\.tdata \.tbss 
-+ +04 +
- 
- Relocation section '\.rela\.dyn' at offset 0x[0-9a-f]+ contains 18 entries:
-  Offset +Info +Type +Sym\. Value +Symbol's Name \+ Addend
-@@ -52,9 +54,9 @@ Relocation section '\.rela\.dyn' at offset 0x[0-9a-f]+ contains 18 entries:
- [0-9a-f ]+R_PPC_TPREL16 +0+30 +le0 \+ 0
- [0-9a-f ]+R_PPC_TPREL16_HA +0+34 +le1 \+ 0
- [0-9a-f ]+R_PPC_TPREL16_LO +0+34 +le1 \+ 0
--[0-9a-f ]+R_PPC_TPREL16 +0+103d0 +\.tdata \+ 103e4
--[0-9a-f ]+R_PPC_TPREL16_HA +0+103d0 +\.tdata \+ 103e8
--[0-9a-f ]+R_PPC_TPREL16_LO +0+103d0 +\.tdata \+ 103e8
-+[0-9a-f ]+R_PPC_TPREL16 +0+103[df]0 +\.tdata \+ 10[0-9a-f]{3}
-+[0-9a-f ]+R_PPC_TPREL16_HA +0+103[df]0 +\.tdata \+ 10[0-9a-f]{3}
-+[0-9a-f ]+R_PPC_TPREL16_LO +0+103[df]0 +\.tdata \+ 10[0-9a-f]{3}
- [0-9a-f ]+R_PPC_DTPMOD32 +0+
- [0-9a-f ]+R_PPC_DTPREL32 +0+
- [0-9a-f ]+R_PPC_DTPMOD32 +0+
 --- binutils-2.22/ld/testsuite/ld-powerpc/tlstoc.g
 +++ binutils-2.22/ld/testsuite/ld-powerpc/tlstoc.g
 @@ -8,8 +8,8 @@
