@@ -5,7 +5,7 @@
 
 name       = acl
 version    = 2.2.51
-release    = 2
+release    = 3
 
 groups     = System/Filesystems
 url        = http://oss.sgi.com/projects/xfs/
@@ -39,6 +39,11 @@ build
 	end
 
 	make_install_targets += install-dev install-lib
+
+	install_cmds
+		# Fix library permissions.
+		chmod 755 %{BUILDROOT}%{libdir}/libacl.so.*
+	end
 end
 
 packages
