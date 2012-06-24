@@ -5,7 +5,7 @@
 
 name       = gettext
 version    = 0.18.1.1
-release    = 7
+release    = 8
 
 groups     = System/Base
 url        = http://www.gnu.org/software/gettext/
@@ -51,6 +51,9 @@ build
 				chrpath -l ${i} && chrpath --delete ${i}
 			fi
 		done
+
+		# Fix library permissions.
+		chmod 755 %{BUILDROOT}%{libdir}/preloadable_libintl.so
 	end
 end
 
