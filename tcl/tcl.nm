@@ -6,7 +6,7 @@
 name       = tcl
 major_ver  = 8.5
 version    = %{major_ver}.11
-release    = 1
+release    = 2
 thisapp    = tcl%{version}
 
 groups     = Development/Languages
@@ -77,6 +77,9 @@ build
 		# remove buildroot traces
 		sed -i -e "s|$PWD/unix|%{libdir}|; s|$PWD|%{includedir}/%{name}-private|" %{BUILDROOT}%{libdir}/%{name}Config.sh
 		rm -rf %{BUILDROOT}%{datadir}/%{name}%{major_ver}/ldAix
+
+		# Fix library permissions.
+		chmod 755 %{BUILDROOT}%{libdir}/libtcl*.so*
 	end
 
 	# Keep libtclstub*.a.
