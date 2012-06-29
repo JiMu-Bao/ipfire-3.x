@@ -1,0 +1,19 @@
+commit 2d1d622ac9859c90363076aa2f44edf1efe53597
+Author: Michael Tremer <michael.tremer@ipfire.org>
+Date:   Tue Jun 26 19:32:11 2012 +0200
+
+    Sort patches by their version number (not in alphabetical order).
+
+diff --git a/macros/constants.macro b/macros/constants.macro
+index 07459a3..74484ea 100644
+--- a/macros/constants.macro
++++ b/macros/constants.macro
+@@ -11,7 +11,7 @@ DIR_SOURCE  = %{BASEDIR}
+ 
+ # By default, take all patches from the patches directory
+ # in alphabetical order.
+-patches = $(find %{DIR_PATCHES} -not -type d 2>/dev/null | sort)
++patches = $(find %{DIR_PATCHES} -not -type d 2>/dev/null | sort --version-sort)
+ sources = %{thisapp}.tar.gz
+ 
+ # Macro definitions
