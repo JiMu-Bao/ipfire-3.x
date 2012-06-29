@@ -8,7 +8,7 @@ ver_major  = 3
 ver_minor  = 13
 ver_patch  = 1
 version    = %{ver_major}.%{ver_minor}.%{ver_patch}
-release    = 3
+release    = 4
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Libraries
@@ -146,29 +146,33 @@ build
 		install -p -v -m 755 mozilla/dist/*.OBJ/bin/vfychain %{BUILDROOT}%{libdir}/nss/unsupported-tools
 		chrpath --delete %{BUILDROOT}%{libdir}/nss/unsupported-tools/*
 
-		sed -e "s,@libdir@,%{libdir},g" \
-			-e "s,@prefix@,/usr,g" \
-			-e "s,@exec_prefix@,/usr,g" \
-			-e "s,@includedir@,/usr/include/nss3,g" \
-			-e "s,@MOD_MAJOR_VERSION@,$(grep "#define.*NSS_VMAJOR" mozilla/security/nss/lib/nss/nss.h | awk '{print $3}'),g" \
-			-e "s,@MOD_MINOR_VERSION@,$(grep "#define.*NSS_VMINOR" mozilla/security/nss/lib/nss/nss.h | awk '{print $3}'),g" \
-			-e "s,@MOD_PATCH_VERSION@,$(grep "#define.*NSS_VPATCH" mozilla/security/nss/lib/nss/nss.h | awk '{print $3}'),g" \
-			< %{DIR_SOURCE}/nss-config.in \
-			> %{BUILDROOT}/usr/bin/nss-config
-		chmod -v 755 %{BUILDROOT}/usr/bin/nss-config
+		for file in nss-config nss-util-config; do
+			sed -e "s,@libdir@,%{libdir},g" \
+				-e "s,@prefix@,/usr,g" \
+				-e "s,@exec_prefix@,/usr,g" \
+				-e "s,@includedir@,/usr/include/nss3,g" \
+				-e "s,@MOD_MAJOR_VERSION@,$(grep "#define.*NSS_VMAJOR" mozilla/security/nss/lib/nss/nss.h | awk '{print $3}'),g" \
+				-e "s,@MOD_MINOR_VERSION@,$(grep "#define.*NSS_VMINOR" mozilla/security/nss/lib/nss/nss.h | awk '{print $3}'),g" \
+				-e "s,@MOD_PATCH_VERSION@,$(grep "#define.*NSS_VPATCH" mozilla/security/nss/lib/nss/nss.h | awk '{print $3}'),g" \
+				< %{DIR_SOURCE}/${file}.in \
+				> %{BUILDROOT}/usr/bin/${file}
+			chmod -v 755 %{BUILDROOT}/usr/bin/${file}
+		done
 
 		install -p -v -m 755 %{DIR_SOURCE}/setup-nsssysinit.sh %{BUILDROOT}/usr/bin
 
 		# Generate file for pkg-config.
-		sed \
-			-e "s,%libdir%,%{libdir},g" \
-			-e "s,%prefix%,/usr,g" \
-			-e "s,%exec_prefix%,/usr,g" \
-			-e "s,%includedir%,/usr/include/nss3,g" \
-			-e "s,%NSS_VERSION%,%{version},g" \
-			-e "s,%NSPR_VERSION%,$(nspr-config --version),g" \
-			< %{DIR_SOURCE}/nss.pc.in \
-			> %{BUILDROOT}%{libdir}/pkgconfig/nss.pc
+		for file in nss.pc nss-util.pc; do
+			sed \
+				-e "s,%libdir%,%{libdir},g" \
+				-e "s,%prefix%,/usr,g" \
+				-e "s,%exec_prefix%,/usr,g" \
+				-e "s,%includedir%,/usr/include/nss3,g" \
+				-e "s,%NSS_VERSION%,%{version},g" \
+				-e "s,%NSPR_VERSION%,$(nspr-config --version),g" \
+				< %{DIR_SOURCE}/${file}.in \
+				> %{BUILDROOT}%{libdir}/pkgconfig/${file}
+		done
 
 		# Copy the include files we want
 		cp -vf mozilla/dist/public/nss/*.h %{BUILDROOT}/usr/include/nss3
@@ -199,6 +203,10 @@ packages
 		requires
 			nspr-devel
 			nss=%{thisver}
+		end
+
+		provides
+			nss-util-devel = %{thisver}
 		end
 
 		# Mozilla does no versioning :(
