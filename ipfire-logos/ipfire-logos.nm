@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = ipfire-logos
-version    = 1
-release    = 2
+version    = 2
+release    = 1
 arch       = noarch
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -30,14 +30,16 @@ end
 
 packages
 	package %{name}
-		provides = system-logos
-
 		prerequires
 			plymouth-scripts
 		end
 
 		requires
 			plymouth-plugin-script
+		end
+
+		provides
+			system-logos = %{thisver}
 		end
 
 		script postin
