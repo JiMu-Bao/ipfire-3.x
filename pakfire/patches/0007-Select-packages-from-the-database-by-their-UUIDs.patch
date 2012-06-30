@@ -1,11 +1,11 @@
 From b8f51d988734a75e8e41496a5d272057d18ecfda Mon Sep 17 00:00:00 2001
 From: Michael Tremer <michael.tremer@ipfire.org>
 Date: Sun, 22 Apr 2012 14:47:43 +0200
-Subject: [PATCH 7/8] Select packages from the database by their UUIDs.
+Subject: [PATCH 07/16] Select packages from the database by their UUIDs.
 
 ---
  python/pakfire/repository/database.py |    6 +++---
- 1 files changed, 3 insertions(+), 3 deletions(-)
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/python/pakfire/repository/database.py b/python/pakfire/repository/database.py
 index 11321ae..6f8f397 100644
@@ -25,5 +25,5 @@ index 11321ae..6f8f397 100644
  		id = None
  		for row in c:
 -- 
-1.7.7.6
+1.7.10.4
 

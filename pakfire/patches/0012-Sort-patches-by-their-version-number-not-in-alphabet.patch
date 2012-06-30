@@ -1,8 +1,12 @@
-commit 2d1d622ac9859c90363076aa2f44edf1efe53597
-Author: Michael Tremer <michael.tremer@ipfire.org>
-Date:   Tue Jun 26 19:32:11 2012 +0200
+From 2d1d622ac9859c90363076aa2f44edf1efe53597 Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Tue, 26 Jun 2012 19:32:11 +0200
+Subject: [PATCH 12/16] Sort patches by their version number (not in
+ alphabetical order).
 
-    Sort patches by their version number (not in alphabetical order).
+---
+ macros/constants.macro |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/macros/constants.macro b/macros/constants.macro
 index 07459a3..74484ea 100644
@@ -17,3 +21,6 @@ index 07459a3..74484ea 100644
  sources = %{thisapp}.tar.gz
  
  # Macro definitions
+-- 
+1.7.10.4
+

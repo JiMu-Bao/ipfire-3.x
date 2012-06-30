@@ -1,11 +1,11 @@
 From acf9ff3a740f37550287b4e263e6d7e76cef3e36 Mon Sep 17 00:00:00 2001
 From: Michael Tremer <michael.tremer@ipfire.org>
 Date: Sun, 22 Apr 2012 14:42:37 +0200
-Subject: [PATCH 5/8] Allow to install multiple non-default kernels.
+Subject: [PATCH 05/16] Allow to install multiple non-default kernels.
 
 ---
  python/pakfire/constants.py |    9 ++++++++-
- 1 files changed, 8 insertions(+), 1 deletions(-)
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/python/pakfire/constants.py b/python/pakfire/constants.py
 index 0899dd0..44d1d02 100644
@@ -28,5 +28,5 @@ index 0899dd0..44d1d02 100644
  SCRIPTLET_INTERPRETER = "/bin/sh"
  SCRIPTLET_TIMEOUT = 60 * 15
 -- 
-1.7.7.6
+1.7.10.4
 

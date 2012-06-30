@@ -1,0 +1,1787 @@
+From 9b68f47c96625fdafc9b3810de08563abe8e78be Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Wed, 16 May 2012 12:43:25 +0000
+Subject: [PATCH 11/16] Move C module to newer version of libsolv.
+
+Many more improvements which should make the
+transaction check much faster.
+---
+ po/pakfire.pot                        |  155 +++++++++++++++++----------------
+ python/pakfire/actions.py             |   10 +--
+ python/pakfire/base.py                |   36 +++++---
+ python/pakfire/builder.py             |    3 +-
+ python/pakfire/filelist.py            |   13 +--
+ python/pakfire/packages/installed.py  |   18 ++--
+ python/pakfire/repository/database.py |   46 +++++-----
+ python/pakfire/repository/index.py    |    9 +-
+ python/pakfire/repository/system.py   |   50 +++++++++--
+ python/pakfire/satsolver.py           |   65 ++++----------
+ python/pakfire/transaction.py         |   49 +++++------
+ python/src/_pakfiremodule.c           |   18 +++-
+ python/src/repo.c                     |   31 ++++---
+ python/src/repo.h                     |    1 +
+ python/src/request.c                  |   64 +++++++-------
+ python/src/request.h                  |    4 +
+ python/src/solution.c                 |    8 +-
+ python/src/solver.c                   |   88 +++++++++++--------
+ python/src/solver.h                   |    5 +-
+ 19 files changed, 368 insertions(+), 305 deletions(-)
+
+diff --git a/po/pakfire.pot b/po/pakfire.pot
+index 4fd12e7..db3a88f 100644
+--- a/po/pakfire.pot
++++ b/po/pakfire.pot
+@@ -8,7 +8,7 @@ msgid ""
+ msgstr ""
+ "Project-Id-Version: PACKAGE VERSION\n"
+ "Report-Msgid-Bugs-To: \n"
+-"POT-Creation-Date: 2012-04-19 16:57+0200\n"
++"POT-Creation-Date: 2012-05-16 12:33+0000\n"
+ "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+ "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+ "Language-Team: LANGUAGE <LL@li.org>\n"
+@@ -73,13 +73,13 @@ msgid "Exception occured: %s"
+ msgstr ""
+ 
+ #: ../python/pakfire/actions.py:364 ../python/pakfire/actions.py:402
+-#: ../python/pakfire/actions.py:425 ../python/pakfire/actions.py:448
+-#: ../python/pakfire/actions.py:465 ../python/pakfire/actions.py:484
++#: ../python/pakfire/actions.py:424 ../python/pakfire/actions.py:446
++#: ../python/pakfire/actions.py:463 ../python/pakfire/actions.py:482
+ #, python-format
+ msgid "Running transaction test for %s"
+ msgstr ""
+ 
+-#: ../python/pakfire/actions.py:373 ../python/pakfire/actions.py:477
++#: ../python/pakfire/actions.py:373
+ msgid "Installing"
+ msgstr ""
+ 
+@@ -87,63 +87,67 @@ msgstr ""
+ msgid "Updating"
+ msgstr ""
+ 
+-#: ../python/pakfire/actions.py:431
++#: ../python/pakfire/actions.py:430
+ msgid "Removing"
+ msgstr ""
+ 
+ #. Cleaning up leftover files and stuff.
+-#: ../python/pakfire/actions.py:455
++#: ../python/pakfire/actions.py:453
+ msgid "Cleanup"
+ msgstr ""
+ 
+-#: ../python/pakfire/actions.py:493
++#: ../python/pakfire/actions.py:475
++msgid "Reinstalling"
++msgstr ""
++
++#: ../python/pakfire/actions.py:491
+ msgid "Downgrading"
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:315
++#: ../python/pakfire/base.py:320
+ msgid "Local install repository"
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:372
++#: ../python/pakfire/base.py:377
+ #, python-format
+ msgid "Could not find any installed package providing \"%s\"."
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:378
++#: ../python/pakfire/base.py:383
+ #, python-format
+ msgid "Multiple reinstall candidates for \"%(pattern)s\": %(pkgs)s"
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:382 ../python/pakfire/base.py:450
+-#: ../python/pakfire/base.py:487 ../python/pakfire/base.py:546
+-#: ../python/pakfire/base.py:567 ../python/pakfire/transaction.py:396
++#: ../python/pakfire/base.py:387 ../python/pakfire/base.py:455
++#: ../python/pakfire/base.py:491 ../python/pakfire/base.py:553
++#: ../python/pakfire/base.py:574 ../python/pakfire/transaction.py:390
+ msgid "Nothing to do"
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:407
++#: ../python/pakfire/base.py:412
+ #, python-format
+ msgid "Could not find package %s in a remote repository."
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:479
++#: ../python/pakfire/base.py:483
+ #, python-format
+ msgid "Excluding %s."
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:531
++#: ../python/pakfire/base.py:535
+ #, python-format
+ msgid "\"%s\" package does not seem to be installed."
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:681
++#: ../python/pakfire/base.py:688
+ msgid "Build command has failed."
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:716
++#: ../python/pakfire/base.py:723
+ msgid "New repository"
+ msgstr ""
+ 
+-#: ../python/pakfire/base.py:752
++#: ../python/pakfire/base.py:764
+ msgid "Everything is fine."
+ msgstr ""
+ 
+@@ -199,72 +203,72 @@ msgstr ""
+ msgid "Running installation test..."
+ msgstr ""
+ 
+-#: ../python/pakfire/builder.py:766
++#: ../python/pakfire/builder.py:767
+ msgid "Installation test succeeded."
+ msgstr ""
+ 
+ #. Create a progressbar.
+-#: ../python/pakfire/builder.py:803
++#: ../python/pakfire/builder.py:804
+ msgid "Signing packages..."
+ msgstr ""
+ 
+-#: ../python/pakfire/builder.py:837
++#: ../python/pakfire/builder.py:838
+ msgid "Dumping package information:"
+ msgstr ""
+ 
+ #. Walk through the whole tree and collect all files
+ #. that are on the same disk (not crossing mountpoints).
+-#: ../python/pakfire/builder.py:867
++#: ../python/pakfire/builder.py:868
+ msgid "Creating filelist..."
+ msgstr ""
+ 
+ #. Create a nice progressbar.
+-#: ../python/pakfire/builder.py:886
++#: ../python/pakfire/builder.py:887
+ msgid "Compressing files..."
+ msgstr ""
+ 
+-#: ../python/pakfire/builder.py:905
++#: ../python/pakfire/builder.py:906
+ #, python-format
+ msgid "Cache file was successfully created at %s."
+ msgstr ""
+ 
+-#: ../python/pakfire/builder.py:906
++#: ../python/pakfire/builder.py:907
+ #, python-format
+ msgid "  Containing %(files)s files, it has a size of %(size)s."
+ msgstr ""
+ 
+ #. Make a nice progress bar as always.
+-#: ../python/pakfire/builder.py:917
++#: ../python/pakfire/builder.py:918
+ msgid "Extracting files..."
+ msgstr ""
+ 
+ #. Update all packages.
+-#: ../python/pakfire/builder.py:937
++#: ../python/pakfire/builder.py:938
+ msgid "Updating packages from cache..."
+ msgstr ""
+ 
+ #. Package the result.
+ #. Make all these little package from the build environment.
+-#: ../python/pakfire/builder.py:1075
++#: ../python/pakfire/builder.py:1076
+ msgid "Creating packages:"
+ msgstr ""
+ 
+ #. Execute the buildscript of this stage.
+-#: ../python/pakfire/builder.py:1089
++#: ../python/pakfire/builder.py:1090
+ #, python-format
+ msgid "Running stage %s:"
+ msgstr ""
+ 
+-#: ../python/pakfire/builder.py:1107
++#: ../python/pakfire/builder.py:1108
+ #, python-format
+ msgid "Could not remove static libraries: %s"
+ msgstr ""
+ 
+-#: ../python/pakfire/builder.py:1113
++#: ../python/pakfire/builder.py:1114
+ msgid "Compressing man pages did not complete successfully."
+ msgstr ""
+ 
+-#: ../python/pakfire/builder.py:1133
++#: ../python/pakfire/builder.py:1134
+ msgid "Extracting debuginfo did not complete with success. Aborting build."
+ msgstr ""
+ 
+@@ -416,7 +420,7 @@ msgstr ""
+ msgid "Give name of at least one package to check."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:348 ../python/pakfire/transaction.py:405
++#: ../python/pakfire/cli.py:348 ../python/pakfire/transaction.py:399
+ msgid "Repository"
+ msgstr ""
+ 
+@@ -740,7 +744,7 @@ msgid "Job: %(name)s"
+ msgstr ""
+ 
+ #: ../python/pakfire/cli.py:1078 ../python/pakfire/packages/base.py:107
+-#: ../python/pakfire/transaction.py:404
++#: ../python/pakfire/transaction.py:398
+ msgid "Arch"
+ msgstr ""
+ 
+@@ -992,7 +996,7 @@ msgstr ""
+ msgid "Running pakfire-build in a pakfire container?"
+ msgstr ""
+ 
+-#: ../python/pakfire/errors.py:94 ../python/pakfire/transaction.py:475
++#: ../python/pakfire/errors.py:94 ../python/pakfire/transaction.py:469
+ msgid "Transaction test was not successful"
+ msgstr ""
+ 
+@@ -1085,7 +1089,7 @@ msgstr ""
+ msgid "Name"
+ msgstr ""
+ 
+-#: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:404
++#: ../python/pakfire/packages/base.py:110 ../python/pakfire/transaction.py:398
+ msgid "Version"
+ msgstr ""
+ 
+@@ -1093,7 +1097,7 @@ msgstr ""
+ msgid "Release"
+ msgstr ""
+ 
+-#: ../python/pakfire/packages/base.py:115 ../python/pakfire/transaction.py:405
++#: ../python/pakfire/packages/base.py:115 ../python/pakfire/transaction.py:399
+ msgid "Size"
+ msgstr ""
+ 
+@@ -1173,7 +1177,7 @@ msgstr ""
+ msgid "Not set"
+ msgstr ""
+ 
+-#: ../python/pakfire/packages/base.py:528
++#: ../python/pakfire/packages/base.py:534
+ #, python-format
+ msgid "Config file saved as %s."
+ msgstr ""
+@@ -1243,16 +1247,16 @@ msgstr ""
+ msgid "Building source package %s:"
+ msgstr ""
+ 
+-#: ../python/pakfire/repository/database.py:116
++#: ../python/pakfire/repository/database.py:123
+ msgid "The format of the database is not supported by this version of pakfire."
+ msgstr ""
+ 
+-#: ../python/pakfire/repository/database.py:224
++#: ../python/pakfire/repository/database.py:231
+ #, python-format
+ msgid "Cannot use database with version greater than %s."
+ msgstr ""
+ 
+-#: ../python/pakfire/repository/database.py:226
++#: ../python/pakfire/repository/database.py:233
+ #, python-format
+ msgid "Migrating database from format %(old)s to %(new)s."
+ msgstr ""
+@@ -1320,33 +1324,38 @@ msgstr ""
+ msgid "Trying an other mirror."
+ msgstr ""
+ 
+-#: ../python/pakfire/satsolver.py:230 ../python/pakfire/satsolver.py:256
++#. Create a progressbar.
++#: ../python/pakfire/repository/system.py:66
++msgid "Loading installed packages"
++msgstr ""
++
++#: ../python/pakfire/satsolver.py:199 ../python/pakfire/satsolver.py:225
+ msgid "The solver returned one problem:"
+ msgstr ""
+ 
+ #. Ask the user if he or she want to modify the request. If not, just exit.
+-#: ../python/pakfire/satsolver.py:272
++#: ../python/pakfire/satsolver.py:241
+ msgid "Do you want to manually alter the request?"
+ msgstr ""
+ 
+-#: ../python/pakfire/satsolver.py:275
++#: ../python/pakfire/satsolver.py:244
+ msgid "You can now try to satisfy the solver by modifying your request."
+ msgstr ""
+ 
+-#: ../python/pakfire/satsolver.py:280
++#: ../python/pakfire/satsolver.py:249
+ msgid "Which problem to you want to resolve?"
+ msgstr ""
+ 
+-#: ../python/pakfire/satsolver.py:282
++#: ../python/pakfire/satsolver.py:251
+ msgid "Press enter to try to re-solve the request."
+ msgstr ""
+ 
+-#: ../python/pakfire/satsolver.py:313
++#: ../python/pakfire/satsolver.py:282
+ #, python-format
+ msgid "    Solution: %s"
+ msgstr ""
+ 
+-#: ../python/pakfire/satsolver.py:322
++#: ../python/pakfire/satsolver.py:291
+ msgid "    Solutions:"
+ msgstr ""
+ 
+@@ -1354,110 +1363,110 @@ msgstr ""
+ msgid "Could not be determined"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:95
++#: ../python/pakfire/transaction.py:94
+ #, python-format
+ msgid "file %(name)s from %(pkg1)s conflicts with file from package %(pkg2)s"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:101
++#: ../python/pakfire/transaction.py:100
+ #, python-format
+ msgid "file %(name)s from %(pkg)s conflicts with files from %(pkgs)s"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:109
++#: ../python/pakfire/transaction.py:108
+ #, python-format
+ msgid ""
+ "There is not enough space left on %(name)s. Need at least %(size)s to "
+ "perform transaction."
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:327
++#: ../python/pakfire/transaction.py:321
+ #, python-format
+ msgid "Not enough space to download %s of packages."
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:330
++#: ../python/pakfire/transaction.py:324
+ msgid "Downloading packages:"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:404
++#: ../python/pakfire/transaction.py:398
+ msgid "Package"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:409
++#: ../python/pakfire/transaction.py:403
+ msgid "Installing:"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:410
++#: ../python/pakfire/transaction.py:404
+ msgid "Reinstalling:"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:411
++#: ../python/pakfire/transaction.py:405
+ msgid "Updating:"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:412
++#: ../python/pakfire/transaction.py:406
+ msgid "Downgrading:"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:413
++#: ../python/pakfire/transaction.py:407
+ msgid "Removing:"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:419
++#: ../python/pakfire/transaction.py:413
+ msgid "Transaction Summary"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:426
++#: ../python/pakfire/transaction.py:420
+ msgid "package"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:432
++#: ../python/pakfire/transaction.py:426
+ #, python-format
+ msgid "Total download size: %s"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:436
++#: ../python/pakfire/transaction.py:430
+ #, python-format
+ msgid "Installed size: %s"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:439
++#: ../python/pakfire/transaction.py:433
+ #, python-format
+ msgid "Freed size: %s"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:450
++#: ../python/pakfire/transaction.py:444
+ msgid "Is this okay?"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:456
++#: ../python/pakfire/transaction.py:450
+ msgid "Running Transaction Test"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:468
++#: ../python/pakfire/transaction.py:462
+ msgid "Transaction Test Succeeded"
+ msgstr ""
+ 
+ #. Make a nice progressbar.
+-#: ../python/pakfire/transaction.py:501
++#: ../python/pakfire/transaction.py:495
+ msgid "Verifying signatures..."
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:533
++#: ../python/pakfire/transaction.py:527
+ #, python-format
+ msgid "Found %s signature error(s)!"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:538
++#: ../python/pakfire/transaction.py:532
+ msgid "Going on because we are running in permissive mode."
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:539
++#: ../python/pakfire/transaction.py:533
+ msgid "This is dangerous!"
+ msgstr ""
+ 
+-#: ../python/pakfire/transaction.py:560
++#: ../python/pakfire/transaction.py:554
+ msgid "Running transaction"
+ msgstr ""
+ 
+diff --git a/python/pakfire/actions.py b/python/pakfire/actions.py
+index cdc2778..9fda261 100644
+--- a/python/pakfire/actions.py
++++ b/python/pakfire/actions.py
+@@ -417,7 +417,6 @@ class ActionRemove(Action):
+ 	def __init__(self, *args, **kwargs):
+ 		Action.__init__(self, *args, **kwargs)
+ 
+-		# XXX This is ugly, but works for the moment.
+ 		self.pkg = self.local.db.get_package_from_solv(self.pkg_solv)
+ 		assert self.pkg
+ 
+@@ -431,7 +430,7 @@ class ActionRemove(Action):
+ 		self.pkg.cleanup(_("Removing"), prefix=self.pakfire.path)
+ 
+ 		# Remove package from the database.
+-		self.local.rem_package(self.pkg)
++		self.local.rem_package(self.pkg_solv)
+ 
+ 
+ class ActionCleanup(Action):
+@@ -440,7 +439,6 @@ class ActionCleanup(Action):
+ 	def __init__(self, *args, **kwargs):
+ 		Action.__init__(self, *args, **kwargs)
+ 
+-		# XXX This is ugly, but works for the moment.
+ 		self.pkg = self.local.db.get_package_from_solv(self.pkg_solv)
+ 		assert self.pkg
+ 
+@@ -455,7 +453,7 @@ class ActionCleanup(Action):
+ 		self.pkg.cleanup(_("Cleanup"), prefix=self.pakfire.path)
+ 
+ 		# Remove package from the database.
+-		self.local.rem_package(self.pkg)
++		self.local.rem_package(self.pkg_solv)
+ 
+ 
+ class ActionReinstall(Action):
+@@ -471,10 +469,10 @@ class ActionReinstall(Action):
+ 	def run(self):
+ 		# Remove package from the database and add it afterwards.
+ 		# Sounds weird, but fixes broken entries in the database.
+-		self.local.rem_package(self.pkg)
++		self.local.rem_package(self.pkg_solv)
+ 		self.local.add_package(self.pkg)
+ 
+-		self.pkg.extract(_("Installing"), prefix=self.pakfire.path)
++		self.pkg.extract(_("Reinstalling"), prefix=self.pakfire.path)
+ 
+ 
+ class ActionDowngrade(Action):
+diff --git a/python/pakfire/base.py b/python/pakfire/base.py
+index 6e2e52e..54485a5 100644
+--- a/python/pakfire/base.py
++++ b/python/pakfire/base.py
+@@ -132,7 +132,7 @@ class Pakfire(object):
+ 
+ 		return ret
+ 
+-	def create_request(self, builder=False, install=None, remove=None, update=None):
++	def create_request(self, builder=False, install=None, remove=None, update=None, updateall=False):
+ 		request = satsolver.Request(self.pool)
+ 
+ 		# Add multiinstall information.
+@@ -151,6 +151,11 @@ class Pakfire(object):
+ 		for req in self.expand_requires(update):
+ 			request.update(req)
+ 
++		# Configure the request to update all packages
++		# if requested.
++		if updateall:
++			request.updateall()
++
+ 		# Return the request.
+ 		return request
+ 
+@@ -467,12 +472,11 @@ class Pakfire(object):
+ 
+ 		# If there are given any packets on the command line, we will
+ 		# only update them. Otherwise, we update the whole system.
++		updateall = True
+ 		if pkgs:
+-			update = False
+-		else:
+-			update = True
++			updateall = False
+ 
+-		request = self.create_request(update=pkgs)
++		request = self.create_request(update=pkgs, updateall=updateall)
+ 
+ 		# Exclude packages that should not be updated.
+ 		for exclude in excludes or []:
+@@ -481,7 +485,7 @@ class Pakfire(object):
+ 			exclude = self.create_relation(exclude)
+ 			request.lock(exclude)
+ 
+-		solver = self.solv(request, logger=logger, update=update, **kwargs)
++		solver = self.solv(request, logger=logger, **kwargs)
+ 
+ 		if not solver.status:
+ 			logger.info(_("Nothing to do"))
+@@ -534,8 +538,11 @@ class Pakfire(object):
+ 				request.install(rel)
+ 
+ 		# Solve the request.
+-		solver = self.solv(request, allow_downgrade=True, allow_vendorchange=allow_vendorchange,
+-			allow_archchange=allow_archchange)
++		solver = self.solv(request,
++			allow_downgrade=True,
++			allow_vendorchange=allow_vendorchange,
++			allow_archchange=allow_archchange,
++		)
+ 		assert solver.status is True
+ 
+ 		# Create the transaction.
+@@ -556,7 +563,7 @@ class Pakfire(object):
+ 		request = self.create_request(remove=pkgs)
+ 
+ 		# Solve the request.
+-		solver = self.solv(request, uninstall=True)
++		solver = self.solv(request, allow_uninstall=True)
+ 		assert solver.status is True
+ 
+ 		# Create the transaction.
+@@ -737,7 +744,7 @@ class Pakfire(object):
+ 		# Clean up repository caches.
+ 		self.repos.clean()
+ 
+-	def check(self, downgrade=True, uninstall=True):
++	def check(self, allow_downgrade=True, allow_uninstall=True):
+ 		"""
+ 			Try to fix any errors in the system.
+ 		"""
+@@ -745,8 +752,13 @@ class Pakfire(object):
+ 		# For that we create an empty request and solver and try to solve
+ 		# something.
+ 		request = self.create_request()
+-		solver = self.solv(request, fix_system=True, allow_downgrade=downgrade,
+-			uninstall=uninstall)
++		request.verify()
++
++		solver = self.solv(
++			request,
++			allow_downgrade=allow_downgrade,
++			allow_uninstall=allow_uninstall,
++		)
+ 
+ 		if solver.status is False:
+ 			log.info(_("Everything is fine."))
+diff --git a/python/pakfire/builder.py b/python/pakfire/builder.py
+index 494049e..863ade3 100644
+--- a/python/pakfire/builder.py
++++ b/python/pakfire/builder.py
+@@ -761,7 +761,8 @@ class BuildEnviron(object):
+ 
+ 		# Install all packages that were built.
+ 		self.install(self.find_result_packages(),
+-			uninstall=True, signatures_mode="disabled")
++			allow_vendorchange=True, allow_archchange=True,
++			allow_uninstall=True, signatures_mode="disabled")
+ 
+ 		self.log.info(_("Installation test succeeded."))
+ 		self.log.info("")
+diff --git a/python/pakfire/filelist.py b/python/pakfire/filelist.py
+index ef7ee35..4bac6ef 100644
+--- a/python/pakfire/filelist.py
++++ b/python/pakfire/filelist.py
+@@ -74,13 +74,12 @@ class File(_File):
+ 
+ 
+ class FileDatabase(_File):
+-	def __init__(self, pakfire, db, row_id):
++	def __init__(self, pakfire, db, row_id, row=None):
+ 		_File.__init__(self, pakfire)
+ 
+ 		self.db = db
+ 		self.row_id = row_id
+-
+-		self.__row = None
++		self.__row = row
+ 
+ 	@property
+ 	def row(self):
+@@ -91,13 +90,7 @@ class FileDatabase(_File):
+ 			c = self.db.cursor()
+ 			c.execute("SELECT * FROM files WHERE id = ? LIMIT 1", (self.row_id,))
+ 
+-			# Check if we got the same row.
+-			#assert c.lastrowid == self.row_id
+-
+-			for row in c:
+-				self.__row = row
+-				break
+-
++			self.__row = c.fetchone()
+ 			c.close()
+ 
+ 		return self.__row
+diff --git a/python/pakfire/packages/installed.py b/python/pakfire/packages/installed.py
+index 5a7763b..33c241d 100644
+--- a/python/pakfire/packages/installed.py
++++ b/python/pakfire/packages/installed.py
+@@ -39,6 +39,7 @@ class DatabasePackage(Package):
+ 		self.db = db
+ 
+ 		self._data = {}
++		self._filelist = None
+ 
+ 		for key in data.keys():
+ 			self._data[key] = data[key]
+@@ -169,20 +170,21 @@ class DatabasePackage(Package):
+ 
+ 	@property
+ 	def filename(self):
+-		return self.metadata.get("filename") # XXX basename?
++		return self.metadata.get("filename")
+ 
+ 	@property
+ 	def filelist(self):
+-		filelist = []
++		if self._filelist is None:
++			self._filelist = []
+ 
+-		c = self.db.cursor()
+-		c.execute("SELECT id FROM files WHERE pkg = ?", (self.id,))
++			c = self.db.cursor()
++			c.execute("SELECT * FROM files WHERE pkg = ?", (self.id,))
+ 
+-		for id in c:
+-			file = pakfire.filelist.FileDatabase(self.pakfire, self.db, id[0])
+-			filelist.append(file)
++			for row in c.fetchall():
++				file = pakfire.filelist.FileDatabase(self.pakfire, self.db, row["id"], row)
++				self._filelist.append(file)
+ 
+-		return filelist
++		return self._filelist
+ 
+ 	@property
+ 	def configfiles(self):
+diff --git a/python/pakfire/repository/database.py b/python/pakfire/repository/database.py
+index 6f8f397..a5e5b85 100644
+--- a/python/pakfire/repository/database.py
++++ b/python/pakfire/repository/database.py
+@@ -53,6 +53,13 @@ class Database(object):
+ 			self._db.close()
+ 			self._db = None
+ 
++	@property
++	def db(self):
++		if self._db is None:
++			self.open()
++
++		return self._db
++
+ 	def create(self):
+ 		pass
+ 
+@@ -338,11 +345,11 @@ class DatabaseLocal(Database):
+ 		#c.execute("SELECT id FROM packages WHERE name = ? AND epoch = ? AND version = ?"
+ 		#	" AND release = ? LIMIT 1", (pkg.name, pkg.epoch, pkg.version, pkg.release,))
+ 
+-		id = None
+-		for row in c:
+-			id = row["id"]
+-			break
+-		assert id
++		row = c.fetchone()
++		if not row:
++			return
++
++		id = row["id"]
+ 
+ 		# First, delete all files from the database and then delete the pkg itself.
+ 		c.execute("DELETE FROM files WHERE pkg = ?", (id,))
+@@ -364,34 +371,29 @@ class DatabaseLocal(Database):
+ 
+ 	@property
+ 	def packages(self):
+-		c = self.cursor()
++		c = self.db.execute("SELECT * FROM packages ORDER BY name")
+ 
+-		c.execute("SELECT * FROM packages ORDER BY name")
+-
+-		for row in c:
++		for row in c.fetchall():
+ 			yield packages.DatabasePackage(self.pakfire, self.repo, self, row)
+ 
+ 		c.close()
+ 
+ 	def get_filelist(self):
+-		c = self.cursor()
+-		c.execute("SELECT DISTINCT name FROM files")
+-
+-		ret = []
+-		for row in c:
+-			ret.append(row["name"])
+-
+-		c.close()
++		c = self.db.execute("SELECT name FROM files")
+ 
+-		return ret
++		return [r["name"] for r in c.fetchall()]
+ 
+ 	def get_package_from_solv(self, solv_pkg):
+-		c = self.cursor()
+-		c.execute("SELECT * FROM packages WHERE uuid = ? LIMIT 1", (solv_pkg.uuid,))
++		assert solv_pkg.uuid
++
++		c = self.db.execute("SELECT * FROM packages WHERE uuid = ? LIMIT 1", (solv_pkg.uuid,))
+ 
+ 		try:
+-			for row in c:
+-				return packages.DatabasePackage(self.pakfire, self.repo, self, row)
++			row = c.fetchone()
++			if row is None:
++				return
++
++			return packages.DatabasePackage(self.pakfire, self.repo, self, row)
+ 
+ 		finally:
+ 			c.close()
+diff --git a/python/pakfire/repository/index.py b/python/pakfire/repository/index.py
+index fac1c2f..7620b38 100644
+--- a/python/pakfire/repository/index.py
++++ b/python/pakfire/repository/index.py
+@@ -24,6 +24,7 @@ import os
+ import logging
+ log = logging.getLogger("pakfire")
+ 
++import pakfire.packages as packages
+ import pakfire.satsolver as satsolver
+ 
+ class Index(object):
+@@ -147,8 +148,12 @@ class Index(object):
+ 			solvable.add_provides(rel)
+ 
+ 	def rem_package(self, pkg):
+-		# XXX delete the solvable from the index.
+-		pass # TODO
++		"""
++			Delete the solvable from the index.
++		"""
++		assert isinstance(pkg, packages.SolvPackage)
++
++		self.solver_repo.rem_solv(pkg)
+ 
+ 	def clear(self):
+ 		"""
+diff --git a/python/pakfire/repository/system.py b/python/pakfire/repository/system.py
+index ce3e979..386f252 100644
+--- a/python/pakfire/repository/system.py
++++ b/python/pakfire/repository/system.py
+@@ -19,9 +19,17 @@
+ #                                                                             #
+ ###############################################################################
+ 
++import os
++
+ import base
+ import database
+ 
++import pakfire.packages as packages
++import pakfire.util as util
++
++from pakfire.constants import *
++from pakfire.i18n import _
++
+ class RepositorySystem(base.RepositoryFactory):
+ 	def __init__(self, pakfire):
+ 		base.RepositoryFactory.__init__(self, pakfire, "@system", "Local repository")
+@@ -33,6 +41,10 @@ class RepositorySystem(base.RepositoryFactory):
+ 		self.pool.set_installed(self.solver_repo)
+ 
+ 	@property
++	def cache_file(self):
++		return os.path.join(self.pakfire.path, PACKAGES_SOLV)
++
++	@property
+ 	def priority(self):
+ 		"""
+ 			The local repository has always a high priority.
+@@ -40,14 +52,35 @@ class RepositorySystem(base.RepositoryFactory):
+ 		return 10
+ 
+ 	def update(self, force=False, offline=False):
+-		if not force:
+-			force = len(self) == 0
++		# XXX using the cache is currently disabled
++		#if not force:
++		#	if os.path.exists(self.cache_file):
++		#		self.index.read(self.cache_file)
++		#
++		#	force = len(self) == 0
++
++		force = True
+ 
+ 		if force:
++			# Create a progressbar.
++			pb = util.make_progress(_("Loading installed packages"), len(self.db))
++
++			# Remove all data from the current index.
+ 			self.index.clear()
++
++			i = 0
+ 			for pkg in self.db.packages:
++				if pb:
++					i += 1
++					pb.update(i)
++
+ 				self.index.add_package(pkg)
+ 
++			self.index.optimize()
++
++			if pb:
++				pb.finish()
++
+ 	def commit(self):
+ 		# Commit the database to disk.
+ 		self.db.commit()
+@@ -55,20 +88,23 @@ class RepositorySystem(base.RepositoryFactory):
+ 		# Make sure that all data in the index is accessable.
+ 		self.index.optimize()
+ 
++		# Write the content of the index to a file
++		# for fast parsing.
++		# XXX this is currently disabled
++		#self.index.write(self.cache_file)
++
+ 	def add_package(self, pkg):
+ 		# Add package to the database.
+ 		self.db.add_package(pkg)
+ 		self.index.add_package(pkg)
+ 
+ 	def rem_package(self, pkg):
++		assert isinstance(pkg, packages.SolvPackage), pkg
++
+ 		# Remove package from the database.
+ 		self.db.rem_package(pkg)
+ 		self.index.rem_package(pkg)
+ 
+ 	@property
+ 	def filelist(self):
+-		# XXX ugly?
+-
+-		for pkg in self.db.packages:
+-			for file in pkg.filelist:
+-				yield file
++		return self.db.get_filelist()
+diff --git a/python/pakfire/satsolver.py b/python/pakfire/satsolver.py
+index c3629ce..48c6d0d 100644
+--- a/python/pakfire/satsolver.py
++++ b/python/pakfire/satsolver.py
+@@ -111,6 +111,13 @@ class Request(_pakfire.Request):
+ 
+ 
+ class Solver(object):
++	option2flag = {
++		"allow_archchange"   : SOLVER_FLAG_ALLOW_ARCHCHANGE,
++		"allow_downgrade"    : SOLVER_FLAG_ALLOW_DOWNGRADE,
++		"allow_uninstall"    : SOLVER_FLAG_ALLOW_UNINSTALL,
++		"allow_vendorchange" : SOLVER_FLAG_ALLOW_VENDORCHANGE,
++	}
++
+ 	def __init__(self, pakfire, request, logger=None):
+ 		if logger is None:
+ 			logger = logging.getLogger("pakfire")
+@@ -119,27 +126,6 @@ class Solver(object):
+ 		self.pakfire = pakfire
+ 		self.pool = self.pakfire.pool
+ 
+-		# Default settings.
+-		self.settings = {
+-			# Update all installed packages?
+-			"update" : False,
+-
+-			# Allow to uninstall any packages?
+-			"uninstall" : False,
+-
+-			# Allow to downgrade any packages?
+-			"allow_downgrade" : False,
+-
+-			# Allow packages to change their vendors?
+-			"allow_vendorchange" : False,
+-
+-			# Allow packages to change their arch?
+-			"allow_archchange" : False,
+-
+-			# Fix system?
+-			"fix_system" : False,
+-		}
+-
+ 		self.request = request
+ 		assert self.request, "Empty request?"
+ 
+@@ -159,40 +145,23 @@ class Solver(object):
+ 		self.__problems = None
+ 		self.__transaction = None
+ 
+-	def set(self, key, value):
+-		assert self.settings.has_key(key), "Unknown configuration setting: %s" % key
+-		assert value in (True, False), "Invalid value: %s" % value
+-
++	def set(self, option, value):
+ 		try:
+-			self.settings[key] = value
++			flag = self.option2flag[option]
+ 		except KeyError:
+-			pass
++			raise Exception, "Unknown configuration setting: %s" % option
++		self.solver.set_flag(flag, value)
+ 
+-	def get(self, key):
+-		assert self.settings.has_key(key), "Unknown configuration setting: %s" % key
+-
+-		return self.settings.get(key)
++	def get(self, option):
++		try:
++			flag = self.option2flag[option]
++		except KeyError:
++			raise Exception, "Unknown configuration setting: %s" % option
++		return self.solver.get_flag(flag)
+ 
+ 	def solve(self):
+ 		assert self.status is None, "Solver did already solve something."
+ 
+-		# Apply solver configuration.
+-		self.solver.set_fix_system(self.get("fix_system"))
+-		self.solver.set_allow_uninstall(self.get("uninstall"))
+-		self.solver.set_allow_downgrade(self.get("allow_downgrade"))
+-
+-		# Optionally allow packages to change their vendors.
+-		# This is not recommended because it may have weird effects.
+-		self.solver.set_allow_vendorchange(self.get("allow_vendorchange"))
+-
+-		# Optionally allow packages ot change their architecture.
+-		self.solver.set_allow_archchange(self.get("allow_archchange"))
+-
+-		# Configure the solver for an update.
+-		if self.get("update"):
+-			self.solver.set_updatesystem(True)
+-			self.solver.set_do_split_provides(True)
+-
+ 		# Actually solve the request.
+ 		start_time = time.time()
+ 		self.status = self.solver.solve(self.request)
+diff --git a/python/pakfire/transaction.py b/python/pakfire/transaction.py
+index 58b52c6..10a1277 100644
+--- a/python/pakfire/transaction.py
++++ b/python/pakfire/transaction.py
+@@ -59,15 +59,16 @@ class TransactionCheck(object):
+ 
+ 	@property
+ 	def error_files(self):
+-		ret = {}
++		ret = []
+ 
+-		for name, files in self.filelist.items():
+-			if len(files) <= 1:
+-				continue
++		for name, count in self.filelist.items():
++			if count > 1:
++				ret.append(name)
+ 
+-			ret[name] = files
++		return sorted(ret)
+ 
+-		return ret
++	def provides_file(self, name):
++		return [] # XXX TODO
+ 
+ 	@property
+ 	def successful(self):
+@@ -85,18 +86,16 @@ class TransactionCheck(object):
+ 		if logger is None:
+ 			logger = logging.getLogger("pakfire")
+ 
+-		for name, files in sorted(self.error_files.items()):
+-			assert len(files) >= 2
+-
+-			pkgs = [f.pkg.friendly_name for f in files]
++		for file in self.error_files:
++			pkgs = self.provides_file(file)
+ 
+-			if len(files) == 2:
++			if len(pkgs) == 2:
+ 				logger.critical(
+ 					_("file %(name)s from %(pkg1)s conflicts with file from package %(pkg2)s") % \
+ 						{ "name" : name, "pkg1" : pkgs[0], "pkg2" : pkgs[1] }
+ 				)
+ 
+-			elif len(files) >= 3:
++			elif len(pkgs) >= 3:
+ 				logger.critical(
+ 					_("file %(name)s from %(pkg)s conflicts with files from %(pkgs)s") % \
+ 						{ "name" : name, "pkg" : pkgs[0], "pkgs" : i18n.list(pkgs[1:])}
+@@ -113,7 +112,7 @@ class TransactionCheck(object):
+ 		filelist = {}
+ 
+ 		for file in self.pakfire.repos.local.filelist:
+-			filelist[file.name] = [file,]
++			filelist[file] = 1
+ 
+ 		return filelist
+ 
+@@ -122,11 +121,10 @@ class TransactionCheck(object):
+ 			if file.is_dir():
+ 				continue
+ 
+-			if self.filelist.has_key(file.name):
+-				self.filelist[file.name].append(file)
+-
+-			else:
+-				self.filelist[file.name] = [file,]
++			try:
++				self.filelist[file.name] += 1
++			except KeyError:
++				self.filelist[file.name] = 1
+ 
+ 		# Add all filesize data to mountpoints.
+ 		self.mountpoints.add_pkg(pkg)
+@@ -136,14 +134,10 @@ class TransactionCheck(object):
+ 			if file.is_dir():
+ 				continue
+ 
+-			if not self.filelist.has_key(file.name):
+-				continue
+-
+-			for f in self.filelist[file.name]:
+-				if not f.pkg == pkg:
+-					continue
+-
+-				self.filelist[file.name].remove(f)
++			try:
++				self.filelist[file.name] -= 1
++			except KeyError:
++				pass
+ 
+ 		# Remove all filesize data from mountpoints.
+ 		self.mountpoints.rem_pkg(pkg)
+@@ -562,8 +556,11 @@ class Transaction(object):
+ 		for action in self.actions:
+ 			try:
+ 				action.run()
++
+ 			except ActionError, e:
+ 				logger.error("Action finished with an error: %s - %s" % (action, e))
++			#except Exception, e:
++			#	logger.error(_("An unforeseen error occoured: %s") % e)
+ 
+ 		logger.info("")
+ 
+diff --git a/python/src/_pakfiremodule.c b/python/src/_pakfiremodule.c
+index d4ea688..8e80468 100644
+--- a/python/src/_pakfiremodule.c
++++ b/python/src/_pakfiremodule.c
+@@ -80,6 +80,9 @@ static PyMethodDef Request_methods[] = {
+ 	{"noobsoletes_solvable", (PyCFunction)Request_noobsoletes_solvable, METH_VARARGS, NULL},
+ 	{"noobsoletes_relation", (PyCFunction)Request_noobsoletes_relation, METH_VARARGS, NULL},
+ 	{"noobsoletes_name", (PyCFunction)Request_noobsoletes_name, METH_VARARGS, NULL},
++	{"updateall", (PyCFunction)Request_updateall, METH_NOARGS, NULL},
++	{"distupgrade", (PyCFunction)Request_distupgrade, METH_NOARGS, NULL},
++	{"verify", (PyCFunction)Request_verify, METH_NOARGS, NULL},
+ 	{ NULL, NULL, 0, NULL }
+ };
+ 
+@@ -99,6 +102,7 @@ static PyMethodDef Repo_methods[] = {
+ 	{"internalize", (PyCFunction)Repo_internalize, METH_NOARGS, NULL},
+ 	{"clear", (PyCFunction)Repo_clear, METH_NOARGS, NULL},
+ 	{"get_all", (PyCFunction)Repo_get_all, METH_NOARGS, NULL},
++	{"rem_solv", (PyCFunction)Repo_rem_solv, METH_VARARGS, NULL},
+ 	{ NULL, NULL, 0, NULL }
+ };
+ 
+@@ -152,10 +156,8 @@ static PyMethodDef Solution_methods[] = {
+ 
+ static PyMethodDef Solver_methods[] = {
+ 	{"solve", (PyCFunction)Solver_solve, METH_VARARGS, NULL},
+-	{"get_fix_system", (PyCFunction)Solver_get_fix_system, METH_NOARGS, NULL},
+-	{"set_fix_system", (PyCFunction)Solver_set_fix_system, METH_VARARGS, NULL},
+-	{"get_allow_downgrade", (PyCFunction)Solver_get_allow_downgrade, METH_NOARGS, NULL},
+-	{"set_allow_downgrade", (PyCFunction)Solver_set_allow_downgrade, METH_VARARGS, NULL},
++	{"get_flag", (PyCFunction)Solver_get_flag, METH_VARARGS, NULL},
++	{"set_flag", (PyCFunction)Solver_set_flag, METH_VARARGS, NULL},
+ 	{"get_allow_archchange", (PyCFunction)Solver_get_allow_archchange, METH_NOARGS, NULL},
+ 	{"set_allow_archchange", (PyCFunction)Solver_set_allow_archchange, METH_VARARGS, NULL},
+ 	{"get_allow_vendorchange", (PyCFunction)Solver_get_allow_vendorchange, METH_NOARGS, NULL},
+@@ -307,4 +309,12 @@ void init_pakfire(void) {
+ 	PyDict_SetItemString(d, "SOLVER_RULE_FEATURE",				Py_BuildValue("i", SOLVER_RULE_FEATURE));
+ 	PyDict_SetItemString(d, "SOLVER_RULE_LEARNT",				Py_BuildValue("i", SOLVER_RULE_LEARNT));
+ 	PyDict_SetItemString(d, "SOLVER_RULE_CHOICE",				Py_BuildValue("i", SOLVER_RULE_CHOICE));
++
++	/* Solver flags */
++	PyDict_SetItemString(d, "SOLVER_FLAG_ALLOW_DOWNGRADE", Py_BuildValue("i", SOLVER_FLAG_ALLOW_DOWNGRADE));
++	PyDict_SetItemString(d, "SOLVER_FLAG_ALLOW_ARCHCHANGE", Py_BuildValue("i", SOLVER_FLAG_ALLOW_ARCHCHANGE));
++	PyDict_SetItemString(d, "SOLVER_FLAG_ALLOW_VENDORCHANGE", Py_BuildValue("i", SOLVER_FLAG_ALLOW_VENDORCHANGE));
++	PyDict_SetItemString(d, "SOLVER_FLAG_ALLOW_UNINSTALL", Py_BuildValue("i", SOLVER_FLAG_ALLOW_UNINSTALL));
++	PyDict_SetItemString(d, "SOLVER_FLAG_NO_UPDATEPROVIDE", Py_BuildValue("i", SOLVER_FLAG_NO_UPDATEPROVIDE));
++	PyDict_SetItemString(d, "SOLVER_FLAG_SPLITPROVIDES", Py_BuildValue("i", SOLVER_FLAG_SPLITPROVIDES));
+ }
+diff --git a/python/src/repo.c b/python/src/repo.c
+index 6621c3b..4bc112a 100644
+--- a/python/src/repo.c
++++ b/python/src/repo.c
+@@ -47,7 +47,6 @@ PyObject* Repo_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
+ 	const char *name;
+ 
+ 	if (!PyArg_ParseTuple(args, "Os", &pool, &name)) {
+-		/* XXX raise exception */
+ 		return NULL;
+ 	}
+ 
+@@ -67,7 +66,6 @@ PyObject* Repo_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
+ }
+ 
+ PyObject *Repo_dealloc(RepoObject *self) {
+-	// repo_free(self->_repo, 0);
+ 	self->ob_type->tp_free((PyObject *)self);
+ 
+ 	Py_RETURN_NONE;
+@@ -97,7 +95,6 @@ PyObject *Repo_set_enabled(RepoObject *self, PyObject *args) {
+ 	bool enabled;
+ 
+ 	if (!PyArg_ParseTuple(args, "b", &enabled)) {
+-		/* XXX raise exception */
+ 		return NULL;
+ 	}
+ 
+@@ -132,13 +129,12 @@ PyObject *Repo_write(RepoObject *self, PyObject *args) {
+ 	char exception[STRING_SIZE];
+ 
+ 	if (!PyArg_ParseTuple(args, "s", &filename)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	// Prepare the pool and internalize all attributes.
+-	_Pool_prepare(self->_repo->pool);
++	//_Pool_prepare(self->_repo->pool);
+ 
+-	// XXX catch if file cannot be opened
+ 	FILE *fp = NULL;
+ 	if ((fp = fopen(filename, "wb")) == NULL) {
+ 		snprintf(exception, STRING_SIZE - 1, "Could not open file for writing: %s (%s).",
+@@ -147,8 +143,7 @@ PyObject *Repo_write(RepoObject *self, PyObject *args) {
+ 		return NULL;
+ 	}
+ 
+-	repo_write(self->_repo, fp, NULL, NULL, 0);
+-
++	repo_write(self->_repo, fp);
+ 	fclose(fp);
+ 
+ 	Py_RETURN_NONE;
+@@ -158,14 +153,12 @@ PyObject *Repo_read(RepoObject *self, PyObject *args) {
+ 	const char *filename;
+ 
+ 	if (!PyArg_ParseTuple(args, "s", &filename)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	// XXX catch if file cannot be opened
+ 	FILE *fp = fopen(filename, "rb");
+-
+-	repo_add_solv(self->_repo, fp);
+-
++	repo_add_solv(self->_repo, fp, 0);
+ 	fclose(fp);
+ 
+ 	Py_RETURN_NONE;
+@@ -209,3 +202,17 @@ PyObject *Repo_get_all(RepoObject *self) {
+ 
+ 	return list;
+ }
++
++PyObject *Repo_rem_solv(RepoObject *self, PyObject *args) {
++	Repo *repo = self->_repo;
++	SolvableObject *solv;
++
++	if (!PyArg_ParseTuple(args, "O", &solv)) {
++		return NULL;
++	}
++
++	Solvable *s = pool_id2solvable(repo->pool, solv->_id);
++	repo_free_solvable(repo, s - repo->pool->solvables, 1);
++
++	Py_RETURN_NONE;
++}
+diff --git a/python/src/repo.h b/python/src/repo.h
+index 9de636f..3ef96df 100644
+--- a/python/src/repo.h
++++ b/python/src/repo.h
+@@ -44,6 +44,7 @@ extern PyObject *Repo_read(RepoObject *self, PyObject *args);
+ extern PyObject *Repo_internalize(RepoObject *self);
+ extern PyObject *Repo_clear(RepoObject *self);
+ extern PyObject *Repo_get_all(RepoObject *self);
++extern PyObject *Repo_rem_solv(RepoObject *self, PyObject *args);
+ 
+ extern PyTypeObject RepoType;
+ 
+diff --git a/python/src/request.c b/python/src/request.c
+index 168b455..7d7c5b2 100644
+--- a/python/src/request.c
++++ b/python/src/request.c
+@@ -64,29 +64,25 @@ PyObject *Request_dealloc(RequestObject *self) {
+ }
+ 
+ void _Request_solvable(RequestObject *self, Id what, Id solvable) {
+-	queue_push(&self->_queue, what|SOLVER_SOLVABLE);
+-	queue_push(&self->_queue, solvable);
++	queue_push2(&self->_queue, what|SOLVER_SOLVABLE, solvable);
+ }
+ 
+ void _Request_relation(RequestObject *self, Id what, Id relation) {
+-	queue_push(&self->_queue, what|SOLVER_SOLVABLE_PROVIDES);
+-	queue_push(&self->_queue, relation);
++	queue_push2(&self->_queue, what|SOLVER_SOLVABLE_PROVIDES, relation);
+ }
+ 
+ void _Request_name(RequestObject *self, Id what, Id provides) {
+-	queue_push(&self->_queue, what|SOLVER_SOLVABLE_NAME);
+-	queue_push(&self->_queue, provides);
++	queue_push2(&self->_queue, what|SOLVER_SOLVABLE_NAME, provides);
+ }
+ 
+ PyObject *Request_install_solvable(RequestObject *self, PyObject *args) {
+ 	SolvableObject *solv;
+ 
+ 	if (!PyArg_ParseTuple(args, "O", &solv)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	_Request_solvable(self, SOLVER_INSTALL, solv->_id);
+-
+ 	Py_RETURN_NONE;
+ }
+ 
+@@ -94,11 +90,10 @@ PyObject *Request_install_relation(RequestObject *self, PyObject *args) {
+ 	RelationObject *rel;
+ 
+ 	if (!PyArg_ParseTuple(args, "O", &rel)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	_Request_relation(self, SOLVER_INSTALL, rel->_id);
+-
+ 	Py_RETURN_NONE;
+ }
+ 
+@@ -106,7 +101,7 @@ PyObject *Request_install_name(RequestObject *self, PyObject *args) {
+ 	const char *name;
+ 
+ 	if (!PyArg_ParseTuple(args, "s", &name)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	Id _name = pool_str2id(self->_pool, name, 1);
+@@ -119,11 +114,10 @@ PyObject *Request_remove_solvable(RequestObject *self, PyObject *args) {
+ 	SolvableObject *solv;
+ 
+ 	if (!PyArg_ParseTuple(args, "O", &solv)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	_Request_solvable(self, SOLVER_ERASE, solv->_id);
+-
+ 	Py_RETURN_NONE;
+ }
+ 
+@@ -131,11 +125,10 @@ PyObject *Request_remove_relation(RequestObject *self, PyObject *args) {
+ 	RelationObject *rel;
+ 
+ 	if (!PyArg_ParseTuple(args, "O", &rel)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	_Request_relation(self, SOLVER_ERASE, rel->_id);
+-
+ 	Py_RETURN_NONE;
+ }
+ 
+@@ -143,7 +136,7 @@ PyObject *Request_remove_name(RequestObject *self, PyObject *args) {
+ 	const char *name;
+ 
+ 	if (!PyArg_ParseTuple(args, "s", &name)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	Id _name = pool_str2id(self->_pool, name, 1);
+@@ -156,11 +149,10 @@ PyObject *Request_update_solvable(RequestObject *self, PyObject *args) {
+ 	SolvableObject *solv;
+ 
+ 	if (!PyArg_ParseTuple(args, "O", &solv)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	_Request_solvable(self, SOLVER_UPDATE, solv->_id);
+-
+ 	Py_RETURN_NONE;
+ }
+ 
+@@ -168,11 +160,10 @@ PyObject *Request_update_relation(RequestObject *self, PyObject *args) {
+ 	RelationObject *rel;
+ 
+ 	if (!PyArg_ParseTuple(args, "O", &rel)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	_Request_relation(self, SOLVER_UPDATE, rel->_id);
+-
+ 	Py_RETURN_NONE;
+ }
+ 
+@@ -180,7 +171,7 @@ PyObject *Request_update_name(RequestObject *self, PyObject *args) {
+ 	const char *name;
+ 
+ 	if (!PyArg_ParseTuple(args, "s", &name)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	Id _name = pool_str2id(self->_pool, name, 1);
+@@ -193,11 +184,10 @@ PyObject *Request_lock_solvable(RequestObject *self, PyObject *args) {
+ 	SolvableObject *solv;
+ 
+ 	if (!PyArg_ParseTuple(args, "O", &solv)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	_Request_solvable(self, SOLVER_LOCK, solv->_id);
+-
+ 	Py_RETURN_NONE;
+ }
+ 
+@@ -205,11 +195,10 @@ PyObject *Request_lock_relation(RequestObject *self, PyObject *args) {
+ 	RelationObject *rel;
+ 
+ 	if (!PyArg_ParseTuple(args, "O", &rel)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	_Request_relation(self, SOLVER_LOCK, rel->_id);
+-
+ 	Py_RETURN_NONE;
+ }
+ 
+@@ -217,7 +206,7 @@ PyObject *Request_lock_name(RequestObject *self, PyObject *args) {
+ 	const char *name;
+ 
+ 	if (!PyArg_ParseTuple(args, "s", &name)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	Id _name = pool_str2id(self->_pool, name, 1);
+@@ -230,11 +219,10 @@ PyObject *Request_noobsoletes_solvable(RequestObject *self, PyObject *args) {
+ 	SolvableObject *solv;
+ 
+ 	if (!PyArg_ParseTuple(args, "O", &solv)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	_Request_solvable(self, SOLVER_NOOBSOLETES, solv->_id);
+-
+ 	Py_RETURN_NONE;
+ }
+ 
+@@ -242,11 +230,10 @@ PyObject *Request_noobsoletes_relation(RequestObject *self, PyObject *args) {
+ 	RelationObject *rel;
+ 
+ 	if (!PyArg_ParseTuple(args, "O", &rel)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	_Request_relation(self, SOLVER_NOOBSOLETES, rel->_id);
+-
+ 	Py_RETURN_NONE;
+ }
+ 
+@@ -254,7 +241,7 @@ PyObject *Request_noobsoletes_name(RequestObject *self, PyObject *args) {
+ 	const char *name;
+ 
+ 	if (!PyArg_ParseTuple(args, "s", &name)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	Id _name = pool_str2id(self->_pool, name, 1);
+@@ -262,3 +249,18 @@ PyObject *Request_noobsoletes_name(RequestObject *self, PyObject *args) {
+ 
+ 	Py_RETURN_NONE;
+ }
++
++PyObject *Request_updateall(RequestObject *self, PyObject *args) {
++	queue_push2(&self->_queue, SOLVER_UPDATE|SOLVER_SOLVABLE_ALL, 0);
++	Py_RETURN_NONE;
++}
++
++PyObject *Request_distupgrade(RequestObject *self, PyObject *args) {
++	queue_push2(&self->_queue, SOLVER_DISTUPGRADE|SOLVER_SOLVABLE_ALL, 0);
++	Py_RETURN_NONE;
++}
++
++PyObject *Request_verify(RequestObject *self, PyObject *args) {
++	queue_push2(&self->_queue, SOLVER_VERIFY|SOLVER_SOLVABLE_ALL, 0);
++	Py_RETURN_NONE;
++}
+diff --git a/python/src/request.h b/python/src/request.h
+index b936801..aa79274 100644
+--- a/python/src/request.h
++++ b/python/src/request.h
+@@ -59,6 +59,10 @@ extern PyObject *Request_noobsoletes_solvable(RequestObject *self, PyObject *arg
+ extern PyObject *Request_noobsoletes_relation(RequestObject *self, PyObject *args);
+ extern PyObject *Request_noobsoletes_name(RequestObject *self, PyObject *args);
+ 
++extern PyObject *Request_updateall(RequestObject *self, PyObject *args);
++extern PyObject *Request_distupgrade(RequestObject *self, PyObject *args);
++extern PyObject *Request_verify(RequestObject *self, PyObject *args);
++
+ extern PyTypeObject RequestType;
+ 
+ #endif
+diff --git a/python/src/solution.c b/python/src/solution.c
+index b52a1b5..7360a37 100644
+--- a/python/src/solution.c
++++ b/python/src/solution.c
+@@ -82,7 +82,7 @@ PyObject *Solution_string(SolutionObject *self) {
+ 
+ 			switch (how & SOLVER_JOBMASK) {
+ 				case SOLVER_INSTALL:
+-					if (select == SOLVER_SOLVABLE && solver->installed && pool->solvables[what].repo == solver->installed)
++					if (select == SOLVER_SOLVABLE && pool->installed && pool->solvables[what].repo == pool->installed)
+ 						snprintf(str, STRING_SIZE - 1, _("do not keep %s installed"),
+ 							pool_solvid2str(pool, what));
+ 					else if (select == SOLVER_SOLVABLE_PROVIDES)
+@@ -94,7 +94,7 @@ PyObject *Solution_string(SolutionObject *self) {
+ 					break;
+ 
+ 				case SOLVER_ERASE:
+-					if (select == SOLVER_SOLVABLE && !(solver->installed && pool->solvables[what].repo == solver->installed))
++					if (select == SOLVER_SOLVABLE && !(pool->installed && pool->solvables[what].repo == pool->installed))
+ 						snprintf(str, STRING_SIZE - 1, _("do not forbid installation of %s"),
+ 							pool_solvid2str(pool, what));
+ 					else if (select == SOLVER_SOLVABLE_PROVIDES)
+@@ -122,7 +122,7 @@ PyObject *Solution_string(SolutionObject *self) {
+ 
+ 		} else if (p == SOLVER_SOLUTION_INFARCH) {
+ 			s = pool->solvables + rp;
+-			if (solver->installed && s->repo == solver->installed)
++			if (pool->installed && s->repo == pool->installed)
+ 				snprintf(str, STRING_SIZE - 1, _("keep %s despite the inferior architecture"),
+ 					pool_solvable2str(pool, s));
+ 			else
+@@ -131,7 +131,7 @@ PyObject *Solution_string(SolutionObject *self) {
+ 
+ 		} else if (p == SOLVER_SOLUTION_DISTUPGRADE) {
+ 			s = pool->solvables + rp;
+-			if (solver->installed && s->repo == solver->installed)
++			if (pool->installed && s->repo == pool->installed)
+ 				snprintf(str, STRING_SIZE - 1, _("keep obsolete %s"),
+ 					pool_solvable2str(pool, s));
+ 			else
+diff --git a/python/src/solver.c b/python/src/solver.c
+index 5079510..54e1294 100644
+--- a/python/src/solver.c
++++ b/python/src/solver.c
+@@ -53,6 +53,9 @@ PyObject* Solver_new(PyTypeObject *type, PyObject *args, PyObject *kwds) {
+ 		}
+ 	}
+ 
++	/* enable splitprovides by default */
++	solver_set_flag(self->_solver, SOLVER_FLAG_SPLITPROVIDES, 1);
++
+ 	return (PyObject *)self;
+ }
+ 
+@@ -63,138 +66,150 @@ PyObject *Solver_dealloc(SolverObject *self) {
+ 	Py_RETURN_NONE;
+ }
+ 
+-PyObject *Solver_get_fix_system(SolverObject *self, PyObject *args) {
+-	return Py_BuildValue("i", self->_solver->fixsystem);
++PyObject *Solver_get_flag(SolverObject *self, PyObject *args) {
++	int flag = 0;
++
++	if (!PyArg_ParseTuple(args, "i", &flag)) {
++		return NULL;
++	}
++
++	int val = solver_get_flag(self->_solver, flag);
++	return Py_BuildValue("i", val);
+ }
+ 
+-PyObject *Solver_set_fix_system(SolverObject *self, PyObject *args) {
+-	int val;
++PyObject *Solver_set_flag(SolverObject *self, PyObject *args) {
++	int flag = 0, val = 0;
+ 
+-	if (!PyArg_ParseTuple(args, "i", &val)) {
+-		/* XXX raise exception */
++	if (!PyArg_ParseTuple(args, "ii", &flag, &val)) {
++		return NULL;
+ 	}
+ 
+-	self->_solver->fixsystem = val;
+-
++	solver_set_flag(self->_solver, flag, val);
+ 	Py_RETURN_NONE;
+ }
+ 
+ PyObject *Solver_get_allow_downgrade(SolverObject *self, PyObject *args) {
+-	return Py_BuildValue("i", self->_solver->allowdowngrade);
++	int val = solver_get_flag(self->_solver, SOLVER_FLAG_ALLOW_DOWNGRADE);
++
++	return Py_BuildValue("i", val);
+ }
+ 
+ PyObject *Solver_set_allow_downgrade(SolverObject *self, PyObject *args) {
+ 	int val;
+ 
+ 	if (!PyArg_ParseTuple(args, "i", &val)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+-	self->_solver->allowdowngrade = val;
+-
++	solver_set_flag(self->_solver, SOLVER_FLAG_ALLOW_DOWNGRADE, val);
+ 	Py_RETURN_NONE;
+ }
+ 
+ PyObject *Solver_get_allow_archchange(SolverObject *self, PyObject *args) {
+-	return Py_BuildValue("i", self->_solver->allowarchchange);
++	int val = solver_get_flag(self->_solver, SOLVER_FLAG_ALLOW_ARCHCHANGE);
++
++	return Py_BuildValue("i", val);
+ }
+ 
+ PyObject *Solver_set_allow_archchange(SolverObject *self, PyObject *args) {
+ 	int val;
+ 
+ 	if (!PyArg_ParseTuple(args, "i", &val)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+-	self->_solver->allowarchchange = val;
+-
++	solver_set_flag(self->_solver, SOLVER_FLAG_ALLOW_ARCHCHANGE, val);
+ 	Py_RETURN_NONE;
+ }
+ 
+ PyObject *Solver_get_allow_vendorchange(SolverObject *self, PyObject *args) {
+-	return Py_BuildValue("i", self->_solver->allowvendorchange);
++	int val = solver_get_flag(self->_solver, SOLVER_FLAG_ALLOW_VENDORCHANGE);
++
++	return Py_BuildValue("i", val);
+ }
+ 
+ PyObject *Solver_set_allow_vendorchange(SolverObject *self, PyObject *args) {
+ 	int val;
+ 
+ 	if (!PyArg_ParseTuple(args, "i", &val)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+-	self->_solver->allowvendorchange = val;
+-
++	solver_set_flag(self->_solver, SOLVER_FLAG_ALLOW_VENDORCHANGE, val);
+ 	Py_RETURN_NONE;
+ }
+ 
+ PyObject *Solver_get_allow_uninstall(SolverObject *self, PyObject *args) {
+-	return Py_BuildValue("i", self->_solver->allowuninstall);
++	int val = solver_get_flag(self->_solver, SOLVER_FLAG_ALLOW_UNINSTALL);
++
++	return Py_BuildValue("i", val);
+ }
+ 
+ PyObject *Solver_set_allow_uninstall(SolverObject *self, PyObject *args) {
+ 	int val;
+ 
+ 	if (!PyArg_ParseTuple(args, "i", &val)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+-	self->_solver->allowuninstall = val;
+-
++	solver_set_flag(self->_solver, SOLVER_FLAG_ALLOW_UNINSTALL, val);
+ 	Py_RETURN_NONE;
+ }
+ 
+ PyObject *Solver_get_updatesystem(SolverObject *self, PyObject *args) {
+-	return Py_BuildValue("i", self->_solver->updatesystem);
++	//return Py_BuildValue("i", self->_solver->updatesystem);
++	Py_RETURN_NONE;
+ }
+ 
+ PyObject *Solver_set_updatesystem(SolverObject *self, PyObject *args) {
+-	int val;
++	/*int val;
+ 
+ 	if (!PyArg_ParseTuple(args, "i", &val)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+-	self->_solver->updatesystem = val;
++	self->_solver->updatesystem = val; */
+ 
+ 	Py_RETURN_NONE;
+ }
+ 
+ PyObject *Solver_get_do_split_provides(SolverObject *self, PyObject *args) {
+-	return Py_BuildValue("i", self->_solver->dosplitprovides);
++	int val = solver_get_flag(self->_solver, SOLVER_FLAG_SPLITPROVIDES);
++
++	return Py_BuildValue("i", val);
+ }
+ 
+ PyObject *Solver_set_do_split_provides(SolverObject *self, PyObject *args) {
+ 	int val;
+ 
+ 	if (!PyArg_ParseTuple(args, "i", &val)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+-	self->_solver->dosplitprovides = val;
+-
++	solver_set_flag(self->_solver, SOLVER_FLAG_SPLITPROVIDES, val);
+ 	Py_RETURN_NONE;
+ }
+ 
+ PyObject *Solver_solve(SolverObject *self, PyObject *args) {
+ 	RequestObject *request;
++	int res = 0;
+ 
+ 	if (!PyArg_ParseTuple(args, "O", &request)) {
+-		/* XXX raise exception */
++		return NULL;
+ 	}
+ 
+ 	// Make sure, the pool is prepared.
+ 	_Pool_prepare(self->_solver->pool);
+ 
+-	solver_solve(self->_solver, &request->_queue);
++	res = solver_solve(self->_solver, &request->_queue);
+ 
+ #ifdef DEBUG
+ 	solver_printallsolutions(self->_solver);
+ #endif
+ 
+-	if (self->_solver->problems.count == 0) {
++	if (res == 0) {
+ 		Py_RETURN_TRUE;
+ 	}
+-
+ 	Py_RETURN_FALSE;
+ }
+ 
+@@ -202,7 +217,6 @@ PyObject *Solver_get_problems(SolverObject *self, PyObject *args) {
+ 	RequestObject *request;
+ 
+ 	if (!PyArg_ParseTuple(args, "O", &request)) {
+-		/* XXX raise exception */
+ 		return NULL;
+ 	}
+ 
+diff --git a/python/src/solver.h b/python/src/solver.h
+index 604cb83..8a4478b 100644
+--- a/python/src/solver.h
++++ b/python/src/solver.h
+@@ -34,8 +34,9 @@ typedef struct {
+ extern PyObject* Solver_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
+ extern PyObject *Solver_dealloc(SolverObject *self);
+ 
+-extern PyObject *Solver_get_fix_system(SolverObject *self, PyObject *args);
+-extern PyObject *Solver_set_fix_system(SolverObject *self, PyObject *args);
++extern PyObject *Solver_get_flag(SolverObject *self, PyObject *args);
++extern PyObject *Solver_set_flag(SolverObject *self, PyObject *args);
++
+ extern PyObject *Solver_get_allow_downgrade(SolverObject *self, PyObject *args);
+ extern PyObject *Solver_set_allow_downgrade(SolverObject *self, PyObject *args);
+ extern PyObject *Solver_get_allow_archchange(SolverObject *self, PyObject *args);
+-- 
+1.7.10.4
+

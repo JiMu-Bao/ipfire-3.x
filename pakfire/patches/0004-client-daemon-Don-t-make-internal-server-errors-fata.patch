@@ -1,7 +1,7 @@
 From e3eb933336605515fe8cc9968a83a37b7df6b257 Mon Sep 17 00:00:00 2001
 From: Michael Tremer <michael.tremer@ipfire.org>
 Date: Thu, 19 Apr 2012 17:02:09 +0200
-Subject: [PATCH 4/8] client/daemon: Don't make internal server errors fatal
+Subject: [PATCH 04/16] client/daemon: Don't make internal server errors fatal
  for keepalives/updates.
 
 Because sometime, the hub could have some hiccups, this is no
@@ -12,9 +12,9 @@ However, we should now about the error and so the last try would
 raise an exception.
 ---
  po/pakfire.pot                     |  137 ++++++++++++++++++++----------------
- python/pakfire/client/base.py      |   43 ++++++++----
- python/pakfire/client/transport.py |    8 ++
- python/pakfire/errors.py           |    4 +
+ python/pakfire/client/base.py      |   43 +++++++----
+ python/pakfire/client/transport.py |    8 +++
+ python/pakfire/errors.py           |    4 ++
  4 files changed, 117 insertions(+), 75 deletions(-)
 
 diff --git a/po/pakfire.pot b/po/pakfire.pot
@@ -496,5 +496,5 @@ index c0f711f..3af257d 100644
  	message = _("Could not find the requested URL.")
  
 -- 
-1.7.7.6
+1.7.10.4
 

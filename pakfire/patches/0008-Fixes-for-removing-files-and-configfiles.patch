@@ -1,13 +1,13 @@
 From d38612fe50395a35d6fdc0774d56c7c2ddc58cf7 Mon Sep 17 00:00:00 2001
 From: Michael Tremer <michael.tremer@ipfire.org>
 Date: Sun, 22 Apr 2012 14:48:10 +0200
-Subject: [PATCH 8/8] Fixes for removing files (and configfiles).
+Subject: [PATCH 08/16] Fixes for removing files (and configfiles).
 
 There were some problems when the user removed those
 files earlier.
 ---
  python/pakfire/packages/base.py |   12 ++++++++++++
- 1 files changed, 12 insertions(+), 0 deletions(-)
+ 1 file changed, 12 insertions(+)
 
 diff --git a/python/pakfire/packages/base.py b/python/pakfire/packages/base.py
 index e27c3f7..9162536 100644
@@ -47,5 +47,5 @@ index e27c3f7..9162536 100644
  			else:
  				log.warning("Cannot remove file: %s. Filetype is unhandled." % file)
 -- 
-1.7.7.6
+1.7.10.4
 

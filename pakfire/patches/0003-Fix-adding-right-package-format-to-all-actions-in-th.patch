@@ -1,12 +1,12 @@
 From 39097e291ae050dbefe2dfa265e55dd330328acd Mon Sep 17 00:00:00 2001
 From: Michael Tremer <michael.tremer@ipfire.org>
 Date: Thu, 19 Apr 2012 16:56:03 +0200
-Subject: [PATCH 3/8] Fix adding right package format to all actions in the
+Subject: [PATCH 03/16] Fix adding right package format to all actions in the
  transaction.
 
 ---
  python/pakfire/transaction.py |   23 +++++++++++++++--------
- 1 files changed, 15 insertions(+), 8 deletions(-)
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
 diff --git a/python/pakfire/transaction.py b/python/pakfire/transaction.py
 index 0b417d2..58b52c6 100644
@@ -71,5 +71,5 @@ index 0b417d2..58b52c6 100644
  			s.append(_("Total download size: %s") % util.format_size(download_size))
  
 -- 
-1.7.7.6
+1.7.10.4
 

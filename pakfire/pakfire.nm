@@ -5,7 +5,7 @@
 
 name       = pakfire
 version    = 0.9.22
-release    = 4
+release    = 5
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Packaging
@@ -26,7 +26,7 @@ build
 		elfutils-devel
 		gettext
 		libcap-devel
-		libsolv-devel
+		libsolv-devel >= 0.0.0-4
 		popt-devel
 		python-devel
 		xz-devel
@@ -60,6 +60,7 @@ packages
 
 	package %{name}-common
 		requires
+			libsolv >= 0.0.0-4
 			pygpgme
 			python-progressbar
 			python-urlgrabber
