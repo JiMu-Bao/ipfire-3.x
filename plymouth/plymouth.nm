@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = plymouth
-version    = 0.8.4
-release    = 3
+version    = 0.8.5.1
+release    = 1
 
 groups     = System/Base
 url        = http://www.freedesktop.org/wiki/Software/Plymouth
@@ -101,6 +101,10 @@ packages
 			initscripts
 		end
 
+		conflicts
+			systemd-units < 185-3
+		end
+
 		configfiles
 			/etc/plymouth/plymouthd.conf
 		end
@@ -110,6 +114,19 @@ packages
 				cp -f %{datadir}/plymouth/default-boot-duration \
 					%{localstatedir}/lib/plymouth/boot-duration
 			fi
+
+			# Just search for new unit files that were just installed.
+			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		# Reload systemd after update.
+		script postup
+			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		# Tell systemd that unitfiles have been removed.
+		script postun
+			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
 		end
 
 		script posttransin
