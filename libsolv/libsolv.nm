@@ -6,7 +6,7 @@
 name       = libsolv
 version    = 0.0.0
 git_ver    = c02d759
-release    = 4.git%{git_ver}
+release    = 5.git%{git_ver}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -43,18 +43,35 @@ build
 		mkdir build
 		cd build && cmake .. \
 			-DCMAKE_INSTALL_PREFIX=/usr \
-			-DCMAKE_BUILD_TYPE=Release \
-			-DCMAKE_SKIP_RPATH=1
+			-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+			-DENABLE_PERL=0 \
+			-DENABLE_PYTHON=0 \
+			-DENABLE_RUBY=0
 		make %{PARALELLISMFLAGS}
 	end
 
 	install
 		cd build && make install DESTDIR=%{BUILDROOT}
+		rm -vf %{BUILDROOT}%{bindir}/{,test}solv
 	end
 end
 
 packages
 	package %{name}
+
+	package %{name}-tools
+		summary = Tools to manipulate .solv files.
+
+		requires
+			bzip2
+			coreutils
+			gzip
+		end
+
+		files
+			%{bindir}
+		end
+	end
 
 	package %{name}-devel
 		template DEVEL
