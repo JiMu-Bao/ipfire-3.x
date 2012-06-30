@@ -5,8 +5,8 @@
 
 name       = network
 epoch      = 1
-version    = 003
-release    = 2
+version    = 004
+release    = 1
 arch       = noarch
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -14,9 +14,6 @@ groups     = Base Networking/Tools
 url        = http://www.ipfire.org/
 license    = GPLv3+
 summary    = The IPFire Networking Scripts.
-
-# XXX maybe we can split this package into smaller ones like -wireless,
-# -dialup etc.
 
 description
 	The scripts that are contained in this package are the heart of the
@@ -28,22 +25,30 @@ end
 source_dl  = http://source.ipfire.org/releases/network/
 
 build
-	build = # Do nothing
+	install_cmds
+		# Create some dummy configuration files.
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/{firewall,network}
+		touch %{BUILDROOT}%{sysconfdir}/network/{config,dns-servers}
+	end
 end
 
 packages
 	package %{name}
 		requires
 			aiccu
-			bash>=4.0
+			bash >= 4.0
 			bridge-utils
 			dhcp
 			ebtables
 			hostapd
 			iproute2
-			ppp
+			iw
+			man
+			miredo-client
+			ppp >= 2.4.5-4
 			radvd
-			rstp
+			rp-pppoe
+			mstpd
 			sqlite
 			systemd-units
 			tunctl
@@ -53,24 +58,24 @@ packages
 			/usr/bin/logger
 		end
 
-		prerequires = systemd-units
+		configfiles
+			/etc/firewall
+			/etc/network
+		end
 
 		# Enable network service, so it starts at the first boot.
 		script postin
-			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-			/bin/systemctl --no-reload enable network.service >/dev/null 2>&1 || :
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl --no-reload enable network.service >/dev/null 2>&1 || :
 		end
 
 		script preun
-			/bin/systemctl --no-reload disable network.service >/dev/null 2>&1 || :
-			/bin/systemctl stop network.service >/dev/null 2>&1 || :
+			systemctl --no-reload disable network.service >/dev/null 2>&1 || :
+			systemctl stop network.service >/dev/null 2>&1 || :
 		end
 
 		script postup
-			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-
-			# Maybe it is not a good idea to restart network.
-			#/bin/systemctl try-reload-or-restart network.service >/dev/null 2>&1 || :
+			systemctl daemon-reload >/dev/null 2>&1 || :
 		end
 	end
 end
