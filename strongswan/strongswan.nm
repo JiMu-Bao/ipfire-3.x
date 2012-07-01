@@ -5,8 +5,7 @@
 
 name       = strongswan
 version    = 5.0.0
-release    = 0.2.rc1
-thisapp    = %{name}-%{version}rc1
+release    = 1
 
 groups     = Networking/VPN
 url        = http://www.strongswan.org/
