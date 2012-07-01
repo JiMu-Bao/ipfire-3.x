@@ -1,0 +1,57 @@
+# IPFire 3 theme for GRUB2
+#
+
+#general settings
+message-font: "DejaVu Sans Regular 12"
+message-color: "#fff"
+message-bg-color: "#000"
+terminal-box: "terminal_box_*.png"
+terminal-font: "DejaVu Sans Regular 12"
+desktop-image: "background.png"
+
+#help bar at the bottom
++ label {
+	top = 100%-25
+	left = 0
+	width = 100%
+	height = 20
+	text = "@KEYMAP_MIDDLE@"
+	align = "center"
+	font = "DejaVu Sans Regular 10"
+	color = "#FFF"
+}
+
+#boot menu
++ boot_menu {
+	left = 17%
+	width = 66%
+	top = 20%
+	height = 30%	
+	item_font = "DejaVu Sans Regular 12"
+	item_color = "#880400"
+	selected_item_font = "DejaVu Sans Bold 14"
+	selected_item_color= "#fff"
+	icon_width = 0
+	item_height = 30
+	item_padding = 0
+	item_spacing = 0
+	scrollbar = true
+	scrollbar_width = 20
+	scrollbar_thumb = "slider_*.png"
+	menu_pixmap_style = "boot_menu_*.png"
+}
+
+#progress bar
++ progress_bar {
+	id = "__timeout__"
+	left = 22%
+	top = 80%
+	height = 20
+	width = 56%
+	font = "DejaVu Sans Regular 12"
+	text_color = "#fff"
+	fg_color = "#880400"
+	bg_color = "black"
+	border_color = "#fff"
+	text = "@TIMEOUT_NOTIFICATION_LONG@"
+}
