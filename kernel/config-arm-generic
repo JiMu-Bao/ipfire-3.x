@@ -468,14 +468,18 @@ CONFIG_OLD_MCOUNT=y
 # CONFIG_OC_ETM is not set
 
 #
+# Miscellaneous hardening features
+#
+CONFIG_PAX_MEMORY_SANITIZE=y
+
+#
 # Executable Protections
 #
 # CONFIG_GRKERNSEC_SETXID is not set
 
 #
-# Miscellaneous hardening features
+# Logging Options
 #
-CONFIG_PAX_MEMORY_SANITIZE=y
 CONFIG_LSM_MMAP_MIN_ADDR=32768
 
 #

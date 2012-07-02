@@ -595,12 +595,6 @@ CONFIG_RCU_CPU_STALL_TIMEOUT=60
 CONFIG_OC_ETM=y
 
 #
-# Kernel Auditing
-#
-CONFIG_GRKERNSEC_RWXMAP_LOG=y
-CONFIG_GRKERNSEC_AUDIT_TEXTREL=y
-
-#
 # Non-executable pages
 #
 CONFIG_PAX_NOEXEC=y
@@ -613,6 +607,12 @@ CONFIG_PAX_ELFRELOCS=y
 # Miscellaneous hardening features
 #
 CONFIG_PAX_REFCOUNT=y
+
+#
+# Kernel Auditing
+#
+CONFIG_GRKERNSEC_RWXMAP_LOG=y
+CONFIG_GRKERNSEC_AUDIT_TEXTREL=y
 
 #
 # Crypto core or helper
