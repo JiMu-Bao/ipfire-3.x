@@ -5,7 +5,7 @@
 
 name       = grub
 version    = 2.00
-release    = 1
+release    = 2
 sup_arches = x86_64 i686
 
 groups     = System/Boot
