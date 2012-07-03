@@ -5,7 +5,7 @@
 
 name       = plymouth
 version    = 0.8.5.1
-release    = 1
+release    = 2
 
 groups     = System/Base
 url        = http://www.freedesktop.org/wiki/Software/Plymouth
@@ -127,14 +127,13 @@ packages
 		# Tell systemd that unitfiles have been removed.
 		script postun
 			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+
+			# Remove initrd image with plymouth.
+			rm -f /boot/initrd-plymouth.img
 		end
 
 		script posttransin
 			/usr/lib/plymouth/plymouth-generate-initrd >/dev/null 2>&1
-		end
-
-		script postun
-			rm -f /boot/initrd-plymouth.img
 		end
 	end
 
