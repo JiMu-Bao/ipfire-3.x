@@ -5,7 +5,7 @@
 
 name       = plymouth
 version    = 0.8.5.1
-release    = 2
+release    = 3
 
 groups     = System/Base
 url        = http://www.freedesktop.org/wiki/Software/Plymouth
@@ -71,6 +71,10 @@ build
 		autoreconf -vfi
 	end
 
+	# Fix install location for systemd files.
+	make_install_targets += \
+		SYSTEMD_UNIT_DIR=%{unitdir}
+
 	install_cmds
 		mkdir -pv %{BUILDROOT}%{datadir}/plymouth
 		mkdir -pv %{BUILDROOT}%{localstatedir}/lib/plymouth
@@ -83,6 +87,23 @@ build
 		cp -vf %{DIR_SOURCE}/plymouth-update-initrd \
 			%{BUILDROOT}/usr/lib/plymouth/plymouth-update-initrd
 		chmod 755 %{BUILDROOT}/usr/lib/plymouth/plymouth-update-initrd
+
+		# XXX - may we can remove this at a later time.
+		#
+		# Enable plymouth systemd service files and link them to the correct targets.
+		mkdir -pv %{BUILDROOT}%{unitdir}/halt.target.wants
+		mkdir -pv %{BUILDROOT}%{unitdir}/multi-user.target.wants
+		mkdir -pv %{BUILDROOT}%{unitdir}/poweroff.target.wants
+		mkdir -pv %{BUILDROOT}%{unitdir}/reboot.target.wants
+		mkdir -pv %{BUILDROOT}%{unitdir}/sysinit.target.wants
+
+		ln -svf ../plymouth-halt.service %{BUILDROOT}%{unitdir}/halt.target.wants/plymouth-halt.service
+		ln -svf ../plymouth-quit.service %{BUILDROOT}%{unitdir}/multi-user.target.wants/plymouth-quit.service
+		ln -svf ../plymouth-quit-wait.service %{BUILDROOT}%{unitdir}/multi-user.target.wants/plymouth-quit-wait.service
+		ln -svf ../plymouth-poweroff.service %{BUILDROOT}%{unitdir}/poweroff.target.wants/plymouth-poweroff.service
+		ln -svf ../plymouth-reboot.service %{BUILDROOT}%{unitdir}/reboot.target.wants/plymouth-reboot.service
+		ln -svf ../plymouth-read-write.service %{BUILDROOT}%{unitdir}/sysinit.target.wants/plymouth-read-write.service
+		ln -svf ../plymouth-start.service %{BUILDROOT}%{unitdir}/sysinit.target.wants/plymouth-start.service
 	end
 end
 
@@ -128,7 +149,6 @@ packages
 		script postun
 			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
 
-			# Remove initrd image with plymouth.
 			rm -f /boot/initrd-plymouth.img
 		end
 
