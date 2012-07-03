@@ -261,11 +261,6 @@ CONFIG_CLKSRC_I8253=y
 CONFIG_DOUBLEFAULT=y
 
 #
-# Memory Protections
-#
-CONFIG_GRKERNSEC_VM86=y
-
-#
 # PaX
 #
 CONFIG_ARCH_TRACK_EXEC_LIMIT=y
@@ -276,7 +271,12 @@ CONFIG_ARCH_TRACK_EXEC_LIMIT=y
 CONFIG_PAX_SEGMEXEC=y
 
 #
-# Miscellaneous hardening features
+# Memory Protections
+#
+CONFIG_GRKERNSEC_VM86=y
+
+#
+# Logging Options
 #
 # CONFIG_INTEL_TXT is not set
 

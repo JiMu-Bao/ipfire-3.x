@@ -164,7 +164,7 @@ CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
 CONFIG_TASK_SIZE_MAX_SHIFT=47
 
 #
-# Miscellaneous hardening features
+# Logging Options
 #
 CONFIG_INTEL_TXT=y
 
