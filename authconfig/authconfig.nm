@@ -5,7 +5,7 @@
 
 name       = authconfig
 version    = 6.2.2
-release    = 3
+release    = 4
 
 groups     = System/Base
 url        = https://fedorahosted.org/authconfig
@@ -75,6 +75,11 @@ packages
 		requires
 			libpwquality
 			newt-python
+		end
+
+		configfiles
+			%{sysconfdir}/sysconfig/authconfig
+			%{sysconfdir}/pam.d
 		end
 	end
 
