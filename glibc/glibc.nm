@@ -4,9 +4,8 @@
 ###############################################################################
 
 name       = glibc
-version    = 2.15
-release    = 4
-thisapp    = %{name}-2.15-a316c1f
+version    = 2.16.0
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -25,10 +24,10 @@ description
 end
 
 # The version of the ports addon.
-ports_version = 2.15-8a70b2d
+ports_version = 2.16.0
 
 source_dl  = http://ftp.gnu.org/gnu/glibc/
-sources    = %{thisapp}.tar.gz glibc-ports-%{ports_version}.tar.gz
+sources    = %{thisapp}.tar.xz glibc-ports-%{ports_version}.tar.xz
 
 build
 	# Optimize glibc for kernel
@@ -208,15 +207,14 @@ build
 		# This would install all locales that are supported
 		make localedata/install-locales install_root=%{BUILDROOT}
 
-		# Timezone
-		cp -v --remove-destination %{BUILDROOT}/usr/share/zoneinfo/GMT \
-			%{BUILDROOT}/etc/localtime
-		rm -rf %{BUILDROOT}/usr/share/zoneinfo
-
 		# Configuration
 		cp -vf %{DIR_SOURCE}/{ld.so.conf,nsswitch.conf} %{BUILDROOT}/etc
 		mkdir -pv %{BUILDROOT}/etc/{default,ld.so.conf.d}
 		install -p -m644 %{DIR_APP}/nis/nss %{BUILDROOT}/etc/default/nss
+
+		if [ "%{DISTRO_ARCH}" = "armv7hl" ]; then
+			ln -svf ld-linux-armhf.so.3 %{BUILDROOT}/lib/ld-linux.so.3
+		fi
 
 		# Remove unused binaries
 		rm -vf %{BUILDROOT}/sbin/sln \
@@ -247,6 +245,11 @@ end
 packages
 	package glibc
 		requires = glibc-common=%{thisver}
+
+		if "%{DISTRO_ARCH}" == "armv7hl"
+			provides += ld-linux.so.3
+			provides += ld-linux.so.3(GLIBC_2.4)
+		end
 	end
 
 	package glibc-common
@@ -280,7 +283,11 @@ packages
 
 		requires = glibc-headers=%{thisver}
 
-		files = %{libdir}/*.a %{libdir}/*.o
+		files
+			%{includedir}
+			%{libdir}/*.a
+			%{libdir}/*.o
+		end
 	end
 
 	package glibc-headers
