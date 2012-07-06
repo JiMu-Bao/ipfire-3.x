@@ -5,8 +5,8 @@ After=syslog.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/bin/cpupower frequency-set -g performance
-ExecStop=/usr/bin/cpupower frequency-set -g ondemand
+ExecStart=/usr/bin/cpupower frequency-set -g ondemand
+ExecStop=/usr/bin/cpupower frequency-set -g performance
 
 [Install]
 WantedBy=multi-user.target
