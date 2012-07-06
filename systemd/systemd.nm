@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = systemd
-version    = 185
-release    = 3
+version    = 186
+release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -281,9 +281,10 @@ packages
 		end
 
 		files
-			%{libdir}/libgudev*.so
+			%{libdir}/lib*udev*.so
 			%{libdir}/pkgconfig/lib*udev.pc
 			%{libdir}/pkgconfig/gudev*
+			%{includedir}/lib*udev.h
 			%{includedir}/gudev*
 			%{datadir}/gir-*
 			%{datadir}/gtk-doc/html/gudev
