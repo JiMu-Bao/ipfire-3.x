@@ -5,7 +5,7 @@
 
 name       = glibc
 version    = 2.16.0
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -244,7 +244,7 @@ end
 
 packages
 	package glibc
-		requires = glibc-common=%{thisver}
+		requires = glibc-common = %{thisver}
 
 		if "%{DISTRO_ARCH}" == "armv7hl"
 			provides += ld-linux.so.3
@@ -255,7 +255,10 @@ packages
 	package glibc-common
 		# XXX description and summary are missing
 
-		requires = tzdata
+		requires
+			glibc = %{thisver}
+			tzdata
+		end
 
 		files
 			/usr/bin
@@ -281,7 +284,10 @@ packages
 		end
 		group = Development/Libraries
 
-		requires = glibc-headers=%{thisver}
+		requires
+			glibc = %{thisver}
+			glibc-headers = %{thisver}
+		end
 
 		files
 			%{includedir}
@@ -303,7 +309,10 @@ packages
 			use the standard C libraries.
 		end
 
-		requires = kernel-headers
+		requires
+			glibc = %{thisver}
+			kernel-headers >= %{OPTIMIZED_KERNEL}
+		end
 
 		files
 			/usr/include
