@@ -1,0 +1,40 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libnetfilter_acct
+version    = 1.0.0
+release    = 1
+
+groups     = System/Libraries
+url        = http://www.netfilter.org/projects/libnetfilter_acct/index.html
+license    = GPL
+summary    = The libnetfilter_acct userspace library.
+
+description
+	libnetfilter_acct is the userspace library providing interface to
+	extended accounting infrastructure. 
+end
+
+source_dl  = http://www.netfilter.org/projects/libnetfilter_acct/files/
+sources    = %{thisapp}.tar.bz2
+
+build
+	requires
+		libmnl-devel
+		pkg-config
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
