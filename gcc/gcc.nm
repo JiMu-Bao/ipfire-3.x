@@ -8,7 +8,7 @@ build_cloog_ppl = 1
 
 name       = gcc
 version    = 4.7.1
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -36,7 +36,7 @@ build
 		expect
 		filesystem >= 002
 		flex
-		glibc-devel
+		glibc-devel >= 2.16
 		gmp-devel
 		libffi-devel
 		libmpc-devel
@@ -299,6 +299,7 @@ packages
 		requires
 			binutils >= %{required_binutils_version}
 			filesystem >= 002
+			glibc >= 2.16
 			glibc-devel
 			gmp-devel
 			cpp = %{thisver}
