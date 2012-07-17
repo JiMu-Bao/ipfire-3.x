@@ -5,7 +5,7 @@
 
 name       = glibc
 version    = 2.16.0
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -249,6 +249,7 @@ packages
 		if "%{DISTRO_ARCH}" == "armv7hl"
 			provides += ld-linux.so.3
 			provides += ld-linux.so.3(GLIBC_2.4)
+			provides += ld-linux.so.3(GLIBC_PRIVATE)
 		end
 	end
 
