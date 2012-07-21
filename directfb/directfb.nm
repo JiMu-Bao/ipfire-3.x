@@ -4,9 +4,12 @@
 ###############################################################################
 
 name       = directfb
-version    = 1.4.1
-release    = 2
+version    = %{ver_major}.%{ver_minor}
+release    = 1
 thisapp    = DirectFB-%{version}
+
+ver_major  = 1.5
+ver_minor  = 3
 
 groups     = System/Graphics
 url        = http://www.directfb.org/
@@ -14,13 +17,13 @@ license    = LGPLv2+
 summary    = Graphics abstraction library for the Linux Framebuffer Device.
 
 description
-	DirectFB is a thin library that provides hardware graphics acceleration, \
-	input device handling and abstraction, integrated windowing system with \
-	support for translucent windows and multiple display layers on top of the \
+	DirectFB is a thin library that provides hardware graphics acceleration,
+	input device handling and abstraction, integrated windowing system with
+	support for translucent windows and multiple display layers on top of the
 	Linux Framebuffer Device.
 end
 
-source_dl  =
+source_dl  = http://www.directfb.org/download/DirectFBGL/DirectFB-%{ver_major}/
 
 build
 	requires
@@ -32,11 +35,14 @@ build
 		zlib-devel
 	end
 
+	LDFLAGS += \
+		-Wl,-z,relro \
+		-Wl,-z,noexecstack
+
 	configure_options += \
 		--disable-x11 \
 		--enable-sdl \
 		--enable-video4linux2 \
-		--enable-libv412 \
 		--enable-zlib \
 		--with-dither-rgb16=advanced \
 		--disable-mmx \
