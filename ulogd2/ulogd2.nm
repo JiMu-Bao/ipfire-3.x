@@ -4,8 +4,9 @@
 ###############################################################################
 
 name       = ulogd2
-version    = 2.0.0beta3
-release    = 3
+version    = 2.0.0
+release    = 1
+epoch      = 1
 thisapp    = ulogd-%{version}
 
 groups     = Networking/Statistics
@@ -26,15 +27,20 @@ sources    = %{thisapp}.tar.bz2
 
 build
 	requires
+		libmnl-devel
 		libnfnetlink-devel
+		libnetfilter_acct-devel
 		libnetfilter_conntrack-devel
 		libnetfilter_log-devel
 		libpcap-devel
 		sqlite-devel
 	end
 
+	# Set libdir to "/usr/lib" for every architecture to install the ulogd2 plugins
+	# to this folder.
 	configure_options+= \
-		--sysconfdir=/etc
+		--sysconfdir=/etc \
+		--libdir=%{prefix}/lib
 
 	install_cmds
 		mkdir -pv %{BUILDROOT}/etc
@@ -47,6 +53,29 @@ end
 
 packages
 	package %{name}
+		configfiles
+			/etc/ulogd.conf
+		end
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl enable ulogd.service >/dev/null 2>&1 || :
+		end
+		
+		script preun
+			systemctl --no-reload disable ulogd.service >/dev/null 2>&1 || :
+			systemctl stop ulogd.service >/dev/null 2>&1 || :
+		end
+		
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart ulogd.service >/dev/null 2>&1 || :
+		end
+	end                 
 
 	package %{name}-debuginfo
 		template DEBUGINFO
