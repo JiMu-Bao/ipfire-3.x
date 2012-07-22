@@ -5,7 +5,7 @@
 
 name       = plymouth
 version    = 0.8.5.1
-release    = 3
+release    = 4
 
 groups     = System/Base
 url        = http://www.freedesktop.org/wiki/Software/Plymouth
@@ -37,12 +37,7 @@ build
 
 	enable_libdrm_intel = 0
 
-	if "%{DISTRO_MACHINE}" == "x86_64"
-		enable_libdrm_intel = 1
-		requires += pkgconfig(libdrm_intel)
-	end
-
-	if "%{DISTRO_MACHINE}" == "i686"
+	if "%{DISTRO_PLATFORM}" == "x86"
 		enable_libdrm_intel = 1
 		requires += pkgconfig(libdrm_intel)
 	end
@@ -51,6 +46,7 @@ build
 
 	configure_options += \
 		--libexecdir=/usr/lib \
+		--disable-libkms \
 		--enable-tracing \
 		--disable-tests \
 		--with-logo=%{datadir}/pixmaps/system-logo-white.png \
