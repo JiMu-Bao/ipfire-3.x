@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libnetfilter_log
-version    = 0.0.16
+version    = 1.0.1
 release    = 1
 
 groups     = System/Libraries
@@ -13,25 +13,31 @@ license    = GPL
 summary    = The libnetfilter_log userspace library.
 
 description
-	libnetfilter_log is a software library to interface with the \
-	nfnetlink_log mechanism in Linux 2.6.14 and later. The library \
-	enables programs to receive and process packets logged by the \
+	libnetfilter_log is a software library to interface with the
+	nfnetlink_log mechanism in Linux 2.6.14 and later. The library
+	enables programs to receive and process packets logged by the
 	Linux packet filter (iptables).
 end
 
-source_dl  =
+source_dl  = http://www.netfilter.org/projects/%{name}/files/
 sources    = %{thisapp}.tar.bz2
 
 build
 	requires
 		libnfnetlink-devel
-		pkg-config
 	end
+
+	# Disable any optimization because of
+	# https://bugzilla.ipfire.org/show_bug.cgi?id=10018
+	if "%{DISTRO_ARCH}" == "i686"
+		CFLAGS += -O0
+	end
+
+	make_build_targets += CFLAGS="%{CFLAGS}" 
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

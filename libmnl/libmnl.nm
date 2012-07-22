@@ -1,0 +1,41 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libmnl
+version    = 1.0.3
+release    = 1
+
+groups     = System/Libraries
+url        = http://www.netfilter.org/projects/libmnl/
+license    = LGPLv2.1+
+summary    = Minimalistic user-space Netlink library.
+
+description
+	libmnl is a minimalistic user-space library oriented to Netlink developers. 
+	There are a lot of common tasks in parsing, validating, constructing of both 
+	the Netlink header and TLVs that are repetitive and easy to get wrong. 
+	This library aims to provide simple helpers that allows you to re-use code
+	 and to avoid re-inventing the wheel. 
+end
+
+source_dl  = http://www.netfilter.org/projects/%{name}/files/
+sources    = %{thisapp}.tar.bz2
+
+build
+	configure_options +=\
+		--disable-static
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
