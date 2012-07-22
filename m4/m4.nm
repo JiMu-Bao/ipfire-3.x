@@ -5,7 +5,7 @@
 
 name       = m4
 version    = 1.4.16
-release    = 2
+release    = 3
 
 groups     = Applications/Text
 url        = http://www.gnu.org/software/m4/
@@ -32,6 +32,8 @@ end
 
 packages
 	package %{name}
+		provides += bundled(gnulib)
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
