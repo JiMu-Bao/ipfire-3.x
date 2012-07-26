@@ -4,35 +4,57 @@
 ###############################################################################
 
 name       = libmpc
-version    = 0.9
-release    = 2
+version    = 1.0
+release    = 1
+thisapp    = mpc-%{version}
+
+compat_version = 0.9
 
 groups     = System/Libraries
 url        = http://www.multiprecision.org/
 license    = LGPLv2.1+
 summary    = Mpc is a C library for the arithmetic of complex numbers.
 
-thisapp    = mpc-%{version}
-
 description
-	Mpc is a C library for the arithmetic of complex numbers with \
-	arbitrarily high precision and correct rounding of the result. \
+	Mpc is a C library for the arithmetic of complex numbers with
+	arbitrarily high precision and correct rounding of the result.
 	It is built upon and follows the same principles as Mpfr.
 end
 
 source_dl  = http://www.multiprecision.org/mpc/download/
+sources   += mpc-%{compat_version}.tar.gz
 
 build
 	requires
-		gmp-devel>=4.3.2
-		mpfr-devel>=2.4.2
+		gmp-devel >= 4.3.2
+		mpfr-devel >= 2.4.2
 	end
 
-	# http://lists.gforge.inria.fr/pipermail/mpc-discuss/2011-February/000805.html
-	export EGREP=egrep
+	configure_options += \
+		--enable-shared \
+		--disable-static
+
+	build_cmds
+		cd %{DIR_SRC}/mpc-%{compat_version}
+		EGREP=egrep ./configure \
+			%{configure_options}
+
+		make %{PARALLELISMFLAGS}
+	end
 
 	test
+		export LD_LIBRARY_PATH=$(pwd)/src/.libs
 		make check
+
+		cd %{DIR_SRC}/mpc-%{compat_version}
+		export LD_LIBRARY_PATH=$(pwd)/src/.libs
+		make check
+	end
+
+	install_cmds
+		cd %{DIR_SRC}/mpc-%{compat_version}
+		install -m 644 src/.libs/libmpc.so.2.0.0 %{BUILDROOT}%{libdir}
+		ln -svf libmpc.so.2.0.0 %{BUILDROOT}%{libdir}/libmpc.so.2
 	end
 end
 
@@ -41,6 +63,14 @@ packages
 
 	package %{name}-devel
 		template DEVEL
+	end
+
+	package %{name}-compat
+		summary = Compat libraries of %{thisapp}.
+
+		files
+			%{libdir}/libmpc.so.2*
+		end
 	end
 
 	package %{name}-debuginfo
