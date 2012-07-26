@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = systemd
-version    = 186
+version    = 187
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -56,10 +56,6 @@ build
 
 	prepare_cmds
 		./autogen.sh ac
-	end
-
-	test
-		make check
 	end
 
 	install_cmds

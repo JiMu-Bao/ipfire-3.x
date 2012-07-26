@@ -1,0 +1,33 @@
+diff -Nur a/configure.ac b/configure.ac
+--- a/configure.ac	2012-07-20 00:40:32.000000000 +0200
++++ b/configure.ac	2012-07-26 21:01:58.319135633 +0200
+@@ -504,7 +504,7 @@
+ AC_PATH_PROG([XSLTPROC], [xsltproc])
+ AM_CONDITIONAL(HAVE_XSLTPROC, test x"$XSLTPROC" != x)
+ 
+-AC_ARG_WITH(distro, AS_HELP_STRING([--with-distro=DISTRO],[Specify the distribution to target: One of fedora, suse, debian, ubuntu, arch, gentoo, slackware, altlinux, mandriva, mageia, angstrom or other]))
++AC_ARG_WITH(distro, AS_HELP_STRING([--with-distro=DISTRO],[Specify the distribution to target: One of fedora, suse, debian, ubuntu, arch, gentoo, slackware, altlinux, mandriva, mageia, angstrom, ipfire or other]))
+ if test "z$with_distro" = "z"; then
+         if test "$cross_compiling" = yes; then
+                 AC_MSG_WARN([Target distribution cannot be reliably detected when cross-compiling. You should specify it with --with-distro (see $0 --help for recognized distros)])
+@@ -587,6 +587,12 @@
+                 AC_DEFINE(TARGET_MAGEIA, [], [Target is Mageia])
+                 M4_DEFINES=-DTARGET_MAGEIA=1
+                 ;;
++	ipfire)
++		SYSTEM_SYSVINIT_PATH=
++		SYSTEM_SYSVRCND_PATH=
++		AC_DEFINE(TARGET_IPFIRE, [], [Target is IPFire])
++                M4_DEFINES=-DTARGET_IPFIRE=1
++		;;
+         other)
+                 ;;
+         *)
+@@ -639,6 +645,7 @@
+ AM_CONDITIONAL(TARGET_MANDRIVA, test x"$with_distro" = xmandriva)
+ AM_CONDITIONAL(TARGET_ANGSTROM, test x"$with_distro" = xangstrom)
+ AM_CONDITIONAL(TARGET_MAGEIA, test x"$with_distro" = xmageia)
++AM_CONDITIONAL(TARGET_IPFIRE, test x"$with_distro" = xipfire)
+ 
+ AM_CONDITIONAL(HAVE_SYSV_COMPAT, test "$SYSTEM_SYSV_COMPAT" = "yes")
+ 
