@@ -4,10 +4,10 @@
 ###############################################################################
 
 name       = python-setuptools
-version    = 0.6c9
+version    = 0.6.28
 release    = 1
 arch       = noarch
-thisapp    = setuptools-%{version}
+thisapp    = distribute-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Libraries
@@ -21,7 +21,7 @@ description
 	especially ones that have dependencies on other packages.
 end
 
-source_dl  =
+source_dl  = http://pypi.python.org/packages/source/d/distribute/
 
 build
 	requires
@@ -30,7 +30,12 @@ build
 
 	prepare_cmds
 		# Scripts seem to have a wrong hashbang
-		find . -name "*.py" | xargs sed -i "1s@^#!python@#!/usr/bin/python@"
+		for file in setuptools/command/easy_install.py distribute_setup.py ; do
+			sed -i '1s|^#!python|#!/usr/bin/python|' $file
+		done
+
+		# Fix file permissions.
+		chmod -R 644 %{DIR_APP}/distribute.egg-info
 	end
 
 	build
@@ -42,6 +47,7 @@ build
 
 		# XXX %{PYTHON_EXTRACT_EGG} /usr/lib/python*/site-packages/%{name}*.egg
 		rm -vf %{BUILDROOT}/usr/lib/python*/site-packages/setuptools/*.exe
+		rm -rvf %{BUILDROOT}/usr/lib/python*/site-packages/setuptools/tests
 	end
 end
 
