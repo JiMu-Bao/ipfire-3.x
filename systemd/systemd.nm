@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 187
-release    = 1
+release    = 2
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -59,6 +59,9 @@ build
 	end
 
 	install_cmds
+		# Create folder in log to store the journal.
+		mkdir -pv %{BUILDROOT}/var/log/journal
+
 		# Create sysv compatible symlinks.
 		mkdir -pv %{BUILDROOT}%{sbindir}
 		ln -svf ../lib/systemd/systemd  %{BUILDROOT}/%{sbindir}/init
@@ -104,6 +107,13 @@ build
 
 		# Remove unneeded symlink for xdg
 		rm -rfv %{BUILDROOT}/etc/xdg/systemd
+
+		# Use journald. Enable the import of kernel messages.
+		# Stop forwarding to a syslog daemon.
+		sed \
+			-e "s/^#ForwardToSyslog=.*$/ForwardToSyslog=no/" \
+			-e "s/^#ImportKernel=.*$/ImportKernel=yes/" \
+			-i %{BUILDROOT}/etc/systemd/journald.conf
 	end
 end
 
@@ -130,12 +140,14 @@ packages
 			/sbin/reboot
 			/sbin/shutdown
 
+			syslog
 			udev = %{thisver}
 		end
 
 		conflicts
 			dracut < 019
 			filesystem < 002
+			rsyslog < 5.8.6-4
 			upstart
 		end
 
@@ -195,6 +207,12 @@ packages
 			# Restart login service after update
 			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
 			/usr/bin/systemctl try-restart systemd-logind.service >/dev/null 2>&1 || :
+
+			# Use the new journald configuration file and restart the service.
+			if ! grep -xq ImportKernel=yes /etc/systemd/journald.conf ; then
+				mv /etc/systemd/journald.conf.paknew /etc/systemd/journald.conf
+				/usr/bin/systemctl restart systemd-journald.service >/dev/null 2>&1 || :
+			fi
 		end
 
 		# Be sure to start the new udev after everything is done.
