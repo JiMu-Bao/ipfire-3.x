@@ -5,13 +5,13 @@
 
 name       = transifex-client
 version    = 0.7.3
-release    = 1
+release    = 2
 arch       = noarch
 
 groups     = Development/Tools
 url        = http://transifex.org
 license    = GPLv2
-summary    = A tool for creating scanners (text pattern recognizers).
+summary    = Command line tool for Transifex translation management.
 
 description
 	The Transifex Command-line Client is a command line tool that enables
