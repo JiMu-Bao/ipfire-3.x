@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = iproute2
-version    = 3.3.0
+version    = 3.4.0
 release    = 1
 
 groups     = Networking/Tools
@@ -18,7 +18,7 @@ description
 	capabilities of the Linux 2.4.x and 2.6.x kernel.
 end
 
-source_dl  =
+source_dl  = http://kernel.org/pub/linux/utils/net/iproute2/
 sources    = %{thisapp}.tar.xz
 
 build
@@ -52,7 +52,7 @@ build
 			%{BUILDROOT}%{sysconfdir}/iproute2
 
 		# Install binaries.
-		for bin in genl/genl ip/{ifcfg,ip,routef,routel,rtpr} tc/tc \
+		for bin in genl/genl ip/{ifcfg,ip,routef,routel,rtmon,rtpr} tc/tc \
 				misc/{arpd,ifstat,lnstat,nstat,rtacct,ss}; do
 			install -v -m 755 ${bin} %{BUILDROOT}%{sbindir}
 		done

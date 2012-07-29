@@ -1,14 +1,15 @@
-diff -up iproute-2.6.29/iproute2-2.6.29/tc/tc_util.c.movelib iproute-2.6.29/iproute2-2.6.29/tc/tc_util.c
---- iproute2-2.6.29/tc/tc_util.c.movelib	2009-01-15 21:25:04.000000000 +0100
-+++ iproute2-2.6.29/tc/tc_util.c	2009-02-04 08:58:36.000000000 +0100
+diff --git a/tc/tc_util.c b/tc/tc_util.c
+index 926ed08..33f6974 100644
+--- a/tc/tc_util.c
++++ b/tc/tc_util.c
 @@ -24,8 +24,8 @@
  #include "utils.h"
  #include "tc_util.h"
  
 -#ifndef LIBDIR
--#define LIBDIR "/usr/lib/"
+-#define LIBDIR "/usr/lib"
 +#ifndef SHAREDIR
-+#define SHAREDIR "/usr/share/"
++#define SHAREDIR "/usr/share"
  #endif
  
  const char *get_tc_lib(void)
