@@ -5,7 +5,7 @@
 
 name       = ulogd2
 version    = 2.0.0
-release    = 1
+release    = 1.1
 epoch      = 1
 thisapp    = ulogd-%{version}
 
@@ -75,7 +75,7 @@ packages
 			systemctl daemon-reload >/dev/null 2>&1 || :
 			systemctl try-restart ulogd.service >/dev/null 2>&1 || :
 		end
-	end                 
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
