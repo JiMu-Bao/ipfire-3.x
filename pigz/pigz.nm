@@ -1,0 +1,44 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = pigz
+version    = 2.2.5
+release    = 1
+
+groups     = Applications/Compression
+url        = http://www.zlib.net/pigz/
+license    = zlib
+summary    = Parallel implementation of gzip.
+
+description
+	pigz, which stands for parallel implementation of gzip,
+	is a fully functional replacement for gzip that exploits
+	multiple processors and multiple cores to the hilt when compressing
+	data.
+end
+
+source_dl  = %{url}
+
+build
+	requires
+		zlib-devel
+	end
+
+	make_build_targets += CFLAGS="%{CFLAGS}"
+
+	install
+		install -p -D pigz %{BUILDROOT}%{bindir}/pigz
+		ln -svf pigz %{BUILDROOT}%{bindir}/unpigz
+		install -p -D pigz.1 -m 644 %{BUILDROOT}%{mandir}/man1/pigz.1
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
