@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = libcap-ng
-version    = 0.6.6
-release    = 3
+version    = 0.7
+release    = 1
 
 groups     = System/Libraries
 url        = http://people.redhat.com/sgrubb/libcap-ng
@@ -25,10 +25,7 @@ build
 		python
 	end
 
-	# XXX Testsuite is broken by the package developers
-	#def test
-	#	make check
-	#end
+	# The testsuite is broken by the package developers
 end
 
 packages
