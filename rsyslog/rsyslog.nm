@@ -5,7 +5,7 @@
 
 name       = rsyslog
 version    = 5.8.6
-release    = 3
+release    = 4
 
 groups     = System/Daemons
 url        = http://www.rsyslog.com/
@@ -74,8 +74,6 @@ packages
 				[ -f "${n}" ] && continue
 				umask 066 && touch ${n}
 			done
-
-			/bin/systemctl enable rsyslog.service >/dev/null 2>&1 || :
 		end
 
 		script preun
@@ -87,9 +85,12 @@ packages
 			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
 		end
 
+		# Disable and stop rsyslog after update, because we use the
+		# journal daemon from systemd from now.
 		script postup
 			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-			/bin/systemctl try-restart rsyslog.service >/dev/null 2>&1 || :
+			/bin/systemctl disable rsyslog.service >/dev/null 2>&1 || :
+			/bin/systemctl stop rsyslog.service >/dev/null 2>&1 || :
 		end
 	end
 
