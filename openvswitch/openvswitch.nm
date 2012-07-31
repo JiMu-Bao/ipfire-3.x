@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = openvswitch
-version    = 1.4.1
+version    = 1.7.0
 release    = 1
 
 groups     = Networking/Tools
@@ -22,21 +22,14 @@ source_dl  = http://openvswitch.org/releases/
 
 build
 	requires
-		autoconf
-		automake
 		groff
 		openssl-devel
 		systemd-units
 	end
 
-	prepare_cmds
-		autoreconf -vfi
-	end
-
 	configure_options += \
 		--enable-ssl \
-		--with-pkidir=%{sharedstatedir}/openvswitch/pki \
-		OVSKMOD=openvswitch
+		--with-pkidir=%{sharedstatedir}/openvswitch/pki
 
 	install_cmds
 		# Install logrotate file.
