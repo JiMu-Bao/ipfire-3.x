@@ -4,8 +4,11 @@
 ###############################################################################
 
 name       = multipath-tools
-version    = 0.4.9
+version    = %{rel_ver}.%{rel_date}
 release    = 1
+
+rel_ver    = 0.4.9
+rel_date   = 120613
 
 groups     = System/Base
 url        = http://christophe.varoqui.free.fr/
@@ -17,27 +20,77 @@ description
 	instructing the device-mapper multipath kernel module what to do.
 end
 
-source_dl  =
-sources    = %{name}-091027.tar.gz
+thisapp    = %{name}-%{rel_date}
+
+sources    = %{thisapp}.tgz
 
 build
 	requires
 		gzip
 		libaio-devel
 		libdevmapper-devel
+		libudev-devel
 		ncurses-devel
 		readline-devel
 	end
 
-	DIR_APP = %{DIR_SRC}/%{name}
+	prepare_cmds
+		# Fix hardcoded install location for udev rules.
+		sed -e "s@lib/udev@usr/lib/udev@g" -i multipath/Makefile
+	end
+
+	# Install everything to the correct locations.
+	make_install_targets +=\
+		bindir=%{sbindir} \
+		syslibdir=%{libdir} \
+		libdir=%{libdir}/multipath \
+		unitdir=%{unitdir}
 
 	install_cmds
+		# Remove old SysV init script and folder.
 		rm -rf %{BUILDROOT}/etc/rc.d
+
+		# Install configuration file.
+		install -m 0664 %{DIR_SOURCE}/multipath.conf %{BUILDROOT}%{sysconfdir}/multipath.conf
 	end
 end
 
 packages
 	package %{name}
+		configfiles
+			/etc/multipath.conf
+		end
+
+		script postin
+			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/usr/bin/systemctl --no-reload disable multipathd.service >/dev/null 2>&1 || :
+			/usr/bin/systemctl stop multipathd.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/usr/bin/systemctl try-restart multipathd.service >/dev/null 2>&1 || :
+		end
+	end
+
+	package kpartx
+		summary = Partition manager for device-mapper devices.
+		description
+			kpartx manages partition creation and removal for device-mapper devices.
+		end
+
+		files
+			%{sbindir}/kpartx
+			%{mandir}/man8/kpartx.8*
+		end
+	end
 
 	package %{name}-devel
 		template DEVEL

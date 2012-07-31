@@ -1,14 +1,14 @@
 ---
  libmultipath/checkers.h        |    3 +
  libmultipath/checkers/Makefile |    4 +
- libmultipath/checkers/tur.c    |  111 +++++++++++++++++++++++++++++++++++++++++
+ libmultipath/checkers/tur.c    |  123 +++++++++++++++++++++++++++++++++++++++--
  multipath.conf.annotated       |    5 +
- 4 files changed, 121 insertions(+), 2 deletions(-)
+ 4 files changed, 128 insertions(+), 7 deletions(-)
 
-Index: multipath-tools/libmultipath/checkers.h
+Index: multipath-tools-120613/libmultipath/checkers.h
 ===================================================================
---- multipath-tools.orig/libmultipath/checkers.h
-+++ multipath-tools/libmultipath/checkers.h
+--- multipath-tools-120613.orig/libmultipath/checkers.h
++++ multipath-tools-120613/libmultipath/checkers.h
 @@ -60,6 +60,7 @@ enum path_check_state {
  
  #define DIRECTIO     "directio"
@@ -17,7 +17,7 @@ Index: multipath-tools/libmultipath/checkers.h
  #define HP_SW        "hp_sw"
  #define RDAC         "rdac"
  #define EMC_CLARIION "emc_clariion"
-@@ -91,6 +92,7 @@ enum path_check_state {
+@@ -77,6 +78,7 @@ enum path_check_state {
  #define CHECKER_MSG_LEN 256
  #define CHECKER_DEV_LEN 256
  #define LIB_CHECKER_NAMELEN 256
@@ -25,7 +25,7 @@ Index: multipath-tools/libmultipath/checkers.h
  
  struct checker {
  	struct list_head node;
-@@ -99,6 +101,7 @@ struct checker {
+@@ -88,6 +90,7 @@ struct checker {
  	int disable;
  	char name[CHECKER_NAME_LEN];
  	char message[CHECKER_MSG_LEN];       /* comm with callers */
@@ -33,10 +33,10 @@ Index: multipath-tools/libmultipath/checkers.h
  	void * context;                      /* store for persistent data */
  	void ** mpcontext;                   /* store for persistent data shared
  						multipath-wide. Use MALLOC if
-Index: multipath-tools/libmultipath/checkers/Makefile
+Index: multipath-tools-120613/libmultipath/checkers/Makefile
 ===================================================================
---- multipath-tools.orig/libmultipath/checkers/Makefile
-+++ multipath-tools/libmultipath/checkers/Makefile
+--- multipath-tools-120613.orig/libmultipath/checkers/Makefile
++++ multipath-tools-120613/libmultipath/checkers/Makefile
 @@ -8,6 +8,7 @@ LIBS= \
  	libcheckcciss_tur.so \
  	libcheckreadsector0.so \
@@ -47,7 +47,7 @@ Index: multipath-tools/libmultipath/checkers/Makefile
  	libcheckhp_sw.so \
 @@ -23,6 +24,9 @@ libcheckdirectio.so: libsg.o directio.o
  libcheck%.so: libsg.o %.o
- 	$(CC) $(SHARED_FLAGS) -o $@ $^
+ 	$(CC) $(LDFLAGS) $(SHARED_FLAGS) -o $@ $^
  
 +hp_tur.o: tur.c
 +	$(CC) $(CFLAGS) -DCHECK_WWID -c -o $@ $<
@@ -55,17 +55,11 @@ Index: multipath-tools/libmultipath/checkers/Makefile
  install:
  	$(INSTALL_PROGRAM) -m 755 $(LIBS) $(DESTDIR)$(libdir)
  
-Index: multipath-tools/libmultipath/checkers/tur.c
+Index: multipath-tools-120613/libmultipath/checkers/tur.c
 ===================================================================
---- multipath-tools.orig/libmultipath/checkers/tur.c
-+++ multipath-tools/libmultipath/checkers/tur.c
-@@ -15,14 +15,101 @@
- 
- #include "checkers.h"
- 
-+#include "../libmultipath/debug.h"
- #include "../libmultipath/sg_include.h"
- 
+--- multipath-tools-120613.orig/libmultipath/checkers/tur.c
++++ multipath-tools-120613/libmultipath/checkers/tur.c
+@@ -24,12 +24,101 @@
  #define TUR_CMD_LEN 6
  #define HEAVY_CHECK_COUNT       10
  
@@ -73,6 +67,9 @@ Index: multipath-tools/libmultipath/checkers/tur.c
 +#define MSG_TUR_UP	"HP tur checker reports path is up"
 +#define MSG_TUR_DOWN	"HP tur checker reports path is down"
 +#define MSG_TUR_GHOST	"HP tur checker reports path is in standby state"
++#define MSG_TUR_RUNNING "HP tur checker still running"
++#define MSG_TUR_TIMEOUT "HP tur checker timed out"
++#define MSG_TUR_FAILED  "HP tur checker failed to initialize"
 +#define EVPD            0x01
 +#define PAGE_83         0x83
 +#define INQUIRY_CMD     0x12
@@ -82,11 +79,14 @@ Index: multipath-tools/libmultipath/checkers/tur.c
  #define MSG_TUR_UP	"tur checker reports path is up"
  #define MSG_TUR_DOWN	"tur checker reports path is down"
  #define MSG_TUR_GHOST	"tur checker reports path is in standby state"
+ #define MSG_TUR_RUNNING	"tur checker still running"
+ #define MSG_TUR_TIMEOUT	"tur checker timed out"
+ #define MSG_TUR_FAILED	"tur checker failed to initialize"
 +#endif
 +
 +#ifdef CHECK_WWID
 +static int
-+do_inq(struct checker * c, char * wwid)
++do_inq(int fd, unsigned int timeout, char * wwid)
 +{
 +	int ret = -1;
 +	unsigned char inq_cmd[INQUIRY_CMDLEN] =
@@ -111,9 +111,9 @@ Index: multipath-tools/libmultipath/checkers/tur.c
 +	io_hdr.dxferp = (unsigned char *)resp_buffer;
 +	io_hdr.cmdp = inq_cmd;
 +	io_hdr.sbp = sense_buffer;
-+	io_hdr.timeout = 60; // IOCTL timeout value.
++	io_hdr.timeout = timeout; // IOCTL timeout value.
 +
-+	if (ioctl(c->fd, SG_IO, &io_hdr) < 0) {
++	if (ioctl(fd, SG_IO, &io_hdr) < 0) {
 +		condlog(0, "SG_IO ioctl failed: %s", strerror(errno));
 +		return ret;
 +	}
@@ -160,57 +160,100 @@ Index: multipath-tools/libmultipath/checkers/tur.c
 +#endif
  
  struct tur_checker_context {
- 	void * dummy;
-@@ -30,6 +117,9 @@ struct tur_checker_context {
+ 	dev_t devt;
+@@ -43,6 +132,7 @@ struct tur_checker_context {
+ 	pthread_cond_t active;
+ 	pthread_spinlock_t hldr_lock;
+ 	int holders;
++	char wwid[WWID_SIZE];
+ 	char message[CHECKER_MSG_LEN];
+ };
  
- int libcheck_init (struct checker * c)
+@@ -100,12 +190,15 @@ void libcheck_free (struct checker * c)
+ #define TUR_MSG(msg, fmt, args...) snprintf(msg, CHECKER_MSG_LEN, fmt, ##args);
+ 
+ int
+-tur_check(int fd, unsigned int timeout, char *msg)
++tur_check (int fd, unsigned int timeout, char *msg, char *wwid)
  {
-+#ifdef CHECK_WWID
-+	memset(c->wwid, 0, WWID_SIZE);
-+#endif
- 	return 0;
- }
- 
-@@ -45,6 +135,9 @@ libcheck_check (struct checker * c)
+ 	struct sg_io_hdr io_hdr;
  	unsigned char turCmdBlk[TUR_CMD_LEN] = { 0x00, 0, 0, 0, 0, 0 };
  	unsigned char sense_buffer[32];
  	int retry_tur = 5;
 +#ifdef CHECK_WWID
-+	char wwid[WWID_SIZE];
++	char new_wwid[WWID_SIZE];
 +#endif
  
   retry:
  	memset(&io_hdr, 0, sizeof (struct sg_io_hdr));
-@@ -110,6 +203,24 @@ libcheck_check (struct checker * c)
- 		MSG(c, MSG_TUR_DOWN);
+@@ -179,6 +272,24 @@ tur_check(int fd, unsigned int timeout,
+ 		TUR_MSG(msg, MSG_TUR_DOWN);
  		return PATH_DOWN;
  	}
 +#ifdef CHECK_WWID
-+	if (!do_inq(c, wwid)) {
++	if (!do_inq(fd, timeout, new_wwid)) {
 +
-+		if(!strcmp(c->wwid, "\0")) {
-+			strcpy(c->wwid, wwid);
++		if(!strcmp(wwid, "\0")) {
++			strcpy(wwid, new_wwid);
 +			goto up;
 +		}
 +
-+		if (strcmp(c->wwid , wwid)) {
++		if (strcmp(wwid , new_wwid)) {
 +			condlog(0,
 +				"hp_tur: Lun collided. new_wwid %s old_wwid %s",
-+				wwid, c->wwid);
-+			MSG(c, MSG_TUR_DOWN);
++				new_wwid, wwid);
++			TUR_MSG(msg, MSG_TUR_DOWN);
 +			return PATH_DOWN;
 +		}
 +	}
 +up:
 +#endif
- 	MSG(c, MSG_TUR_UP);
+ 	TUR_MSG(msg, MSG_TUR_UP);
  	return PATH_UP;
  }
-Index: multipath-tools/multipath.conf.annotated
+@@ -215,7 +326,7 @@ void *tur_thread(void *ctx)
+ 	ct->state = PATH_PENDING;
+ 	pthread_mutex_unlock(&ct->lock);
+ 
+-	state = tur_check(ct->fd, ct->timeout, ct->message);
++	state = tur_check(ct->fd, ct->timeout, ct->message, ct->wwid);
+ 
+ 	/* TUR checker done */
+ 	pthread_mutex_lock(&ct->lock);
+@@ -275,7 +386,7 @@ libcheck_check (struct checker * c)
+ 		ct->devt = sb.st_rdev;
+ 
+ 	if (c->sync)
+-		return tur_check(c->fd, c->timeout, c->message);
++		return tur_check(c->fd, c->timeout, c->message, ct->wwid);
+ 
+ 	/*
+ 	 * Async mode
+@@ -319,7 +430,8 @@ libcheck_check (struct checker * c)
+ 			pthread_mutex_unlock(&ct->lock);
+ 			condlog(3, "%d:%d: tur thread not responding, "
+ 				"using sync mode", TUR_DEVT(ct));
+-			return tur_check(c->fd, c->timeout, c->message);
++			return tur_check(c->fd, c->timeout, c->message,
++					 ct->wwid);
+ 		}
+ 		/* Start new TUR checker */
+ 		ct->state = PATH_UNCHECKED;
+@@ -337,7 +449,8 @@ libcheck_check (struct checker * c)
+ 			ct->holders--;
+ 			condlog(3, "%d:%d: failed to start tur thread, using"
+ 				" sync mode", TUR_DEVT(ct));
+-			return tur_check(c->fd, c->timeout, c->message);
++			return tur_check(c->fd, c->timeout, c->message,
++					 ct->wwid);
+ 		}
+ 		pthread_attr_destroy(&attr);
+ 		tur_timeout(&tsp);
+Index: multipath-tools-120613/multipath.conf.annotated
 ===================================================================
---- multipath-tools.orig/multipath.conf.annotated
-+++ multipath-tools/multipath.conf.annotated
-@@ -86,7 +86,8 @@
+--- multipath-tools-120613.orig/multipath.conf.annotated
++++ multipath-tools-120613/multipath.conf.annotated
+@@ -96,7 +96,8 @@
  #	# name    : path_checker, checker
  #	# scope   : multipath & multipathd
  #	# desc    : the default method used to determine the paths' state
@@ -220,9 +263,9 @@ Index: multipath-tools/multipath.conf.annotated
  #	# default : directio
  #	#
  #	path_checker	directio
-@@ -456,7 +457,7 @@
- #		# scope   : multipathd
- #		# desc    : path checking alorithm to use to check path state
+@@ -493,7 +494,7 @@
+ #		# scope   : multipathd & multipathd
+ #		# desc    : path checking algorithm to use to check path state
  #		# values  : readsector0|tur|emc_clariion|hp_sw|directio|rdac|
 -#		#           cciss_tur
 +#		#           cciss_tur|hp_tur

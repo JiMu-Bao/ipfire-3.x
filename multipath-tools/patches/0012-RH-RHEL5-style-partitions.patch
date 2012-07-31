@@ -1,15 +1,15 @@
 ---
- kpartx/bsd.c    |   35 ----------------
+ kpartx/bsd.c    |   35 ---------------
  kpartx/dos.c    |    7 +--
- kpartx/kpartx.c |  121 +++++++-------------------------------------------------
+ kpartx/kpartx.c |  123 +++++++-------------------------------------------------
  kpartx/kpartx.h |    1 
- kpartx/sun.c    |   35 ----------------
- 5 files changed, 24 insertions(+), 175 deletions(-)
+ kpartx/sun.c    |   35 ---------------
+ 5 files changed, 24 insertions(+), 177 deletions(-)
 
-Index: multipath-tools/kpartx/bsd.c
+Index: multipath-tools-120123/kpartx/bsd.c
 ===================================================================
---- multipath-tools.orig/kpartx/bsd.c
-+++ multipath-tools/kpartx/bsd.c
+--- multipath-tools-120123.orig/kpartx/bsd.c
++++ multipath-tools-120123/kpartx/bsd.c
 @@ -50,10 +50,10 @@ int
  read_bsd_pt(int fd, struct slice all, struct slice *sp, int ns) {
  	struct bsd_disklabel *l;
@@ -60,10 +60,10 @@ Index: multipath-tools/kpartx/bsd.c
 -	}
  	return n;
  }
-Index: multipath-tools/kpartx/dos.c
+Index: multipath-tools-120123/kpartx/dos.c
 ===================================================================
---- multipath-tools.orig/kpartx/dos.c
-+++ multipath-tools/kpartx/dos.c
+--- multipath-tools-120123.orig/kpartx/dos.c
++++ multipath-tools-120123/kpartx/dos.c
 @@ -16,7 +16,7 @@ is_extended(int type) {
  }
  
@@ -92,20 +92,20 @@ Index: multipath-tools/kpartx/dos.c
  		}
  	}
  	return n;
-Index: multipath-tools/kpartx/kpartx.c
+Index: multipath-tools-120123/kpartx/kpartx.c
 ===================================================================
---- multipath-tools.orig/kpartx/kpartx.c
-+++ multipath-tools/kpartx/kpartx.c
-@@ -185,7 +185,7 @@ get_hotplug_device(void)
+--- multipath-tools-120123.orig/kpartx/kpartx.c
++++ multipath-tools-120123/kpartx/kpartx.c
+@@ -190,7 +190,7 @@ get_hotplug_device(void)
  
  int
  main(int argc, char **argv){
--	int fd, i, j, m, n, op, off, arg, c, d;
-+	int fd, i, j, k, n, op, off, arg;
+-	int i, j, m, n, op, off, arg, c, d, ro=0;
++	int i, j, m, n, op, off, arg, ro=0;
+ 	int fd = -1;
  	struct slice all;
  	struct pt *ptp;
- 	enum action what = LIST;
-@@ -355,49 +355,30 @@ main(int argc, char **argv){
+@@ -380,49 +380,30 @@ main(int argc, char **argv){
  		else
  			continue;
  
@@ -114,9 +114,9 @@ Index: multipath-tools/kpartx/kpartx.c
 + 		 * zero their size to avoid mapping
 + 		 */
 +		for (j = 0; j < n; j++) {
-+			for (k = j + 1; k < n; k++) {
-+				if (slices[k].start > slices[j].start &&
-+				    slices[k].start < slices[j].start +
++			for (m = j + 1; m < n; m++) {
++				if (slices[m].start > slices[j].start &&
++				    slices[m].start < slices[j].start +
 +				    slices[j].size)
 +					slices[j].size = 0;
 +			}
@@ -167,12 +167,12 @@ Index: multipath-tools/kpartx/kpartx.c
 -					break;
 -			}
  
- 			if (loopcreated && S_ISREG (buf.st_mode)) {
- 				if (del_loop(device)) {
-@@ -443,16 +424,10 @@ main(int argc, char **argv){
  			break;
  
+@@ -461,16 +442,10 @@ main(int argc, char **argv){
  		case ADD:
+ 		case UPDATE:
+ 			/* ADD and UPDATE share the same code that adds new partitions. */
 -			for (j = 0, c = 0; j < n; j++) {
 +			for (j = 0; j < n; j++) {
  				if (slices[j].size == 0)
@@ -187,7 +187,7 @@ Index: multipath-tools/kpartx/kpartx.c
  				if (safe_sprintf(partname, "%s%s%d",
  					     mapname, delim, j+1)) {
  					fprintf(stderr, "partname too small\n");
-@@ -493,70 +468,6 @@ main(int argc, char **argv){
+@@ -511,72 +486,6 @@ main(int argc, char **argv){
  					       slices[j].minor, slices[j].size,
  					       DM_TARGET, params);
  			}
@@ -234,13 +234,15 @@ Index: multipath-tools/kpartx/kpartx.c
 -					      DM_DEVICE_RELOAD : DM_DEVICE_CREATE);
 -
 -					dm_addmap(op, partname, DM_TARGET, params,
--						  slices[j].size, uuid, j+1,
+-						  slices[j].size, ro, uuid, j+1,
 -						  buf.st_mode & 0777,
--						  buf.st_uid, buf.st_gid);
+-						  buf.st_uid, buf.st_gid,
+-						  &cookie);
 -
 -					if (op == DM_DEVICE_RELOAD)
 -						dm_simplecmd(DM_DEVICE_RESUME,
--							     partname, 1);
+-							     partname, 1,
+-							     &cookie);
 -
 -					dm_devn(partname, &slices[j].major,
 -						&slices[j].minor);
@@ -255,13 +257,13 @@ Index: multipath-tools/kpartx/kpartx.c
 -				if (d == c)
 -					break;
 -			}
- 			break;
  
- 		default:
-Index: multipath-tools/kpartx/kpartx.h
+ 			if (what == ADD) {
+ 				/* Skip code that removes devmappings for deleted partitions */
+Index: multipath-tools-120123/kpartx/kpartx.h
 ===================================================================
---- multipath-tools.orig/kpartx/kpartx.h
-+++ multipath-tools/kpartx/kpartx.h
+--- multipath-tools-120123.orig/kpartx/kpartx.h
++++ multipath-tools-120123/kpartx/kpartx.h
 @@ -24,7 +24,6 @@
  struct slice {
  	uint64_t start;
@@ -270,10 +272,10 @@ Index: multipath-tools/kpartx/kpartx.h
  	int major;
  	int minor;
  };
-Index: multipath-tools/kpartx/sun.c
+Index: multipath-tools-120123/kpartx/sun.c
 ===================================================================
---- multipath-tools.orig/kpartx/sun.c
-+++ multipath-tools/kpartx/sun.c
+--- multipath-tools-120123.orig/kpartx/sun.c
++++ multipath-tools-120123/kpartx/sun.c
 @@ -62,8 +62,8 @@ int
  read_sun_pt(int fd, struct slice all, struct slice *sp, int ns) {
  	struct sun_disk_label *l;

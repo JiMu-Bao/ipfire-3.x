@@ -1,0 +1,16 @@
+---
+ multipathd/multipathd.service |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: multipath-tools-110916/multipathd/multipathd.service
+===================================================================
+--- multipath-tools-110916.orig/multipathd/multipathd.service
++++ multipath-tools-110916/multipathd/multipathd.service
+@@ -2,6 +2,7 @@
+ Description=Device-Mapper Multipath Device Controller
+ Before=iscsi.service iscsid.service
+ After=syslog.target
++ConditionPathExists=/etc/multipath.conf
+ 
+ [Service]
+ Type=forking
