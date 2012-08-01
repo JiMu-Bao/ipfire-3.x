@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kernel
-version    = 3.4.4
-release    = 3
+version    = 3.4.6
+release    = 1
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -64,6 +64,9 @@ build
 	# Should we build cpupower?
 	build_cpupower = 1
 
+	# Arguments that are passed to the kernel build command.
+	kernel_build_flags =
+
 	kernel_target = bzImage
 	if "%{DISTRO_ARCH}" == "i686"
 		# Build a default and legacy kernel for the
@@ -98,6 +101,9 @@ build
 
 		# ARM does not support cpupower.
 		build_cpupower = 0
+
+		# http://lists.infradead.org/pipermail/linux-arm-kernel/2012-March/091404.html
+		kernel_build_flags = KALLSYMS_EXTRA_PASS=1
 	end
 
 	if "%{DISTRO_ARCH}" == "armv7hl"
@@ -213,7 +219,8 @@ build
 
 			# Run the build.
 			make ARCH=%{kernel_arch} oldnoconfig >/dev/null
-			make ARCH=%{kernel_arch} CC="gcc -fno-PIE" %{kernel_target} modules %{PARALLELISMFLAGS}
+			make ARCH=%{kernel_arch} CC="gcc -fno-PIE" %{kernel_target} modules \
+				%{kernel_build_flags} %{PARALLELISMFLAGS}
 
 			# Install the results.
 			mkdir -pv %{BUILDROOT}/boot %{BUILDROOT}/lib/modules/${fullversion}
