@@ -1,0 +1,91 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = openvswitch
+version    = 1.7.0
+release    = 1
+
+groups     = Networking/Tools
+url        = http://openvswitch.org/
+license    = ASL 2.0 and LGPLv2+ and SISSL
+summary    = Open vSwitch daemon/database/utilities.
+
+description
+	Open vSwitch provides standard network bridging functions and
+	support for the OpenFlow protocol for remote per-flow control
+	of traffic.
+end
+
+source_dl  = http://openvswitch.org/releases/
+
+build
+	requires
+		groff
+		openssl-devel
+		systemd-units
+	end
+
+	configure_options += \
+		--enable-ssl \
+		--with-pkidir=%{sharedstatedir}/openvswitch/pki
+
+	install_cmds
+		# Install logrotate file.
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/logrotate.d
+		install -m 644 %{DIR_SOURCE}/openvswitch.logrotate \
+			%{BUILDROOT}%{sysconfdir}/logrotate.d/openvswitch
+
+		mkdir -pv %{BUILDROOT}%{sharedstatedir}/openvswitch
+	
+		# Remove stuff we don't want to support.
+		rm -vf \
+			%{BUILDROOT}%{bindir}/ovs-controller \
+			%{BUILDROOT}%{sbindir}/ovs-{vlan-bug-workaround,brcompatd} \
+			%{BUILDROOT}%{mandir}/man8/ovs-{controller,vlan-bug-workaround,brcompatd}.8
+	end
+end
+
+packages
+	package %{name}
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart openvswitch.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl --no-reload disable openvswitch.service >/dev/null 2>&1 || :
+			systemctl stop openvswitch.service >/dev/null 2>&1 || :
+		end
+
+		configfiles
+			%{sysconfdir}/logrotate.d/openvswitch
+		end
+	end
+
+	package %{name}-test
+		summary = Open vSwitch testing utilities.
+		license = ASL 2.0
+		description
+			Utilities that are useful to diagnose performance and connectivity
+			issues in Open vSwitch setup.
+		end
+		arch = noarch
+
+		files
+			%{bindir}/ovs-test
+			%{bindir}/ovs-vlan-test
+			%{mandir}/man8/ovs-test.8*
+			%{mandir}/man8/ovs-vlan-test.8*
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
