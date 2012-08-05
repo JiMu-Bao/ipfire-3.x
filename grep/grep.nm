@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = grep
-version    = 2.12
+version    = 2.13
 release    = 1
 
 groups     = Applications/Text
@@ -13,8 +13,8 @@ license    = GPLv3+
 summary    = A pattern matching utilities.
 
 description
-	The GNU versions of commonly used grep utilities. Grep searches through \
-	textual input for lines which contain a match to a specified pattern and then \
+	The GNU versions of commonly used grep utilities. Grep searches through
+	textual input for lines which contain a match to a specified pattern and then
 	prints the matching lines. GNU's grep utilities include grep, egrep and fgrep.
 end
 
