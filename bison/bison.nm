@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = bison
-version    = 2.5.1
+version    = 2.6.2
 release    = 1
 
 groups     = Development/Tools
