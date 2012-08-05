@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = gzip
-version    = 1.4
-release    = 3
+version    = 1.5
+release    = 1
 
 groups     = Applications/Compression
 url        = http://www.gzip.org/
@@ -13,13 +13,18 @@ license    = GPLv2
 summary    = The GNU data compression program.
 
 description
-	The gzip package contains the popular GNU gzip data compression \
+	The gzip package contains the popular GNU gzip data compression
 	program. Gzipped files have a .gz extension.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.gnu.org/gnu/%{name}/
 
 build
+	requires
+		coreutils
+		less
+	end
+
 	# NO_ASM is for textrels.
 	configure_options += \
 		DEFS=NO_ASM \
