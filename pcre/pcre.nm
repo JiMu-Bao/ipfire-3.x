@@ -5,7 +5,7 @@
 
 name       = pcre
 version    = 8.31
-release    = 1
+release    = 2
 
 compat_version = 8.21
 
@@ -51,7 +51,7 @@ build
 	install_cmds
 		cd %{DIR_SRC}/%{name}-%{compat_version}
 		install -m 755 .libs/libpcre.so.0.0.1 %{BUILDROOT}%{libdir}
-		ln -svf libpcre.so.0.0.1 %{BUILDROOT}%{libdir}/libprce.so.0
+		ln -svf libpcre.so.0.0.1 %{BUILDROOT}%{libdir}/libpcre.so.0
 	end
 end
 
