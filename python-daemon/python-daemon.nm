@@ -1,0 +1,44 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = python-daemon
+version    = 1.6
+release    = 1
+arch       = noarch
+
+groups     = System/Libraries
+url        = http://pypi.python.org/pypi/python-daemon
+license    = Python
+summary    = Library to implement a well-behaved Unix daemon process.
+
+description
+	This library implements the well-behaved daemon specification of PEP 3143,
+	"Standard daemon process library".
+end
+
+source_dl  = http://pypi.python.org/packages/source/p/python-daemon
+
+build
+	requires
+		python-devel
+		python-setuptools
+	end
+
+	prepare_cmds
+		sed -i -e '/^#!\//, 1d' daemon/version/version_info.py
+	end
+
+	build
+		python setup.py build
+	end
+
+	install
+		python setup.py install --root=%{BUILDROOT}
+	end
+end
+
+packages
+	package %{name}
+end
