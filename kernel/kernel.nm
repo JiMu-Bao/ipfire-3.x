@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kernel
-version    = 3.4.6
-release    = 1
+version    = 3.5.1
+release    = 0.2
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -331,7 +331,7 @@ build
 		rm -rfv %{BUILDROOT}/lib/firmware
 
 		# Install tools.
-		make -C tools/perf DESTDIR=%{BUILDROOT} \
+		make -C tools/perf DESTDIR=%{BUILDROOT} WERROR=0 \
 			HAVE_CPLUS_DEMANGLE=1 prefix=/usr perfexecdir=lib/perf-core \
 			install install-man
 
