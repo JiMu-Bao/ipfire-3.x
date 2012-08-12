@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = rrdtool
-version    = 1.4.5
+version    = 1.4.7
 release    = 1
 
 groups     = Applications/Databases
@@ -60,10 +60,20 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-libs
 		template LIBS
+	end
+
+	package python-%{name}
+		summary = Python bindings for rrdtool %{thisver}.
+		description = %{summary}
+
+		requires = %{name}-libs = %{thisver}
+
+		files
+			/usr/lib*/python*
+		end
 	end
 
 	package %{name}-devel
