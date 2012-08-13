@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 3.5.1
-release    = 0.2
+release    = 0.3
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -90,9 +90,6 @@ build
 		# ERROR Currently all kernel images are disabled, because they
 		# won't build with the grsecurity patch.
 
-		# Build versatile kernel.
-		build_kernel_versatile = 1
-
 		# Build a kernel for Marvell Kirkwood-based devices.
 		build_kernel_kirkwood = 1
 
@@ -125,11 +122,6 @@ build
 	# Build legacy kernel.
 	if "%{build_kernel_legacy}" == "1"
 		kernels += legacy
-	end
-
-	# Build ARM versatile kernel.
-	if "%{build_kernel_versatile}" == "1"
-		kernels += versatile
 	end
 
 	# Build ARM kirkwood kernel.
@@ -454,22 +446,6 @@ packages
 
 			kernel_name = kernel-legacy
 			kernel_release = %{fullver}.legacy
-		end
-	end
-
-	if "%{build_kernel_versatile}" == "1"
-		package kernel-versatile
-			template KERNEL
-
-			kernel_name = kernel-versatile
-			kernel_release = %{fullver}.versatile
-		end
-
-		package kernel-versatile-devel
-			template KERNELDEVEL
-
-			kernel_name = kernel-versatile
-			kernel_release = %{fullver}.versatile
 		end
 	end
 
