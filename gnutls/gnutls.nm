@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = gnutls
-version    = 3.0.15
+version    = 3.1.0
 release    = 1
 
 groups     = System/Libraries
@@ -29,7 +29,7 @@ build
 		libgcrypt-devel
 		libtasn1-devel
 		lzo-devel
-		nettle-devel >= 2.4
+		nettle-devel >= 2.5
 		perl
 		p11-kit-devel >= 0.4
 		readline-devel
@@ -54,7 +54,7 @@ end
 packages
 	package %{name}
 		requires
-			nettle >= 2.4
+			nettle >= 2.5
 			p11-kit >= 0.4
 		end
 	end
