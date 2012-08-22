@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 3.5.1
-release    = 0.3
+release    = 0.4
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -215,7 +215,7 @@ build
 				%{kernel_build_flags} %{PARALLELISMFLAGS}
 
 			# Install the results.
-			mkdir -pv %{BUILDROOT}/boot %{BUILDROOT}/lib/modules/${fullversion}
+			mkdir -pv %{BUILDROOT}/boot %{BUILDROOT}/usr/lib/modules/${fullversion}
 			install -m 755 %{kernel_image} %{BUILDROOT}/boot/vmlinuz-${fullversion}
 			install -m 644 .config %{BUILDROOT}/boot/config-${fullversion}
 			install -m 644 System.map %{BUILDROOT}/boot/System.map-${fullversion}
@@ -224,7 +224,7 @@ build
 			dd if=/dev/zero of=%{BUILDROOT}/boot/initramfs-${fullversion}.img bs=1M count=20
 
 			# Install modules.
-			make ARCH=%{kernel_arch} INSTALL_MOD_PATH=%{BUILDROOT} mod-fw= \
+			make ARCH=%{kernel_arch} INSTALL_MOD_PATH=%{BUILDROOT}/usr mod-fw= \
 				KERNELRELEASE=${fullversion} modules_install
 
 			# Install vdso.
@@ -243,45 +243,45 @@ build
 			# And now the scary looking part.
 			#
 			# Recreate source and build links.
-			rm -vf %{BUILDROOT}/lib/modules/${fullversion}/{build,source}
-			mkdir -pv %{BUILDROOT}/lib/modules/${fullversion}/build
-			ln -svf build %{BUILDROOT}/lib/modules/${fullversion}/source
+			rm -vf %{BUILDROOT}/usr/lib/modules/${fullversion}/{build,source}
+			mkdir -pv %{BUILDROOT}/usr/lib/modules/${fullversion}/build
+			ln -svf build %{BUILDROOT}/usr/lib/modules/${fullversion}/source
 
 			# Create dirs for extra modules.
-			mkdir -pv %{BUILDROOT}/lib/modules/${fullversion}/extra
+			mkdir -pv %{BUILDROOT}/usr/lib/modules/${fullversion}/extra
 
 			cp -v --parents $(find -type f -name "Makefile*" -o -name "Kconfig*") \
-				%{BUILDROOT}/lib/modules/${fullversion}/build
+				%{BUILDROOT}/usr/lib/modules/${fullversion}/build
 			cp -v Module.symvers System.map \
-				%{BUILDROOT}/lib/modules/${fullversion}/build
-			rm -vrf %{BUILDROOT}/lib/modules/${fullversion}/build/{Documentation,scripts,include}
+				%{BUILDROOT}/usr/lib/modules/${fullversion}/build
+			rm -vrf %{BUILDROOT}/usr/lib/modules/${fullversion}/build/{Documentation,scripts,include}
 
-			cp -v .config %{BUILDROOT}/lib/modules/${fullversion}/build
-			cp -va scripts %{BUILDROOT}/lib/modules/${fullversion}/build
-			find %{BUILDROOT}/lib/modules/${fullversion}/build/scripts -name "*.o" \
+			cp -v .config %{BUILDROOT}/usr/lib/modules/${fullversion}/build
+			cp -va scripts %{BUILDROOT}/usr/lib/modules/${fullversion}/build
+			find %{BUILDROOT}/usr/lib/modules/${fullversion}/build/scripts -name "*.o" \
 				-exec rm -vf {} \;
 
 			cp -va --parents arch/%{kernel_arch}/include \
-				%{BUILDROOT}/lib/modules/${fullversion}/build
-			cp -va include %{BUILDROOT}/lib/modules/${fullversion}/build/include
+				%{BUILDROOT}/usr/lib/modules/${fullversion}/build
+			cp -va include %{BUILDROOT}/usr/lib/modules/${fullversion}/build/include
 
 			# Make sure we can build external modules.
-			touch -r %{BUILDROOT}/lib/modules/${fullversion}/build/Makefile \
-				%{BUILDROOT}/lib/modules/${fullversion}/build/include/linux/version.h
-			touch -r %{BUILDROOT}/lib/modules/${fullversion}/build/.config \
-				%{BUILDROOT}/lib/modules/${fullversion}/build/autoconf.h
-			cp -v %{BUILDROOT}/lib/modules/${fullversion}/build/.config \
-				%{BUILDROOT}/lib/modules/${fullversion}/build/include/config/auto.conf
+			touch -r %{BUILDROOT}/usr/lib/modules/${fullversion}/build/Makefile \
+				%{BUILDROOT}/usr/lib/modules/${fullversion}/build/include/linux/version.h
+			touch -r %{BUILDROOT}/usr/lib/modules/${fullversion}/build/.config \
+				%{BUILDROOT}/usr/lib/modules/${fullversion}/build/autoconf.h
+			cp -v %{BUILDROOT}/usr/lib/modules/${fullversion}/build/.config \
+				%{BUILDROOT}/usr/lib/modules/${fullversion}/build/include/config/auto.conf
 
-			find %{BUILDROOT}/lib/modules/${fullversion} -name "*.ko" -type f | \
+			find %{BUILDROOT}/usr/lib/modules/${fullversion} -name "*.ko" -type f | \
 				xargs chmod u+x
 
 			# Move all development files to /usr/src.
 			mkdir -pv %{BUILDROOT}/usr/src/kernels
-			mv -v %{BUILDROOT}/lib/modules/${fullversion}/build \
+			mv -v %{BUILDROOT}/usr/lib/modules/${fullversion}/build \
 				%{BUILDROOT}/usr/src/kernels/${fullversion}
-			ln -svf ../../../usr/src/kernels/${fullversion} \
-				%{BUILDROOT}/lib/modules/${fullversion}/build
+			ln -svf ../../../src/kernels/${fullversion} \
+				%{BUILDROOT}/usr/lib/modules/${fullversion}/build
 
 			find %{BUILDROOT}/usr/src/kernels -name ".*.cmd" -exec rm -f {} \;
 		}
@@ -366,7 +366,7 @@ packages
 			/boot/vmlinuz-%{kernel_release}
 			/boot/initramfs-%{kernel_release}.img
 			/etc/ld.so.conf.d/kernel-%{kernel_release}.conf
-			/lib/modules/%{kernel_release}
+			/usr/lib/modules/%{kernel_release}
 		end
 
 		_posttrans
@@ -411,8 +411,8 @@ packages
 		end
 
 		files
-			/lib/modules/%{kernel_release}/build
-			/lib/modules/%{kernel_release}/source
+			/usr/lib/modules/%{kernel_release}/build
+			/usr/lib/modules/%{kernel_release}/source
 			/usr/src/kernels/%{kernel_release}
 		end
 	end
@@ -501,8 +501,8 @@ packages
 		files
 			/
 			!/boot
-			!/lib/modules
 			!/usr/include
+			!/usr/lib/modules
 			!/usr/src
 			!/usr/src/debug
 			!/usr/lib/debug
