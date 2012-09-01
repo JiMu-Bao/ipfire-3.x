@@ -5,7 +5,7 @@
 
 name       = git
 version    = 1.7.8.2
-release    = 2
+release    = 3
 
 groups     = Development/Tools
 url        = http://git-scm.com/
@@ -13,8 +13,8 @@ license    = GPLv2
 summary    = Fast Version Control System.
 
 description
-	Git is a fast, scalable, distributed revision control system with an \
-	unusually rich command set that provides both high-level operations \
+	Git is a fast, scalable, distributed revision control system with an
+	unusually rich command set that provides both high-level operations
 	and full access to internals.
 end
 
@@ -22,6 +22,7 @@ source_dl  = http://git-core.googlecode.com/files/
 
 build
 	requires
+		asciidoc
 		expat-devel
 		gettext
 		libcurl-devel
@@ -29,6 +30,7 @@ build
 		perl-ExtUtils-MakeMaker
 		perl-devel
 		zlib-devel
+		xmlto
 	end
 
 	prepare_cmds
@@ -57,6 +59,9 @@ build
 	make_install_targets += INSTALLDIRS=vendor
 
 	install_cmds
+		# Install man pages.
+		make install-doc DESTDIR=%{BUILDROOT}
+
 		# Install bash completion file.
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/bash_completion.d
 		install -v -m 644 contrib/completion/git-completion.bash \
