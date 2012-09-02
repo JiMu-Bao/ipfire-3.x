@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = hostapd
-version    = 0.7.3
-release    = 2
+version    = 1.0
+release    = 1
 
 groups     = Networking/Tools
 url        = http://hostap.epitest.fi/hostapd/
@@ -29,8 +29,12 @@ build
 
 	prepare_cmds
 		cd hostapd
-		cp -vf %{DIR_SOURCE}/config .config
-		sed -e "s@/usr/local@%{BUILDROOT}/usr@g" -i Makefile
+
+		# Create our custom configuration.
+		cat defconfig > .config
+		sed -i .config \
+			-e "/^#CONFIG_IEEE80211N=y/s/^#//" \
+			-e "/^#CONFIG_RADIUS_SERVER=y/s/^#//"
 	end
 
 	build
@@ -39,13 +43,34 @@ build
 	end
 
 	install
-		mkdir -pv %{BUILDROOT}/usr/bin
-		cd hostapd && make install
+		cd hostapd
+
+		# Install binaries.
+		mkdir -pv %{BUILDROOT}%{bindir} %{BUILDROOT}%{sbindir}
+		install -m 755 hostapd %{BUILDROOT}%{sbindir}
+		install -m 755 hostapd_cli %{BUILDROOT}%{bindir}
+
+		# Install manpages.
+		mkdir -pv %{BUILDROOT}%{mandir}/man{1,8}
+		install -m 644 hostapd.8 %{BUILDROOT}%{mandir}/man8
+		install -m 644 hostapd_cli.1 %{BUILDROOT}%{mandir}/man1
 	end
 end
 
 packages
 	package %{name}
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO

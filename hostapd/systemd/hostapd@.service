@@ -1,17 +1,7 @@
-#  This file is part of systemd.
-#
-#  systemd is free software; you can redistribute it and/or modify it
-#  under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 2 of the License, or
-#  (at your option) any later version.
-
 [Unit]
-Description=WLAN AP on %I
-BindTo=dev-%I.device
-After=dev-%I.device
+Description=hostap daemon on %I
 
 [Service]
-ExecStart=/usr/bin/hostapd -dd -P /run/network/hostapd/%I/pid /run/network/hostapd/%I/config
-#Restart=always
+ExecStart=/usr/sbin/hostapd -P /run/network/hostapd/%I/pid /run/network/hostapd/%I/config
 UtmpIdentifier=%I
 KillMode=process
