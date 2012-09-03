@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = pkg-config
-version    = 0.25
-release    = 2
+version    = 0.27.1
+release    = 1
 
 groups     = Development/Tools
 url        = http://pkg-config.freedesktop.org/
@@ -18,17 +18,19 @@ description
 	compiler and linker flags.
 end
 
-source_dl  =
+source_dl  = http://pkgconfig.freedesktop.org/releases/
+sources    = %{thisapp}.tar.gz
 
 build
 	requires
 		m4
-		popt-devel
+		glib2-devel
 		sed
 	end
 
 	configure_options += \
-		--with-installed-popt
+		--disable-shared \
+		--with-installed-glib
 
 	test
 		make check
