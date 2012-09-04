@@ -5,7 +5,7 @@
 
 name       = pdns
 version    = 3.1
-release    = 1
+release    = 2
 
 groups     = Networking/DNS
 url        = http://powerdns.com/
@@ -27,26 +27,51 @@ build
 		chrpath
 		gcc-c++
 		lua-devel
-		openldap-devel
+		shadow-utils
 		sqlite-devel
 		zlib-devel
 	end
 
-	CPPFLAGS = -DLDAP_DEPRECATED
-
+	# No paralilelism build.
 	PARALLELISMFLAGS =
 
 	configure_options += \
-		--sysconfdir=/etc/pdns \
+		--sysconfdir=%{sysconfdir}/pdns \
 		--libdir=%{libdir}/powerdns \
 		--with-modules="" \
-		--with-dynmodules="pipe geo ldap gsqlite3" \
+		--with-dynmodules="pipe geo gsqlite3" \
 		--with-lua \
 		--disable-static
 
+	prepare_cmds
+		%{create_user}
+	end
+
 	install_cmds
+		# Create directories for pdns sqlite db.
+		mkdir -p %{BUILDROOT}%{datadir}/pdns/
+		mkdir -p %{BUILDROOT}%{sharedstatedir}/pdns/
+
+		# Install shema for sqlite database.
+		install -m 0644 %{DIR_SOURCE}/pdns.table \
+			%{BUILDROOT}%{datadir}/pdns/pdns.table
+
+		# Install default configuration.
+		install -m 0644 %{DIR_SOURCE}/pdns.conf \
+			%{BUILDROOT}%{sysconfdir}/pdns/pdns.conf
+
+		# Create empty database file.
+		touch %{BUILDROOT}%{sharedstatedir}/pdns/pdns.db
+
+		# Fix permissions and ownership from database.
+		chown -R pdns:pdns %{BUILDROOT}%{sharedstatedir}/pdns
+		chmod 660 %{BUILDROOT}%{sharedstatedir}/pdns/pdns.db
+
+		# Remove unneded binaries.
+		rm -vf %{BUILDROOT}%{bindir}/zone2ldap
+
+		# Remove rpath from binaries and backend libs.
 		chrpath --delete %{BUILDROOT}/usr/bin/pdns_control
-		chrpath --delete %{BUILDROOT}/usr/bin/zone2ldap
 		chrpath --delete %{BUILDROOT}/usr/bin/zone2sql
 		chrpath --delete %{BUILDROOT}/usr/sbin/pdns_server
 		chrpath --delete %{BUILDROOT}%{libdir}/powerdns/*.so
@@ -55,8 +80,55 @@ build
 	end
 end
 
+create_user
+	getent group pdns >/dev/null || groupadd -r pdns
+	getent passwd pdns >/dev/null || \
+	useradd -r -g pdns -d %{sharedstatedir}/pdns -s /sbin/nologin \
+		-c "PowerDNS user" pdns
+end
+
 packages
 	package %{name}
+		prerequires
+			coreutils
+			shadow-utils
+			sqlite
+		end
+ 
+		configfiles
+			/etc/pdns/pdns.conf
+		end
+
+		script prein
+			%{create_user}
+		end
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+
+			# Check if DB allready exists. Create pdns sqlite database if not.
+			if [ ! -s "%{sharedstatedir}/pdns/pdns.db" ]; then
+				sqlite3 %{sharedstatedir}/pdns/pdns.db < %{datadir}/pdns/pdns.table
+			fi
+		end
+
+		script preun
+			systemctl --no-reload disable pdns.service >/dev/null 2>&1 || :
+			systemctl stop pdns.service >/dev/null 2>&1 || :
+
+			# Backup existing database.
+			mv %{sharedstatedir}/pdns/pdns.db{,.bak}
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart pdns.service >/dev/null 2>&1 || :
+		end
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
