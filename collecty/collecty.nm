@@ -1,0 +1,40 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = collecty
+version    = 0.0.2
+release    = 1
+
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = System/Monitoring
+url        = http://git.ipfire.org/?p=oddments/collecty.git;a=summary
+license    = GPLv3+
+summary    = A system data collecting daemon.
+
+description
+	collecty is a daemon which collects data from the
+	system like CPU usage and many more.
+	It has been designed with power efficiency in mind.
+end
+
+source_dl  = http://source.ipfire.org/releases/collecty/
+
+build
+	requires
+		gettext
+		python
+	end
+
+	install
+		mkdir -pv %{BUILDROOT}%{bindir}
+		make install DESTDIR=%{BUILDROOT}
+	end
+end
+
+packages
+	package %{name}
+		groups += Base
+	end
+end
