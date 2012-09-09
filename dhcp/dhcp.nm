@@ -5,7 +5,7 @@
 
 name       = dhcp
 version    = 4.2.2
-release    = 4
+release    = 5
 
 groups     = Networking/Daemons
 url        = http://isc.org/products/DHCP/
@@ -75,9 +75,9 @@ build
 		-Wl,--as-needed
 
 	configure_options += \
-		--sysconfdir=/etc \
+		--sysconfdir=%{sysconfdir}/dhcp \
 		--with-srv-lease-file=/var/lib/dhcpd/dhcpd.leases \
-		--with-srv6-lease-file=/var/lib/dhcpd/dhcp6.leases \
+		--with-srv6-lease-file=/var/lib/dhcpd/dhcpd6.leases \
 		--with-cli-lease-file=/var/lib/dhclient/dhclient.leases \
 		--with-cli6-lease-file=/var/lib/dhclient/dhclient6.leases \
 		--with-srv-pid-file=/run/dhcpd.pid \
@@ -103,7 +103,7 @@ build
 	end
 
 	install_cmds
-		rm -vf %{BUILDROOT}/etc/dhclient.conf
+		rm -vf %{BUILDROOT}%{sysconfdir}/dhcp/dhclient.conf
 
 		# Move the client to /sbin, create dirs
 		# and remove the default config.
@@ -127,19 +127,23 @@ end
 
 packages
 	package %{name}
-
 		requires
-			dhcp-common
+			dhcp-common = %{thisver}
+			dhcp-libs = %{thisver}
+			/usr/lib/network/helpers/dhcpd-config-helper
 		end
 
 		prerequires += shadow-utils
+
+		configfiles
+			%{sysconfdir}/dhcp
+		end
 
 		script prein
 			getent group dhcpd >/dev/null || groupadd -r dhcpd
 			getent passwd dhcpd >/dev/null || \
 				useradd -r -g dhcpd -d /var/lib/dhcpd -s /sbin/nologin \
 				-c "User for the DHCP server" dhcpd
-			exit  0
 		end
 
 		# Just search for new unit files that were just installed.
@@ -176,7 +180,8 @@ packages
 		description = %{summary}
 
 		requires
-			dhcp-common
+			dhcp-common = %{thisver}
+			dhcp-libs = %{thisver}
 		end
 
 		files
@@ -204,6 +209,10 @@ packages
 	package %{name}-common
 		summary = Common files used by the dhcp client and server.
 		description = %{summary}
+
+		requires
+			dhcp-libs = %{thisver}
+		end
 
 		files
 			/usr/bin/
