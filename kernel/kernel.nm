@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kernel
-version    = 3.5.1
-release    = 0.4
+version    = 3.5.3
+release    = 0.1
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
