@@ -5,7 +5,7 @@
 
 name       = hplip
 version    = 3.10.9
-release    = 1
+release    = 2
 
 groups     = Applications/Printing
 url        = http://hplipopensource.com/hplip-web/index.html
@@ -13,14 +13,14 @@ license    = GPLv2*
 summary    = HP Printer/Scanner Library (full version).
 
 description
-	HPLIP (Hewlett-Packard Linux Imaging & Printing) is an HP-developed \
-	olution for printing, scanning, and faxing with HP inkjet and laser based \
-	printers in Linux. The HPLIP project provides printing support for 1,924 \
-	printer models. \
+	HPLIP (Hewlett-Packard Linux Imaging & Printing) is an HP-developed
+	olution for printing, scanning, and faxing with HP inkjet and laser based
+	printers in Linux. The HPLIP project provides printing support for 1,924
+	printer models.
 	This is the full version including printer/scanner support.
 end
 
-source_dl  =
+source_dl  = http://sourceforge.net/projects/%{name}/files/%{name}/%{version}/
 
 build
 	requires
@@ -33,6 +33,7 @@ build
 		libtool
 		libusb-compat-devel
 		net-snmp-devel
+		openssl-devel
 		pkg-config
 		python-devel
 		sane-devel
@@ -40,10 +41,26 @@ build
 
 	configure_options += \
 		--sysconfdir=/etc
+
+	install_cmds
+		# Remove unwanted files.
+		rm -rvf %{BUILDROOT}%{sysconfdir}/sane.d/
+	end
 end
 
 packages
 	package %{name}
+		prerequires += sane
+
+		script postin
+			# Add hplip scanner support to sane.
+			echo "hpaio" >> %{sysconfdir}/sane.d/dll.conf
+		end
+
+		script postun
+			# Remove hplip scanner support from sane.
+			sed -i "/^hpaio$/d" %{sysconfdir}/sane.d/dll.conf
+		end
 	end
 
 	package %{name}-debuginfo
