@@ -5,7 +5,7 @@
 
 name       = openssh
 version    = 5.9p1
-release    = 6
+release    = 7
 
 groups     = Application/Internet
 url        = http://www.openssh.com/portable.html
@@ -172,7 +172,7 @@ packages
 		files
 			%{sysconfdir}/pam.d/sshd
 			%{sysconfdir}/ssh/sshd_config
-			/lib/systemd
+			%{unitdir}/sshd.service
 			%{libdir}/openssh/sftp-server
 			%{sbindir}/sshd-keygen
 			%{sbindir}/sshd
