@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = patch
-version    = 2.6.1
-release    = 3
+version    = 2.7
+release    = 1
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/patch/patch.html
@@ -20,10 +20,12 @@ description
 	diff file to add the changes to their original file.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.gnu.org/gnu/patch/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
+		attr-devel
 		ed
 		libselinux-devel
 		pkg-config
