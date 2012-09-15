@@ -1,19 +1,18 @@
-diff -up dhcp-4.2.1b1/common/dispatch.c.64-bit_lease_parse dhcp-4.2.1b1/common/dispatch.c
-diff -up dhcp-4.2.1b1/common/parse.c.64-bit_lease_parse dhcp-4.2.1b1/common/parse.c
---- dhcp-4.2.1b1/common/parse.c.64-bit_lease_parse	2010-12-30 00:01:42.000000000 +0100
-+++ dhcp-4.2.1b1/common/parse.c	2011-01-28 08:01:10.000000000 +0100
-@@ -909,8 +909,8 @@ TIME 
+diff -up dhcp-4.2.4b1/common/parse.c.64-bit_lease_parse dhcp-4.2.4b1/common/parse.c
+--- dhcp-4.2.4b1/common/parse.c.64-bit_lease_parse	2012-03-09 12:28:10.000000000 +0100
++++ dhcp-4.2.4b1/common/parse.c	2012-04-16 17:30:55.867045149 +0200
+@@ -906,8 +906,8 @@ TIME
  parse_date_core(cfile)
  	struct parse *cfile;
  {
 -	int guess;
--	int tzoff, wday, year, mon, mday, hour, min, sec;
+-	int tzoff, year, mon, mday, hour, min, sec;
 +	TIME guess;
-+	long int tzoff, wday, year, mon, mday, hour, min, sec;
++	long int tzoff, year, mon, mday, hour, min, sec;
  	const char *val;
  	enum dhcp_token token;
  	static int months[11] = { 31, 59, 90, 120, 151, 181,
-@@ -936,7 +936,7 @@ parse_date_core(cfile)
+@@ -933,7 +933,7 @@ parse_date_core(cfile)
  		}
  
  		token = next_token(&val, NULL, cfile); /* consume number */
@@ -22,16 +21,7 @@ diff -up dhcp-4.2.1b1/common/parse.c.64-bit_lease_parse dhcp-4.2.1b1/common/pars
  
  		return((TIME)guess);
  	}
-@@ -948,7 +948,7 @@ parse_date_core(cfile)
- 		return((TIME)0);
- 	}
- 	token = next_token(&val, NULL, cfile); /* consume day of week */
--	wday = atoi(val);
-+	wday = atol(val);
- 
- 	/* Year... */
- 	token = peek_token(&val, NULL, cfile);
-@@ -964,7 +964,7 @@ parse_date_core(cfile)
+@@ -961,7 +961,7 @@ parse_date_core(cfile)
  	   somebody invents a time machine, I think we can safely disregard
  	   it.   This actually works around a stupid Y2K bug that was present
  	   in a very early beta release of dhcpd. */
@@ -40,7 +30,7 @@ diff -up dhcp-4.2.1b1/common/parse.c.64-bit_lease_parse dhcp-4.2.1b1/common/pars
  	if (year > 1900)
  		year -= 1900;
  
-@@ -988,7 +988,7 @@ parse_date_core(cfile)
+@@ -985,7 +985,7 @@ parse_date_core(cfile)
  		return((TIME)0);
  	}
  	token = next_token(&val, NULL, cfile); /* consume month */	
@@ -49,7 +39,7 @@ diff -up dhcp-4.2.1b1/common/parse.c.64-bit_lease_parse dhcp-4.2.1b1/common/pars
  
  	/* Slash separating month from day... */
  	token = peek_token(&val, NULL, cfile);
-@@ -1010,7 +1010,7 @@ parse_date_core(cfile)
+@@ -1007,7 +1007,7 @@ parse_date_core(cfile)
  		return((TIME)0);
  	}
  	token = next_token(&val, NULL, cfile); /* consume day of month */
@@ -58,7 +48,7 @@ diff -up dhcp-4.2.1b1/common/parse.c.64-bit_lease_parse dhcp-4.2.1b1/common/pars
  
  	/* Hour... */
  	token = peek_token(&val, NULL, cfile);
-@@ -1021,7 +1021,7 @@ parse_date_core(cfile)
+@@ -1018,7 +1018,7 @@ parse_date_core(cfile)
  		return((TIME)0);
  	}
  	token = next_token(&val, NULL, cfile); /* consume hour */
@@ -67,7 +57,7 @@ diff -up dhcp-4.2.1b1/common/parse.c.64-bit_lease_parse dhcp-4.2.1b1/common/pars
  
  	/* Colon separating hour from minute... */
  	token = peek_token(&val, NULL, cfile);
-@@ -1043,7 +1043,7 @@ parse_date_core(cfile)
+@@ -1040,7 +1040,7 @@ parse_date_core(cfile)
  		return((TIME)0);
  	}
  	token = next_token(&val, NULL, cfile); /* consume minute */
@@ -76,7 +66,7 @@ diff -up dhcp-4.2.1b1/common/parse.c.64-bit_lease_parse dhcp-4.2.1b1/common/pars
  
  	/* Colon separating minute from second... */
  	token = peek_token(&val, NULL, cfile);
-@@ -1065,13 +1065,13 @@ parse_date_core(cfile)
+@@ -1062,13 +1062,13 @@ parse_date_core(cfile)
  		return((TIME)0);
  	}
  	token = next_token(&val, NULL, cfile); /* consume second */
