@@ -4,9 +4,9 @@
 ###############################################################################
 
 name       = util-linux
-major_ver  = 2.21
+major_ver  = 2.22
 version    = %{major_ver}
-release    = 4
+release    = 1
 
 groups     = System/Base
 url        = http://kernel.org/~kzak/util-linux/
@@ -25,12 +25,14 @@ source_dl  = ftp://ftp.kernel.org/pub/linux/utils/util-linux/v%{major_ver}/
 build
 	requires
 		audit-devel
+		coreutils >= 8.19
 		gettext
 		libcap-devel
 		libselinux-devel
 		libsepol-devel
 		ncurses-devel
 		pam-devel
+		libudev-devel
 		zlib-devel
 	end
 
@@ -40,14 +42,18 @@ build
 		-D_FILE_OFFSET_BITS=64
 
 	configure_options += \
+		--with-systemdsystemunitdir=%{unitdir} \
 		--disable-wall \
+		--enable-eject \
 		--enable-kill \
-		--enable-login-utils \
 		--enable-partx \
 		--enable-write \
+		--enable-su \
+		--enable-socket-activation \
 		--enable-libmount-mount \
 		--with-selinux \
 		--with-audit \
+		--with-udev \
 		--disable-makeinstall-chown \
 		--disable-static
 
@@ -63,8 +69,10 @@ build
 
 	install_cmds
 		mkdir -pv \
+			%{BUILDROOT}/var/lib/libuuid \
 			%{BUILDROOT}/var/lib/hwclock \
 			%{BUILDROOT}/usr/share/man/man8 \
+			%{BUILDROOT}/run/uuidd \
 			%{BUILDROOT}/var/log
 
 		install -m 755 %{DIR_APP}/nologin %{BUILDROOT}%{sbindir}
@@ -85,6 +93,10 @@ build
 		setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep %{BUILDROOT}%{bindir}/mount
 		chmod -v -s %{BUILDROOT}%{bindir}/umount
 		setcap CAP_DAC_OVERRIDE,CAP_SYS_ADMIN=ep %{BUILDROOT}%{bindir}/umount
+
+		# su (set right capabilities)
+		chmod -v u-s %{BUILDROOT}%{bindir}/su
+		setcap cap_setgid,cap_setuid+ep %{BUILDROOT}%{bindir}/su
 	end
 end
 
@@ -97,10 +109,13 @@ packages
 		end
 
 		provides
+			eject = %{thisver}
 			/bin/dmesg
+			/bin/eject
 			/bin/kill
 			/bin/more
 			/bin/mount
+			/bin/su
 			/bin/umount
 			/sbin/blkid
 			/sbin/blockdev
@@ -109,10 +124,14 @@ packages
 			/sbin/nologin
 		end
 
-		obsoletes = util-linux-ng
+		obsoletes
+			util-linux-ng
+			eject <= 2.1.5
+		end
 
 		conflicts
 			filesystem < 002
+			coreutils < 8.19
 			setup < 3.0-2
 			util-linux-ng
 			sysvinit <= 2.86-2
@@ -169,6 +188,10 @@ packages
 			part of util-linux.
 		end
 
+		requires
+			uuidd=%{thisver}
+		end
+
 		conflicts = filesystem < 002
 
 		files
@@ -217,6 +240,53 @@ packages
 		end
 	end
 
+	package uuidd
+		summary = Helper daemon to guarantee uniqueness of time-based UUIDs.
+		description
+			The uuidd package contains a userspace daemon (uuidd) which guarantees
+			uniqueness of time-based UUID generation even at very high rates on
+			SMP systems.
+		end
+
+		groups += Base
+
+		files
+			%{sbindir}/uuidd
+			%{mandir}/man8/uuidd.8*
+			%{sharedstatedir}/libuuid
+			%{unitdir}/uuidd*
+			/run/uuidd
+		end
+
+		prerequires += shadow-utils
+
+		script prein
+			getent group uuidd >/dev/null || groupadd -r uuidd
+			getent passwd uuidd >/dev/null || \
+				useradd -r -g uuidd -d %{sharedstatedir}/libuuid -s /sbin/nologin \
+					-c "UUID generator helper daemon" uuidd
+		end
+	
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl enable uuidd.service >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl --no-reload disable uuidd.service >/dev/null 2>&1 || :
+			systemctl stop uuidd.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart uuidd.service >/dev/null 2>&1 || :
+		end
+	end
+	
 	package %{name}-debuginfo
 		template DEBUGINFO
 	end
