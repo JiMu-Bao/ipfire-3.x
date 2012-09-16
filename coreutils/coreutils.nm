@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = coreutils
-version    = 8.17
-release    = 2
+version    = 8.19
+release    = 1
 
 groups     = System/Base
 url        = http://www.gnu.org/software/coreutils/
@@ -31,7 +31,7 @@ build
 		libcap-devel
 		libselinux-devel
 		ncurses-devel
-		pam-devel>=1.1.5
+		texinfo
 	end
 
 	CFLAGS += \
@@ -40,11 +40,10 @@ build
 
 	configure_options += \
 		--libexecdir=%{libdir} \
-		--enable-pam \
 		--enable-selinux \
 		--enable-largefile \
 		--disable-rpath \
-		--enable-install-program=arch,su \
+		--enable-install-program=arch \
 		--enable-no-install-program=hostname,kill,uptime \
 		--with-tty-group \
 		\
@@ -64,11 +63,6 @@ build
 	install_cmds
 		mkdir -pv %{BUILDROOT}%{sbindir}
 		mv -v %{BUILDROOT}/usr/bin/chroot %{BUILDROOT}%{sbindir}
-		mv -v %{BUILDROOT}/usr/bin/runuser %{BUILDROOT}%{sbindir}
-
-		# su (set right capabilities)
-		chmod -v u-s %{BUILDROOT}%{bindir}/su
-		setcap cap_setgid,cap_setuid+ep %{BUILDROOT}%{bindir}/su
 
 		# Dump /etc/DIR_COLORS
 		mkdir -pv %{BUILDROOT}%{sysconfdir}
@@ -114,12 +108,10 @@ packages
 			/bin/sleep
 			/bin/sort
 			/bin/stty
-			/bin/su
 			/bin/sync
 			/bin/touch
 			/bin/true
 			/bin/uname
-			/sbin/runuser
 		end
 
 		conflicts
