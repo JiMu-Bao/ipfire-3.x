@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = openldap
-version    = 2.4.30
+version    = 2.4.32
 release    = 1
 
 groups     = System/Daemons
@@ -51,11 +51,6 @@ build
 		--enable-ndb=no \
 		--disable-static
 
-# Doens't seem to work in chroot.
-#define test
-#	cd %{DIR_APP} && make check
-#endef
-
 	install_cmds
 		mv -v %{BUILDROOT}%{libdir}/slapd %{BUILDROOT}/usr/sbin/slapd
 		ln -svf slapd %{BUILDROOT}/usr/sbin/slapacl
@@ -85,6 +80,24 @@ end
 
 packages
 	package %{name}
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl --no-reload disable openldap.service >/dev/null 2>&1 || :
+			systemctl stop openldap.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart openldap.service >/dev/null 2>&1 || :
+		end
+	end
 
 	package %{name}-libs
 		template LIBS

@@ -1,5 +1,5 @@
 [Unit]
-Description=Very Secure FTP Daemon
+Description=OpenLDAP
 After=basic.target
 
 [Service]
