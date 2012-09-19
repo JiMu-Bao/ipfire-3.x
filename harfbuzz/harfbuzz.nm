@@ -1,0 +1,44 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = harfbuzz
+version    = 0.9.4
+release    = 1
+
+groups     = System/Libraries
+url        = http://freedesktop.org/wiki/Software/HarfBuzz
+license    = MIT
+summary    = A text shaping library.
+
+description
+	HarfBuzz is an implementation of the OpenType Layout engine.
+end
+
+source_dl  = http://www.freedesktop.org/software/harfbuzz/release/
+sources    = %{thisapp}.tar.bz2
+
+build
+	requires
+		cairo-devel
+		freetype-devel
+		glib2-devel
+	end
+
+	test
+		make check
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
