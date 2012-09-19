@@ -4,9 +4,9 @@
 ###############################################################################
 
 name       = pango
-major	   = 1.29
-version    = %{major}.5
-release    = 2
+major	   = 1.31
+version    = %{major}.0
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.pango.org/
@@ -14,7 +14,7 @@ license    = LGPLv2+
 summary    = System for layout and rendering of internationalized text.
 
 description
-	Pango is a library for laying out and rendering of text, with an \
+	Pango is a library for laying out and rendering of text, with an
 	emphasis on internationalization.
 end
 
@@ -29,6 +29,7 @@ build
 		gcc-c++
 		glib2-devel
 		glibc-devel
+		harfbuzz-devel
 		libXft-devel
 		perl
 		pkg-config
@@ -40,7 +41,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
