@@ -5,7 +5,7 @@
 
 name       = coreutils
 version    = 8.17
-release    = 1
+release    = 2
 
 groups     = System/Base
 url        = http://www.gnu.org/software/coreutils/
@@ -72,7 +72,9 @@ build
 
 		# Dump /etc/DIR_COLORS
 		mkdir -pv %{BUILDROOT}%{sysconfdir}
-		dircolors -p > %{BUILDROOT}/etc/DIR_COLORS
+		for i in DIR_COLORS DIR_COLORS.256color DIR_COLORS.lightbgcolor; do
+			install -m 644 %{DIR_SOURCE}/${i} %{BUILDROOT}%{sysconfdir}
+		done
 
 		# Install profile.d.
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/profile.d/
