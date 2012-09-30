@@ -1,0 +1,37 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = mtr
+version    = 0.82
+release    = 1
+
+groups     = Applications/Internet
+url        = http://www.BitWizard.nl/mtr
+license    = GPLv2+
+summary    = A network diagnostic tool.
+
+description
+	Mtr is a network diagnostic tool that combines ping and traceroute
+	into one program.
+end
+
+source_dl  = ftp://ftp.bitwizard.nl/mtr/
+
+build
+	requires
+		ncurses-devel
+	end
+
+	configure_options += \
+		--without-gtk
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
