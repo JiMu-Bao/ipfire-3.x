@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = expat
-version    = 2.0.1
-release    = 3
+version    = 2.1.0
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.libexpat.org/
