@@ -1,0 +1,224 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = python3
+major_ver  = 3.3
+version    = %{major_ver}.0
+release    = 1
+thisapp    = Python-%{version}
+
+groups     = Development/Languages
+url        = http://www.python.org
+license    = Python
+summary    = Version 3 of the Python programming language.
+
+description
+	Python is an interpreted, interactive, object-oriented programming
+	language often compared to Tcl, Perl, Scheme or Java. Python includes
+	modules, classes, exceptions, very high level dynamic data types and
+	dynamic typing. Python supports interfaces to many system calls and
+	libraries, as well as to various windowing systems.
+end
+
+source_dl  = http://python.org/ftp/python/%{version}/
+sources    = %{thisapp}.tar.xz
+
+pylibdir   = %{libdir}/python%{major_ver}
+dynload_dir= %{pylibdir}/lib-dynload
+
+build
+	requires
+		autoconf
+		automake
+		bzip2
+		bzip2-devel
+		db4-devel >= 1:4.8
+		expat-devel >= 2.1.0
+		findutils
+		gdbm-devel >= 1.10
+		gcc-c++
+		glibc-devel
+		gmp-devel
+		libffi-devel
+		libGL-devel
+		libX11-devel
+		ncurses-devel
+		openssl-devel
+		pkg-config
+		readline-devel
+		sqlite-devel
+		tar
+		tcl-devel
+		util-linux
+		xz-devel
+		zlib-devel
+	end
+
+	export CFLAGS   += -D_GNU_SOURCE -fwrapv
+	export CXXFLAGS += -D_GNU_SOURCE -fwrapv
+	export OPT       = %{CFLAGS}
+	export LINKCC    = gcc
+
+	prepare_cmds
+		# Apply patches for x86_64.
+		if [ "$(uname -m)" = "x86_64" ]; then
+			patch -Np1 -i %{DIR_SOURCE}/python-3.3.0b1-lib64.patch
+		fi
+
+		# Remove embedded copies of expat and libffi
+		rm -rf Modules/{expat,zlib}
+		rm -rf Modules/_ctypes/{darwin,libffi,libffi_arm_wince,libffi_msvc,libffi_osx}
+
+		# Make all source files owned by root.
+		chown root.root -R .
+
+		autoreconf --force
+	end
+
+	configure_options += \
+		--enable-ipv6 \
+		--with-computed-gotos=yes \
+		--with-dbmliborder=gdbm:ndbm:bdb \
+		--with-system-expat \
+		--with-system-ffi \
+		--enable-shared
+
+	#test
+	#	make test
+	#end
+
+	install_cmds
+		install -d -m 0755 %{BUILDROOT}%{pylibdir}/site-packages/__pycache__
+		install -d -m 0755 %{BUILDROOT}/usr/lib/python${major_ver}/site-packages/__pycache__
+
+		# Development tools
+		mv -v %{BUILDROOT}%{bindir}/{,python3-}2to3
+		install -m 755 -d %{BUILDROOT}%{pylibdir}/Tools
+		install Tools/README %{BUILDROOT}%{pylibdir}/Tools/
+		cp -avr Tools/{freeze,i18n,pynche,scripts} %{BUILDROOT}%{pylibdir}/Tools/
+
+		rm -vf %{BUILDROOT}%{pylibdir}/email/test/data/audiotest.au %{BUILDROOT}%{pylibdir}/test/audiotest.au
+
+		# Switch all shebangs to refer to the specific Python version.
+		LD_LIBRARY_PATH=. ./python Tools/scripts/pathfix.py \
+			-i "%{bindir}/python%{major_ver}" \
+			%{BUILDROOT}
+
+		# Remove shebang lines from .py files that aren't executable, and
+		# remove executability from .py files that don't have a shebang line:
+		find %{BUILDROOT} -name \*.py \
+			\( \( \! -perm /u+x,g+x,o+x -exec sed -e '/^#!/Q 0' -e 'Q 1' {} \; \
+			-print -exec sed -i '1d' {} \; \) -o \( \
+			-perm /u+x,g+x,o+x ! -exec grep -m 1 -q '^#!' {} \; \
+			-exec chmod a-x {} \; \) \)
+
+		# .xpm and .xbm files should not be executable:
+		find %{BUILDROOT} \
+			\( -name \*.xbm -o -name \*.xpm -o -name \*.xpm.1 \) \
+			-exec chmod a-x {} \;
+
+		# Remove executable flag from files that shouldn't have it:
+		chmod a-x \
+			%{BUILDROOT}%{pylibdir}/distutils/tests/Setup.sample \
+			%{BUILDROOT}%{pylibdir}/Tools/README
+
+		# Get rid of DOS batch files:
+		find %{BUILDROOT} -name \*.bat -exec rm {} \;
+
+		# Get rid of backup files:
+		find %{BUILDROOT}/ -name "*~" -exec rm -f {} \;
+		rm -f %{BUILDROOT}%{pylibdir}/LICENSE.txt
+
+		# Junk, no point in putting in -test sub-pkg
+		rm -f %{BUILDROOT}%{pylibdir}/idlelib/testcode.py*
+
+		# Fix end-of-line encodings:
+		find %{BUILDROOT}/ -name \*.py -exec sed -i 's/\r//' {} \;
+
+		# Do bytecompilation with the newly installed interpreter.
+		# compile *.pyo
+		find %{BUILDROOT} -type f -a -name "*.py" -print0 | \
+			LD_LIBRARY_PATH="%{BUILDROOT}%{dynload_dir}:%{BUILDROOT}%{libdir}" \
+			PYTHONPATH="%{BUILDROOT}%{libdir}python%{major_ver} %{BUILDROOT}/%{libdir}python%{major_ver}/site-packages" \
+			xargs -0 %{BUILDROOT}%{bindir}/python%{major_ver} -O -c 'import py_compile, sys; [py_compile.compile(f, dfile=f.partition("%{BUILDROOT}")[2]) for f in sys.argv[1:]]' || :
+		# compile *.pyc
+		find %{BUILDROOT} -type f -a -name "*.py" -print0 | \
+			LD_LIBRARY_PATH="%{BUILDROOT}%{dynload_dir}:%{BUILDROOT}%{libdir}" \
+			PYTHONPATH="%{BUILDROOT}%{libdir}python%{major_ver} %{BUILDROOT}/%{libdir}python%{major_ver}/site-packages" \
+			xargs -0 %{BUILDROOT}%{bindir}/python%{major_ver} -O -c 'import py_compile, sys; [py_compile.compile(f, dfile=f.partition("%{BUILDROOT}")[2], optimize=0) for f in sys.argv[1:]]' || :
+
+		# Fixup permissions for shared libraries from non-standard 555 to standard 755:
+		find %{BUILDROOT} -perm 555 -exec chmod 755 {} \;
+	end
+end
+
+packages
+	package %{name}
+		# Define python-abi manually.
+		provides
+			python-abi = %{major_ver}
+		end
+
+		requires
+			%{name}-libs = %{thisver}
+		end
+	end
+
+	package %{name}-libs
+		template LIBS
+
+		requires
+			expat >= 2.1.0
+		end
+
+		files += %{dynload_dir}
+	end
+
+	package %{name}-devel
+		template DEVEL
+
+		requires += %{name}-libs = %{thisver}
+
+		files += \
+			!%{libdir}/python*/config*/Makefile \
+			!%{includedir}/python*/pyconfig.h
+	end
+
+	package %{name}-test
+		requires
+			%{name} = %{thisver}
+		end
+
+		files
+			%{pylibdir}/ctypes/test
+			%{pylibdir}/distutils/testi
+			%{pylibdir}/lib2to3/test
+			%{pylibdir}/sqlite3/test
+			%{pylibdir}/test
+			%{pylibdir}/tkinter/test
+			%{pylibdir}/unittest/test
+			%{dynload_dir}/_ctypes_test*
+			%{dynload_dir}/_testbuffer*
+			%{dynload_dir}/_testcapi*
+		end
+	end
+
+	package %{name}-tools
+		requires
+			%{name} = %{thisver}
+		end
+
+		files
+			%{bindir}/python3-2to3
+			%{bindir}/2to3*
+			%{bindir}/idle*
+			%{pylibdir}/Tools
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
