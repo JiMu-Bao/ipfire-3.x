@@ -3,13 +3,14 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = gdbm
-version    = 1.10
+name       = compat-gdbm
+version    = 1.8.3
 release    = 1
+thisapp    = gdbm-%{version}
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/gdbm/
-license    = GPLv3+
+license    = GPLv2+
 summary    = The GDBM package contains the GNU Database Manager.
 
 description
@@ -23,26 +24,56 @@ source_dl  = http://ftp.gnu.org/gnu/gdbm/
 
 build
 	requires
-		gettext
+		autoconf
+		automake
 		libtool
 	end
 
-	configure_options += \
-		--enable-libgdbm-compat
+	prepare_cmds
+		libtoolize --force --copy
+		aclocal
+		autoconf
 
-	install_cmds
+		# Don't use flock, because it doesn't work on NFS.
+		# Use fcntl instead.
+		echo "#undef HAVE_FLOCK" >> autoconf.h.in
+	end
+
+	PARALLELISMFLAGS = # Not supported.
+
+	install
+		make install install-compat \
+			prefix=%{BUILDROOT}%{prefix} \
+			libdir=%{BUILDROOT}%{libdir} \
+			includedir=%{BUILDROOT}%{includedir} \
+			mandir=%{BUILDROOT}%{mandir} \
+			infodir=%{BUILDROOT}%{infodir}
+
 		mkdir -pv %{BUILDROOT}%{includedir}/gdbm
-		ln -svf ../gdbm.h %{BUILDROOT}%{includedir}/gdbm/gdbm.h
-		ln -svf ../ndbm.h %{BUILDROOT}%{includedir}/gdbm/ndbm.h
-		ln -svf ../dbm.h  %{BUILDROOT}%{includedir}/gdbm/dbm.h
+		ln -svf gdbm/gdbm.h %{BUILDROOT}%{includedir}/gdbm.h
+
+		# Remove all man pages provided by gdbm-devel.
+		rm -rfv %{BUILDROOT}%{mandir}/man3
 	end
 end
 
 packages
 	package %{name}
+		conflicts
+			gdbm <= %{version}
+		end
+	end
 
 	package %{name}-devel
 		template DEVEL
+
+		requires
+			compat-gdbm = %{thisver}
+		end
+
+		conflicts
+			gdbm-devel
+		end
 	end
 
 	package %{name}-debuginfo
