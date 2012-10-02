@@ -1,0 +1,444 @@
+From cae350969fc6ae01b1f4a10927c43340f1ca0592 Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Thu, 26 Jul 2012 20:49:25 +0200
+Subject: [PATCH 1/4] Rework parallelism decision function and move it into
+ the System class.
+
+---
+ po/pakfire.pot                  | 128 +++++++++++++++++++++-------------------
+ python/pakfire/cli.py           |   1 +
+ python/pakfire/packages/make.py |   3 +-
+ python/pakfire/system.py        |  16 +++++
+ python/pakfire/util.py          |  13 ----
+ 5 files changed, 85 insertions(+), 76 deletions(-)
+
+diff --git a/po/pakfire.pot b/po/pakfire.pot
+index 495f5cd..c1c67fb 100644
+--- a/po/pakfire.pot
++++ b/po/pakfire.pot
+@@ -8,7 +8,7 @@ msgid ""
+ msgstr ""
+ "Project-Id-Version: PACKAGE VERSION\n"
+ "Report-Msgid-Bugs-To: \n"
+-"POT-Creation-Date: 2012-07-26 17:09+0200\n"
++"POT-Creation-Date: 2012-07-26 19:43+0200\n"
+ "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+ "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+ "Language-Team: LANGUAGE <LL@li.org>\n"
+@@ -428,11 +428,11 @@ msgstr ""
+ msgid "Enabled"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:348 ../python/pakfire/cli.py:1050
++#: ../python/pakfire/cli.py:348 ../python/pakfire/cli.py:1051
+ msgid "Priority"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:348 ../python/pakfire/cli.py:1095
++#: ../python/pakfire/cli.py:348 ../python/pakfire/cli.py:1096
+ msgid "Packages"
+ msgstr ""
+ 
+@@ -659,228 +659,232 @@ msgstr ""
+ msgid "Memory"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:964 ../python/pakfire/server.py:311
++#: ../python/pakfire/cli.py:963
++msgid "Parallelism"
++msgstr ""
++
++#: ../python/pakfire/cli.py:965 ../python/pakfire/server.py:311
+ msgid "Native arch"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:966
++#: ../python/pakfire/cli.py:967
+ msgid "Default arch"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:968 ../python/pakfire/server.py:313
++#: ../python/pakfire/cli.py:969 ../python/pakfire/server.py:313
+ msgid "Supported arches"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:981
++#: ../python/pakfire/cli.py:982
+ msgid "Your IP address"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:986
++#: ../python/pakfire/cli.py:987
+ msgid "You are authenticated to the build service:"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:992
++#: ../python/pakfire/cli.py:993
+ msgid "User name"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:993
++#: ../python/pakfire/cli.py:994
+ msgid "Real name"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:994
++#: ../python/pakfire/cli.py:995
+ msgid "Email address"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:995
++#: ../python/pakfire/cli.py:996
+ msgid "Registered"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1002
++#: ../python/pakfire/cli.py:1003
+ msgid "You could not be authenticated to the build service."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1023
++#: ../python/pakfire/cli.py:1024
+ msgid "No ongoing jobs found."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1026
++#: ../python/pakfire/cli.py:1027
+ msgid "Active build jobs"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1032
++#: ../python/pakfire/cli.py:1033
+ msgid "No jobs found."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1035
++#: ../python/pakfire/cli.py:1036
+ msgid "Recently processed build jobs"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1042
++#: ../python/pakfire/cli.py:1043
+ #, python-format
+ msgid "A build with ID %s could not be found."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1045
++#: ../python/pakfire/cli.py:1046
+ #, python-format
+ msgid "Build: %(name)s"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1049 ../python/pakfire/cli.py:1077
++#: ../python/pakfire/cli.py:1050 ../python/pakfire/cli.py:1078
+ msgid "State"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1053
++#: ../python/pakfire/cli.py:1054
+ msgid "Jobs"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1066
++#: ../python/pakfire/cli.py:1067
+ #, python-format
+ msgid "A job with ID %s could not be found."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1073
++#: ../python/pakfire/cli.py:1074
+ #, python-format
+ msgid "Job: %(name)s"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1078 ../python/pakfire/packages/base.py:107
++#: ../python/pakfire/cli.py:1079 ../python/pakfire/packages/base.py:107
+ #: ../python/pakfire/transaction.py:404
+ msgid "Arch"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1083 ../python/pakfire/packages/base.py:142
++#: ../python/pakfire/cli.py:1084 ../python/pakfire/packages/base.py:142
+ msgid "Build host"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1088
++#: ../python/pakfire/cli.py:1089
+ msgid "Time created"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1089
++#: ../python/pakfire/cli.py:1090
+ msgid "Time started"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1090
++#: ../python/pakfire/cli.py:1091
+ msgid "Time finished"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1091
++#: ../python/pakfire/cli.py:1092
+ msgid "Duration"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1119
++#: ../python/pakfire/cli.py:1120
+ msgid "Invalid error code given."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1122
++#: ../python/pakfire/cli.py:1123
+ #, python-format
+ msgid "Reponse from the server: %s"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1128
++#: ../python/pakfire/cli.py:1129
+ msgid "Pakfire daemon command line interface."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1156
++#: ../python/pakfire/cli.py:1157
+ msgid "Pakfire key command line interface."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1200 ../python/pakfire/cli.py:1210
++#: ../python/pakfire/cli.py:1201 ../python/pakfire/cli.py:1211
+ msgid "Import a key from file."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1202
++#: ../python/pakfire/cli.py:1203
+ msgid "The real name of the owner of this key."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1204
++#: ../python/pakfire/cli.py:1205
+ msgid "The email address of the owner of this key."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1212
++#: ../python/pakfire/cli.py:1213
+ msgid "Filename of that key to import."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1218
++#: ../python/pakfire/cli.py:1219
+ msgid "Export a key to a file."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1220
++#: ../python/pakfire/cli.py:1221
+ msgid "The ID of the key to export."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1222
++#: ../python/pakfire/cli.py:1223
+ msgid "Write the key to this file."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1224
++#: ../python/pakfire/cli.py:1225
+ msgid "Export the secret key, too."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1230
++#: ../python/pakfire/cli.py:1231
+ msgid "Delete a key from the local keyring."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1232
++#: ../python/pakfire/cli.py:1233
+ msgid "The ID of the key to delete."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1238
++#: ../python/pakfire/cli.py:1239
+ msgid "List all imported keys."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1244
++#: ../python/pakfire/cli.py:1245
+ msgid "Sign one or more packages."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1246
++#: ../python/pakfire/cli.py:1247
+ msgid "Key that is used sign the package(s)."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1248
++#: ../python/pakfire/cli.py:1249
+ msgid "Package(s) to sign."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1254
++#: ../python/pakfire/cli.py:1255
+ msgid "Verify one or more packages."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1258
++#: ../python/pakfire/cli.py:1259
+ msgid "Package(s) to verify."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1265
++#: ../python/pakfire/cli.py:1266
+ msgid "Generating the key may take a moment..."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1314
++#: ../python/pakfire/cli.py:1315
+ #, python-format
+ msgid "Signing %s..."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1331
++#: ../python/pakfire/cli.py:1332
+ #, python-format
+ msgid "Verifying %s..."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1341
++#: ../python/pakfire/cli.py:1342
+ msgid "This signature is valid."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1344
++#: ../python/pakfire/cli.py:1345
+ msgid "Unknown key"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1345
++#: ../python/pakfire/cli.py:1346
+ msgid "Could not check if this signature is valid."
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1348 ../python/pakfire/keyring.py:96
++#: ../python/pakfire/cli.py:1349 ../python/pakfire/keyring.py:96
+ #, python-format
+ msgid "Created: %s"
+ msgstr ""
+ 
+-#: ../python/pakfire/cli.py:1352 ../python/pakfire/keyring.py:99
++#: ../python/pakfire/cli.py:1353 ../python/pakfire/keyring.py:99
+ #, python-format
+ msgid "Expires: %s"
+ msgstr ""
+@@ -1216,26 +1220,26 @@ msgstr ""
+ msgid "Template does not exist: %s"
+ msgstr ""
+ 
+-#: ../python/pakfire/packages/make.py:80
++#: ../python/pakfire/packages/make.py:81
+ msgid "Package name is undefined."
+ msgstr ""
+ 
+-#: ../python/pakfire/packages/make.py:83
++#: ../python/pakfire/packages/make.py:84
+ msgid "Package version is undefined."
+ msgstr ""
+ 
+-#: ../python/pakfire/packages/make.py:420
++#: ../python/pakfire/packages/make.py:421
+ #, python-format
+ msgid "Searching for automatic dependencies for %s..."
+ msgstr ""
+ 
+-#: ../python/pakfire/packages/make.py:474
++#: ../python/pakfire/packages/make.py:475
+ #, python-format
+ msgid "Regular experession is invalid and has been skipped: %s"
+ msgstr ""
+ 
+ #. Let the user know what has been done.
+-#: ../python/pakfire/packages/make.py:490
++#: ../python/pakfire/packages/make.py:491
+ #, python-format
+ msgid "Filter '%(pattern)s' filtered %(dep)s."
+ msgstr ""
+diff --git a/python/pakfire/cli.py b/python/pakfire/cli.py
+index a808975..419e9a0 100644
+--- a/python/pakfire/cli.py
++++ b/python/pakfire/cli.py
+@@ -960,6 +960,7 @@ class CliClient(Cli):
+ 		ret.append("  %s:" % _("Hardware information"))
+ 		ret.append("      %-16s: %s" % (_("CPU model"), system.cpu_model))
+ 		ret.append("      %-16s: %s" % (_("Memory"),    util.format_size(system.memory)))
++		ret.append("      %-16s: %s" % (_("Parallelism"), system.parallelism))
+ 		ret.append("")
+ 		ret.append("      %-16s: %s" % (_("Native arch"), system.native_arch))
+ 		if not system.arch == system.native_arch:
+diff --git a/python/pakfire/packages/make.py b/python/pakfire/packages/make.py
+index 43aca8a..263527a 100644
+--- a/python/pakfire/packages/make.py
++++ b/python/pakfire/packages/make.py
+@@ -45,6 +45,7 @@ from file import SourcePackage
+ 
+ from pakfire.constants import *
+ from pakfire.i18n import _
++from pakfire.system import system
+ 
+ class MakefileBase(Package):
+ 	def __init__(self, pakfire, filename):
+@@ -57,7 +58,7 @@ class MakefileBase(Package):
+ 		environ = self.pakfire.environ
+ 		environ.update({
+ 			"BASEDIR"          : os.path.dirname(self.filename),
+-			"PARALLELISMFLAGS" : "-j%s" % util.calc_parallelism(),
++			"PARALLELISMFLAGS" : "-j%d" % system.parallelism,
+ 		})
+ 
+ 		# Open and parse the makefile.
+diff --git a/python/pakfire/system.py b/python/pakfire/system.py
+index 4d533dd..44d43a2 100644
+--- a/python/pakfire/system.py
++++ b/python/pakfire/system.py
+@@ -150,6 +150,22 @@ class System(object):
+ 	def get_mountpoint(self, path):
+ 		return Mountpoint(path)
+ 
++	@property
++	def parallelism(self):
++		"""
++			Calculates how many processes should be run
++			simulatneously when compiling.
++		"""
++		# Check how many processes would fit into the
++		# memory when each process takes up to 500MB.
++		multiplicator = self.memory / (500 * 1024 * 1024)
++		multiplicator = round(multiplicator)
++
++		# Count the number of online CPU cores.
++		cpucount = os.sysconf("SC_NPROCESSORS_CONF")
++
++		return min(multiplicator, cpucount * 2)
++
+ 
+ # Create an instance of this class to only keep it once in memory.
+ system = System()
+diff --git a/python/pakfire/util.py b/python/pakfire/util.py
+index 2581ece..9fa011a 100644
+--- a/python/pakfire/util.py
++++ b/python/pakfire/util.py
+@@ -296,16 +296,3 @@ def scriptlet_interpreter(scriptlet):
+ 		break
+ 
+ 	return interpreter
+-
+-def calc_parallelism():
+-	"""
+-		Calculate how many processes to run
+-		at the same time.
+-
+-		We take the log10(number of processors) * factor
+-	"""
+-	num = os.sysconf("SC_NPROCESSORS_CONF")
+-	if num == 1:
+-		return 2
+-
+-	return num
+-- 
+1.7.11.4
+
