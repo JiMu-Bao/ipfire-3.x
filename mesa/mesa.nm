@@ -5,7 +5,7 @@
 
 name       = mesa
 version    = 7.11.2
-release    = 1
+release    = 2
 
 groups     = Development/Tools
 url        = http://www.mesa3d.org
@@ -74,6 +74,10 @@ packages
 
 	package %{name}-devel
 		template DEVEL
+
+		provides
+			libGL-devel = %{thisver}
+		end
 
 		requires
 			libX11-devel
