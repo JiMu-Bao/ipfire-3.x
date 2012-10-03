@@ -5,7 +5,7 @@
 
 name       = python-setuptools
 version    = 0.6.28
-release    = 1
+release    = 2
 arch       = noarch
 thisapp    = distribute-%{version}
 
@@ -25,32 +25,62 @@ source_dl  = http://pypi.python.org/packages/source/d/distribute/
 
 build
 	requires
+		pakfire-builder >= 0.9.23-2
 		python-devel
+		python3-devel
 	end
 
+	DIR_APP3 = %{DIR_APP}-python3
+
 	prepare_cmds
+		cp -av %{DIR_APP} %{DIR_APP3}
+
+		pushd %{DIR_APP3}
+		for file in setuptools/command/easy_install.py distribute_setup.py ; do
+			sed -i '1s|^#!python|#!%{python3}|' $file
+		done
+		popd
+
 		# Scripts seem to have a wrong hashbang
 		for file in setuptools/command/easy_install.py distribute_setup.py ; do
-			sed -i '1s|^#!python|#!/usr/bin/python|' $file
+			sed -i '1s|^#!python|#!%{python}|' $file
 		done
 
 		# Fix file permissions.
-		chmod -R 644 %{DIR_APP}/distribute.egg-info
+		chmod -R 644 {%{DIR_APP},%{DIR_APP3}}/distribute.egg-info
 	end
 
 	build
-		CFLAGS="%{CFLAGS}" python setup.py build
+		pushd %{DIR_APP3}
+		CFLAGS="%{CFLAGS}" %{python3} setup.py build
+		popd
+
+		CFLAGS="%{CFLAGS}" %{python} setup.py build
 	end
 
 	install
-		python setup.py install --skip-build --root=%{BUILDROOT}
+		pushd %{DIR_APP3}
+		%{python3} setup.py install --skip-build --root=%{BUILDROOT}
 
-		# XXX %{PYTHON_EXTRACT_EGG} /usr/lib/python*/site-packages/%{name}*.egg
-		rm -vf %{BUILDROOT}/usr/lib/python*/site-packages/setuptools/*.exe
-		rm -rvf %{BUILDROOT}/usr/lib/python*/site-packages/setuptools/tests
+		rm -rvf %{BUILDROOT}%{python3_sitelib}/setuptools/tests
+		chmod +x %{BUILDROOT}%{python3_sitelib}/setuptools/command/easy_install.py
+		popd
+
+		%{python} setup.py install --skip-build --root=%{BUILDROOT}
+
+		rm -rvf %{BUILDROOT}%{python_sitelib}/setuptools/tests
+		chmod +x %{BUILDROOT}%{python_sitelib}/setuptools/command/easy_install.py
+
+		find %{BUILDROOT}{%{python_sitelib},%{python3_sitelib}} -name "*.exe" | xargs rm -vf
 	end
 end
 
 packages
 	package %{name}
+
+	package python3-setuptools
+		template PYTHON3
+
+		files += %{bindir}/easy_install-3*
+	end
 end
