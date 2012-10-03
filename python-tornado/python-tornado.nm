@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = python-tornado
-version    = 0.2
+version    = 2.4
 release    = 1
 arch       = noarch
 thisapp    = tornado-%{version}
@@ -12,7 +12,7 @@ thisapp    = tornado-%{version}
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Libraries
 url        = http://www.tornadoweb.org/
-license    = Apache2.0
+license    = ASL 2.0
 summary    = A python based non-blocking web server.
 
 description
@@ -21,22 +21,51 @@ description
 	and reasonably fast.
 end
 
-source_dl  =
+source_dl  = http://github.com/downloads/facebook/tornado/
 
 build
 	requires
+		pakfire-builder >= 0.9.23-2
 		python-devel
+		python3-devel
+		python3-setuptools
+		python3-tools
+	end
+
+	DIR_APP3 = %{DIR_APP}-python3
+
+	prepare_cmds
+		find tornado -name "*py" | xargs sed -e '/^#!\//, 1d' -i
+
+		cp -a %{DIR_APP} %{DIR_APP3}
+		2to3 --write --nobackups %{DIR_APP3}
 	end
 
 	build
-		python setup.py build
+		pushd %{DIR_APP3}
+		%{python3} setup.py build
+		popd
+
+		%{python} setup.py build
 	end
 
 	install
-		python setup.py install --skip-build --root=%{BUILDROOT}
+		pushd %{DIR_APP3}
+		%{python3} setup.py install --skip-build --root=%{BUILDROOT}
+		popd
+
+		%{python} setup.py install --skip-build --root=%{BUILDROOT}
 	end
 end
 
 packages
 	package %{name}
+		requires
+			python-pycurl
+		end
+	end
+
+	package python3-tornado
+		template PYTHON3
+	end
 end
