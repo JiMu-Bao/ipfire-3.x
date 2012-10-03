@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = less
-version    = 444
-release    = 2
+version    = 451
+release    = 1
 
 groups     = Applications/Text
 url        = http://www.greenwoodsoftware.com/less/
@@ -20,7 +20,7 @@ description
 	example, vi).
 end
 
-source_dl  =
+source_dl  = http://www.greenwoodsoftware.com/less/
 
 build
 	requires
