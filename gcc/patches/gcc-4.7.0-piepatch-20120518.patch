@@ -383,7 +383,7 @@ diff -Nur gcc-4.7.0-vanilla/gcc/configure gcc-4.7.0/gcc/configure
 +  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if we can default to use -fstack-protector" >&5
 +$as_echo_n "checking if we can default to use -fstack-protector... " >&6; }
 +  ssp_link_test=no
-+  if test x$gcc_cv_libc_provides_ssp = xyes && test x$set_have_as_tls = yes; then
++  if test x$gcc_cv_libc_provides_ssp = xyes && test x$set_have_as_tls = xyes; then
 +    if $EGREP '^ 	*#[ 	]*define[ 	]+__UCLIBC__[ 	]+1' \
 +       $target_header_dir/features.h > /dev/null; then
 +      if test -f $target_header_dir/bits/uClibc_config.h && \
