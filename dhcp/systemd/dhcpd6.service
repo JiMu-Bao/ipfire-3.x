@@ -1,9 +1,10 @@
 [Unit]
 Description=DHCPv6 Server Daemon
-After=syslog.target network.target
+After=network.target
 
 [Service]
-ExecStart=/usr/sbin/dhcpd -d -6 -user dhcpd -group dhcpd --no-pid
+ExecStartPre=/usr/lib/network/helpers/dhcpd-config-helper create ipv6
+ExecStart=/usr/sbin/dhcpd -d -6 -cf /etc/dhcp/dhcpd6.conf -user dhcpd -group dhcpd --no-pid
 
 [Install]
 WantedBy=multi-user.target

@@ -1,7 +1,7 @@
-diff -up dhcp-4.2.0-P1/client/dhc6.c.PPP dhcp-4.2.0-P1/client/dhc6.c
---- dhcp-4.2.0-P1/client/dhc6.c.PPP	2010-11-05 10:47:37.000000000 +0100
-+++ dhcp-4.2.0-P1/client/dhc6.c	2010-11-09 15:54:12.000000000 +0100
-@@ -129,7 +129,7 @@ extern int stateless;
+diff -up dhcp-4.2.4b1/client/dhc6.c.PPP dhcp-4.2.4b1/client/dhc6.c
+--- dhcp-4.2.4b1/client/dhc6.c.PPP	2012-04-16 17:37:23.243618764 +0200
++++ dhcp-4.2.4b1/client/dhc6.c	2012-04-16 17:37:23.252618638 +0200
+@@ -133,7 +133,7 @@ extern int stateless;
   * is not how it is intended.  Upcoming rearchitecting the client should
   * address this "one daemon model."
   */
@@ -10,7 +10,7 @@ diff -up dhcp-4.2.0-P1/client/dhc6.c.PPP dhcp-4.2.0-P1/client/dhc6.c
  form_duid(struct data_string *duid, const char *file, int line)
  {
  	struct interface_info *ip;
-@@ -141,6 +141,15 @@ form_duid(struct data_string *duid, cons
+@@ -145,6 +145,15 @@ form_duid(struct data_string *duid, cons
  	if (ip == NULL)
  		log_fatal("Impossible condition at %s:%d.", MDL);
  
@@ -26,7 +26,7 @@ diff -up dhcp-4.2.0-P1/client/dhc6.c.PPP dhcp-4.2.0-P1/client/dhc6.c
  	if ((ip->hw_address.hlen == 0) ||
  	    (ip->hw_address.hlen > sizeof(ip->hw_address.hbuf)))
  		log_fatal("Impossible hardware address length at %s:%d.", MDL);
-@@ -176,6 +185,8 @@ form_duid(struct data_string *duid, cons
+@@ -180,6 +189,8 @@ form_duid(struct data_string *duid, cons
  		memcpy(duid->buffer->data + 4, ip->hw_address.hbuf + 1,
  		       ip->hw_address.hlen - 1);
  	}
@@ -35,7 +35,7 @@ diff -up dhcp-4.2.0-P1/client/dhc6.c.PPP dhcp-4.2.0-P1/client/dhc6.c
  }
  
  /*
-@@ -5289,7 +5300,8 @@ make_client6_options(struct client_state
+@@ -5130,7 +5141,8 @@ make_client6_options(struct client_state
  	 */
  	if ((oc = lookup_option(&dhcpv6_universe, *op,
  				D6O_CLIENTID)) == NULL) {
@@ -45,10 +45,10 @@ diff -up dhcp-4.2.0-P1/client/dhc6.c.PPP dhcp-4.2.0-P1/client/dhc6.c
  				  MDL))
  			log_fatal("Failure assembling a DUID.");
  
-diff -up dhcp-4.2.0-P1/client/dhclient.c.PPP dhcp-4.2.0-P1/client/dhclient.c
---- dhcp-4.2.0-P1/client/dhclient.c.PPP	2010-11-05 10:47:37.000000000 +0100
-+++ dhcp-4.2.0-P1/client/dhclient.c	2010-11-09 15:37:26.000000000 +0100
-@@ -911,8 +911,8 @@ main(int argc, char **argv) {
+diff -up dhcp-4.2.4b1/client/dhclient.c.PPP dhcp-4.2.4b1/client/dhclient.c
+--- dhcp-4.2.4b1/client/dhclient.c.PPP	2012-04-16 17:37:23.214619170 +0200
++++ dhcp-4.2.4b1/client/dhclient.c	2012-04-16 17:37:23.254618610 +0200
+@@ -919,8 +919,8 @@ main(int argc, char **argv) {
  			if (default_duid.buffer != NULL)
  				data_string_forget(&default_duid, MDL);
  
@@ -59,9 +59,9 @@ diff -up dhcp-4.2.0-P1/client/dhclient.c.PPP dhcp-4.2.0-P1/client/dhclient.c
  		}
  
  		for (ip = interfaces ; ip != NULL ; ip = ip->next) {
-diff -up dhcp-4.2.0-P1/common/bpf.c.PPP dhcp-4.2.0-P1/common/bpf.c
---- dhcp-4.2.0-P1/common/bpf.c.PPP	2010-11-05 10:47:37.000000000 +0100
-+++ dhcp-4.2.0-P1/common/bpf.c	2010-11-09 15:42:42.000000000 +0100
+diff -up dhcp-4.2.4b1/common/bpf.c.PPP dhcp-4.2.4b1/common/bpf.c
+--- dhcp-4.2.4b1/common/bpf.c.PPP	2012-04-16 17:37:23.175619716 +0200
++++ dhcp-4.2.4b1/common/bpf.c	2012-04-16 17:37:23.255618596 +0200
 @@ -599,6 +599,22 @@ get_hw_addr(const char *name, struct har
                          memcpy(&hw->hbuf[1], LLADDR(sa), sa->sdl_alen);
                          break;
@@ -85,10 +85,10 @@ diff -up dhcp-4.2.0-P1/common/bpf.c.PPP dhcp-4.2.0-P1/common/bpf.c
                  default:
                          log_fatal("Unsupported device type %d for \"%s\"",
                                    sa->sdl_type, name);
-diff -up dhcp-4.2.0-P1/common/lpf.c.PPP dhcp-4.2.0-P1/common/lpf.c
---- dhcp-4.2.0-P1/common/lpf.c.PPP	2010-11-05 10:47:37.000000000 +0100
-+++ dhcp-4.2.0-P1/common/lpf.c	2010-11-09 15:45:40.000000000 +0100
-@@ -502,6 +502,22 @@ get_hw_addr(const char *name, struct har
+diff -up dhcp-4.2.4b1/common/lpf.c.PPP dhcp-4.2.4b1/common/lpf.c
+--- dhcp-4.2.4b1/common/lpf.c.PPP	2012-04-16 17:37:23.155619996 +0200
++++ dhcp-4.2.4b1/common/lpf.c	2012-04-16 17:37:23.256618582 +0200
+@@ -503,6 +503,22 @@ get_hw_addr(const char *name, struct har
  			hw->hbuf[0] = HTYPE_FDDI;
  			memcpy(&hw->hbuf[1], sa->sa_data, 16);
  			break;
@@ -111,10 +111,10 @@ diff -up dhcp-4.2.0-P1/common/lpf.c.PPP dhcp-4.2.0-P1/common/lpf.c
  		default:
  			log_fatal("Unsupported device type %ld for \"%s\"",
  				  (long int)sa->sa_family, name);
-diff -up dhcp-4.2.0-P1/includes/dhcpd.h.PPP dhcp-4.2.0-P1/includes/dhcpd.h
---- dhcp-4.2.0-P1/includes/dhcpd.h.PPP	2010-11-05 10:47:37.000000000 +0100
-+++ dhcp-4.2.0-P1/includes/dhcpd.h	2010-11-09 15:46:58.000000000 +0100
-@@ -2733,7 +2733,7 @@ void dhcpv4_client_assignments(void);
+diff -up dhcp-4.2.4b1/includes/dhcpd.h.PPP dhcp-4.2.4b1/includes/dhcpd.h
+--- dhcp-4.2.4b1/includes/dhcpd.h.PPP	2012-04-16 17:37:23.239618820 +0200
++++ dhcp-4.2.4b1/includes/dhcpd.h	2012-04-16 17:37:23.257618568 +0200
+@@ -2760,7 +2760,7 @@ void dhcpv4_client_assignments(void);
  void dhcpv6_client_assignments(void);
  
  /* dhc6.c */
@@ -123,21 +123,21 @@ diff -up dhcp-4.2.0-P1/includes/dhcpd.h.PPP dhcp-4.2.0-P1/includes/dhcpd.h
  void dhc6_lease_destroy(struct dhc6_lease **src, const char *file, int line);
  void start_init6(struct client_state *client);
  void start_info_request6(struct client_state *client);
-diff -up dhcp-4.2.0-P1/includes/dhcp.h.PPP dhcp-4.2.0-P1/includes/dhcp.h
---- dhcp-4.2.0-P1/includes/dhcp.h.PPP	2010-11-05 10:47:37.000000000 +0100
-+++ dhcp-4.2.0-P1/includes/dhcp.h	2010-11-09 15:48:53.000000000 +0100
-@@ -80,6 +80,8 @@ struct dhcp_packet {
- #define HTYPE_IEEE802	6               /* IEEE 802.2 Token Ring...	*/
- #define HTYPE_FDDI	8		/* FDDI...			*/
+diff -up dhcp-4.2.4b1/includes/dhcp.h.PPP dhcp-4.2.4b1/includes/dhcp.h
+--- dhcp-4.2.4b1/includes/dhcp.h.PPP	2012-04-16 17:37:23.000000000 +0200
++++ dhcp-4.2.4b1/includes/dhcp.h	2012-04-16 17:38:34.675618138 +0200
+@@ -85,6 +85,8 @@ struct dhcp_packet {
+ 					 * is no standard for this so we
+ 					 * just steal a type            */
  
-+#define HTYPE_RESERVED  0               /* RFC 5494 */
++#define HTYPE_RESERVED	0		/* RFC 5494 */
 +
  /* Magic cookie validating dhcp options field (and bootp vendor
     extensions field). */
  #define DHCP_OPTIONS_COOKIE	"\143\202\123\143"
-diff -up dhcp-4.2.0-P1/server/dhcpv6.c.PPP dhcp-4.2.0-P1/server/dhcpv6.c
---- dhcp-4.2.0-P1/server/dhcpv6.c.PPP	2010-11-05 10:47:37.000000000 +0100
-+++ dhcp-4.2.0-P1/server/dhcpv6.c	2010-11-09 15:50:17.000000000 +0100
+diff -up dhcp-4.2.4b1/server/dhcpv6.c.PPP dhcp-4.2.4b1/server/dhcpv6.c
+--- dhcp-4.2.4b1/server/dhcpv6.c.PPP	2012-04-16 17:37:23.218619114 +0200
++++ dhcp-4.2.4b1/server/dhcpv6.c	2012-04-16 17:37:23.260618526 +0200
 @@ -300,6 +300,9 @@ generate_new_server_duid(void) {
  		if (p->hw_address.hlen > 0) {
  			break;

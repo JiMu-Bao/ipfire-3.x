@@ -1,6 +1,6 @@
-diff -up dhcp-4.2.0/server/dhcpv6.c.UseMulticast dhcp-4.2.0/server/dhcpv6.c
---- dhcp-4.2.0/server/dhcpv6.c.UseMulticast	2010-06-01 19:30:00.000000000 +0200
-+++ dhcp-4.2.0/server/dhcpv6.c	2010-07-21 16:17:30.000000000 +0200
+diff -up dhcp-4.2.4b1/server/dhcpv6.c.UseMulticast dhcp-4.2.4b1/server/dhcpv6.c
+--- dhcp-4.2.4b1/server/dhcpv6.c.UseMulticast	2012-04-11 00:14:04.000000000 +0200
++++ dhcp-4.2.4b1/server/dhcpv6.c	2012-04-16 19:21:43.575923732 +0200
 @@ -346,6 +346,48 @@ generate_new_server_duid(void) {
  }
  
@@ -50,7 +50,7 @@ diff -up dhcp-4.2.0/server/dhcpv6.c.UseMulticast dhcp-4.2.0/server/dhcpv6.c
   * Get the client identifier from the packet.
   */
  isc_result_t
-@@ -1405,6 +1447,56 @@ lease_to_client(struct data_string *repl
+@@ -1404,6 +1446,56 @@ lease_to_client(struct data_string *repl
  						    reply.shared->group);
  	}
  
@@ -102,21 +102,31 @@ diff -up dhcp-4.2.0/server/dhcpv6.c.UseMulticast dhcp-4.2.0/server/dhcpv6.c
 +					reply.opt_state, reply.packet,
 +					required_opts_NAA,
 +					NULL);
-+	} else if (no_resources_avail && (reply.ia_count != 0) &&
-+	    (reply.packet->dhcpv6_msg_type == DHCPV6_SOLICIT))
++	}
++
  	/*
  	 * RFC3315 section 17.2.2 (Solicit):
  	 *
-@@ -1429,8 +1521,6 @@ lease_to_client(struct data_string *repl
- 	 * the server.
+@@ -1429,8 +1521,8 @@ lease_to_client(struct data_string *repl
  	 * Sends a Renew/Rebind if the IA is not in the Reply message.
  	 */
+ #if defined (RFC3315_PRE_ERRATA_2010_08)
 -	if (no_resources_avail && (reply.ia_count != 0) &&
 -	    (reply.packet->dhcpv6_msg_type == DHCPV6_SOLICIT))
++	else if (no_resources_avail && (reply.ia_count != 0) &&
++		 (reply.packet->dhcpv6_msg_type == DHCPV6_SOLICIT))
  	{
  		/* Set the NoAddrsAvail status code. */
  		if (!set_status_code(STATUS_NoAddrsAvail,
-@@ -4128,7 +4218,6 @@ dhcpv6_solicit(struct data_string *reply
+@@ -1477,6 +1569,7 @@ lease_to_client(struct data_string *repl
+ 	 * Having stored the client's IA's, store any options that
+ 	 * will fit in the remaining space.
+ 	 */
++	else 
+ 	reply.cursor += store_options6((char *)reply.buf.data + reply.cursor,
+ 				       sizeof(reply.buf) - reply.cursor,
+ 				       reply.opt_state, reply.packet,
+@@ -4126,7 +4219,6 @@ dhcpv6_solicit(struct data_string *reply
   * Very similar to Solicit handling, except the server DUID is required.
   */
  
@@ -124,7 +134,7 @@ diff -up dhcp-4.2.0/server/dhcpv6.c.UseMulticast dhcp-4.2.0/server/dhcpv6.c
  static void
  dhcpv6_request(struct data_string *reply_ret, struct packet *packet) {
  	struct data_string client_id;
-@@ -4443,7 +4532,6 @@ exit:
+@@ -4456,7 +4548,6 @@ exit:
   * except for the error code of when addresses don't match.
   */
  
@@ -132,7 +142,7 @@ diff -up dhcp-4.2.0/server/dhcpv6.c.UseMulticast dhcp-4.2.0/server/dhcpv6.c
  static void
  dhcpv6_renew(struct data_string *reply, struct packet *packet) {
  	struct data_string client_id;
-@@ -4688,18 +4776,60 @@ iterate_over_ia_na(struct data_string *r
+@@ -4700,18 +4791,60 @@ iterate_over_ia_na(struct data_string *r
  		goto exit;
  	}
  
@@ -203,7 +213,7 @@ diff -up dhcp-4.2.0/server/dhcpv6.c.UseMulticast dhcp-4.2.0/server/dhcpv6.c
  
  	/*
  	 * Loop through the IA_NA reported by the client, and deal with
-@@ -4838,6 +4968,7 @@ iterate_over_ia_na(struct data_string *r
+@@ -4849,6 +4982,7 @@ iterate_over_ia_na(struct data_string *r
  	/* 
  	 * Return our reply to the caller.
  	 */
@@ -211,7 +221,7 @@ diff -up dhcp-4.2.0/server/dhcpv6.c.UseMulticast dhcp-4.2.0/server/dhcpv6.c
  	reply_ret->len = reply_ofs;
  	reply_ret->buffer = NULL;
  	if (!buffer_allocate(&reply_ret->buffer, reply_ofs, MDL)) {
-@@ -4883,7 +5014,6 @@ exit:
+@@ -4894,7 +5028,6 @@ exit:
   * we still need to be aware of this possibility.
   */
  
@@ -219,7 +229,7 @@ diff -up dhcp-4.2.0/server/dhcpv6.c.UseMulticast dhcp-4.2.0/server/dhcpv6.c
  /* TODO: IA_TA */
  static void
  dhcpv6_decline(struct data_string *reply, struct packet *packet) {
-@@ -5355,7 +5485,6 @@ exit:
+@@ -5364,7 +5497,6 @@ exit:
   * Release means a client is done with the leases.
   */
  

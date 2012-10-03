@@ -1,7 +1,7 @@
-diff -up dhcp-4.2.2b1/client/clparse.c.options dhcp-4.2.2b1/client/clparse.c
---- dhcp-4.2.2b1/client/clparse.c.options	2011-04-21 16:08:14.000000000 +0200
-+++ dhcp-4.2.2b1/client/clparse.c	2011-07-01 13:51:52.935755570 +0200
-@@ -146,6 +146,7 @@ isc_result_t read_client_conf ()
+diff -up dhcp-4.2.4b1/client/clparse.c.options dhcp-4.2.4b1/client/clparse.c
+--- dhcp-4.2.4b1/client/clparse.c.options	2012-03-09 12:28:10.000000000 +0100
++++ dhcp-4.2.4b1/client/clparse.c	2012-04-16 17:24:58.794047046 +0200
+@@ -154,6 +154,7 @@ isc_result_t read_client_conf ()
  	/* Requested lease time, used by DHCPv6 (DHCPv4 uses the option cache)
  	 */
  	top_level_config.requested_lease = 7200;
@@ -9,7 +9,7 @@ diff -up dhcp-4.2.2b1/client/clparse.c.options dhcp-4.2.2b1/client/clparse.c
  
  	group_allocate (&top_level_config.on_receipt, MDL);
  	if (!top_level_config.on_receipt)
-@@ -313,7 +314,8 @@ void read_client_leases ()
+@@ -320,7 +321,8 @@ void read_client_leases ()
  	interface-declaration |
  	LEASE client-lease-statement |
  	ALIAS client-lease-statement |
@@ -19,7 +19,7 @@ diff -up dhcp-4.2.2b1/client/clparse.c.options dhcp-4.2.2b1/client/clparse.c
  
  void parse_client_statement (cfile, ip, config)
  	struct parse *cfile;
-@@ -732,6 +734,12 @@ void parse_client_statement (cfile, ip, 
+@@ -739,6 +741,12 @@ void parse_client_statement (cfile, ip,
  		parse_reject_statement (cfile, config);
  		return;
  
@@ -32,9 +32,9 @@ diff -up dhcp-4.2.2b1/client/clparse.c.options dhcp-4.2.2b1/client/clparse.c
  	      default:
  		lose = 0;
  		stmt = (struct executable_statement *)0;
-diff -up dhcp-4.2.2b1/client/dhclient.c.options dhcp-4.2.2b1/client/dhclient.c
---- dhcp-4.2.2b1/client/dhclient.c.options	2011-05-11 16:20:59.000000000 +0200
-+++ dhcp-4.2.2b1/client/dhclient.c	2011-07-01 13:51:52.936755545 +0200
+diff -up dhcp-4.2.4b1/client/dhclient.c.options dhcp-4.2.4b1/client/dhclient.c
+--- dhcp-4.2.4b1/client/dhclient.c.options	2012-04-11 22:43:24.000000000 +0200
++++ dhcp-4.2.4b1/client/dhclient.c	2012-04-16 17:24:58.795047032 +0200
 @@ -39,6 +39,12 @@
  #include <limits.h>
  #include <dns/result.h>
@@ -48,7 +48,7 @@ diff -up dhcp-4.2.2b1/client/dhclient.c.options dhcp-4.2.2b1/client/dhclient.c
  TIME default_lease_time = 43200; /* 12 hours... */
  TIME max_lease_time = 86400; /* 24 hours... */
  
-@@ -87,6 +93,9 @@ int wanted_ia_na = -1;		/* the absolute 
+@@ -87,6 +93,9 @@ int wanted_ia_na = -1;		/* the absolute
  int wanted_ia_ta = 0;
  int wanted_ia_pd = 0;
  char *mockup_relay = NULL;
@@ -138,7 +138,7 @@ diff -up dhcp-4.2.2b1/client/dhclient.c.options dhcp-4.2.2b1/client/dhclient.c
 +			}
 +
 +			if ((timeout_arg = atoi(argv[i])) <= 0) {
-+				log_error("-T timeout option must be > 0 - bad value: %s",argv[i]);
++				log_error("timeout option must be > 0 - bad value: %s",argv[i]);
 +				exit(1);
 +			}
 +		} else if (!strcmp(argv[i], "-V")) {
@@ -163,7 +163,7 @@ diff -up dhcp-4.2.2b1/client/dhclient.c.options dhcp-4.2.2b1/client/dhclient.c
  		} else if (argv[i][0] == '-') {
  		    usage();
  		} else if (interfaces_requested < 0) {
-@@ -484,6 +584,166 @@ main(int argc, char **argv) {
+@@ -484,6 +584,156 @@ main(int argc, char **argv) {
  	/* Parse the dhclient.conf file. */
  	read_client_conf();
  
@@ -297,21 +297,11 @@ diff -up dhcp-4.2.2b1/client/dhclient.c.options dhcp-4.2.2b1/client/dhclient.c
 +
 +		if (timeout_arg) {
 +			/* we just set the toplevel timeout, but per-client
-+			 * timeouts may still be at defaults. Also, it makes no
-+			 * sense having the reboot_timeout or backoff_cutoff
-+			 * greater than the timeout:
++			 * timeouts may still be at defaults.
 +			 */
-+			if ((top_level_config.backoff_cutoff == 15) && (top_level_config.backoff_cutoff > (timeout_arg / 2)))
-+				top_level_config.backoff_cutoff = (((unsigned long)(timeout_arg / 2)) == 0) ? timeout_arg : (unsigned long)(timeout_arg / 2);
-+
 +			for (ip=interfaces; ip; ip = ip->next) {
 +				if (ip->client->config->timeout == 60)
 +					ip->client->config->timeout = timeout_arg;
-+
-+				if ((ip->client->config->reboot_timeout == 10) && (ip->client->config->reboot_timeout > ip->client->config->timeout))
-+					ip->client->config->reboot_timeout = ip->client->config->timeout;
-+				if ((ip->client->config->backoff_cutoff == 15) && (ip->client->config->backoff_cutoff > top_level_config.backoff_cutoff))
-+					ip->client->config->backoff_cutoff = top_level_config.backoff_cutoff;
 +			}
 +		}
 +
@@ -330,7 +320,7 @@ diff -up dhcp-4.2.2b1/client/dhclient.c.options dhcp-4.2.2b1/client/dhclient.c
  	/* Parse the lease database. */
  	read_client_leases();
  
-@@ -2397,7 +2657,8 @@ void make_discover (client, lease)
+@@ -2421,7 +2671,8 @@ void make_discover (client, lease)
  	client -> packet.xid = random ();
  	client -> packet.secs = 0; /* filled in by send_discover. */
  
@@ -340,7 +330,7 @@ diff -up dhcp-4.2.2b1/client/dhclient.c.options dhcp-4.2.2b1/client/dhclient.c
  		client -> packet.flags = 0;
  	else
  		client -> packet.flags = htons (BOOTP_BROADCAST);
-@@ -2481,7 +2742,9 @@ void make_request (client, lease)
+@@ -2505,7 +2756,9 @@ void make_request (client, lease)
  	} else {
  		memset (&client -> packet.ciaddr, 0,
  			sizeof client -> packet.ciaddr);
@@ -351,7 +341,7 @@ diff -up dhcp-4.2.2b1/client/dhclient.c.options dhcp-4.2.2b1/client/dhclient.c
  			client -> packet.flags = 0;
  		else
  			client -> packet.flags = htons (BOOTP_BROADCAST);
-@@ -2543,7 +2806,8 @@ void make_decline (client, lease)
+@@ -2567,7 +2820,8 @@ void make_decline (client, lease)
  	client -> packet.hops = 0;
  	client -> packet.xid = client -> xid;
  	client -> packet.secs = 0; /* Filled in by send_request. */
@@ -361,10 +351,10 @@ diff -up dhcp-4.2.2b1/client/dhclient.c.options dhcp-4.2.2b1/client/dhclient.c
  		client -> packet.flags = 0;
  	else
  		client -> packet.flags = htons (BOOTP_BROADCAST);
-diff -up dhcp-4.2.2b1/common/conflex.c.options dhcp-4.2.2b1/common/conflex.c
---- dhcp-4.2.2b1/common/conflex.c.options	2011-05-11 16:20:59.000000000 +0200
-+++ dhcp-4.2.2b1/common/conflex.c	2011-07-01 13:51:52.938755494 +0200
-@@ -808,6 +808,8 @@ intern(char *atom, enum dhcp_token dfv) 
+diff -up dhcp-4.2.4b1/common/conflex.c.options dhcp-4.2.4b1/common/conflex.c
+--- dhcp-4.2.4b1/common/conflex.c.options	2012-02-16 22:09:14.000000000 +0100
++++ dhcp-4.2.4b1/common/conflex.c	2012-04-16 17:24:58.796047018 +0200
+@@ -808,6 +808,8 @@ intern(char *atom, enum dhcp_token dfv)
  			return BALANCE;
  		if (!strcasecmp (atom + 1, "ound"))
  			return BOUND;
@@ -373,9 +363,9 @@ diff -up dhcp-4.2.2b1/common/conflex.c.options dhcp-4.2.2b1/common/conflex.c
  		break;
  	      case 'c':
  		if (!strcasecmp(atom + 1, "ase"))
-diff -up dhcp-4.2.2b1/includes/dhcpd.h.options dhcp-4.2.2b1/includes/dhcpd.h
---- dhcp-4.2.2b1/includes/dhcpd.h.options	2011-05-20 16:21:11.000000000 +0200
-+++ dhcp-4.2.2b1/includes/dhcpd.h	2011-07-01 13:51:52.940755442 +0200
+diff -up dhcp-4.2.4b1/includes/dhcpd.h.options dhcp-4.2.4b1/includes/dhcpd.h
+--- dhcp-4.2.4b1/includes/dhcpd.h.options	2012-04-10 02:55:06.000000000 +0200
++++ dhcp-4.2.4b1/includes/dhcpd.h	2012-04-16 17:24:58.797047004 +0200
 @@ -1147,6 +1147,9 @@ struct client_config {
  	int do_forward_update;		/* If nonzero, and if we have the
  					   information we need, update the
@@ -386,16 +376,16 @@ diff -up dhcp-4.2.2b1/includes/dhcpd.h.options dhcp-4.2.2b1/includes/dhcpd.h
  };
  
  /* Per-interface state used in the dhcp client... */
-diff -up dhcp-4.2.2b1/includes/dhctoken.h.options dhcp-4.2.2b1/includes/dhctoken.h
---- dhcp-4.2.2b1/includes/dhctoken.h.options	2011-05-12 14:02:47.000000000 +0200
-+++ dhcp-4.2.2b1/includes/dhctoken.h	2011-07-01 13:53:43.316861637 +0200
-@@ -361,7 +361,8 @@ enum dhcp_token {
- 	GETHOSTNAME = 662,
- 	REWIND = 663,
- 	INITIAL_DELAY = 664,
--	GETHOSTBYNAME = 665
-+	GETHOSTBYNAME = 665,
-+	BOOTP_BROADCAST_ALWAYS = 666
+diff -up dhcp-4.2.4b1/includes/dhctoken.h.options dhcp-4.2.4b1/includes/dhctoken.h
+--- dhcp-4.2.4b1/includes/dhctoken.h.options	2012-02-16 22:09:15.000000000 +0100
++++ dhcp-4.2.4b1/includes/dhctoken.h	2012-04-16 17:25:53.819276248 +0200
+@@ -364,7 +364,8 @@ enum dhcp_token {
+ 	GETHOSTBYNAME = 665,
+ 	PRIMARY6 = 666,
+ 	SECONDARY6 = 667,
+-	TOKEN_INFINIBAND = 668
++	TOKEN_INFINIBAND = 668,
++	BOOTP_BROADCAST_ALWAYS = 669
  };
  
  #define is_identifier(x)	((x) >= FIRST_TOKEN &&	\
