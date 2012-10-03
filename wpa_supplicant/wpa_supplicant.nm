@@ -5,7 +5,7 @@
 
 name       = wpa_supplicant
 version    = 1.0
-release    = 1
+release    = 2
 
 groups     = Sytem/Base
 url        = http://hostap.epitest.fi/releases/
@@ -53,6 +53,8 @@ end
 
 packages
 	package %{name}
+		requires += network >= 1:005
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
