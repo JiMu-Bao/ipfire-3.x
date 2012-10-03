@@ -1,0 +1,93 @@
+From 5baf67156ccb7fed775d8bd00298a6ccaed03214 Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Sun, 9 Sep 2012 21:34:19 +0000
+Subject: [PATCH] ipcalc: Enhance to implode/explode IPv6 addresses.
+
+These functionalities are handy to work with IPv6 addresses
+in shell scripts.
+
+implode:
+Removes all leading zeroes from the IP address:
+  ::0:0:0:1 -> ::1
+
+explode:
+Adds all leading zeroes:
+   ::1 -> 0000:0000:0000:0000:0000:0000:0000:0001
+---
+ src/ipcalc.1 |   10 ++++++++++
+ src/ipcalc.c |   25 +++++++++++++++++++++++++
+ 2 files changed, 35 insertions(+), 0 deletions(-)
+
+diff --git a/src/ipcalc.1 b/src/ipcalc.1
+index 30e0b20..654e2ba 100644
+--- a/src/ipcalc.1
++++ b/src/ipcalc.1
+@@ -51,6 +51,16 @@ Show the prefix for the given mask/IP address.
+ Display the network address for the given IP address and netmask.
+ 
+ .TP
++\fB\-i\fR, \fB\-\-implode\fR
++Implodes the given IPv6 address. Returns the shortest possible representation
++of the given IPv6 address.
++
++.TP
++\fB\-e\fR, \fB\-\-explode\fR
++Explodes the given IPv6 address. Adds all leading zeroes and replaces
++:: with zeroes, too.
++
++.TP
+ \fB\-s\fR, \fB\-\-silent\fR 
+ Don't ever display error messages.
+ 
+diff --git a/src/ipcalc.c b/src/ipcalc.c
+index 7316f05..c3f4604 100644
+--- a/src/ipcalc.c
++++ b/src/ipcalc.c
+@@ -218,6 +218,7 @@ int main(int argc, const char **argv) {
+     int showHostname = 0, showNetmask = 0;
+     int beSilent = 0;
+     int doCheck = 0, familyIPv4 = 0, familyIPv6 = 0;
++    int implodeIP6Address = 0, explodeIP6Address = 0;
+     int rc;
+     poptContext optCon;
+     char *ipStr, *prefixStr, *netmaskStr, *chptr;
+@@ -246,6 +247,10 @@ int main(int argc, const char **argv) {
+           "Display network prefix", },
+         { "silent", 's', 0, &beSilent, 0,
+           "Don't ever display error messages" },
++        { "implode", 'i', 0, &implodeIP6Address, 0,
++          "Implode given IPv6 address", },
++        { "explode", 'e', 0, &explodeIP6Address, 0,
++          "Explode given IPv6 address", },
+         POPT_AUTOHELP
+         { NULL, '\0', 0, 0, 0, NULL, NULL }
+     };
+@@ -472,5 +477,25 @@ int main(int argc, const char **argv) {
+         printf("HOSTNAME=%s\n", hostName);
+     }
+ 
++    if (implodeIP6Address) {
++        if (inet_ntop(AF_INET6, &ip6, namebuf, INET6_ADDRSTRLEN) == NULL) {
++            perror("inet_ntop error");
++            abort();
++        }
++
++        printf("ADDRESS6_IMPL=%s\n", namebuf);
++    }
++
++    if (explodeIP6Address) {
++        sprintf(namebuf, "%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
++            (int)ip6.s6_addr[0], (int)ip6.s6_addr[1], (int)ip6.s6_addr[2], (int)ip6.s6_addr[3],
++            (int)ip6.s6_addr[4], (int)ip6.s6_addr[5], (int)ip6.s6_addr[6], (int)ip6.s6_addr[7],
++            (int)ip6.s6_addr[8], (int)ip6.s6_addr[9], (int)ip6.s6_addr[10], (int)ip6.s6_addr[11],
++            (int)ip6.s6_addr[12], (int)ip6.s6_addr[13], (int)ip6.s6_addr[14], (int)ip6.s6_addr[15]
++        );
++
++        printf("ADDRESS6_EXPL=%s\n", namebuf);
++    }
++
+     return 0;
+ }
+-- 
+1.7.8.2
+

@@ -1,0 +1,84 @@
+From 027b87bd2fcfd1aa6fe48a363d51e40ff972f03d Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Sat, 15 Sep 2012 10:50:32 +0000
+Subject: [PATCH] ipcalc: Implement --prefix for IPv6.
+
+The -p option will now return the prefix of the given IPv6 address.
+
+[root@os src]# ./ipcalc -p 2001:db8:abc:123::1/64
+PREFIX6=2001:db8:abc:123::
+[root@os src]# ./ipcalc -p 2001:db8:abc:123::2/48
+PREFIX6=2001:db8:abc::
+---
+ src/ipcalc.c |   31 ++++++++++++++++++++++++++++---
+ 1 files changed, 28 insertions(+), 3 deletions(-)
+
+diff --git a/src/ipcalc.c b/src/ipcalc.c
+index c3f4604..039f4c7 100644
+--- a/src/ipcalc.c
++++ b/src/ipcalc.c
+@@ -204,6 +204,21 @@ char *get_hostname(int family, void *addr)
+     return hostinfo->h_name;
+ }
+ 
++void ipv6_prefix(struct in6_addr *dst, struct in6_addr *addr, unsigned int prefix) {
++    uint8_t i;
++
++    /* Make a copy to work with, because we don't want to alter the input. */
++    memcpy(dst, addr, sizeof(struct in6_addr));
++
++    for (i = 0; i < (128 - prefix) / 8; i++) {
++        dst->s6_addr[15-i] = 0;
++    }
++
++    if ((128 - prefix) % 8) {
++        dst->s6_addr[15-i] &= ~((1 << ((128 - prefix) % 8)) - 1);
++    }
++}
++
+ /*!
+   \fn main(int argc, const char **argv)
+   \brief wrapper program for ipcalc functions.
+@@ -225,7 +240,7 @@ int main(int argc, const char **argv) {
+     char *hostName = NULL;
+     char namebuf[INET6_ADDRSTRLEN+1];
+     struct in_addr ip, netmask, network, broadcast;
+-    struct in6_addr ip6;
++    struct in6_addr ip6, prefix6;
+     int prefix = -1;
+     char errBuf[250];
+     struct poptOption optionsTable[] = {
+@@ -394,7 +409,7 @@ int main(int argc, const char **argv) {
+     }
+ 
+     if (familyIPv6 &&
+-        (showBroadcast || showNetmask || showNetwork || showPrefix)) {
++        (showBroadcast || showNetmask || showNetwork)) {
+         if (!beSilent) {
+             fprintf(stderr, "ipcalc: unable to show setting for IPv6\n");
+         }
+@@ -429,10 +444,20 @@ int main(int argc, const char **argv) {
+         printf("NETMASK=%s\n", namebuf);
+     }
+ 
+-    if (showPrefix) {
++    if (showPrefix && familyIPv4) {
+         if (prefix == -1)
+             prefix = mask2prefix(ip);
+         printf("PREFIX=%d\n", prefix);
++
++    } else if (showPrefix && familyIPv6) {
++	ipv6_prefix(&prefix6, &ip6, prefix);
++
++	if (inet_ntop(AF_INET6, &prefix6, namebuf, INET6_ADDRSTRLEN) == NULL) {
++		perror("inet_ntop error");
++		abort();
++	}
++
++	printf("PREFIX6=%s\n", namebuf);
+     }
+ 
+     if (showBroadcast) {
+-- 
+1.7.8.2
+
