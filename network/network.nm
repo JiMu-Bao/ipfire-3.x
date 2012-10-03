@@ -6,7 +6,7 @@
 name       = network
 epoch      = 1
 version    = 005
-release    = 1.1
+release    = 1.2
 arch       = noarch
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -37,7 +37,7 @@ packages
 		requires
 			aiccu
 			bash >= 4.0
-			#dhcp >= 4.2.4-1
+			dhcp >= 4.2.4-1
 			ebtables
 			hostapd
 			initscripts >= 1:2.99-18
@@ -52,7 +52,7 @@ packages
 			sqlite
 			systemd-units
 			tunctl
-			#wpa_supplicant >= 1.0-2
+			wpa_supplicant >= 1.0-2
 			/usr/bin/ipcalc
 			/usr/bin/logger
 		end
