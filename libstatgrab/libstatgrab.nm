@@ -1,0 +1,41 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libstatgrab
+version    = 0.17
+release    = 1
+
+groups     = System/Libraries
+url        = http://www.i-scream.org/libstatgrab/
+license    = GNUv2
+summary    = Provides access to statistics about the system.
+
+description
+	libstatgrab is a library that provides statistics about the system on 
+	which it's run. It's written in C and presents a selection of useful 
+	interfaces which can be used to access key system statistics. 
+	The current list of statistics includes CPU usage, memory utilisation, 
+	disk usage, process counts, network traffic, disk I/O, and more. 
+end
+
+source_dl  = ftp://ftp.uk.i-scream.org/pub/i-scream/libstatgrab/
+
+build
+	requires
+		ncurses-devel
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
