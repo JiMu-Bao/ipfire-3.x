@@ -5,7 +5,7 @@
 
 name       = nano
 version    = 2.3.0
-release    = 2
+release    = 3
 
 groups     = Application/Editors
 url        = http://www.nano-editor.org/
@@ -25,19 +25,26 @@ build
 	end
 
 	configure_options += \
-		--sysconfdir=/etc/nano \
 		--enable-color \
 		--enable-multibuffer \
 		--enable-nanorc
 
 	install_cmds
+		# Disable line wrapping.
+		sed -i doc/nanorc.sample \
+			-e "s/# set nowrap/set nowrap/"
+
 		install -v -m644 -D doc/nanorc.sample \
-			%{BUILDROOT}/etc/nano/nanorc.sample
+			%{BUILDROOT}%{sysconfdir}/nanorc
 	end
 end
 
 packages
 	package %{name}
+		configfiles
+			%{sysconfdir}/nanorc
+		end
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
