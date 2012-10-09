@@ -6,7 +6,7 @@
 name       = libsolv
 version    = 0.0.0
 git_ver    = c02d759
-release    = 5.git%{git_ver}
+release    = 6.git%{git_ver}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -26,7 +26,7 @@ source_dl  =
 build
 	requires
 		gcc-c++
-		cmake
+		cmake >= 2.8.4-2
 		db4-devel
 		expat-devel
 		zlib-devel
@@ -41,8 +41,7 @@ build
 
 	build
 		mkdir build
-		cd build && cmake .. \
-			-DCMAKE_INSTALL_PREFIX=/usr \
+		cd build && %{cmake} .. \
 			-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 			-DENABLE_PERL=0 \
 			-DENABLE_PYTHON=0 \
