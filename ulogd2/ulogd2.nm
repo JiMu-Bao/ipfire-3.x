@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = ulogd2
-version    = 2.0.0
-release    = 1.1
+version    = 2.0.1
+release    = 1
 epoch      = 1
 thisapp    = ulogd-%{version}
 
@@ -22,15 +22,15 @@ description
 	ethernet devices directly.
 end
 
-source_dl += http://ftp.netfilter.org/pub/ulogd/
+source_dl  = http://ftp.netfilter.org/pub/ulogd/
 sources    = %{thisapp}.tar.bz2
 
 build
 	requires
 		libmnl-devel
-		libnfnetlink-devel
-		libnetfilter_acct-devel
-		libnetfilter_conntrack-devel
+		libnfnetlink-devel >= 1.0.1
+		libnetfilter_acct-devel >= 1.0.1
+		libnetfilter_conntrack-devel >= 1.0.2
 		libnetfilter_log-devel
 		libpcap-devel
 		sqlite-devel
@@ -53,6 +53,12 @@ end
 
 packages
 	package %{name}
+		requires
+			libnfnetlink >= 1.0.1
+			libnetfilter_acct >= 1.0.1
+			libnetfilter_conntrack >= 1.0.2
+		end
+
 		configfiles
 			/etc/ulogd.conf
 		end

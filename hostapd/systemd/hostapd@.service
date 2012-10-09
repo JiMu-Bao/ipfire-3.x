@@ -2,6 +2,9 @@
 Description=hostap daemon on %I
 
 [Service]
-ExecStart=/usr/sbin/hostapd -P /run/network/hostapd/%I/pid /run/network/hostapd/%I/config
+ExecStartPre=/usr/lib/network/helpers/hostapd-config-helper create %I
+ExecStart=/usr/sbin/hostapd -P /run/hostapd/%I.pid /run/network/ports/%I/hostapd.conf
+ExecStopPost=/usr/lib/network/helpers/hostapd-config-helper remove %I
+Restart=on-failure
 UtmpIdentifier=%I
 KillMode=process

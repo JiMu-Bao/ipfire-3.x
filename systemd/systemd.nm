@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = systemd
-version    = 187
-release    = 2
+version    = 194
+release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -41,8 +41,10 @@ build
 		libacl-devel
 		libblkid-devel
 		libcap-devel
+		libgcrypt-devel
 		libselinux-devel
 		libtool
+		libuuid-devel
 		pam-devel
 		pciutils-devel
 		usbutils

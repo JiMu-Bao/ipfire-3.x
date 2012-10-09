@@ -5,7 +5,7 @@
 
 name       = dhcp
 version    = 4.2.4
-release    = 1
+release    = 2
 
 groups     = Networking/Daemons
 url        = http://isc.org/products/DHCP/
@@ -113,14 +113,6 @@ build
 	install_cmds
 		rm -vf %{BUILDROOT}%{sysconfdir}/dhcp/dhclient.conf
 
-		# Move the client to /sbin, create dirs
-		# and remove the default config.
-		mkdir -pv %{BUILDROOT}/sbin
-		mv -v %{BUILDROOT}/usr/sbin/dhclient %{BUILDROOT}/sbin/dhclient
-
-		install -v -m 755 %{DIR_SOURCE}/dhclient-script \
-			%{BUILDROOT}/sbin/dhclient-script
-
 		# Create runtime folders.
 		mkdir -pv %{BUILDROOT}/var/lib/dhclient
 		mkdir -pv %{BUILDROOT}/var/lib/dhcpd
@@ -190,11 +182,12 @@ packages
 		requires
 			dhcp-common = %{thisver}
 			dhcp-libs = %{thisver}
+			%{sbindir}/dhclient-script
 		end
 
 		files
 			%{unitdir}/dhclient*.service
-			/sbin
+			%{sbindir}/dhclient
 			/usr/share/man/man5/dhclient*
 			/usr/share/man/man8/dhclient*
 			/var/lib/dhclient
