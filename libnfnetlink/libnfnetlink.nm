@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libnfnetlink
-version    = 1.0.0
+version    = 1.0.1
 release    = 1
 
 groups     = System/Libraries
@@ -20,12 +20,11 @@ description
 	with the netfilter subsystem of the Linux kernel.
 end
 
-source_dl  =
+source_dl  = http://www.netfilter.org/projects/libnfnetlink/files/
 sources    = %{thisapp}.tar.bz2
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
