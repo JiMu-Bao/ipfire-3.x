@@ -1,0 +1,18 @@
+#
+# cmake macros
+#
+
+__cmake = /usr/bin/cmake
+if "${lib}" == "lib64"
+	__cmake_lib_suffix = -DLIB_SUFFIX=64
+end
+
+cmake = %{__cmake} \
+	-DCMAKE_VERBOSE_MAKEFILE=ON \
+	-DCMAKE_INSTALL_PREFIX:PATH=%{prefix} \
+	-DINCLUDE_INSTALL_DIR:PATH=%{includedir} \
+	-DLIB_INSTALL_DIR:PATH=%{libdir} \
+	-DSYSCONF_INSTALL_DIR:PATH=%{sysconfdir} \
+	-DSHARE_INSTALL_PREFIX:PATH=%{datadir} \
+	%{__cmake_lib_suffix} \
+	-DBUILD_SHARED_LIBS:BOOL=ON

@@ -5,7 +5,7 @@
 
 name       = cmake
 version    = 2.8.4
-release    = 1
+release    = 2
 
 groups     = Development/Tools
 url        = http://www.cmake.org
@@ -60,12 +60,16 @@ build
 
 	install
 		cd build && make install DESTDIR=%{BUILDROOT}
+
+		# Install pakfire macro.
+		mkdir -p %{BUILDROOT}/usr/lib/pakfire/macros
+		install -v -m 644 %{DIR_SOURCE}/cmake.macro \
+			%{BUILDROOT}/usr/lib/pakfire/macros
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
