@@ -5,7 +5,7 @@
 
 name       = libnetfilter_conntrack
 version    = 1.0.2
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.netfilter.org/projects/libnetfilter_conntrack/index.html
@@ -22,11 +22,18 @@ source_dl  = http://www.netfilter.org/projects/libnetfilter_conntrack/files/
 sources    = %{thisapp}.tar.bz2
 
 build
+	# Disable any optimization.
+	if "%{DISTRO_ARCH}" == "i686"
+		CFLAGS += -O0
+	end
+
 	requires
 		libmnl-devel >= 1.0.3
 		libnfnetlink-devel
 		pkg-config
 	end
+
+	make_build_targets += V=1
 end
 
 packages
