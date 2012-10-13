@@ -4,10 +4,8 @@
 ###############################################################################
 
 name       = suricata
-version    = 1.3
-devel_ver  = beta1
-release    = 0.1-%{devel_ver}
-thisapp    = %{name}-%{version}%{devel_ver}
+version    = 1.3.2
+release    = 1
 
 groups     = Networking/IDS
 url        = http://www.openinfosecfoundation.org/
@@ -43,11 +41,11 @@ build
 		--disable-static
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/etc
-		mkdir -pv %{BUILDROOT}/etc/suricata
-		mkdir -pv %{BUILDROOT}/etc/suricata/rules
-		cp -vf %{DIR_SOURCE}/%{name}.conf %{BUILDROOT}/etc/suricata
-		mkdir -pv %{BUILDROOT}/var/log/suricata
+		mkdir -pv %{BUILDROOT}%{sysconfdir}
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/suricata
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/suricata/rules
+		cp -vf %{DIR_SOURCE}/%{name}.conf %{BUILDROOT}%{sysconfdir}/suricata
+		mkdir -pv %{BUILDROOT}%{localstatedir}/log/suricata
 	end
 
 end
@@ -59,25 +57,25 @@ packages
 		prerquires = systemd-units
 
 		configfiles
-			/etc/suricata/suricata.conf
+			%{BUILDROOT}%{sysconfdir}/suricata/suricata.conf
 		end
 
 		script postin
-			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl daemon-reload >/dev/null 2>&1 || :
 		end
 
 		script preun
-			/bin/systemctl --no-reload disable suricata.service >/dev/null 2>&1 || :
-			/bin/systemctl stop suricata.service >/dev/null 2>&1 || :
+			systemctl --no-reload disable suricata.service >/dev/null 2>&1 || :
+			systemctl stop suricata.service >/dev/null 2>&1 || :
 		end
 
 		script postun
-			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl daemon-reload >/dev/null 2>&1 || :
 		end
 
 		script postup
-			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-			/bin/systemctl try-restart suricata.service >/dev/null 2>&1 || :
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart suricata.service >/dev/null 2>&1 || :
 		end
 
 	end
