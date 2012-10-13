@@ -1,0 +1,58 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = polarssl
+version    = 1.1.4
+release    = 1
+
+groups     = System/Libraries
+url        = http://polarssl.org/
+license    = GPLv2+
+summary    = Light-weight cryptographic and SSL/TLS library.
+
+description
+	PolarSSL is a light-weight open source cryptographic and SSL/TLS
+	library written in C. PolarSSL makes it easy for developers to include
+	cryptographic and SSL/TLS capabilities in their (embedded)
+	applications with as little hassle as possible.
+
+end
+
+sources    = %{thisapp}-gpl.tgz
+source_dl  = http://polarssl.org/code/releases/
+
+build
+	requires
+		cmake >= 2.8.4-2
+		perl
+	end
+
+	prepare_cmds
+		%{cmake} \
+			-D CMAKE_BUILD_TYPE:String="Release" \
+			-D USE_SHARED_POLARSSL_LIBRARY:BOOL=1 .
+	end
+
+	test
+		ctest --output-on-failure
+	end
+
+	install_cmds
+		# Remove binaries which already will be provided from coreutils.
+		rm -rvf %{BUILDROOT}/usr/bin
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
