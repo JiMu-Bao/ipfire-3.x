@@ -5,10 +5,10 @@
 
 name       = lrmi
 version    = 0.10
-release    = 1
+release    = 2
 
 # This is only supported on i686.
-arch       = i686
+sup_arches = i686
 
 groups     = System/Libraries
 url        = http://sourceforge.net/projects/lrmi/
