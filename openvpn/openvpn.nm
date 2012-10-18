@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openvpn
-version    = 2.2.1
-release    = 2
+version    = 2.2.2
+release    = 1
 
 groups     = Networking/VPN
 url        = http://openvpn.net/
