@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = patch
-version    = 2.7
+version    = 2.7.1
 release    = 1
 
 groups     = Development/Tools
@@ -13,10 +13,10 @@ license    = GPLv2+
 summary    = Utility for modifying/upgrading files.
 
 description
-	The patch program applies diff files to originals. The diff \
-	command is used to compare an original to a changed file.\
-	 Diff lists the changes made to the file. A person who has \
-	the original file can then use the patch command with the \
+	The patch program applies diff files to originals. The diff
+	command is used to compare an original to a changed file.
+	Diff lists the changes made to the file. A person who has
+	the original file can then use the patch command with the
 	diff file to add the changes to their original file.
 end
 
