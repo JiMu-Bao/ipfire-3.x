@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = iptables
-version    = 1.4.14
+version    = 1.4.16.2
 release    = 1
 
 groups     = Networking/Tools
@@ -13,8 +13,8 @@ license    = GPL+
 summary    = Tools for managing Linux kernel packet filtering capabilities.
 
 description
-	The iptables utility controls the network packet filtering code in the \
-	Linux kernel. If you need to set up firewalls and/or IP masquerading, \
+	The iptables utility controls the network packet filtering code in the
+	Linux kernel. If you need to set up firewalls and/or IP masquerading,
 	you should install this package.
 end
 
