@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = gnutls
-version    = 3.1.2
+version    = 3.1.3
 release    = 1
 
 groups     = System/Libraries
@@ -13,9 +13,9 @@ license    = LGPLv2.1+
 summary    = A general-purpose cryptography library.
 
 description
-	GnuTLS is a project that aims to develop a library which provides \
-	a secure layer, over a reliable transport layer. Currently the \
-	GnuTLS library implements the proposed standards by the IETF's \
+	GnuTLS is a project that aims to develop a library which provides
+	a secure layer, over a reliable transport layer. Currently the
+	GnuTLS library implements the proposed standards by the IETF's
 	TLS working group.
 end
 
