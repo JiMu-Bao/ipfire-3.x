@@ -1,12 +1,12 @@
 [Unit]
-Description=Power DNS Recursor
+Description=Power DNS Recursor Daemon
 After=network.target
 
 [Service]
 ExecStart=/usr/sbin/pdns_recursor --daemon=no
 ExecStopPost=/bin/rm -f /run/pdns-recursor/pdns_recursor.pid
 ExecStopPost=/bin/rm -f /run/pdns-recursor/pdns_recursor.controlsocket
-Restart=always
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
