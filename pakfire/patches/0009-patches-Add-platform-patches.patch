@@ -1,0 +1,25 @@
+From 8cc622fa66158e02caf366faa993434cf41d28f3 Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Sun, 21 Oct 2012 22:19:26 +0200
+Subject: [PATCH] patches: Add platform patches.
+
+---
+ macros/constants.macro | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/macros/constants.macro b/macros/constants.macro
+index 74484ea..2163a8b 100644
+--- a/macros/constants.macro
++++ b/macros/constants.macro
+@@ -11,7 +11,7 @@ DIR_SOURCE  = %{BASEDIR}
+ 
+ # By default, take all patches from the patches directory
+ # in alphabetical order.
+-patches = $(find %{DIR_PATCHES} -not -type d 2>/dev/null | sort --version-sort)
++patches = %(find %{DIR_PATCHES} %{DIR_PATCHES}/%{DISTRO_ARCH} -not -type d -maxdepth 1 2>/dev/null | sort --version-sort)
+ sources = %{thisapp}.tar.gz
+ 
+ # Macro definitions
+-- 
+1.7.11.7
+
