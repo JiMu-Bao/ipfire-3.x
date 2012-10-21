@@ -94,7 +94,7 @@ build
 				cd ${dir}
 				./configure %{configure_options}
 
-				make %{PARALELLISMFLAGS}
+				make %{PARALLELISMFLAGS}
 			fi
 		done
 	end

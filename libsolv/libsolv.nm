@@ -46,7 +46,7 @@ build
 			-DENABLE_PERL=0 \
 			-DENABLE_PYTHON=0 \
 			-DENABLE_RUBY=0
-		make %{PARALELLISMFLAGS}
+		make %{PARALLELISMFLAGS}
 	end
 
 	install

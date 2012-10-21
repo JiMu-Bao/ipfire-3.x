@@ -61,8 +61,8 @@ build
 	build
 		# Have to build it this way, else parts of the xen stubdom \
 		# would get build too.
-		make dist-xen %{PARALELLISMFLAGS}
-		make dist-tools %{PARALELLISMFLAGS}
+		make dist-xen %{PARALLELISMFLAGS}
+		make dist-tools %{PARALLELISMFLAGS}
 	end
 
 	# Only install xen and tools

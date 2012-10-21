@@ -26,7 +26,7 @@ build
 
 	build
 		make clean
-		make CFLAGS="%{CFLAGS}" %{PARALELLISMFLAGS}
+		make CFLAGS="%{CFLAGS}" %{PARALLELISMFLAGS}
 	end
 
 	# Install libraries to correct place.

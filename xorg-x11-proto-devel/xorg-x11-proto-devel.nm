@@ -69,7 +69,7 @@ build
 			[ -e configure ] || ./autogen.sh
 			./configure %{configure_options}
 
-			make %{PARALELLISMFLAGS}
+			make %{PARALLELISMFLAGS}
 		done
 	end
 

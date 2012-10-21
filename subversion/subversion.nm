@@ -55,14 +55,14 @@ build
 
 	install_cmds
 		# Build / Install perl bindings.
-		make swig-pl-lib %{PARALELLISMFLAGS}
+		make swig-pl-lib %{PARALLELISMFLAGS}
 		make install-swig-pl-lib DESTDIR=%{BUILDROOT}
 
 		cd subversion/bindings/swig/perl/native
 
 		# Doesn't allow OPTIMIZE="%{CFLAGS}".
 		perl Makefile.PL INSTALLDIRS=vendor
-		make %{PARALELLISMFLAGS}
+		make %{PARALLELISMFLAGS}
 		make pure_install PERL_INSTALL_ROOT=%{BUILDROOT}
 	end
 end

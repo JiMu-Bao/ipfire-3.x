@@ -45,7 +45,7 @@ build
 		./configure \
 			%{configure_options}
 
-		make %{PARALELLISMFLAGS}
+		make %{PARALLELISMFLAGS}
 	end
 
 	install_cmds

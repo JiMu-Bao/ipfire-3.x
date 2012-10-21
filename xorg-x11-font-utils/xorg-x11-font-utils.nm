@@ -51,7 +51,7 @@ build
 				autoconf
 				./configure %{configure_options}
 
-				make %{PARALELLISMFLAGS}
+				make %{PARALLELISMFLAGS}
 			fi
 		done
 	end
