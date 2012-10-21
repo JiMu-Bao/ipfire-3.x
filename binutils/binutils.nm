@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = binutils
-version    = 2.22.52.0.4
-release    = 2
+version    = 2.23.51.0.3
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Tools
@@ -29,6 +29,7 @@ build
 		dejagnu
 		flex
 		gcc-c++
+		pakfire-builder >= 0.9.23-5
 		texinfo
 		zlib-devel
 	end
@@ -92,9 +93,18 @@ end
 
 packages
 	package %{name}
+		provides
+			bundled(libiberty)
+		end
+	end
 
 	package %{name}-devel
 		template DEVEL
+
+		requires
+			binutils = %{thisver}
+			zlib-devel
+		end
 
 		# Don't package libbfd and libopcodes in the -devel package.
 		files
