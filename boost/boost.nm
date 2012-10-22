@@ -4,8 +4,11 @@
 ###############################################################################
 
 name       = boost
-version    = 1.41.0
-release    = 2
+ver_major  = 1
+ver_minor  = 51
+ver_plevel = 0
+version    = %{ver_major}.%{ver_minor}.%{ver_plevel}
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.boost.org/
@@ -20,58 +23,348 @@ description
 	libraries are suitable for eventual standardization.
 end
 
-source_dl  = # Cannot find the cmake file.
-sources    = %{thisapp}.cmake0.tar.gz
+thisapp    = %{name}_%{ver_major}_%{ver_minor}_%{ver_plevel}
 
-CFLAGS    += -fno-strict-aliasing
-CXXFLAGS  += -fno-strict-aliasing
-
-DIR_APP    = %{DIR_SRC}/%{thisapp}.cmake0
+source_dl  = http://sourceforge.net/projects/boost/files/%{name}/%{version}/
 
 build
 	requires
-		cmake
+		bzip2-devel
 		gcc-c++
+		python-devel
+		python3-devel
 		zlib-devel
 	end
 
+	CFLAGS   += -fno-strict-aliasing
+	CXXFLAGS += -fno-strict-aliasing
+
+	configure_options = \
+		--layout=tagged \
+		--without-mpi \
+		--without-graph_parallel \
+		--build-dir=serial \
+		\
+		cflags="%{CFLAGS}" \
+		cxxflags="%{CXXFLAGS}" \
+		variant=release \
+		threading=single,multi \
+		debug-symbols=on \
+		python=%{python_version} \
+		pch=off
+
+	# Get python3 abi flags.
+	python3_abiflags = %(%{python3}-config --abiflags)
+
 	prepare_cmds
+		# Create build dir.
 		mkdir -pv %{DIR_APP}/serial
+
+		# Bootstrap build environment.
+		./bootstrap.sh --with-toolset=gcc
+
+		# Enable boost lib for python3.
+		cat >> ./tools/build/v2/user-config.jam << EOF
+		using python : %{python3_version} : %{python3} : %{includedir}/python%{python3_version}%{python3_abiflags} : %{libdir}/python%{python3_version} ;
+		EOF
 	end
 
 	build
-		cd %{DIR_APP}/serial && \
-			cmake \
-				-DCMAKE_INSTALL_PREFIX=/usr \
-				-DCMAKE_BUILD_TYPE=RelWithDebInfo \
-				-DBUILD_TESTS="NONE" \
-				-DENABLE_SINGLE_THREADED=YES \
-				-DINSTALL_VERSIONED=OFF \
-				-DWITH_MPI=OFF \
-				-DENABLE_STATIC=OFF \
-				-DENABLE_DEBUG=OFF \
-				-DBOOST_LIB_INSTALL_DIR=%{libdir} \
-				..
-
-		make VERBOSE=1 #%{PARALLELISMFLAGS}
+		# Build boost.
+		./b2 -d+2 -q %{PARALLELISMFLAGS} %{configure_options} stage
 	end
 
 	install
-		cd %{DIR_APP}/serial && make install DESTDIR=%{BUILDROOT}
-
-		# Kill any debug library versions that may show up un-invited.
-		rm -f %{BUILDROOT}%{libdir}/*-d.*
-
-		# Remove cmake configuration files used to build the Boost libraries
-		find %{BUILDROOT}%{libdir} -name '*.cmake' -exec rm -f {} \;
+		# Install boost.
+		./b2 %{PARALLELISMFLAGS} %{configure_options} install \
+			--prefix=%{BUILDROOT}%{prefix} \
+			--libdir=%{BUILDROOT}%{libdir}
 	end
 end
 
 packages
+	# boost is just a umbrella package, that pulls all other boost
+	# components, except the python3 sub-package.
 	package %{name}
+		requires
+			boost-chrono = %{thisver}
+			boost-context = %{thisver}
+			boost-date-time = %{thisver}
+			boost-filesystem = %{thisver}
+			boost-graph = %{thisver}
+			boost-iostreams = %{thisver}
+			boost-locale = %{thisver}
+			boost-math = %{thisver}
+			boost-program-options = %{thisver}
+			boost-python = %{thisver}
+			boost-random = %{thisver}
+			boost-regex = %{thisver}
+			boost-serialization = %{thisver}
+			boost-signals = %{thisver}
+			boost-system = %{thisver}
+			boost-test = %{thisver}
+			boost-thread = %{thisver}
+			boost-timer = %{thisver}
+			boost-wave = %{thisver}
+		end
+	end
+
+	package %{name}-chrono
+		summary = Run-Time component of boost chrono library.
+		description
+			Run-Time support for Boost.Chrono, a set of useful time utilities.
+		end
+
+		files
+			%{libdir}/libboost_chrono*.so.*
+		end
+	end
+
+	package %{name}-context
+		summary = Run-Time component of boost context library.
+		description
+			A foundational library that provides a sort of cooperative multitasking
+			on asingle thread.
+		end
+
+		files
+			%{libdir}/libboost_context*.so.*
+		end
+	end
+
+	package %{name}-date-time
+		summary = Run-Time component of boost date-time library.
+		description
+			Run-Time support for Boost Date Time, set of date-time libraries based
+			on generic programming concepts.
+		end
+
+		files
+			%{libdir}/libboost_date_time*.so.*
+		end
+	end
+
+	package %{name}-filesystem
+		summary = Run-Time component of boost filesystem library.
+		description
+			Run-Time support for the Boost Filesystem Library, which provides
+			portable facilities to query and manipulate paths, files, and
+			directories.
+		end
+
+		files
+			%{libdir}/libboost_filesystem*.so.*
+		end
+	end
+
+	package %{name}-graph
+		summary = Run-Time component of boost graph library.
+		description
+			Run-Time support for the BGL graph library.  BGL interface and graph
+			components are generic, in the same sense as the the Standard Template
+			Library (STL).
+		end
+
+		files
+			%{libdir}/libboost_graph*.so.*
+		end
+	end
+
+	package %{name}-iostreams
+		summary = Run-Time component of boost iostreams library.
+		description
+			Run-Time support for Boost.IOStreams, a framework for defining streams,
+			stream buffers and i/o filters.
+		end
+
+		files
+			%{libdir}/libboost_iostreams*.so.*
+		end
+	end
+
+	package %{name}-locale
+		summary = Run-Time component of boost locale library.
+		description
+			Run-Time support for Boost.Locale, a set of localization and Unicode
+			handling tools.
+		end
+
+		files
+			%{libdir}/libboost_locale*.so.*
+		end
+	end
+
+	package %{name}-math
+		summary = Math functions for boost TR1 library.
+		description
+			Run-Time support for C99 and C++ TR1 C-style Functions from math
+			portion of Boost.TR1.
+		end
+
+		files
+			%{libdir}/libboost_math*.so.*
+		end
+	end
+
+	package %{name}-program-options
+		summary = Run-Time component of boost program_options library.
+		description
+			Run-Time support of boost program options library, which allows program
+			developers to obtain (name, value) pairs from the user, via
+			conventional methods such as command line and configuration file.
+		end
+
+		files
+			%{libdir}/libboost_program_options*.so.*
+		end
+	end
+
+	package %{name}-python
+		summary = Run-Time component of boost python library.
+		description
+			The Boost Python Library is a framework for interfacing Python and
+			C++. It allows you to quickly and seamlessly expose C++ classes
+			functions and objects to Python, and vice versa, using no special
+			tools -- just your C++ compiler.  This package contains run-time
+			support for Boost Python Library.
+		end
+
+		files
+			%{libdir}/libboost_python.so.*
+			%{libdir}/libboost_python-mt.so.*
+		end
+	end
+
+	package %{name}-python3
+		summary = Run-Time component of boost python library for Python 3.
+		description
+			The Boost Python Library is a framework for interfacing Python and
+			C++. It allows you to quickly and seamlessly expose C++ classes
+			functions and objects to Python, and vice versa, using no special
+			tools -- just your C++ compiler.  This package contains run-time
+			support for Boost Python Library compiled for Python 3.
+		end
+
+		files
+			%{libdir}/libboost_python3*.so.*
+		end
+	end
+
+	package %{name}-random
+		summary = Run-Time component of boost random library.
+		description
+			Run-Time support for boost random library.
+		end
+
+		files
+			%{libdir}/libboost_random*.so.*
+		end
+	end
+
+	package %{name}-regex
+		summary = Run-Time component of boost regular expression library.
+		description
+			Run-Time support for boost regular expression library.
+		end
+
+		files
+			%{libdir}/libboost_regex*.so.*
+		end
+	end
+
+	package %{name}-serialization
+		summary = Run-Time component of boost serialization library.
+		description
+			Run-Time support for serialization for persistence and marshaling.
+		end
+
+		files
+			%{libdir}/libboost_serialization*.so.*
+			%{libdir}/libboost_wserialization*so.*
+		end
+	end
+
+	package %{name}-signals
+		summary = Run-Time component of boost signals and slots library.
+		description
+			Run-Time support for managed signals & slots callback implementation.
+		end
+
+		files
+			%{libdir}/libboost_signals*.so.*
+		end
+	end
+
+	package %{name}-system
+		summary = Run-Time component of boost system support library.
+		description
+			Run-Time component of Boost operating system support library, including
+			the diagnostics support that will be part of the C++0x standard
+			library.
+		end
+
+		files
+			%{libdir}/libboost_system*.so.*
+		end
+	end
+
+	package %{name}-test
+		summary = Run-Time component of boost test library.
+		description
+			Run-Time support for simple program testing, full unit testing, and for
+			program execution monitoring.
+		end
+
+		files
+			%{libdir}/libboost_prg_exec_monitor*.so.*
+			%{libdir}/libboost_unit_test_framework*.so.*
+		end
+	end
+
+	package %{name}-thread
+		summary = Run-Time component of boost thread library.
+		description
+			Run-Time component Boost.Thread library, which provides classes and
+			functions for managing multiple threads of execution, and for
+			synchronizing data between the threads or providing separate copies of
+			data specific to individual threads.
+		end
+
+		files
+			%{libdir}/libboost_thread*.so.*
+		end
+	end
+
+	package %{name}-timer
+		summary = Run-Time component of boost timer library.
+		description
+			"How long does my C++ code take to run?"
+			The Boost Timer library answers that question and does so portably,
+			with as little as one #include and one additional line of code.
+		end
+
+		files
+			%{libdir}/libboost_timer*.so.*
+		end
+	end
+
+	package %{name}-wave
+		summary = Run-Time component of boost C99/C++ pre-processing library.
+		description
+			Run-Time support for the Boost.Wave library, a Standards conforming,
+			and highly configurable implementation of the mandated C99/C++
+			pre-processor functionality.
+		end
+
+		files
+			%{libdir}/libboost_wave*.so.*
+		end
+	end
 
 	package %{name}-devel
 		template DEVEL
+
+		requires = %{name} = %{thisver}
 	end
 
 	package %{name}-debuginfo
