@@ -5,7 +5,7 @@
 
 name       = pdns
 version    = 3.1
-release    = 2
+release    = 3
 
 groups     = Networking/DNS
 url        = http://powerdns.com/
@@ -59,6 +59,7 @@ build
 		# Install default configuration.
 		install -m 0644 %{DIR_SOURCE}/pdns.conf \
 			%{BUILDROOT}%{sysconfdir}/pdns/pdns.conf
+		rm -vf %{BUILDROOT}%{sysconfdir}/pdns/pdns.conf-dist
 
 		# Create empty database file.
 		touch %{BUILDROOT}%{sharedstatedir}/pdns/pdns.db
@@ -94,9 +95,13 @@ packages
 			shadow-utils
 			sqlite
 		end
+
+		requires
+			pdns-recursor >= 3.3-8
+		end
  
 		configfiles
-			/etc/pdns/pdns.conf
+			%{sysconfdir}/pdns/pdns.conf
 		end
 
 		script prein

@@ -1,12 +1,12 @@
 [Unit]
-Description=PDNS DNS Server
-After=syslog.target network.target
+Description=PowerDNS DNS Server Daemon
+After=syslog.target
 
 [Service]
-Type=forking
-ExecStart=/usr/sbin/pdns_server --daemon --guardian=yes
+ExecStart=/usr/sbin/pdns_server --daemon=no
 ExecReload=/usr/bin/pdns_control cycle
 ExecStop=/usr/bin/pdns_control quit
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target

@@ -5,7 +5,7 @@
 
 name       = pdns-recursor
 version    = 3.3
-release    = 7
+release    = 8
 
 groups     = Networking/DNS
 url        = http://powerdns.com/
@@ -39,16 +39,17 @@ build
 
 	install
 		make install DESTDIR=%{BUILDROOT} \
-			CONFIGDIR=/etc/%{name}
+			CONFIGDIR="%{sysconfdir}/pdns"
 
 		# Remove sysvinit file
 		rm -rf %{BUILDROOT}/etc/init.d
 
 		# Remove shipped config file
-		rm -rf %{BUILDROOT}/etc/%{name}/recursor.conf-dist
+		rm -rf %{BUILDROOT}%{sysconfdir}/pdns/recursor.conf-dist
 
 		# Install our default config file
-		cp -vf %{DIR_SOURCE}/recursor.conf %{BUILDROOT}/etc/%{name}/recursor.conf
+		cp -vf %{DIR_SOURCE}/recursor.conf \
+			%{BUILDROOT}%{sysconfdir}/pdns/recursor.conf
 
 		# Create folder for chroot
 		mkdir -pv %{BUILDROOT}/var/lib/pdns-recursor
@@ -69,7 +70,7 @@ end
 packages
 	package %{name}
 		configfiles
-			/etc/%{name}/recursor.conf
+			%{sysconfdir}/pdns/recursor.conf
 		end
 
 		prerequires
