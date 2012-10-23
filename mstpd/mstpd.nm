@@ -5,8 +5,8 @@
 
 name       = mstpd
 version    = 0.01
-svn_ver    = 30
-release    = 0.5-svn%{svn_ver}.1
+svn_ver    = 35
+release    = 0.6-svn%{svn_ver}.1
 thisapp    = %{name}-%{version}-svn%{svn_ver}
 
 groups     = Networking/Tools
@@ -45,7 +45,7 @@ packages
 
 		script preun
 			/bin/systemctl --no-reload disable mstpd.service >/dev/null 2>&1 || :
-			/bin/systemctl stop rstp.service >/dev/null 2>&1 || :
+			/bin/systemctl stop mstpd.service >/dev/null 2>&1 || :
 		end
 
 		script postup
