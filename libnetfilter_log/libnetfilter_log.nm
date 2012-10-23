@@ -5,7 +5,7 @@
 
 name       = libnetfilter_log
 version    = 1.0.1
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.netfilter.org/projects/libnetfilter_log/downloads.html
@@ -24,13 +24,14 @@ sources    = %{thisapp}.tar.bz2
 
 build
 	requires
+		autoconf
+		automake
 		libnfnetlink-devel
 	end
 
-	# Disable any optimization because of
-	# https://bugzilla.ipfire.org/show_bug.cgi?id=10018
-	if "%{DISTRO_ARCH}" == "i686"
-		CFLAGS += -O0
+	prepare_cmds
+		sed -e "s/-Wc,-nostartfiles//g" -i src/Makefile*
+		autoreconf -vfi
 	end
 
 	make_build_targets += CFLAGS="%{CFLAGS}" 
