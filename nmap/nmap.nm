@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = nmap
-version    = 5.51
+version    = 6.01
 release    = 1
 
 groups     = Networking/Sniffer
@@ -20,7 +20,7 @@ description
 	predictability characteristics, reverse-identd scanning, and more.
 end
 
-source_dl  =
+source_dl  = http://nmap.org/dist/
 sources    = %{thisapp}.tar.bz2
 
 build
