@@ -4,11 +4,13 @@
 ###############################################################################
 
 name       = glib2
-ver_major  = 2.31
-version    = %{ver_major}.2
-release    = 2
+ver_major  = 2.35
+ver_minor  = 1
+version    = %{ver_major}.%{ver_minor}
+release    = 1
 thisapp    = glib-%{version}
 
+maintainer = Erik Kapfer <erik.kapfer@ipfire.org>
 groups     = System/Libraries
 url        = http://www.gtk.org
 license    = LGPLv2+
