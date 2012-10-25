@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libssh2
-version    = 1.2.7
+version    = 1.4.2
 release    = 1
 
 groups     = System/Libraries
@@ -13,13 +13,13 @@ license    = BSD
 summary    = A library implementing the SSH2 protocol.
 
 description
-	libssh2 is a library implementing the SSH2 protocol as defined by \
-	Internet Drafts: SECSH-TRANS(22), SECSH-USERAUTH(25), \
-	SECSH-CONNECTION(23), SECSH-ARCH(20), SECSH-FILEXFER(06)*, \
+	libssh2 is a library implementing the SSH2 protocol as defined by
+	Internet Drafts: SECSH-TRANS(22), SECSH-USERAUTH(25),
+	SECSH-CONNECTION(23), SECSH-ARCH(20), SECSH-FILEXFER(06)*,
 	SECSH-DHGEX(04), and SECSH-NUMBERS(10).
 end
 
-source_dl  =
+source_dl  = http://www.libssh2.org/download/
 
 build
 	requires
