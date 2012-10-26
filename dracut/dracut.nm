@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = dracut
-version    = 019
-release    = 2
+version    = 024
+release    = 1
 arch       = noarch
 
 groups     = System/Boot
@@ -39,10 +39,12 @@ build
 
 	dracutlibdir = %{prefix}/lib/dracut
 
-	install
-		make install DESTDIR=%{BUILDROOT} \
-			sysconfdir=/etc mandir=/usr/share/man
+	make_install_targets += \
+		sysconfdir=%{sysconfdir} \
+		libdir=%{dracutlibdir} \
+		mandir=%{mandir}
 
+	install_cmds
 		# Install local configuration.
 		mkdir -pv %{BUILDROOT}/etc/dracut.conf.d
 		cp -vf %{DIR_SOURCE}/ipfire.conf %{BUILDROOT}/etc/dracut.conf.d/ipfire.conf
