@@ -5,7 +5,7 @@
 
 name       = dracut
 version    = 024
-release    = 1
+release    = 2
 arch       = noarch
 
 groups     = System/Boot
@@ -86,6 +86,7 @@ packages
 			lvm2
 			mdadm
 			sysvinit
+			systemd >= 187
 			udev
 			util-linux
 			which
