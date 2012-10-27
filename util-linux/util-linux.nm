@@ -5,9 +5,11 @@
 
 name       = util-linux
 major_ver  = 2.22
-version    = %{major_ver}
+minor_ver  = 1
+version    = %{major_ver}.%{minor_ver}
 release    = 1
 
+maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
 url        = http://kernel.org/~kzak/util-linux/
 license    = GPLv2 and GPLv2+ and BSD with advertising and Public Domain
