@@ -5,7 +5,7 @@
 
 name       = glibc
 version    = 2.16.0
-release    = 3
+release    = 4
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -155,7 +155,8 @@ build
 		--with-selinux \
 		--disable-werror \
 		--enable-bind-now \
-		--enable-nss-crypt
+		--enable-nss-crypt \
+		--enable-obsolete-rpc
 
 	if "%{DISTRO_ARCH}" == "armv5tel"
 		# Disable hardware FP for ARM.
