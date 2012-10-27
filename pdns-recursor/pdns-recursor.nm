@@ -5,7 +5,7 @@
 
 name       = pdns-recursor
 version    = 3.3
-release    = 8
+release    = 9
 
 groups     = Networking/DNS
 url        = http://powerdns.com/

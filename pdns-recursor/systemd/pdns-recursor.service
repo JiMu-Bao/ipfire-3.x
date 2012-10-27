@@ -3,7 +3,7 @@ Description=Power DNS Recursor Daemon
 After=network.target
 
 [Service]
-ExecStart=/usr/sbin/pdns_recursor --daemon=no
+ExecStart=/usr/sbin/pdns_recursor --config-dir=/etc/pdns --daemon=no
 ExecStopPost=/bin/rm -f /run/pdns-recursor/pdns_recursor.pid
 ExecStopPost=/bin/rm -f /run/pdns-recursor/pdns_recursor.controlsocket
 Restart=on-failure
