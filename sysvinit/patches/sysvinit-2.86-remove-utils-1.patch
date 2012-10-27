@@ -26,19 +26,19 @@
 -USRBIN	+= utmpdump wall
 -MAN1	+= mountpoint.1 wall.1
 -MAN8	+= sulogin.8 bootlogd.8
-+SBIN	+= sulogin
-+USRBIN	+= utmpdump
++SBIN	+=
++USRBIN	+=
 +MAN1	+= mountpoint.1
-+MAN8	+= sulogin.8
++MAN8	+=
  endif
  
  ifeq ($(DISTRO),Debian)
  BIN	+= mountpoint
 -SBIN	+= sulogin bootlogd
-+SBIN	+= sulogin
++SBIN	+=
  MAN1	+= mountpoint.1
 -MAN8	+= sulogin.8 bootlogd.8
-+MAN8	+= sulogin.8
++MAN8	+=
  endif
  
  ifeq ($(DISTRO),Owl)

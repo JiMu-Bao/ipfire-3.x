@@ -5,7 +5,7 @@
 
 name       = sysvinit
 version    = 2.86
-release    = 4
+release    = 5
 
 groups     = System/Base
 url        = https://alioth.debian.org/projects/pkg-sysvinit/
@@ -13,7 +13,7 @@ license    = GPLv2+
 summary    = Programs which control basic system processes.
 
 description
-	The sysvinit package contains a group of processes that control \
+	The sysvinit package contains a group of processes that control
 	the very basic functions of your system.
 end
 
