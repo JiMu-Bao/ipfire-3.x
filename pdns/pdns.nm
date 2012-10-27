@@ -5,7 +5,7 @@
 
 name       = pdns
 version    = 3.1
-release    = 4
+release    = 5
 
 groups     = Networking/DNS
 url        = http://powerdns.com/
@@ -109,6 +109,10 @@ packages
  
 		configfiles
 			%{sysconfdir}/pdns/pdns.conf
+		end
+
+		datafiles
+			%{sharedstatedir}/pdns/pdns.db
 		end
 
 		script prein
