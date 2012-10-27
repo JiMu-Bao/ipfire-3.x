@@ -6,7 +6,7 @@
 name       = python
 major_ver  = 2.7
 version    = %{major_ver}.3
-release    = 1
+release    = 2
 thisapp    = Python-%{version}
 
 groups     = Development/Languages
@@ -32,11 +32,12 @@ build
 		bzip2-devel
 		db4-devel >= 1:4.8
 		expat-devel
+		glibc-headers >= 2.16-4
 		libffi-devel
 		libselinux-devel
 		ncurses-devel
 		openssl-devel
-		pkg-config
+		pakfire-builder >= 0.9.23-4
 		readline-devel
 		sqlite-devel
 		tar
@@ -46,12 +47,6 @@ build
 	export CFLAGS  += -D_GNU_SOURCE -fwrapv
 
 	prepare_cmds
-		# Apply patches for x86_64.
-		if [ "$(uname -m)" = "x86_64" ]; then
-			patch -Np1 -i %{DIR_SOURCE}/python-2.7.3-lib64.patch
-			patch -Np1 -i %{DIR_SOURCE}/python-2.7-lib64-sysconfig.patch
-		fi
-
 		# Remove embedded copies of expat, zlib and libffi
 		rm -rf Modules/{expat,zlib}
 		rm -rf Modules/_ctypes/{darwin,libffi,libffi_arm_wince,libffi_msvc,libffi_osx}
