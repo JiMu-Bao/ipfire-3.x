@@ -22,7 +22,7 @@ source_dl  = http://sourceforge.net/projects/%{name}/files/%{name}/
 
 build
 	build
-		CFLAGS="%{CFLAGS}" make %{PARALELLIAMFLAGS} \
+		CFLAGS="%{CFLAGS}" make %{PARALLELISMFLAGS} \
 			STRIP=/bin/true LDFLAGS=
 	end
 
