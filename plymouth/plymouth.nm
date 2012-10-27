@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = plymouth
-version    = 0.8.6.1
+version    = 0.8.8
 release    = 1
 
 groups     = System/Base
