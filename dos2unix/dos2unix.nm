@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = dos2unix
-version    = 5.1.1
+version    = 6.0.2
 release    = 1
 
 groups     = Applications/Text
@@ -13,11 +13,11 @@ license    = BSD
 summary    = Text file format converters.
 
 description
-	Convert text files with DOS or Mac line endings to Unix line endings and \
+	Convert text files with DOS or Mac line endings to Unix line endings and
 	vice versa.
 end
 
-source_dl  =
+source_dl  = http://waterlan.home.xs4all.nl/dos2unix/
 
 build
 	requires
