@@ -1,6 +1,6 @@
 diff -Nur a/tests/Makefile.am b/tests/Makefile.am
---- a/tests/Makefile.am	2012-03-24 19:22:13.000000000 +0100
-+++ b/tests/Makefile.am	2012-04-28 15:42:22.861910633 +0200
+--- a/tests/Makefile.am	2012-08-18 08:02:47.000000000 +0200
++++ b/tests/Makefile.am	2012-08-26 14:57:03.065516651 +0200
 @@ -24,7 +24,6 @@
  
  root_tests =					\
@@ -9,15 +9,23 @@ diff -Nur a/tests/Makefile.am b/tests/Makefile.am
    cp/preserve-gid				\
    cp/special-bits				\
    cp/cp-mv-enotsup-xattr			\
-@@ -195,7 +194,6 @@
+@@ -199,7 +198,6 @@
    misc/groups-version				\
    misc/head-c					\
    misc/head-pos					\
 -  misc/id-context				\
    misc/id-groups				\
+   misc/id-setgid				\
    misc/md5sum					\
-   misc/md5sum-bsd				\
-@@ -408,12 +406,10 @@
+@@ -252,7 +250,6 @@
+   misc/sort-merge				\
+   misc/sort-merge-fdlimit			\
+   misc/sort-month				\
+-  misc/sort-exit-early				\
+   misc/sort-rand				\
+   misc/sort-spinlock-abuse			\
+   misc/sort-stale-thread-mem			\
+@@ -421,12 +418,10 @@
    du/trailing-slash				\
    du/two-args					\
    id/gnu-zero-uids				\
