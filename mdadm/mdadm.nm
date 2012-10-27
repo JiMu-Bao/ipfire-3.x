@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = mdadm
-version    = 3.2.2
-release    = 2
+version    = 3.2.6
+release    = 1
 
 groups     = System/Base
 url        = http://www.kernel.org/pub/linux/utils/raid/mdadm/
@@ -20,7 +20,8 @@ description
 	file can be used to help with some common tasks.
 end
 
-source_dl  =
+source_dl  = https://www.kernel.org/pub/linux/utils/raid/mdadm/
+sources	   = %{thisapp}.tar.xz
 
 build
 	requires
