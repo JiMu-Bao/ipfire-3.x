@@ -6,7 +6,7 @@
 name       = network
 epoch      = 1
 version    = 005
-release    = 1.3
+release    = 2
 arch       = noarch
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -28,7 +28,7 @@ build
 	install_cmds
 		# Create some dummy configuration files.
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/{firewall,network}
-		touch %{BUILDROOT}%{sysconfdir}/network/{config,dns-servers}
+		touch %{BUILDROOT}%{sysconfdir}/network/{config,dns-servers,routes}
 	end
 end
 
