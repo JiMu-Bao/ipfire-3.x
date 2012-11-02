@@ -1,0 +1,50 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libhtp
+version    = 0.2.9
+release    = 1
+
+groups     = System/Libraries
+url        = https://github.com/ironbee/libhtp
+license    = BSD
+summary    = LibHTP is a security-aware parser.
+
+description
+	LibHTP is a security-aware parser for the HTTP protocol and the 
+	related bits and pieces.
+end
+
+thisapp = htp-%{version}
+
+source_dl  = http://www.openinfosecfoundation.org/download/
+sources    = %{thisapp}.tar.gz
+
+build
+	requires
+		gcc
+		pkg-config
+		zlib-devel
+	end
+
+	configure_options += \
+		--disable-static
+
+end
+
+
+
+packages
+	package %{name}
+	end
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
