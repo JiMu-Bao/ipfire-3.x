@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = lm-sensors
-version    = 3.3.1
-release    = 3
+version    = 3.3.3
+release    = 1
 thisapp    = lm_sensors-%{version}
 
 groups     = Applications/Statistics
