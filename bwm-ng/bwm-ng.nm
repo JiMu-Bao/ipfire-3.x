@@ -5,7 +5,7 @@
 
 name       = bwm-ng
 version    = 0.6
-release    = 1
+release    = 2
 
 groups     = Networking/Statistics
 url        = http://www.gropp.org/?id=projects&sub=bwm-ng
@@ -20,12 +20,30 @@ source_dl  = http://www.gropp.org/bwm-ng/
 
 build
 	requires
+		libstatgrab-devel
 		ncurses-devel
 	end
+
+	configure_options += \
+		--enable-64bit \
+		--enable-netstatbyte \
+		--enable-netstatlink \
+		--with-ncurses \
+		--with-time \
+		--with-getopt_long \
+		--with-getifaddrs \
+		--with-sysctl \
+		--with-procnetdev \
+		--with-libstatgrab \
+		--with-netstatlinux \
+		--without-strip
 end
 
 packages
 	package %{name}
+		requires
+			procps
+		end
 	end
 
 	package %{name}-debuginfo
