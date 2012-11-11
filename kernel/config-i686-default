@@ -19,6 +19,11 @@ CONFIG_KTIME_SCALAR=y
 CONFIG_RCU_FANOUT=32
 
 #
+# Kernel Performance Events And Counters
+#
+CONFIG_ARCH_WANT_IPC_PARSE_VERSION=y
+
+#
 # GCOV-based kernel profiling
 #
 CONFIG_LBDAF=y
@@ -208,12 +213,12 @@ CONFIG_GEODE_WDT=m
 # CONFIG_SBC7240_WDT is not set
 
 #
-# Customize TV tuners
+# Media drivers
 #
 CONFIG_VIDEOBUF2_DMA_CONTIG=m
 
 #
-# Miscelaneous helper chips
+# Webcam and/or TV USB devices
 #
 CONFIG_VIDEO_CAFE_CCIC=m
 
@@ -260,7 +265,6 @@ CONFIG_CLKSRC_I8253=y
 # Kernel hacking
 #
 # CONFIG_DEBUG_HIGHMEM is not set
-# CONFIG_PROVIDE_OHCI1394_DMA_INIT is not set
 CONFIG_DOUBLEFAULT=y
 
 #

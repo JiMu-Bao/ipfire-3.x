@@ -1,11 +1,5 @@
 
 #
-# IRQ subsystem
-#
-CONFIG_IRQ_DOMAIN=y
-# CONFIG_IRQ_DOMAIN_DEBUG is not set
-
-#
 # Processor type and features
 #
 # CONFIG_XEN_PRIVILEGED_GUEST is not set
@@ -119,6 +113,11 @@ CONFIG_FB_SYS_FOPS=m
 # Android
 #
 CONFIG_XO1_RFKILL=m
+
+#
+# Hardware Spinlock drivers
+#
+CONFIG_OF_IOMMU=y
 
 #
 # Non-executable pages

@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kernel
-version    = 3.5.3
-release    = 0.1
+version    = 3.6.6
+release    = 1
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -36,7 +36,7 @@ build
 
 	requires
 		asciidoc
-		binutils >= 2.22.52.0.3-2
+		binutils >= 2.23.51.0.3-3
 		binutils-devel
 		bison
 		elfutils-devel
@@ -45,24 +45,23 @@ build
 		gettext
 		ncurses-devel
 		net-tools
+		newt-devel
+		pciutils-devel
 		perl
 		python-devel
+		slang-devel
 		xmlto
 
 		/sbin/depmod
 	end
 
-	tools_cpupower_requires
-		newt-devel
-		pciutils-devel
-		slang-devel
+	# i686 needs librmi for cpupower.
+	if "%{DISTRO_ARCH}" == "i686"
+		requires += liblrmi-devel
 	end
 
 	# A list of kernels to build.
 	kernels =
-
-	# Should we build cpupower?
-	build_cpupower = 1
 
 	# Arguments that are passed to the kernel build command.
 	kernel_build_flags =
@@ -96,9 +95,6 @@ build
 		kernel_arch  = arm
 		kernel_image = arch/%{kernel_arch}/boot/zImage
 
-		# ARM does not support cpupower.
-		build_cpupower = 0
-
 		# http://lists.infradead.org/pipermail/linux-arm-kernel/2012-March/091404.html
 		kernel_build_flags = KALLSYMS_EXTRA_PASS=1
 	end
@@ -109,9 +105,6 @@ build
 
 		kernel_arch  = arm
 		kernel_image = arch/%{kernel_arch}/boot/zImage
-
-		# ARM does not support cpupower.
-		build_cpupower = 0
 	end
 
 	# Build default kernel.
@@ -132,11 +125,6 @@ build
 	# Build ARM omap kernel.
 	if "%{build_kernel_omap}" == "1"
 		kernels += omap
-	end
-
-	# Add tools' build requirements if build is requested.
-	if "%{build_cpupower}" == "1"
-		requires += %{tools_cpupower_requires}
 	end
 
 	prepare_cmds
@@ -236,51 +224,51 @@ build
 			esac
 
 			# Create an empty settings file for dracut
-			mkdir -pv %{BUILDROOT}/etc/ld.so.conf.d
+			mkdir -p %{BUILDROOT}/etc/ld.so.conf.d
 			echo "# Placeholder file, no vDSO hwcap entries used in this kernel." \
 				> %{BUILDROOT}/etc/ld.so.conf.d/kernel-${fullversion}.conf
 
 			# And now the scary looking part.
 			#
 			# Recreate source and build links.
-			rm -vf %{BUILDROOT}/usr/lib/modules/${fullversion}/{build,source}
-			mkdir -pv %{BUILDROOT}/usr/lib/modules/${fullversion}/build
-			ln -svf build %{BUILDROOT}/usr/lib/modules/${fullversion}/source
+			rm -f %{BUILDROOT}/usr/lib/modules/${fullversion}/{build,source}
+			mkdir -p %{BUILDROOT}/usr/lib/modules/${fullversion}/build
+			ln -sf build %{BUILDROOT}/usr/lib/modules/${fullversion}/source
 
 			# Create dirs for extra modules.
-			mkdir -pv %{BUILDROOT}/usr/lib/modules/${fullversion}/extra
+			mkdir -p %{BUILDROOT}/usr/lib/modules/${fullversion}/extra
 
-			cp -v --parents $(find -type f -name "Makefile*" -o -name "Kconfig*") \
+			cp --parents $(find -type f -name "Makefile*" -o -name "Kconfig*") \
 				%{BUILDROOT}/usr/lib/modules/${fullversion}/build
-			cp -v Module.symvers System.map \
+			cp Module.symvers System.map \
 				%{BUILDROOT}/usr/lib/modules/${fullversion}/build
-			rm -vrf %{BUILDROOT}/usr/lib/modules/${fullversion}/build/{Documentation,scripts,include}
+			rm -rf %{BUILDROOT}/usr/lib/modules/${fullversion}/build/{Documentation,scripts,include}
 
-			cp -v .config %{BUILDROOT}/usr/lib/modules/${fullversion}/build
-			cp -va scripts %{BUILDROOT}/usr/lib/modules/${fullversion}/build
+			cp .config %{BUILDROOT}/usr/lib/modules/${fullversion}/build
+			cp -a scripts %{BUILDROOT}/usr/lib/modules/${fullversion}/build
 			find %{BUILDROOT}/usr/lib/modules/${fullversion}/build/scripts -name "*.o" \
 				-exec rm -vf {} \;
 
-			cp -va --parents arch/%{kernel_arch}/include \
+			cp -a --parents arch/%{kernel_arch}/include \
 				%{BUILDROOT}/usr/lib/modules/${fullversion}/build
-			cp -va include %{BUILDROOT}/usr/lib/modules/${fullversion}/build/include
+			cp -a include %{BUILDROOT}/usr/lib/modules/${fullversion}/build/include
 
 			# Make sure we can build external modules.
 			touch -r %{BUILDROOT}/usr/lib/modules/${fullversion}/build/Makefile \
 				%{BUILDROOT}/usr/lib/modules/${fullversion}/build/include/linux/version.h
 			touch -r %{BUILDROOT}/usr/lib/modules/${fullversion}/build/.config \
 				%{BUILDROOT}/usr/lib/modules/${fullversion}/build/autoconf.h
-			cp -v %{BUILDROOT}/usr/lib/modules/${fullversion}/build/.config \
+			cp %{BUILDROOT}/usr/lib/modules/${fullversion}/build/.config \
 				%{BUILDROOT}/usr/lib/modules/${fullversion}/build/include/config/auto.conf
 
 			find %{BUILDROOT}/usr/lib/modules/${fullversion} -name "*.ko" -type f | \
 				xargs chmod u+x
 
 			# Move all development files to /usr/src.
-			mkdir -pv %{BUILDROOT}/usr/src/kernels
-			mv -v %{BUILDROOT}/usr/lib/modules/${fullversion}/build \
+			mkdir -p %{BUILDROOT}/usr/src/kernels
+			mv %{BUILDROOT}/usr/lib/modules/${fullversion}/build \
 				%{BUILDROOT}/usr/src/kernels/${fullversion}
-			ln -svf ../../../src/kernels/${fullversion} \
+			ln -sf ../../../src/kernels/${fullversion} \
 				%{BUILDROOT}/usr/lib/modules/${fullversion}/build
 
 			find %{BUILDROOT}/usr/src/kernels -name ".*.cmd" -exec rm -f {} \;
@@ -292,13 +280,17 @@ build
 
 		# Build tools.
 		# cpupower
-		if [ "%{build_cpupower}" = "1" ]; then
-			chmod +x tools/power/cpupower/utils/version-gen.sh
-			make -C tools/power/cpupower CPUFREQ_BENCH=false %{PARALLELISMFLAGS}
+		chmod +x tools/power/cpupower/utils/version-gen.sh
+		make -C tools/power/cpupower CPUFREQ_BENCH=false %{PARALLELISMFLAGS}
 
-			cd tools/power/cpupower/debug/i386
-			make %{PARALLELISMFLAGS} centrino-decode powernow-k8-decode
-			cd -
+		if [ "%{DISTRO_ARCH}" = "x86_64" ]; then
+			pushd tools/power/cpupower/debug/x86_64
+			make %{MAKETUNING}
+			popd
+		elif [ "%{DISTRO_ARCH}" = "i686" ]; then
+			pushd tools/power/cpupower/debug/i386
+			make %{MAKETUNING}
+			popd
 		fi
 	end
 
@@ -325,18 +317,29 @@ build
 		# Install tools.
 		make -C tools/perf DESTDIR=%{BUILDROOT} WERROR=0 \
 			HAVE_CPLUS_DEMANGLE=1 prefix=/usr perfexecdir=lib/perf-core \
-			install install-man
+			install install-man install-python_ext
 
 		# cpupower
-		if [ "%{build_cpupower}" = "1" ]; then
-			make -C tools/power/cpupower DESTDIR=%{BUILDROOT} libdir=%{libdir} \
-				mandir=%{mandir} CPUFREQ_BENCH=false install
-			cd tools/power/cpupower/debug/i386
-			install -m 755 centrino-decode %{BUILDROOT}/usr/bin/centrino-decode
-			install -m 755 powernow-k8-decode %{BUILDROOT}/usr/bin/powernow-k8-decode
-			cd -
-			chmod 0755 %{BUILDROOT}%{libdir}/libcpupower.so*
+		make -C tools/power/cpupower DESTDIR=%{BUILDROOT} libdir=%{libdir} \
+			mandir=%{mandir} CPUFREQ_BENCH=false install
+
+		if [ "%{DISTRO_ARCH}" = "x86_64" ]; then
+			pushd tools/power/cpupower/debug/x86_64
+			install -m 755 centrino-decode \
+				%{BUILDROOT}/usr/bin/centrino-decode
+			install -m 755 powernow-k8-decode \
+				%{BUILDROOT}/usr/bin/powernow-k8-decode
+			popd
+		elif [ "%{DISTRO_ARCH}" = "i686" ]; then
+			pushd tools/power/cpupower/debug/i386
+			install -m 755 centrino-decode \
+				%{BUILDROOT}/usr/bin/centrino-decode
+			install -m 755 powernow-k8-decode \
+				%{BUILDROOT}/usr/bin/powernow-k8-decode
+			popd
 		fi
+
+		chmod 0755 %{BUILDROOT}%{libdir}/libcpupower.so*
 	end
 end
 
