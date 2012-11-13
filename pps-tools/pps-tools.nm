@@ -1,0 +1,48 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = pps-tools
+version    = 0
+ver_git    = 20120215gitac0aa6
+release    = 0.1.%{ver_git}
+
+groups     = System/Base
+url        = https://github.com/ago/pps-tools
+license    = GPLv2+
+summary    = LinuxPPS user-space tools.
+
+description
+	This package includes the LinuxPPS user-space tools.
+end
+
+sources    = %{name}-%{ver_git}.tar.gz
+
+build
+	DIR_APP = %{DIR_SRC}/%{name}
+
+	install
+		mkdir -pv %{BUILDROOT}{%{bindir},%{includedir}/sys}
+		install -m 755 ppsctl ppsfind ppstest ppswatch %{BUILDROOT}%{bindir}
+		install -m 644 timepps.h %{BUILDROOT}%{includedir}
+		ln -svf ../timepps.h %{BUILDROOT}%{includedir}/sys/timepps.h
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+
+		description
+			This package includes the headers needed
+			to compile PPSAPI (RFC-2783) applications.
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
