@@ -5,7 +5,7 @@
 
 name       = shadow-utils
 version    = 4.1.4.3
-release    = 6
+release    = 7
 thisapp    = shadow-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -68,7 +68,7 @@ end
 
 packages
 	package %{name}
-		groups += Base
+		groups += Base Build
 
 		obsoletes += shadow<%{thisver}
 		provides  += shadow=%{thisver}
