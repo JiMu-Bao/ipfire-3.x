@@ -5,7 +5,7 @@
 
 name       = openssh
 version    = 5.9p1
-release    = 7
+release    = 8
 
 groups     = Application/Internet
 url        = http://www.openssh.com/portable.html
@@ -110,11 +110,6 @@ packages
 	package openssh
 		prerequires
 			shadow-utils
-		end
-
-		requires
-			openssh-clients = %{thisver}
-			openssh-server = %{thisver}
 		end
 
 		configfiles
