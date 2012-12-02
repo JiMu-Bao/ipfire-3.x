@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = systemd
-version    = 194
+version    = 196
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -24,6 +24,7 @@ build
 	unitdir = %{prefix}/lib/systemd/system
 
 	requires
+		attr-devel
 		audit-devel
 		automake
 		autoconf
