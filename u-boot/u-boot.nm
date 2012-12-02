@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = u-boot
-version    = 2011.09
+version    = 2012.10
 release    = 1
 sup_arches = armv5tel armv7hl
 
@@ -23,15 +23,15 @@ sources    = %{thisapp}.tar.bz2
 
 build
 	build
-		while read arch platform target; do
+		while read arch platform targets; do
 			# Skip all other architectures.
 			[ "${arch}" = "%{DISTRO_ARCH}" ] || continue
 
 			builddir="$(pwd)/build-${platform}"
 			mkdir -p ${builddir}
 
-			make O=${builddir} ${platform}_config
-			make O=${builddir} ${builddir}/${target}
+			make CROSS_COMPILE="" O=${builddir} ${platform}_config
+			make HOSTCC="gcc %{CFLAGS}" CROSS_COMPILE="" O=${builddir}
 		done < %{DIR_SOURCE}/targets
 
 		# Build tools.
@@ -43,7 +43,7 @@ build
 	end
 
 	install
-		while read arch platform target; do
+		while read arch platform targets; do
 			# Skip all other architectures.
 			[ "${arch}" = "%{DISTRO_ARCH}" ] || continue
 
@@ -51,8 +51,16 @@ build
 			installdir="%{BUILDROOT}/usr/lib/%{name}/${platform}"
 			mkdir -pv ${installdir}
 
-			install -D -m 644 ${builddir}/${target} ${installdir}
-			install -D -m 644 ${builddir}/u-boot ${installdir}/uboot.elf
+			for target in ${targets}; do
+				install -D -m 644 ${builddir}/${target} ${installdir}
+			done
+			if [ -e "${builddir}/MLO" ]; then
+				install -D -m 644 ${builddir}/MLO ${installdir}
+			fi
+			for f in ${builddir}/spl/*.bin; do
+				[ -e "${f}" ] || continue
+				install -D -m 644 ${f} ${installdir}
+			done
 		done < %{DIR_SOURCE}/targets
 
 		# Install tools.
