@@ -1,7 +1,7 @@
-diff -up openssh-5.9p0/auth-krb5.c.kuserok openssh-5.9p0/auth-krb5.c
---- openssh-5.9p0/auth-krb5.c.kuserok	2011-08-30 16:37:32.651150128 +0200
-+++ openssh-5.9p0/auth-krb5.c	2011-08-30 16:37:37.549087368 +0200
-@@ -54,6 +54,20 @@
+diff -up openssh-6.1p1/auth-krb5.c.kuserok openssh-6.1p1/auth-krb5.c
+--- openssh-6.1p1/auth-krb5.c.kuserok	2012-09-14 21:08:16.941496194 +0200
++++ openssh-6.1p1/auth-krb5.c	2012-09-14 21:08:17.063496896 +0200
+@@ -55,6 +55,20 @@
  
  extern ServerOptions	 options;
  
@@ -22,7 +22,7 @@ diff -up openssh-5.9p0/auth-krb5.c.kuserok openssh-5.9p0/auth-krb5.c
  static int
  krb5_init(void *context)
  {
-@@ -146,7 +160,7 @@ auth_krb5_password(Authctxt *authctxt, c
+@@ -147,7 +161,7 @@ auth_krb5_password(Authctxt *authctxt, c
  	if (problem)
  		goto out;
  
@@ -31,9 +31,9 @@ diff -up openssh-5.9p0/auth-krb5.c.kuserok openssh-5.9p0/auth-krb5.c
  		problem = -1;
  		goto out;
  	}
-diff -up openssh-5.9p0/gss-serv-krb5.c.kuserok openssh-5.9p0/gss-serv-krb5.c
---- openssh-5.9p0/gss-serv-krb5.c.kuserok	2011-08-30 16:37:36.988024804 +0200
-+++ openssh-5.9p0/gss-serv-krb5.c	2011-08-30 16:37:37.659088030 +0200
+diff -up openssh-6.1p1/gss-serv-krb5.c.kuserok openssh-6.1p1/gss-serv-krb5.c
+--- openssh-6.1p1/gss-serv-krb5.c.kuserok	2012-09-14 21:08:17.019496642 +0200
++++ openssh-6.1p1/gss-serv-krb5.c	2012-09-14 21:08:17.065496906 +0200
 @@ -68,6 +68,7 @@ static int ssh_gssapi_krb5_cmdok(krb5_pr
      int);
  
@@ -51,27 +51,27 @@ diff -up openssh-5.9p0/gss-serv-krb5.c.kuserok openssh-5.9p0/gss-serv-krb5.c
  		retval = 1;
  		logit("Authorized to %s, krb5 principal %s (krb5_kuserok)",
  		    luser, (char *)client->displayname.value);
-diff -up openssh-5.9p0/servconf.c.kuserok openssh-5.9p0/servconf.c
---- openssh-5.9p0/servconf.c.kuserok	2011-08-30 16:37:35.093073603 +0200
-+++ openssh-5.9p0/servconf.c	2011-08-30 16:41:13.568087145 +0200
-@@ -144,6 +144,7 @@ initialize_server_options(ServerOptions
- 	options->authorized_principals_file = NULL;
+diff -up openssh-6.1p1/servconf.c.kuserok openssh-6.1p1/servconf.c
+--- openssh-6.1p1/servconf.c.kuserok	2012-09-14 21:08:16.989496471 +0200
++++ openssh-6.1p1/servconf.c	2012-09-14 21:09:30.864868698 +0200
+@@ -152,6 +152,7 @@ initialize_server_options(ServerOptions
  	options->ip_qos_interactive = -1;
  	options->ip_qos_bulk = -1;
+ 	options->version_addendum = NULL;
 +	options->use_kuserok = -1;
  }
  
  void
-@@ -291,6 +292,8 @@ fill_default_server_options(ServerOption
- 		options->ip_qos_bulk = IPTOS_THROUGHPUT;
+@@ -301,6 +302,8 @@ fill_default_server_options(ServerOption
+ 		options->version_addendum = xstrdup("");
  	if (options->show_patchlevel == -1)
-  		options->show_patchlevel = 0;
+ 		options->show_patchlevel = 0;
 +	if (options->use_kuserok == -1)
 +		options->use_kuserok = 1;
  
  	/* Turn privilege separation on by default */
  	if (use_privsep == -1)
-@@ -317,7 +320,7 @@ typedef enum {
+@@ -327,7 +330,7 @@ typedef enum {
  	sPermitRootLogin, sLogFacility, sLogLevel,
  	sRhostsRSAAuthentication, sRSAAuthentication,
  	sKerberosAuthentication, sKerberosOrLocalPasswd, sKerberosTicketCleanup,
@@ -80,7 +80,7 @@ diff -up openssh-5.9p0/servconf.c.kuserok openssh-5.9p0/servconf.c
  	sKerberosTgtPassing, sChallengeResponseAuthentication,
  	sPasswordAuthentication, sKbdInteractiveAuthentication,
  	sListenAddress, sAddressFamily,
-@@ -388,11 +391,13 @@ static struct {
+@@ -399,11 +402,13 @@ static struct {
  #else
  	{ "kerberosgetafstoken", sUnsupported, SSHCFG_GLOBAL },
  #endif
@@ -94,7 +94,7 @@ diff -up openssh-5.9p0/servconf.c.kuserok openssh-5.9p0/servconf.c
  #endif
  	{ "kerberostgtpassing", sUnsupported, SSHCFG_GLOBAL },
  	{ "afstokenpassing", sUnsupported, SSHCFG_GLOBAL },
-@@ -1371,6 +1376,10 @@ process_server_config_line(ServerOptions
+@@ -1486,6 +1491,10 @@ process_server_config_line(ServerOptions
  		*activep = value;
  		break;
  
@@ -105,7 +105,7 @@ diff -up openssh-5.9p0/servconf.c.kuserok openssh-5.9p0/servconf.c
  	case sPermitOpen:
  		arg = strdelim(&cp);
  		if (!arg || *arg == '\0')
-@@ -1580,6 +1589,7 @@ copy_set_server_options(ServerOptions *d
+@@ -1769,6 +1778,7 @@ copy_set_server_options(ServerOptions *d
  	M_CP_INTOPT(max_authtries);
  	M_CP_INTOPT(ip_qos_interactive);
  	M_CP_INTOPT(ip_qos_bulk);
@@ -113,7 +113,7 @@ diff -up openssh-5.9p0/servconf.c.kuserok openssh-5.9p0/servconf.c
  
  	/* See comment in servconf.h */
  	COPY_MATCH_STRING_OPTS();
-@@ -1816,6 +1826,7 @@ dump_config(ServerOptions *o)
+@@ -2005,6 +2015,7 @@ dump_config(ServerOptions *o)
  	dump_cfg_fmtint(sUseDNS, o->use_dns);
  	dump_cfg_fmtint(sAllowTcpForwarding, o->allow_tcp_forwarding);
  	dump_cfg_fmtint(sUsePrivilegeSeparation, use_privsep);
@@ -121,10 +121,10 @@ diff -up openssh-5.9p0/servconf.c.kuserok openssh-5.9p0/servconf.c
  
  	/* string arguments */
  	dump_cfg_string(sPidFile, o->pid_file);
-diff -up openssh-5.9p0/servconf.h.kuserok openssh-5.9p0/servconf.h
---- openssh-5.9p0/servconf.h.kuserok	2011-08-30 16:37:35.201051957 +0200
-+++ openssh-5.9p0/servconf.h	2011-08-30 16:37:37.926087431 +0200
-@@ -166,6 +166,7 @@ typedef struct {
+diff -up openssh-6.1p1/servconf.h.kuserok openssh-6.1p1/servconf.h
+--- openssh-6.1p1/servconf.h.kuserok	2012-09-14 21:08:16.990496476 +0200
++++ openssh-6.1p1/servconf.h	2012-09-14 21:08:17.071496942 +0200
+@@ -169,6 +169,7 @@ typedef struct {
  
  	int	num_permitted_opens;
  
@@ -132,10 +132,21 @@ diff -up openssh-5.9p0/servconf.h.kuserok openssh-5.9p0/servconf.h
  	char   *chroot_directory;
  	char   *revoked_keys_file;
  	char   *trusted_user_ca_keys;
-diff -up openssh-5.9p0/sshd_config.5.kuserok openssh-5.9p0/sshd_config.5
---- openssh-5.9p0/sshd_config.5.kuserok	2011-08-30 16:37:35.979024607 +0200
-+++ openssh-5.9p0/sshd_config.5	2011-08-30 16:37:38.040087843 +0200
-@@ -603,6 +603,10 @@ Specifies whether to automatically destr
+diff -up openssh-6.1p1/sshd_config.kuserok openssh-6.1p1/sshd_config
+--- openssh-6.1p1/sshd_config.kuserok	2012-09-14 21:08:17.002496545 +0200
++++ openssh-6.1p1/sshd_config	2012-09-14 21:08:17.074496957 +0200
+@@ -79,6 +79,7 @@ ChallengeResponseAuthentication no
+ #KerberosOrLocalPasswd yes
+ #KerberosTicketCleanup yes
+ #KerberosGetAFSToken no
++#KerberosUseKuserok yes
+ 
+ # GSSAPI options
+ #GSSAPIAuthentication no
+diff -up openssh-6.1p1/sshd_config.5.kuserok openssh-6.1p1/sshd_config.5
+--- openssh-6.1p1/sshd_config.5.kuserok	2012-09-14 21:08:17.004496556 +0200
++++ openssh-6.1p1/sshd_config.5	2012-09-14 21:08:17.073496952 +0200
+@@ -618,6 +618,10 @@ Specifies whether to automatically destr
  file on logout.
  The default is
  .Dq yes .
@@ -146,7 +157,7 @@ diff -up openssh-5.9p0/sshd_config.5.kuserok openssh-5.9p0/sshd_config.5
  .It Cm KexAlgorithms
  Specifies the available KEX (Key Exchange) algorithms.
  Multiple algorithms must be comma-separated.
-@@ -746,6 +750,7 @@ Available keywords are
+@@ -767,6 +771,7 @@ Available keywords are
  .Cm HostbasedUsesNameFromPacketOnly ,
  .Cm KbdInteractiveAuthentication ,
  .Cm KerberosAuthentication ,
@@ -154,14 +165,3 @@ diff -up openssh-5.9p0/sshd_config.5.kuserok openssh-5.9p0/sshd_config.5
  .Cm MaxAuthTries ,
  .Cm MaxSessions ,
  .Cm PubkeyAuthentication ,
-diff -up openssh-5.9p0/sshd_config.kuserok openssh-5.9p0/sshd_config
---- openssh-5.9p0/sshd_config.kuserok	2011-08-30 16:37:36.808026328 +0200
-+++ openssh-5.9p0/sshd_config	2011-08-30 16:37:38.148071520 +0200
-@@ -77,6 +77,7 @@ ChallengeResponseAuthentication no
- #KerberosOrLocalPasswd yes
- #KerberosTicketCleanup yes
- #KerberosGetAFSToken no
-+#KerberosUseKuserok yes
- 
- # GSSAPI options
- #GSSAPIAuthentication no
