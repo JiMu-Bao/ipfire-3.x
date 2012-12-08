@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openssh
-version    = 5.9p1
-release    = 8
+version    = 6.1p1
+release    = 1
 
 groups     = Application/Internet
 url        = http://www.openssh.com/portable.html
@@ -39,23 +39,21 @@ build
 
 	# Apply patches in a special order
 	patches
-		openssh-5.9p1-coverity.patch
+		openssh-6.1p1-coverity.patch
 		openssh-5.8p1-fingerprint.patch
 		openssh-5.8p1-getaddrinfo.patch
 		openssh-5.8p1-packet.patch
-		openssh-5.9p1-2auth.patch
-		openssh-5.9p1-role.patch
-		openssh-5.9p1-mls.patch
+		openssh-6.1p1-authenticationmethods.patch
+		openssh-6.1p1-role-mls.patch
 		openssh-5.9p1-sftp-chroot.patch
-		openssh-5.9p1-akc.patch
-		openssh-5.9p1-keygen.patch
+		openssh-6.1p1-akc.patch
 		openssh-5.2p1-allow-ip-opts.patch
 		openssh-5.9p1-randclean.patch
 		openssh-5.8p1-keyperm.patch
 		openssh-5.8p2-remove-stale-control-socket.patch
 		openssh-5.9p1-ipv6man.patch
 		openssh-5.8p2-sigpipe.patch
-		openssh-5.8p2-askpass-ld.patch
+		openssh-6.1p1-askpass-ld.patch
 		openssh-5.5p1-x11.patch
 		openssh-5.6p1-exit-deadlock.patch
 		openssh-5.1p1-askpass-progress.patch
@@ -64,10 +62,11 @@ build
 		openssh-5.1p1-scp-manpage.patch
 		openssh-5.8p1-localdomain.patch
 		openssh-5.9p1-ipfire.patch
-		openssh-5.9p1-entropy.patch
-		openssh-5.9p1-vendor.patch
+		openssh-6.0p1-entropy.patch
+		openssh-6.1p1-vendor.patch
 		openssh-5.8p2-force_krb.patch
-		openssh-5.9p1-kuserok.patch
+		openssh-6.1p1-kuserok.patch
+		openssh-6.1p1-required-authentications.patch
 	end
 
 	configure_options += \
@@ -82,7 +81,6 @@ build
 		--with-ssl-engine \
 		--with-authorized-keys-command \
 		--with-ipaddr-display \
-		--with-ldap \
 		--with-pam \
 		--with-libedit \
 		--with-selinux \
@@ -168,6 +166,7 @@ packages
 			%{sysconfdir}/pam.d/sshd
 			%{sysconfdir}/ssh/sshd_config
 			%{unitdir}/sshd.service
+			%{unitdir}/sshd-keygen.service
 			%{libdir}/openssh/sftp-server
 			%{sbindir}/sshd-keygen
 			%{sbindir}/sshd

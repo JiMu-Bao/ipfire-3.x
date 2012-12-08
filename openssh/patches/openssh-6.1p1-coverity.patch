@@ -1,6 +1,6 @@
-diff -up openssh-5.9p1/auth-pam.c.coverity openssh-5.9p1/auth-pam.c
---- openssh-5.9p1/auth-pam.c.coverity	2009-07-12 14:07:21.000000000 +0200
-+++ openssh-5.9p1/auth-pam.c	2011-09-14 08:09:47.074520582 +0200
+diff -up openssh-6.1p1/auth-pam.c.coverity openssh-6.1p1/auth-pam.c
+--- openssh-6.1p1/auth-pam.c.coverity	2009-07-12 14:07:21.000000000 +0200
++++ openssh-6.1p1/auth-pam.c	2012-09-14 21:16:41.264906486 +0200
 @@ -216,7 +216,12 @@ pthread_join(sp_pthread_t thread, void *
  	if (sshpam_thread_status != -1)
  		return (sshpam_thread_status);
@@ -15,43 +15,10 @@ diff -up openssh-5.9p1/auth-pam.c.coverity openssh-5.9p1/auth-pam.c
  	return (status);
  }
  #endif
-diff -up openssh-5.9p1/channels.c.coverity openssh-5.9p1/channels.c
---- openssh-5.9p1/channels.c.coverity	2011-06-23 00:31:57.000000000 +0200
-+++ openssh-5.9p1/channels.c	2011-09-14 08:09:47.556582810 +0200
-@@ -229,11 +229,11 @@ channel_register_fds(Channel *c, int rfd
- 	channel_max_fd = MAX(channel_max_fd, wfd);
- 	channel_max_fd = MAX(channel_max_fd, efd);
- 
--	if (rfd != -1)
-+	if (rfd >= 0)
- 		fcntl(rfd, F_SETFD, FD_CLOEXEC);
--	if (wfd != -1 && wfd != rfd)
-+	if (wfd >= 0 && wfd != rfd)
- 		fcntl(wfd, F_SETFD, FD_CLOEXEC);
--	if (efd != -1 && efd != rfd && efd != wfd)
-+	if (efd >= 0 && efd != rfd && efd != wfd)
- 		fcntl(efd, F_SETFD, FD_CLOEXEC);
- 
- 	c->rfd = rfd;
-@@ -248,11 +248,11 @@ channel_register_fds(Channel *c, int rfd
- 
- 	/* enable nonblocking mode */
- 	if (nonblock) {
--		if (rfd != -1)
-+		if (rfd >= 0)
- 			set_nonblock(rfd);
--		if (wfd != -1)
-+		if (wfd >= 0)
- 			set_nonblock(wfd);
--		if (efd != -1)
-+		if (efd >= 0)
- 			set_nonblock(efd);
- 	}
- }
-diff -up openssh-5.9p1/clientloop.c.coverity openssh-5.9p1/clientloop.c
---- openssh-5.9p1/clientloop.c.coverity	2011-06-23 00:31:58.000000000 +0200
-+++ openssh-5.9p1/clientloop.c	2011-09-14 08:17:41.556521887 +0200
-@@ -1970,14 +1970,15 @@ client_input_global_request(int type, u_
+diff -up openssh-6.1p1/clientloop.c.coverity openssh-6.1p1/clientloop.c
+--- openssh-6.1p1/clientloop.c.coverity	2012-06-20 14:31:27.000000000 +0200
++++ openssh-6.1p1/clientloop.c	2012-09-14 21:16:41.267906501 +0200
+@@ -2006,14 +2006,15 @@ client_input_global_request(int type, u_
  	char *rtype;
  	int want_reply;
  	int success = 0;
@@ -69,10 +36,43 @@ diff -up openssh-5.9p1/clientloop.c.coverity openssh-5.9p1/clientloop.c
  		packet_send();
  		packet_write_wait();
  	}
-diff -up openssh-5.9p1/key.c.coverity openssh-5.9p1/key.c
---- openssh-5.9p1/key.c.coverity	2011-05-20 11:03:08.000000000 +0200
-+++ openssh-5.9p1/key.c	2011-09-14 08:09:47.803458435 +0200
-@@ -803,8 +803,10 @@ key_read(Key *ret, char **cpp)
+diff -up openssh-6.1p1/channels.c.coverity openssh-6.1p1/channels.c
+--- openssh-6.1p1/channels.c.coverity	2012-04-23 10:21:05.000000000 +0200
++++ openssh-6.1p1/channels.c	2012-09-14 21:16:41.272906528 +0200
+@@ -232,11 +232,11 @@ channel_register_fds(Channel *c, int rfd
+ 	channel_max_fd = MAX(channel_max_fd, wfd);
+ 	channel_max_fd = MAX(channel_max_fd, efd);
+ 
+-	if (rfd != -1)
++	if (rfd >= 0)
+ 		fcntl(rfd, F_SETFD, FD_CLOEXEC);
+-	if (wfd != -1 && wfd != rfd)
++	if (wfd >= 0 && wfd != rfd)
+ 		fcntl(wfd, F_SETFD, FD_CLOEXEC);
+-	if (efd != -1 && efd != rfd && efd != wfd)
++	if (efd >= 0 && efd != rfd && efd != wfd)
+ 		fcntl(efd, F_SETFD, FD_CLOEXEC);
+ 
+ 	c->rfd = rfd;
+@@ -251,11 +251,11 @@ channel_register_fds(Channel *c, int rfd
+ 
+ 	/* enable nonblocking mode */
+ 	if (nonblock) {
+-		if (rfd != -1)
++		if (rfd >= 0)
+ 			set_nonblock(rfd);
+-		if (wfd != -1)
++		if (wfd >= 0)
+ 			set_nonblock(wfd);
+-		if (efd != -1)
++		if (efd >= 0)
+ 			set_nonblock(efd);
+ 	}
+ }
+diff -up openssh-6.1p1/key.c.coverity openssh-6.1p1/key.c
+--- openssh-6.1p1/key.c.coverity	2012-06-30 12:05:02.000000000 +0200
++++ openssh-6.1p1/key.c	2012-09-14 21:16:41.274906537 +0200
+@@ -808,8 +808,10 @@ key_read(Key *ret, char **cpp)
  		success = 1;
  /*XXXX*/
  		key_free(k);
@@ -83,10 +83,9 @@ diff -up openssh-5.9p1/key.c.coverity openssh-5.9p1/key.c
  		/* advance cp: skip whitespace and data */
  		while (*cp == ' ' || *cp == '\t')
  			cp++;
-diff -up openssh-5.9p1/misc.c.coverity openssh-5.9p1/misc.c
-diff -up openssh-5.9p1/monitor.c.coverity openssh-5.9p1/monitor.c
---- openssh-5.9p1/monitor.c.coverity	2011-08-05 22:15:18.000000000 +0200
-+++ openssh-5.9p1/monitor.c	2011-09-14 08:09:47.914584009 +0200
+diff -up openssh-6.1p1/monitor.c.coverity openssh-6.1p1/monitor.c
+--- openssh-6.1p1/monitor.c.coverity	2012-06-30 00:33:17.000000000 +0200
++++ openssh-6.1p1/monitor.c	2012-09-14 21:16:41.277906552 +0200
 @@ -420,7 +420,7 @@ monitor_child_preauth(Authctxt *_authctx
  	}
  
@@ -96,7 +95,7 @@ diff -up openssh-5.9p1/monitor.c.coverity openssh-5.9p1/monitor.c
  		;
  
  	if (!authctxt->valid)
-@@ -1161,6 +1161,10 @@ mm_answer_keyallowed(int sock, Buffer *m
+@@ -1159,6 +1159,10 @@ mm_answer_keyallowed(int sock, Buffer *m
  			break;
  		}
  	}
@@ -107,7 +106,7 @@ diff -up openssh-5.9p1/monitor.c.coverity openssh-5.9p1/monitor.c
  	if (key != NULL)
  		key_free(key);
  
-@@ -1182,9 +1186,6 @@ mm_answer_keyallowed(int sock, Buffer *m
+@@ -1180,9 +1184,6 @@ mm_answer_keyallowed(int sock, Buffer *m
  		xfree(chost);
  	}
  
@@ -117,9 +116,9 @@ diff -up openssh-5.9p1/monitor.c.coverity openssh-5.9p1/monitor.c
  	buffer_clear(m);
  	buffer_put_int(m, allowed);
  	buffer_put_int(m, forced_command != NULL);
-diff -up openssh-5.9p1/monitor_wrap.c.coverity openssh-5.9p1/monitor_wrap.c
---- openssh-5.9p1/monitor_wrap.c.coverity	2011-09-14 08:11:36.480500123 +0200
-+++ openssh-5.9p1/monitor_wrap.c	2011-09-14 08:14:11.279520598 +0200
+diff -up openssh-6.1p1/monitor_wrap.c.coverity openssh-6.1p1/monitor_wrap.c
+--- openssh-6.1p1/monitor_wrap.c.coverity	2011-06-20 06:42:23.000000000 +0200
++++ openssh-6.1p1/monitor_wrap.c	2012-09-14 21:16:41.280906568 +0200
 @@ -707,10 +707,10 @@ mm_pty_allocate(int *ptyfd, int *ttyfd,
  	if ((tmp1 = dup(pmonitor->m_recvfd)) == -1 ||
  	    (tmp2 = dup(pmonitor->m_recvfd)) == -1) {
@@ -134,9 +133,9 @@ diff -up openssh-5.9p1/monitor_wrap.c.coverity openssh-5.9p1/monitor_wrap.c
  		return 0;
  	}
  	close(tmp1);
-diff -up openssh-5.9p1/openbsd-compat/bindresvport.c.coverity openssh-5.9p1/openbsd-compat/bindresvport.c
---- openssh-5.9p1/openbsd-compat/bindresvport.c.coverity	2010-12-03 00:50:26.000000000 +0100
-+++ openssh-5.9p1/openbsd-compat/bindresvport.c	2011-09-14 08:09:48.084459344 +0200
+diff -up openssh-6.1p1/openbsd-compat/bindresvport.c.coverity openssh-6.1p1/openbsd-compat/bindresvport.c
+--- openssh-6.1p1/openbsd-compat/bindresvport.c.coverity	2010-12-03 00:50:26.000000000 +0100
++++ openssh-6.1p1/openbsd-compat/bindresvport.c	2012-09-14 21:16:41.281906573 +0200
 @@ -58,7 +58,7 @@ bindresvport_sa(int sd, struct sockaddr
  	struct sockaddr_in6 *in6;
  	u_int16_t *portp;
@@ -146,9 +145,9 @@ diff -up openssh-5.9p1/openbsd-compat/bindresvport.c.coverity openssh-5.9p1/open
  	int i;
  
  	if (sa == NULL) {
-diff -up openssh-5.9p1/packet.c.coverity openssh-5.9p1/packet.c
---- openssh-5.9p1/packet.c.coverity	2011-05-15 00:58:15.000000000 +0200
-+++ openssh-5.9p1/packet.c	2011-09-14 08:09:48.184587842 +0200
+diff -up openssh-6.1p1/packet.c.coverity openssh-6.1p1/packet.c
+--- openssh-6.1p1/packet.c.coverity	2012-03-09 00:28:07.000000000 +0100
++++ openssh-6.1p1/packet.c	2012-09-14 21:16:41.284906588 +0200
 @@ -1177,6 +1177,7 @@ packet_read_poll1(void)
  		case DEATTACK_DETECTED:
  			packet_disconnect("crc32 compensation attack: "
@@ -157,7 +156,7 @@ diff -up openssh-5.9p1/packet.c.coverity openssh-5.9p1/packet.c
  		case DEATTACK_DOS_DETECTED:
  			packet_disconnect("deattack denial of "
  			    "service detected");
-@@ -1684,7 +1685,7 @@ void
+@@ -1678,7 +1679,7 @@ void
  packet_write_wait(void)
  {
  	fd_set *setp;
@@ -166,9 +165,9 @@ diff -up openssh-5.9p1/packet.c.coverity openssh-5.9p1/packet.c
  	struct timeval start, timeout, *timeoutp = NULL;
  
  	setp = (fd_set *)xcalloc(howmany(active_state->connection_out + 1,
-diff -up openssh-5.9p1/progressmeter.c.coverity openssh-5.9p1/progressmeter.c
---- openssh-5.9p1/progressmeter.c.coverity	2006-08-05 04:39:40.000000000 +0200
-+++ openssh-5.9p1/progressmeter.c	2011-09-14 08:09:48.300586004 +0200
+diff -up openssh-6.1p1/progressmeter.c.coverity openssh-6.1p1/progressmeter.c
+--- openssh-6.1p1/progressmeter.c.coverity	2006-08-05 04:39:40.000000000 +0200
++++ openssh-6.1p1/progressmeter.c	2012-09-14 21:16:41.285906593 +0200
 @@ -65,7 +65,7 @@ static void update_progress_meter(int);
  
  static time_t start;		/* start progress */
@@ -187,9 +186,9 @@ diff -up openssh-5.9p1/progressmeter.c.coverity openssh-5.9p1/progressmeter.c
  {
  	start = last_update = time(NULL);
  	file = f;
-diff -up openssh-5.9p1/progressmeter.h.coverity openssh-5.9p1/progressmeter.h
---- openssh-5.9p1/progressmeter.h.coverity	2006-03-26 05:30:02.000000000 +0200
-+++ openssh-5.9p1/progressmeter.h	2011-09-14 08:09:48.420645724 +0200
+diff -up openssh-6.1p1/progressmeter.h.coverity openssh-6.1p1/progressmeter.h
+--- openssh-6.1p1/progressmeter.h.coverity	2006-03-26 05:30:02.000000000 +0200
++++ openssh-6.1p1/progressmeter.h	2012-09-14 21:16:41.286906598 +0200
 @@ -23,5 +23,5 @@
   * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   */
@@ -197,9 +196,9 @@ diff -up openssh-5.9p1/progressmeter.h.coverity openssh-5.9p1/progressmeter.h
 -void	start_progress_meter(char *, off_t, off_t *);
 +void	start_progress_meter(const char *, off_t, off_t *);
  void	stop_progress_meter(void);
-diff -up openssh-5.9p1/scp.c.coverity openssh-5.9p1/scp.c
---- openssh-5.9p1/scp.c.coverity	2011-01-06 12:41:21.000000000 +0100
-+++ openssh-5.9p1/scp.c	2011-09-14 08:09:48.531505457 +0200
+diff -up openssh-6.1p1/scp.c.coverity openssh-6.1p1/scp.c
+--- openssh-6.1p1/scp.c.coverity	2011-09-22 13:38:01.000000000 +0200
++++ openssh-6.1p1/scp.c	2012-09-14 21:16:41.288906608 +0200
 @@ -155,7 +155,7 @@ killchild(int signo)
  {
  	if (do_cmd_pid > 1) {
@@ -209,19 +208,10 @@ diff -up openssh-5.9p1/scp.c.coverity openssh-5.9p1/scp.c
  	}
  
  	if (signo)
-diff -up openssh-5.9p1/servconf.c.coverity openssh-5.9p1/servconf.c
---- openssh-5.9p1/servconf.c.coverity	2011-06-23 00:30:03.000000000 +0200
-+++ openssh-5.9p1/servconf.c	2011-09-14 08:30:17.557468182 +0200
-@@ -609,7 +609,7 @@ match_cfg_line(char **condition, int lin
- 		debug3("checking syntax for 'Match %s'", cp);
- 	else
- 		debug3("checking match for '%s' user %s host %s addr %s", cp,
--		    user ? user : "(null)", host ? host : "(null)",
-+		    user /* User is not NULL ? user : "(null)" */, host ? host : "(null)",
- 		    address ? address : "(null)");
- 
- 	while ((attrib = strdelim(&cp)) && *attrib != '\0') {
-@@ -1171,7 +1171,7 @@ process_server_config_line(ServerOptions
+diff -up openssh-6.1p1/servconf.c.coverity openssh-6.1p1/servconf.c
+--- openssh-6.1p1/servconf.c.coverity	2012-07-31 04:22:38.000000000 +0200
++++ openssh-6.1p1/servconf.c	2012-09-14 21:16:41.291906623 +0200
+@@ -1249,7 +1249,7 @@ process_server_config_line(ServerOptions
  			fatal("%s line %d: Missing subsystem name.",
  			    filename, linenum);
  		if (!*activep) {
@@ -230,7 +220,7 @@ diff -up openssh-5.9p1/servconf.c.coverity openssh-5.9p1/servconf.c
  			break;
  		}
  		for (i = 0; i < options->num_subsystems; i++)
-@@ -1262,8 +1262,9 @@ process_server_config_line(ServerOptions
+@@ -1340,8 +1340,9 @@ process_server_config_line(ServerOptions
  		if (*activep && *charptr == NULL) {
  			*charptr = tilde_expand_filename(arg, getuid());
  			/* increase optional counter */
@@ -242,9 +232,9 @@ diff -up openssh-5.9p1/servconf.c.coverity openssh-5.9p1/servconf.c
  		}
  		break;
  
-diff -up openssh-5.9p1/serverloop.c.coverity openssh-5.9p1/serverloop.c
---- openssh-5.9p1/serverloop.c.coverity	2011-05-20 11:02:50.000000000 +0200
-+++ openssh-5.9p1/serverloop.c	2011-09-14 08:09:48.793586380 +0200
+diff -up openssh-6.1p1/serverloop.c.coverity openssh-6.1p1/serverloop.c
+--- openssh-6.1p1/serverloop.c.coverity	2012-06-20 14:31:27.000000000 +0200
++++ openssh-6.1p1/serverloop.c	2012-09-14 21:16:41.294906638 +0200
 @@ -147,13 +147,13 @@ notify_setup(void)
  static void
  notify_parent(void)
@@ -272,7 +262,7 @@ diff -up openssh-5.9p1/serverloop.c.coverity openssh-5.9p1/serverloop.c
  			debug2("notify_done: reading");
  }
  
-@@ -330,7 +330,7 @@ wait_until_can_do_something(fd_set **rea
+@@ -336,7 +336,7 @@ wait_until_can_do_something(fd_set **rea
  		 * If we have buffered data, try to write some of that data
  		 * to the program.
  		 */
@@ -281,7 +271,7 @@ diff -up openssh-5.9p1/serverloop.c.coverity openssh-5.9p1/serverloop.c
  			FD_SET(fdin, *writesetp);
  	}
  	notify_prepare(*readsetp);
-@@ -470,7 +470,7 @@ process_output(fd_set *writeset)
+@@ -476,7 +476,7 @@ process_output(fd_set *writeset)
  	int len;
  
  	/* Write buffered data to program stdin. */
@@ -290,7 +280,7 @@ diff -up openssh-5.9p1/serverloop.c.coverity openssh-5.9p1/serverloop.c
  		data = buffer_ptr(&stdin_buffer);
  		dlen = buffer_len(&stdin_buffer);
  		len = write(fdin, data, dlen);
-@@ -583,7 +583,7 @@ server_loop(pid_t pid, int fdin_arg, int
+@@ -589,7 +589,7 @@ server_loop(pid_t pid, int fdin_arg, int
  	set_nonblock(fdin);
  	set_nonblock(fdout);
  	/* we don't have stderr for interactive terminal sessions, see below */
@@ -299,7 +289,7 @@ diff -up openssh-5.9p1/serverloop.c.coverity openssh-5.9p1/serverloop.c
  		set_nonblock(fderr);
  
  	if (!(datafellows & SSH_BUG_IGNOREMSG) && isatty(fdin))
-@@ -607,7 +607,7 @@ server_loop(pid_t pid, int fdin_arg, int
+@@ -613,7 +613,7 @@ server_loop(pid_t pid, int fdin_arg, int
  	max_fd = MAX(connection_in, connection_out);
  	max_fd = MAX(max_fd, fdin);
  	max_fd = MAX(max_fd, fdout);
@@ -308,7 +298,7 @@ diff -up openssh-5.9p1/serverloop.c.coverity openssh-5.9p1/serverloop.c
  		max_fd = MAX(max_fd, fderr);
  #endif
  
-@@ -637,7 +637,7 @@ server_loop(pid_t pid, int fdin_arg, int
+@@ -643,7 +643,7 @@ server_loop(pid_t pid, int fdin_arg, int
  		 * If we have received eof, and there is no more pending
  		 * input data, cause a real eof by closing fdin.
  		 */
@@ -317,7 +307,7 @@ diff -up openssh-5.9p1/serverloop.c.coverity openssh-5.9p1/serverloop.c
  			if (fdin != fdout)
  				close(fdin);
  			else
-@@ -735,15 +735,15 @@ server_loop(pid_t pid, int fdin_arg, int
+@@ -741,15 +741,15 @@ server_loop(pid_t pid, int fdin_arg, int
  	buffer_free(&stderr_buffer);
  
  	/* Close the file descriptors. */
@@ -336,7 +326,7 @@ diff -up openssh-5.9p1/serverloop.c.coverity openssh-5.9p1/serverloop.c
  		close(fdin);
  	fdin = -1;
  
-@@ -937,7 +937,7 @@ server_input_window_size(int type, u_int
+@@ -943,7 +943,7 @@ server_input_window_size(int type, u_int
  
  	debug("Window change received.");
  	packet_check_eom();
@@ -345,7 +335,7 @@ diff -up openssh-5.9p1/serverloop.c.coverity openssh-5.9p1/serverloop.c
  		pty_change_window_size(fdin, row, col, xpixel, ypixel);
  }
  
-@@ -990,7 +990,7 @@ server_request_tun(void)
+@@ -996,7 +996,7 @@ server_request_tun(void)
  	}
  
  	tun = packet_get_int();
@@ -354,9 +344,111 @@ diff -up openssh-5.9p1/serverloop.c.coverity openssh-5.9p1/serverloop.c
  		if (tun != SSH_TUNID_ANY && forced_tun_device != tun)
  			goto done;
  		tun = forced_tun_device;
-diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
---- openssh-5.9p1/sftp-client.c.coverity	2010-12-04 23:02:48.000000000 +0100
-+++ openssh-5.9p1/sftp-client.c	2011-09-14 08:09:48.910470343 +0200
+diff -up openssh-6.1p1/sftp.c.coverity openssh-6.1p1/sftp.c
+--- openssh-6.1p1/sftp.c.coverity	2012-06-30 00:33:32.000000000 +0200
++++ openssh-6.1p1/sftp.c	2012-09-14 21:16:41.297906653 +0200
+@@ -206,7 +206,7 @@ killchild(int signo)
+ {
+ 	if (sshpid > 1) {
+ 		kill(sshpid, SIGTERM);
+-		waitpid(sshpid, NULL, 0);
++		(void) waitpid(sshpid, NULL, 0);
+ 	}
+ 
+ 	_exit(1);
+@@ -316,7 +316,7 @@ local_do_ls(const char *args)
+ 
+ /* Strip one path (usually the pwd) from the start of another */
+ static char *
+-path_strip(char *path, char *strip)
++path_strip(const char *path, const char *strip)
+ {
+ 	size_t len;
+ 
+@@ -334,7 +334,7 @@ path_strip(char *path, char *strip)
+ }
+ 
+ static char *
+-make_absolute(char *p, char *pwd)
++make_absolute(char *p, const char *pwd)
+ {
+ 	char *abs_str;
+ 
+@@ -482,7 +482,7 @@ parse_df_flags(const char *cmd, char **a
+ }
+ 
+ static int
+-is_dir(char *path)
++is_dir(const char *path)
+ {
+ 	struct stat sb;
+ 
+@@ -494,7 +494,7 @@ is_dir(char *path)
+ }
+ 
+ static int
+-remote_is_dir(struct sftp_conn *conn, char *path)
++remote_is_dir(struct sftp_conn *conn, const char *path)
+ {
+ 	Attrib *a;
+ 
+@@ -508,7 +508,7 @@ remote_is_dir(struct sftp_conn *conn, ch
+ 
+ /* Check whether path returned from glob(..., GLOB_MARK, ...) is a directory */
+ static int
+-pathname_is_dir(char *pathname)
++pathname_is_dir(const char *pathname)
+ {
+ 	size_t l = strlen(pathname);
+ 
+@@ -516,7 +516,7 @@ pathname_is_dir(char *pathname)
+ }
+ 
+ static int
+-process_get(struct sftp_conn *conn, char *src, char *dst, char *pwd,
++process_get(struct sftp_conn *conn, const char *src, const char *dst, const char *pwd,
+     int pflag, int rflag)
+ {
+ 	char *abs_src = NULL;
+@@ -590,7 +590,7 @@ out:
+ }
+ 
+ static int
+-process_put(struct sftp_conn *conn, char *src, char *dst, char *pwd,
++process_put(struct sftp_conn *conn, const char *src, const char *dst, const char *pwd,
+     int pflag, int rflag)
+ {
+ 	char *tmp_dst = NULL;
+@@ -695,7 +695,7 @@ sdirent_comp(const void *aa, const void
+ 
+ /* sftp ls.1 replacement for directories */
+ static int
+-do_ls_dir(struct sftp_conn *conn, char *path, char *strip_path, int lflag)
++do_ls_dir(struct sftp_conn *conn, const char *path, const char *strip_path, int lflag)
+ {
+ 	int n;
+ 	u_int c = 1, colspace = 0, columns = 1;
+@@ -780,7 +780,7 @@ do_ls_dir(struct sftp_conn *conn, char *
+ 
+ /* sftp ls.1 replacement which handles path globs */
+ static int
+-do_globbed_ls(struct sftp_conn *conn, char *path, char *strip_path,
++do_globbed_ls(struct sftp_conn *conn, const char *path, const char *strip_path,
+     int lflag)
+ {
+ 	char *fname, *lname;
+@@ -861,7 +861,7 @@ do_globbed_ls(struct sftp_conn *conn, ch
+ }
+ 
+ static int
+-do_df(struct sftp_conn *conn, char *path, int hflag, int iflag)
++do_df(struct sftp_conn *conn, const char *path, int hflag, int iflag)
+ {
+ 	struct sftp_statvfs st;
+ 	char s_used[FMT_SCALED_STRSIZE];
+diff -up openssh-6.1p1/sftp-client.c.coverity openssh-6.1p1/sftp-client.c
+--- openssh-6.1p1/sftp-client.c.coverity	2012-07-02 14:15:39.000000000 +0200
++++ openssh-6.1p1/sftp-client.c	2012-09-14 21:18:16.891332281 +0200
 @@ -149,7 +149,7 @@ get_msg(struct sftp_conn *conn, Buffer *
  }
  
@@ -393,7 +485,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
      SFTP_DIRENT ***dir)
  {
  	Buffer msg;
-@@ -571,7 +571,7 @@ do_lsreaddir(struct sftp_conn *conn, cha
+@@ -572,7 +572,7 @@ do_lsreaddir(struct sftp_conn *conn, cha
  }
  
  int
@@ -402,7 +494,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
  {
  	return(do_lsreaddir(conn, path, 0, dir));
  }
-@@ -589,7 +589,7 @@ void free_sftp_dirents(SFTP_DIRENT **s)
+@@ -590,7 +590,7 @@ void free_sftp_dirents(SFTP_DIRENT **s)
  }
  
  int
@@ -411,7 +503,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
  {
  	u_int status, id;
  
-@@ -604,7 +604,7 @@ do_rm(struct sftp_conn *conn, char *path
+@@ -605,7 +605,7 @@ do_rm(struct sftp_conn *conn, char *path
  }
  
  int
@@ -420,7 +512,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
  {
  	u_int status, id;
  
-@@ -620,7 +620,7 @@ do_mkdir(struct sftp_conn *conn, char *p
+@@ -621,7 +621,7 @@ do_mkdir(struct sftp_conn *conn, char *p
  }
  
  int
@@ -429,7 +521,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
  {
  	u_int status, id;
  
-@@ -636,7 +636,7 @@ do_rmdir(struct sftp_conn *conn, char *p
+@@ -637,7 +637,7 @@ do_rmdir(struct sftp_conn *conn, char *p
  }
  
  Attrib *
@@ -438,7 +530,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
  {
  	u_int id;
  
-@@ -650,7 +650,7 @@ do_stat(struct sftp_conn *conn, char *pa
+@@ -651,7 +651,7 @@ do_stat(struct sftp_conn *conn, char *pa
  }
  
  Attrib *
@@ -447,7 +539,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
  {
  	u_int id;
  
-@@ -684,7 +684,7 @@ do_fstat(struct sftp_conn *conn, char *h
+@@ -685,7 +685,7 @@ do_fstat(struct sftp_conn *conn, char *h
  #endif
  
  int
@@ -456,7 +548,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
  {
  	u_int status, id;
  
-@@ -701,7 +701,7 @@ do_setstat(struct sftp_conn *conn, char
+@@ -702,7 +702,7 @@ do_setstat(struct sftp_conn *conn, char
  }
  
  int
@@ -465,7 +557,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
      Attrib *a)
  {
  	u_int status, id;
-@@ -718,12 +718,12 @@ do_fsetstat(struct sftp_conn *conn, char
+@@ -719,7 +719,7 @@ do_fsetstat(struct sftp_conn *conn, char
  }
  
  char *
@@ -474,22 +566,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
  {
  	Buffer msg;
  	u_int type, expected_id, count, id;
- 	char *filename, *longname;
--	Attrib *a;
-+/*UNUSED Attrib *a; */
- 
- 	expected_id = id = conn->msg_id++;
- 	send_string_request(conn, id, SSH2_FXP_REALPATH, path,
-@@ -754,7 +754,7 @@ do_realpath(struct sftp_conn *conn, char
- 
- 	filename = buffer_get_string(&msg, NULL);
- 	longname = buffer_get_string(&msg, NULL);
--	a = decode_attrib(&msg);
-+	/*a =*/ (void) decode_attrib(&msg);
- 
- 	debug3("SSH_FXP_REALPATH %s -> %s", path, filename);
- 
-@@ -766,7 +766,7 @@ do_realpath(struct sftp_conn *conn, char
+@@ -768,7 +768,7 @@ do_realpath(struct sftp_conn *conn, char
  }
  
  int
@@ -498,7 +575,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
  {
  	Buffer msg;
  	u_int status, id;
-@@ -800,7 +800,7 @@ do_rename(struct sftp_conn *conn, char *
+@@ -802,7 +802,7 @@ do_rename(struct sftp_conn *conn, char *
  }
  
  int
@@ -507,7 +584,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
  {
  	Buffer msg;
  	u_int status, id;
-@@ -833,7 +833,7 @@ do_hardlink(struct sftp_conn *conn, char
+@@ -835,7 +835,7 @@ do_hardlink(struct sftp_conn *conn, char
  }
  
  int
@@ -516,7 +593,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
  {
  	Buffer msg;
  	u_int status, id;
-@@ -984,7 +984,7 @@ send_read_request(struct sftp_conn *conn
+@@ -987,7 +987,7 @@ send_read_request(struct sftp_conn *conn
  }
  
  int
@@ -525,7 +602,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
      Attrib *a, int pflag)
  {
  	Attrib junk;
-@@ -1223,7 +1223,7 @@ do_download(struct sftp_conn *conn, char
+@@ -1226,7 +1226,7 @@ do_download(struct sftp_conn *conn, char
  }
  
  static int
@@ -534,7 +611,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
      Attrib *dirattrib, int pflag, int printflag, int depth)
  {
  	int i, ret = 0;
-@@ -1313,7 +1313,7 @@ download_dir_internal(struct sftp_conn *
+@@ -1316,7 +1316,7 @@ download_dir_internal(struct sftp_conn *
  }
  
  int
@@ -543,7 +620,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
      Attrib *dirattrib, int pflag, int printflag)
  {
  	char *src_canon;
-@@ -1331,7 +1331,7 @@ download_dir(struct sftp_conn *conn, cha
+@@ -1334,7 +1334,7 @@ download_dir(struct sftp_conn *conn, cha
  }
  
  int
@@ -552,7 +629,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
      int pflag)
  {
  	int local_fd;
-@@ -1514,7 +1514,7 @@ do_upload(struct sftp_conn *conn, char *
+@@ -1517,7 +1517,7 @@ do_upload(struct sftp_conn *conn, char *
  }
  
  static int
@@ -561,7 +638,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
      int pflag, int printflag, int depth)
  {
  	int ret = 0, status;
-@@ -1605,7 +1605,7 @@ upload_dir_internal(struct sftp_conn *co
+@@ -1608,7 +1608,7 @@ upload_dir_internal(struct sftp_conn *co
  }
  
  int
@@ -570,7 +647,7 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
      int pflag)
  {
  	char *dst_canon;
-@@ -1622,7 +1622,7 @@ upload_dir(struct sftp_conn *conn, char
+@@ -1625,7 +1625,7 @@ upload_dir(struct sftp_conn *conn, char
  }
  
  char *
@@ -579,9 +656,9 @@ diff -up openssh-5.9p1/sftp-client.c.coverity openssh-5.9p1/sftp-client.c
  {
  	char *ret;
  	size_t len = strlen(p1) + strlen(p2) + 2;
-diff -up openssh-5.9p1/sftp-client.h.coverity openssh-5.9p1/sftp-client.h
---- openssh-5.9p1/sftp-client.h.coverity	2010-12-04 23:02:48.000000000 +0100
-+++ openssh-5.9p1/sftp-client.h	2011-09-14 08:09:49.021583940 +0200
+diff -up openssh-6.1p1/sftp-client.h.coverity openssh-6.1p1/sftp-client.h
+--- openssh-6.1p1/sftp-client.h.coverity	2010-12-04 23:02:48.000000000 +0100
++++ openssh-6.1p1/sftp-client.h	2012-09-14 21:16:41.301906674 +0200
 @@ -56,49 +56,49 @@ struct sftp_conn *do_init(int, int, u_in
  u_int sftp_proto_version(struct sftp_conn *);
  
@@ -679,124 +756,9 @@ diff -up openssh-5.9p1/sftp-client.h.coverity openssh-5.9p1/sftp-client.h
 +char *path_append(const char *, const char *);
  
  #endif
-diff -up openssh-5.9p1/sftp.c.coverity openssh-5.9p1/sftp.c
---- openssh-5.9p1/sftp.c.coverity	2010-12-04 23:02:48.000000000 +0100
-+++ openssh-5.9p1/sftp.c	2011-09-14 08:09:49.468493585 +0200
-@@ -206,7 +206,7 @@ killchild(int signo)
- {
- 	if (sshpid > 1) {
- 		kill(sshpid, SIGTERM);
--		waitpid(sshpid, NULL, 0);
-+		(void) waitpid(sshpid, NULL, 0);
- 	}
- 
- 	_exit(1);
-@@ -316,7 +316,7 @@ local_do_ls(const char *args)
- 
- /* Strip one path (usually the pwd) from the start of another */
- static char *
--path_strip(char *path, char *strip)
-+path_strip(const char *path, const char *strip)
- {
- 	size_t len;
- 
-@@ -334,7 +334,7 @@ path_strip(char *path, char *strip)
- }
- 
- static char *
--make_absolute(char *p, char *pwd)
-+make_absolute(char *p, const char *pwd)
- {
- 	char *abs_str;
- 
-@@ -482,7 +482,7 @@ parse_df_flags(const char *cmd, char **a
- }
- 
- static int
--is_dir(char *path)
-+is_dir(const char *path)
- {
- 	struct stat sb;
- 
-@@ -494,7 +494,7 @@ is_dir(char *path)
- }
- 
- static int
--remote_is_dir(struct sftp_conn *conn, char *path)
-+remote_is_dir(struct sftp_conn *conn, const char *path)
- {
- 	Attrib *a;
- 
-@@ -508,7 +508,7 @@ remote_is_dir(struct sftp_conn *conn, ch
- 
- /* Check whether path returned from glob(..., GLOB_MARK, ...) is a directory */
- static int
--pathname_is_dir(char *pathname)
-+pathname_is_dir(const char *pathname)
- {
- 	size_t l = strlen(pathname);
- 
-@@ -516,7 +516,7 @@ pathname_is_dir(char *pathname)
- }
- 
- static int
--process_get(struct sftp_conn *conn, char *src, char *dst, char *pwd,
-+process_get(struct sftp_conn *conn, const char *src, const char *dst, const char *pwd,
-     int pflag, int rflag)
- {
- 	char *abs_src = NULL;
-@@ -590,7 +590,7 @@ out:
- }
- 
- static int
--process_put(struct sftp_conn *conn, char *src, char *dst, char *pwd,
-+process_put(struct sftp_conn *conn, const char *src, const char *dst, const char *pwd,
-     int pflag, int rflag)
- {
- 	char *tmp_dst = NULL;
-@@ -695,7 +695,7 @@ sdirent_comp(const void *aa, const void
- 
- /* sftp ls.1 replacement for directories */
- static int
--do_ls_dir(struct sftp_conn *conn, char *path, char *strip_path, int lflag)
-+do_ls_dir(struct sftp_conn *conn, const char *path, const char *strip_path, int lflag)
- {
- 	int n;
- 	u_int c = 1, colspace = 0, columns = 1;
-@@ -780,10 +780,10 @@ do_ls_dir(struct sftp_conn *conn, char *
- 
- /* sftp ls.1 replacement which handles path globs */
- static int
--do_globbed_ls(struct sftp_conn *conn, char *path, char *strip_path,
-+do_globbed_ls(struct sftp_conn *conn, const char *path, const char *strip_path,
-     int lflag)
- {
--	Attrib *a = NULL;
-+/*UNUSED Attrib *a = NULL;*/
- 	char *fname, *lname;
- 	glob_t g;
- 	int err;
-@@ -828,7 +828,7 @@ do_globbed_ls(struct sftp_conn *conn, ch
- 		colspace = width / columns;
- 	}
- 
--	for (i = 0; g.gl_pathv[i] && !interrupted; i++, a = NULL) {
-+	for (i = 0; g.gl_pathv[i] && !interrupted; i++/*, a = NULL*/) {
- 		fname = path_strip(g.gl_pathv[i], strip_path);
- 		if (lflag & LS_LONG_VIEW) {
- 			if (g.gl_statv[i] == NULL) {
-@@ -861,7 +861,7 @@ do_globbed_ls(struct sftp_conn *conn, ch
- }
- 
- static int
--do_df(struct sftp_conn *conn, char *path, int hflag, int iflag)
-+do_df(struct sftp_conn *conn, const char *path, int hflag, int iflag)
- {
- 	struct sftp_statvfs st;
- 	char s_used[FMT_SCALED_STRSIZE];
-diff -up openssh-5.9p1/ssh-agent.c.coverity openssh-5.9p1/ssh-agent.c
---- openssh-5.9p1/ssh-agent.c.coverity	2011-06-03 06:14:16.000000000 +0200
-+++ openssh-5.9p1/ssh-agent.c	2011-09-14 08:09:49.572460295 +0200
+diff -up openssh-6.1p1/ssh-agent.c.coverity openssh-6.1p1/ssh-agent.c
+--- openssh-6.1p1/ssh-agent.c.coverity	2011-06-03 06:14:16.000000000 +0200
++++ openssh-6.1p1/ssh-agent.c	2012-09-14 21:16:41.303906683 +0200
 @@ -1147,8 +1147,8 @@ main(int ac, char **av)
  	sanitise_stdfd();
  
@@ -808,10 +770,10 @@ diff -up openssh-5.9p1/ssh-agent.c.coverity openssh-5.9p1/ssh-agent.c
  
  #if defined(HAVE_PRCTL) && defined(PR_SET_DUMPABLE)
  	/* Disable ptrace on Linux without sgid bit */
-diff -up openssh-5.9p1/sshd.c.coverity openssh-5.9p1/sshd.c
---- openssh-5.9p1/sshd.c.coverity	2011-06-23 11:45:51.000000000 +0200
-+++ openssh-5.9p1/sshd.c	2011-09-14 08:09:49.687509968 +0200
-@@ -676,8 +676,10 @@ privsep_preauth(Authctxt *authctxt)
+diff -up openssh-6.1p1/sshd.c.coverity openssh-6.1p1/sshd.c
+--- openssh-6.1p1/sshd.c.coverity	2012-07-31 04:21:34.000000000 +0200
++++ openssh-6.1p1/sshd.c	2012-09-14 21:16:41.307906705 +0200
+@@ -682,8 +682,10 @@ privsep_preauth(Authctxt *authctxt)
  		if (getuid() == 0 || geteuid() == 0)
  			privsep_preauth_child();
  		setproctitle("%s", "[net]");
@@ -823,7 +785,7 @@ diff -up openssh-5.9p1/sshd.c.coverity openssh-5.9p1/sshd.c
  
  		return 0;
  	}
-@@ -1302,6 +1304,9 @@ server_accept_loop(int *sock_in, int *so
+@@ -1311,6 +1313,9 @@ server_accept_loop(int *sock_in, int *so
  		if (num_listen_socks < 0)
  			break;
  	}
@@ -833,7 +795,7 @@ diff -up openssh-5.9p1/sshd.c.coverity openssh-5.9p1/sshd.c
  }
  
  
-@@ -1774,7 +1779,7 @@ main(int ac, char **av)
+@@ -1768,7 +1773,7 @@ main(int ac, char **av)
  
  	/* Chdir to the root directory so that the current disk can be
  	   unmounted if desired. */
