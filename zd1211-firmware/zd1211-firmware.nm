@@ -1,0 +1,40 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = zd1211-firmware
+version    = 1.4
+release    = 1
+arch       = noarch
+
+maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
+groups     = System/Libraries
+url        = http://sourceforge.net/projects/zd1211/
+license    = GPLv2
+summary    = Firmware Binaries for ZyDAS ZD1211 WLAN USB devices.
+
+description
+	This package contains the firmware files needed for the zd1211 devices to work.
+end
+
+source_dl  = http://sourceforge.net/projects/zd1211/files/%{name}/%{version}/
+sources    = %{thisapp}.tar.bz2
+
+build
+	DIR_APP = %{DIR_SRC}/%{name}
+
+	build
+		: # Nothing to do.
+	end
+
+	install
+		mkdir -pv %{BUILDROOT}%{prefix}/lib/firmware/zd1211/
+		cp -prv zd1211_* %{BUILDROOT}%{prefix}/lib/firmware/zd1211/
+		cp -prv zd1211b_* %{BUILDROOT}%{prefix}/lib/firmware/zd1211/
+	end
+end
+
+packages
+	package %{name}
+end
