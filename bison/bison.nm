@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = bison
-version    = 2.6.2
+version    = 2.7
 release    = 1
 
 groups     = Development/Tools
@@ -21,7 +21,7 @@ source_dl  = http://ftp.gnu.org/gnu/bison/
 
 build
 	requires
-		m4
+		m4 >= 1.4.16
 		perl
 	end
 
