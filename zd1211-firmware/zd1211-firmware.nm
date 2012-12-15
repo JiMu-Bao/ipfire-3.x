@@ -5,7 +5,7 @@
 
 name       = zd1211-firmware
 version    = 1.4
-release    = 1
+release    = 2
 arch       = noarch
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -32,9 +32,13 @@ build
 		mkdir -pv %{BUILDROOT}%{prefix}/lib/firmware/zd1211/
 		cp -prv zd1211_* %{BUILDROOT}%{prefix}/lib/firmware/zd1211/
 		cp -prv zd1211b_* %{BUILDROOT}%{prefix}/lib/firmware/zd1211/
+
+		chown -Rv root:root %{BUILDROOT}%{prefix}/lib/firmware
 	end
 end
 
 packages
 	package %{name}
+		groups += Base
+	end
 end
