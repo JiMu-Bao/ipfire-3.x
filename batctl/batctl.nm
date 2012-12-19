@@ -1,0 +1,38 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = batctl
+version    = 2012.4.0
+release    = 1
+
+groups     = Networking/Tools
+url        = http://www.open-mesh.org/projects/batctl
+license    = GPLv2
+summary    = B.A.T.M.A.N. advanced control and management tool.
+
+
+description
+	B.A.T.M.A.N. advanced operates on layer 2 and thus all
+	hosts participating in the virtual switch are completely
+	transparent for all protocols above layer 2. Therefore the
+	common diagnosis tools do not work as expected.
+	To overcome these problems batctl was created. At the moment batctl
+	contains ping, traceroute, tcpdump and interfaces to the
+	kernel module settings.
+end
+
+source_dl  = http://downloads.open-mesh.org/batman/stable/sources/batctl/
+
+build
+	make_install_targets += PREFIX=%{prefix}
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
