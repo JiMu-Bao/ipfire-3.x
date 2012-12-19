@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = man-db
-version    = 2.6.1
-release    = 3
+version    = 2.6.3
+release    = 1
 
 groups     = Documentation
 url        = http://savannah.nongnu.org/projects/man-db
@@ -20,6 +20,7 @@ description
 end
 
 source_dl  = http://download.savannah.gnu.org/releases/man-db/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
