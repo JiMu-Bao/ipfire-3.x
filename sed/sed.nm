@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = sed
-version    = 4.2.1
-release    = 3
+version    = 4.2.2
+release    = 1
 
 groups     = Applications/Text
 url        = http://sed.sourceforge.net/
@@ -13,14 +13,14 @@ license    = GPLv2+
 summary    = A GNU stream text editor.
 
 description
-	The sed (Stream EDitor) editor is a stream or batch (non-interactive) \
-	editor.  Sed takes text as input, performs an operation or set of \
-	operations on the text and outputs the modified text. The operations \
-	that sed performs (substitutions, deletions, insertions, etc.) can be \
+	The sed (Stream EDitor) editor is a stream or batch (non-interactive)
+	editor.  Sed takes text as input, performs an operation or set of
+	operations on the text and outputs the modified text. The operations
+	that sed performs (substitutions, deletions, insertions, etc.) can be
 	specified in a script file or from the command line.
 end
 
-source_dl  = http://downloads.sourceforge.net/project/%{name}/%{name}/%{thisapp}
+source_dl  = ftp://ftp.gnu.org/gnu/sed/
 
 build
 	requires
