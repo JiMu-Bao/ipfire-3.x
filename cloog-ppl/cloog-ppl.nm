@@ -5,7 +5,7 @@
 
 name       = cloog-ppl
 version    = 0.15.11
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -26,17 +26,17 @@ build
 	requires
 		autoconf
 		automake
-		gmp-devel
+		gmp-devel >= 4.1.3
 		m4
-		ppl-devel>=0.11.2
+		ppl-devel >= 1.0
+		texinfo >= 4.13
 	end
 
 	configure_options += \
 		--with-ppl
 
 	prepare_cmds
-		sed -i configure \
-			-e "s/ppl_minor_version=10/ppl_minor_version=11/"
+		./autogen.sh
 	end
 
 	test
