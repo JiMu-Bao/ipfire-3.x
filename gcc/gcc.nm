@@ -8,7 +8,7 @@ build_cloog_ppl = 1
 
 name       = gcc
 version    = 4.7.2
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -48,8 +48,8 @@ build
 
 	# If cloog support is enabled, we require the devel packages for build.
 	if "%{build_cloog_ppl}" == "1"
-		requires += cloog-ppl-devel
-		requires += ppl-devel
+		requires += cloog-ppl-devel >= 0.15.11-2
+		requires += ppl-devel >= 1.0
 	end
 
 	# Build libquadmath (only on x86).
@@ -95,7 +95,8 @@ build
 	end
 
 	if "%{build_cloog_ppl}" == "1"
-		configure_options += --with-cloog --with-ppl
+		configure_options += --with-cloog --with-ppl \
+			--disable-ppl-version-check
 	end
 
 	# CFLAGS for hardening.
@@ -455,6 +456,8 @@ packages
 		end
 
 		files
+			%{libdir}/libmudflap.so
+			%{libdir}/libmudflapth.so
 			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/mf-runtime.h
 			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/libmudflap.so
 			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/libmudflapth.so
@@ -487,6 +490,7 @@ packages
 			end
 
 			files
+				%{libdir}/libquadmath.so
 				%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/quadmath.h
 				%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/quadmath_weak.h
 				%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/libquadmath.so
@@ -519,6 +523,7 @@ packages
 		end
 
 		files
+			%{libdir}/libitm.so
 			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/itm.h
 			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/itm_weak.h
 			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/libitm.so
