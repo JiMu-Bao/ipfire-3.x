@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = iptables
-version    = 1.4.16.2
+version    = 1.4.17
 release    = 1
 
 groups     = Networking/Tools
@@ -42,7 +42,10 @@ build
 
 	prepare_cmds
 		# Make more space for target name on output.
-		cd iptables && sed -e "s/%-9s/%-18s/g" -i ip{,6}tables.c
+		sed -e "s/%-9s/%-18s/g" -i iptables/ip{,6}tables.c
+
+		sed -i extensions/GNUmakefile* \
+			-e "s@ip6t_NETMAP_LIBADD.*@& -L../libiptc/.libs@"
 	end
 
 	install_cmds
