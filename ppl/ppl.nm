@@ -5,7 +5,7 @@
 
 name       = ppl
 version    = 1.0
-release    = 1
+release    = 1.1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Libraries
@@ -41,11 +41,9 @@ build
 		--enable-interfaces="c cxx" \
 		--disable-debugging
 
-	PARALLELISMFLAGS =
-
-	#test
-	#	make check
-	#end
+	test
+		make check
+	end
 
 	install_cmds
 		# Create compat symlink.
