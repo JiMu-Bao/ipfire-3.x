@@ -1,0 +1,62 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libunwind
+version    = 1.0.1
+release    = 1
+
+groups     = Development/Debuggers
+url        = http://savannah.nongnu.org/projects/libunwind
+license    = BSD
+summary    = An unwinding library.
+
+description
+	Libunwind provides a C ABI to determine the call-chain of a program.
+end
+
+source_dl  = http://download.savannah.gnu.org/releases/libunwind/
+
+build
+	requires
+		autoconf
+		automake
+		libtool
+	end
+
+	prepare_cmds
+		aclocal
+		libtoolize --force
+		autoheader
+		automake --add-missing
+		autoconf
+	end
+
+	configure_options += \
+		--enable-static \
+		--enable-shared
+
+	keep_libraries = %{libdir}/libunwind-ptrace.a
+
+	# Does not work very well.
+	#test
+	#	make check
+	#end
+
+	install_cmds
+		rm -vf %{BUILDROOT}%{libdir}/libunwind-ptrace.so*
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
