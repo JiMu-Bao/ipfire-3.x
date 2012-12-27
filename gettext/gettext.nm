@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = gettext
-version    = 0.18.1.1
-release    = 8
+version    = 0.18.2
+release    = 1
 
 groups     = System/Base
 url        = http://www.gnu.org/software/gettext/
