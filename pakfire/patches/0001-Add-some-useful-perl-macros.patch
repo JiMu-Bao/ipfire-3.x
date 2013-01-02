@@ -1,0 +1,28 @@
+From 88bf3753008602b4ee219fc9a1917102befcfd84 Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Wed, 2 Jan 2013 20:16:14 +0100
+Subject: [PATCH] Add some useful perl macros.
+
+---
+ macros/perl.macro | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+ create mode 100644 macros/perl.macro
+
+diff --git a/macros/perl.macro b/macros/perl.macro
+new file mode 100644
+index 0000000..c1be59f
+--- /dev/null
++++ b/macros/perl.macro
+@@ -0,0 +1,9 @@
++# Perl constants.
++perl = /usr/bin/perl
++
++perl_sitearch   = %(eval "$(%{perl} -V:installsitearch)";   echo ${installsitearch})
++perl_sitelib    = %(eval "$(%{perl} -V:installsitelib)";    echo ${installsitelib})
++perl_vendorarch = %(eval "$(%{perl} -V:installvendorarch)"; echo ${installvendorarch})
++perl_vendorlib  = %(eval "$(%{perl} -V:installvendorlib)";  echo ${installvendorlib})
++perl_archlib    = %(eval "$(%{perl} -V:installarchlib)";    echo ${installarchlib})
++perl_privlib    = %(eval "$(%{perl} -V:installprivlib)";    echo ${installprivlib})
+-- 
+1.7.11.7
+
