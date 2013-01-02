@@ -1,0 +1,75 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-YAML
+version    = 0.84
+release    = 1
+arch       = noarch
+thisapp    = YAML-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/YAML/
+license    = GPL+ or Artistic
+summary    = A perl module for processing YAML.
+
+description
+	The YAML.pm module implements a YAML Loader and Dumper based on the
+	YAML 1.0 specification. http://www.yaml.org/spec/
+	YAML is a generic data serialization language that is optimized for
+	human readability. It can be used to express the data structures of
+	most modern programming languages, including Perl.
+	For information on the YAML syntax, please refer to the YAML
+	specification.
+end
+
+source_dl  = http://search.cpan.org/CPAN/authors/id/M/MS/MSTROUT/
+
+build
+	requires
+		# required for perl macros
+		pakfire-builder >= 0.9.23-6
+
+		perl(Carp)
+		perl(constant)
+		perl(Cwd)
+		perl(Data::Dumper)
+		perl(Exporter)
+		perl(ExtUtils::MakeMaker)
+		perl(File::Path)
+		perl(lib)
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make test
+	end
+
+	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+
+	install_cmds
+		# Removing Test::YAML (at least temporarily) due
+		# to security concerns and questionable value.
+		# https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=197539
+		rm -vf %{BUILDROOT}%{perl_vendorlib}/Test/YAML* \
+			%{BUILDROOT}%{mandir}/man3/Test::YAML*.3*
+	end
+end
+
+packages
+	package %{name}
+		requires
+			perl(Carp)
+			perl(Data::Dumper)
+		end
+
+		filter_provides
+			yaml_
+		end
+	end
+end
