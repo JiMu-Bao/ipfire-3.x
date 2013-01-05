@@ -5,7 +5,7 @@
 
 name       = git
 version    = 1.8.1
-release    = 1
+release    = 2
 
 groups     = Development/Tools
 url        = http://git-scm.com/
@@ -66,10 +66,26 @@ build
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/bash_completion.d
 		install -v -m 644 contrib/completion/git-completion.bash \
 			%{BUILDROOT}%{sysconfdir}/bash_completion.d/git
+
+		# Create folder for git-daemon.
+		mkdir -pv %{BUILDROOT}%{sharedstatedir}/git
+
+		# Create folder for gitweb.
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/httpd/conf.d
+
+		# Install config files for gitweb.
+		install -pm 0664 %{DIR_SOURCE}/gitweb.conf \
+			%{BUILDROOT}%{sysconfdir}/gitweb.conf
+
+		install -pm 0644 %{DIR_SOURCE}/git.conf.httpd \
+			%{BUILDROOT}%{sysconfdir}/httpd/conf.d/git.conf
 	end
 end
 
 packages
+	# Define %{gitcoredir} to have a more handy name.
+	gitcoredir = %{prefix}/lib/git-core
+
 	package %{name}
 		requires
 			less
@@ -78,6 +94,146 @@ packages
 			/usr/bin/vi
 		end
 
+	end
+
+	package %{name}-daemon
+		summary = Git protocol daemon.
+		description
+			The git daemon for supporting git:// access to git repositories.
+		end
+
+		requires
+			git=%{thisver}
+		end
+
+		files
+			%{gitcoredir}/git-daemon
+			%{mandir}/man1/git-daemon*
+			%{sharedstatedir}/git
+		end
+	end
+
+	package %{name}-gitweb
+		arch = noarch
+
+		summary = Simple web interface to git repositories.
+		description
+			Simple web interface to track changes in git repositories
+		end
+
+		requires
+			git=%{thisver}
+		end
+
+		configfiles
+			%{sysconfdir}/gitweb.conf
+			%{sysconfdir}/httpd/conf.d/git.conf
+		end
+
+		files
+			%{sysconfdir}/gitweb.conf
+			%{sysconfdir}/httpd/conf.d/git.conf
+			%{mandir}/man1/gitweb*
+			%{mandir}/man5/gitweb*
+			%{localstatedir}/www/git
+		end
+	end
+
+	package %{name}-svn
+		summary = Git tools for importing Subversion repositories.
+		description = %{summary}
+
+		requires
+			git=%{thisver}
+			subversion
+		end
+
+		files
+			%{gitcoredir}/*svn*
+			%{mandir}/man1/*svn*
+		end
+	end
+
+	package %{name}-cvs
+		summary = Git tools for importing CVS repositories.
+		description = %{summary}
+
+		requires
+			git=%{thisver}
+		end
+
+		files
+			%{bindir}/git-cvsserver
+			%{gitcoredir}/*cvs*
+			%{mandir}/man1/*cvs*
+			%{mandir}/man7/*cvs*
+		end
+	end
+
+	package %{name}-p4
+		arch = noarch
+
+		summary = Git tools for working with Perforce depots.
+		description = %{summary}
+
+		requires
+			git=%{thisver}
+		end
+
+		files
+			%{gitcoredir}/*p4*
+			%{gitcoredir}mergetools/p4merge
+			%{mandir}/man1/*p4*
+		end
+	end
+
+	package %{name}-email
+		summary = Git tools for sending emails.
+		description = %{summary}
+
+		requires
+			git=%{thisver}
+			perl-Git=%{thisver}
+		end
+
+		files
+			%{gitcoredir}/git-send-email
+			%{mandir}/man1/git-send-email*
+		end
+	end
+
+	package perl-Git
+		arch = noarch
+
+		summary = Perl interface to Git.
+		description = %{summary}
+
+		requires
+			git=%{thisver}
+		end
+
+		files
+			%{mandir}/man3/Git*
+			%{perl_archlib}
+			%{perl_vendorlib}/*.pm
+			%{perl_vendorlib}/Git/*.pm
+		end
+	end
+
+	package perl-Git-SVN
+		arch = noarch
+
+		summary = Perl interface to Git::SVN.
+		description = %{summary}
+
+		requires
+			git=%{thisver}
+		end
+
+		files
+			%{mandir}/man3/Git::SVN*
+			%{perl_vendorlib}/Git/SVN/
+		end
 	end
 
 	package %{name}-debuginfo
