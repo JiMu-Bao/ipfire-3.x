@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = glibc
-version    = 2.16.0
-release    = 4
+version    = 2.17
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -23,11 +23,8 @@ description
 	Linux system will not function.
 end
 
-# The version of the ports addon.
-ports_version = 2.16.0
-
 source_dl  = http://ftp.gnu.org/gnu/glibc/
-sources    = %{thisapp}.tar.xz glibc-ports-%{ports_version}.tar.xz
+sources    = %{thisapp}.tar.xz
 
 build
 	# Optimize glibc for kernel
@@ -38,7 +35,7 @@ build
 		autoconf
 		automake
 		gettext
-		kernel-headers>=%{OPTIMIZED_KERNEL}
+		kernel-headers >= %{OPTIMIZED_KERNEL}
 		libcap-devel
 		libselinux-devel
 		nss-devel
@@ -61,16 +58,7 @@ build
 
 	export QUALITY_AGENT_RPATH_ALLOW_ORIGIN=yes
 
-	prepare
-		# Extract source tarballs.
-		%{MACRO_EXTRACT_TARBALL}
-
-		# Create link for ports addon.
-		ln -svf ../glibc-ports-%{ports_version} ports
-
-		# Apply the patches.
-		%{MACRO_PATCHES}
-
+	prepare_cmds
 		# In the vi_VN.TCVN locale, bash enters an infinite loop at startup. It is
 		# unknown whether this is a bash bug or a Glibc problem. Disable
 		# installation of this locale in order to avoid the problem.
@@ -93,56 +81,8 @@ build
 		sed -i Makeconfig \
 			-e "s/-Wl,--hash-style=both/-Wl,--hash-style=gnu -Wl,-O1/"
 
-		# stdlib/tst-putenvmod is not linked against libc.
-		sed -i stdlib/Makefile \
-			-e "s/^CFLAGS-tst-putenvmod.c.*/& -fno-stack-protector/g"
-
-		# stdio-common/bug22 hits timeout.
-		sed -i stdio-common/bug22.c \
-			-e "s/#define TIMEOUT.*/#define TIMEOUT 300/"
-
-		# These tests don't work or need more investigation:
-		sed -i dlfcn/Makefile -e "s/default //g"
-
-		sed -i nptl/Makefile \
-			-e "s/tst-mutex5 //g" \
-			-e "s/tst-mutex5a //g" \
-			-e "s/tst-cond11 //g" \
-			-e "s/tst-rwlock6 //g" \
-			-e "s/tst-rwlock7 //g" \
-			-e "s/tst-sem5 //g" \
-			-e "s/tst-cancelx4 //g" \
-			-e "s/tst-cancelx5 //g" \
-			-e "s/tst-cancelx10 //g" \
-			-e "s/tst-cancelx18 //g" \
-			-e "s/tst-signal1 //g"
-
-		# These are known to fail on x86:
-		sed -i rt/Makefile \
-			-e "s/tst-cpuclock1 //g" \
-			-e "s/tst-cpuclock2 //g"
-
-		sed -i elf/Makefile \
-			-e "s/tst-tls1 //g" \
-			-e "s/tst-tls1-static //g" \
-			-e "s/tst-tls2 //g" \
-			-e "s/tst-tls2-static //g" \
-			-e "s/tst-tls3 //g" \
-			-e "s/resolvfail //g" \
-			-e "s/constload1 //g" \
-			-e "s/order //g" \
-			-e "s/lateglobal //g" \
-			-e "s/dblload //g" \
-			-e "s/dblunload //g" \
-			-e "s/reldep6 //g" \
-			-e "s/circleload1 //g" \
-			-e "s/tst-global1 //g" \
-			-e "s/tst-audit2 //g" \
-			-e "s/check-localplt //g" \
-			-e "s/check-localplt.out$$//g"
-
-		sed -i signal/Makefile \
-			-e "s/tst-sigset2//g"
+		# http://sourceware.org/ml/libc-ports/2011-09/msg00018.html
+		sed -e "s/PIC/SHARED/g" -i ports/sysdeps/arm/{set,__long}jmp.S
 	end
 
 	configure_options = \
@@ -156,7 +96,8 @@ build
 		--disable-werror \
 		--enable-bind-now \
 		--enable-nss-crypt \
-		--enable-obsolete-rpc
+		--enable-obsolete-rpc \
+		--with-bugurl=http://bugtracker.ipfire.org
 
 	if "%{DISTRO_ARCH}" == "armv5tel"
 		# Disable hardware FP for ARM.
@@ -191,13 +132,6 @@ build
 		make PARALLELMFLAGS=%{PARALLELISMFLAGS} \
 			CFLAGS="%{CFLAGS}" CXXFLAGS="%{CXXFLAGS}"
 	end
-
-	#test
-	#	cd $(DIR_SRC)/glibc-build
-	#	make check TIMEOUTFACTOR=16 \
-	#		CFLAGS="%{CFLAGS} -fno-stack-protector -U_FORTIFY_SOURCE" \
-	#		CXXFLAGS="%{CXXFLAGS} -fno-stack-protector -U_FORTIFY_SOURCE"
-	#end
 
 	install
 		cd %{DIR_SRC}/glibc-build
