@@ -1,0 +1,80 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = netpbm
+version    = 10.61.01
+release    = 1
+
+groups     = System/Libraries
+url        = http://netpbm.sourceforge.net/
+license    = BSD and GPLv2 and IJG and MIT and Public Domain
+summary    = A library for handling different graphics file formats.
+
+description
+	The netpbm package contains a library of functions which support
+	programs for handling various graphics file formats, including .pbm
+	(portable bitmaps), .pgm (portable graymaps), .pnm (portable anymaps),
+	.ppm (portable pixmaps) and others.
+end
+
+build
+	requires
+		flex
+		libjpeg-devel
+		libpng-devel
+		libtiff-devel
+		libX11-devel
+		libxml2-devel
+		perl
+	end
+
+	prepare_cmds
+		#sed -i 's/STRIPFLAG = -s/STRIPFLAG =/g' config.mk.in
+		#rm -rf converter/other/jpeg2000/libjasper/
+		#sed -i -e 's/^SUBDIRS = libjasper/SUBDIRS =/' converter/other/jpeg2000/Makefile
+	end
+
+	build
+		yes "" | ./configure
+
+		make \
+			LDFLAGS="-L$(pwd)/pbm -L$(pwd)/pgm -L$(pwd)/pnm -L$(pwd)/ppm" \
+			CFLAGS="%{CFLAGS} -flax-vector-conversions -fno-strict-aliasing" \
+			LADD="-lm" \
+			LINUXSVGALIB="NONE"
+	end
+
+	install
+		make package pkgdir=%{BUILDROOT}%{prefix} LINUXSVGALIB="NONE" XML2LIBS="NONE"
+
+		# Ugly hack to have libs in correct dir on 64bit archs.
+		mkdir -p %{BUILDROOT}%{libdir}
+		if [ "%{libdir}" != "/usr/lib" ]; then
+			mv %{BUILDROOT}/usr/lib/lib* %{BUILDROOT}%{libdir}
+		fi
+		ln -svf libnetpbm.so.11 %{BUILDROOT}%{libdir}/libnetpbm.so
+
+		rm -rvf %{BUILDROOT}%{prefix}/{README,VERSION,link,misc,man,pkginfo,config_template}
+		rm -rvf %{BUILDROOT}%{bindir}/doc.url
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-progs
+		files
+			%{bindir}
+		end
+	end
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
