@@ -5,7 +5,7 @@
 
 name       = git
 version    = 1.8.1
-release    = 2
+release    = 3
 
 groups     = Development/Tools
 url        = http://git-scm.com/
@@ -232,6 +232,7 @@ packages
 
 		files
 			%{mandir}/man3/Git::SVN*
+			%{perl_vendorlib}/Git/SVN*.pm
 			%{perl_vendorlib}/Git/SVN/
 		end
 	end
