@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libuser
-version    = 0.57.1
+version    = 0.58
 release    = 1
 
 groups     = System/Libraries
@@ -13,12 +13,12 @@ license    = LGPLv2+
 summary    = A user and group account administration library.
 
 description
-	The libuser library implements a standardized interface for \
-	manipulating and administering user and group accounts. The \
+	The libuser library implements a standardized interface for
+	manipulating and administering user and group accounts. The
 	library uses pluggable back-ends to interface to its data sources.
 end
 
-source_dl  =
+source_dl  = https://fedorahosted.org/releases/l/i/%{name}/
 sources    = %{thisapp}.tar.xz
 
 build
@@ -46,7 +46,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
