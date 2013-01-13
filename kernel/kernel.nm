@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 3.6.6
-release    = 1
+release    = 2
 thisapp    = linux-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -34,6 +34,8 @@ build
 	# are not available on the remote compilers, we need to disable it here.
 	export ICECC=no
 
+	kernel_logo = /usr/share/pixmaps/kernel-logo.ppm
+
 	requires
 		asciidoc
 		binutils >= 2.23.51.0.3-3
@@ -53,6 +55,7 @@ build
 		xmlto
 
 		/sbin/depmod
+		%{kernel_logo}
 	end
 
 	# i686 needs librmi for cpupower.
@@ -141,7 +144,7 @@ build
 
 		sed -e "s/^HOSTCFLAGS.*=.*/& -fPIC/g" -i Makefile
 
-		cp -vf %{DIR_SOURCE}/%{DISTRO_SNAME}_logo.ppm \
+		cp -vf %{kernel_logo} \
 			drivers/video/logo/logo_linux_clut224.ppm
 
 		# Get rid of unwanted files resulting from patch fuzz.
