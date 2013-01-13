@@ -5,7 +5,7 @@
 
 name       = openldap
 version    = 2.4.32
-release    = 2
+release    = 3
 
 groups     = System/Daemons
 url        = http://www.openldap.org/
@@ -82,7 +82,7 @@ build
 
 		# Create directoires.
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/%{name}/slapd.d
-		mkdir -pv %{BUILDROOT}%{localstatedir}/%{name}
+		mkdir -pv %{BUILDROOT}/run/%{name}
 		mkdir -pv %{BUILDROOT}%{sharedstatedir}/ldap
 
 		# Fix permissions and ownerships.
