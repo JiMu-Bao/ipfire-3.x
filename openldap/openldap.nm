@@ -5,7 +5,7 @@
 
 name       = openldap
 version    = 2.4.32
-release    = 1
+release    = 2
 
 groups     = System/Daemons
 url        = http://www.openldap.org/
@@ -33,6 +33,7 @@ build
 		libtool-devel
 		openssl-devel
 		pth-devel
+		shadow-utils
 	end
 
 	configure_options += \
@@ -51,6 +52,10 @@ build
 		--enable-ndb=no \
 		--disable-static
 
+	prepare_cmds
+		%{create_user}
+	end
+
 	install_cmds
 		mv -v %{BUILDROOT}%{libdir}/slapd %{BUILDROOT}/usr/sbin/slapd
 		ln -svf slapd %{BUILDROOT}/usr/sbin/slapacl
@@ -63,7 +68,9 @@ build
 		ln -svf	slapd %{BUILDROOT}/usr/sbin/slapschema
 		ln -svf	slapd %{BUILDROOT}/usr/sbin/slaptest
 
-		rm -rvf %{BUILDROOT}/var/openldap-data
+		# Remove unneeded files.
+		rm -rvf %{BUILDROOT}%{localstatedir}/openldap-data
+		rm -rvf %{BUILDROOT}%{localstatedir}/run
 
 		for LINK in lber ldap ldap_r; do
 			chmod -v 0755 %{BUILDROOT}%{libdir}/$(readlink %{BUILDROOT}%{libdir}/lib${LINK}.so)
@@ -71,22 +78,50 @@ build
 
 		# Install configuration
 		mkdir -pv %{BUILDROOT}/etc/%{name}
-		cp -vf %{DIR_SOURCE}/slapd.conf %{BUILDROOT}/etc/%{name}/slapd.conf
+		cp -vf %{DIR_SOURCE}/slapd.conf %{BUILDROOT}%{sysconfdir}/%{name}/slapd.conf
 
-		mkdir -pv %{BUILDROOT}/var/lib/ldap
-		chmod 700 -Rv %{BUILDROOT}/var/lib/ldap
+		# Create directoires.
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/%{name}/slapd.d
+		mkdir -pv %{BUILDROOT}%{localstatedir}/%{name}
+		mkdir -pv %{BUILDROOT}%{sharedstatedir}/ldap
+
+		# Fix permissions and ownerships.
+		chown -Rv ldap:ldap %{BUILDROOT}%{sysconfdir}/%{name}
+		chown ldap:ldap %{BUILDROOT}/run/%{name}
+		chown ldap:ldap %{BUILDROOT}%{sharedstatedir}/ldap
+		chmod 700 -Rv %{BUILDROOT}%{sharedstatedir}/ldap
 	end
+end
+
+create_user
+	getent group ldap >/dev/null || groupadd -r ldap
+	getent passwd ldap >/dev/null || useradd -r -g ldap \
+		-d /var/lib/ldap -s /sbin/nologin -c "OpenLDAP server" ldap
 end
 
 packages
 	package %{name}
+		prerequires += shadow-utils
+
+		script prein
+			%{create_user}
+		end
+
+		datafiles
+			%{sysconfdir}/%{name}/slapd.d
+			%{sharedstatedir}/ldap
+		end
+
 		script postin
 			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl enable openldap.socket >/dev/null 2>&1 || :
 		end
 
 		script preun
 			systemctl --no-reload disable openldap.service >/dev/null 2>&1 || :
+			systemctl --no-reload disable openldap.socket >/dev/null 2>&1 || :
 			systemctl stop openldap.service >/dev/null 2>&1 || :
+			systemctl stop openldap.socket >/dev/null 2>&1 || :
 		end
 
 		script postun

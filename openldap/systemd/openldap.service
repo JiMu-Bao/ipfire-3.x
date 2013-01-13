@@ -1,10 +1,6 @@
 [Unit]
 Description=OpenLDAP
-After=basic.target
+After=basic.target sockets.target
 
 [Service]
-Type=forking
-ExecStart=/usr/sbin/slapd
-
-[Install]
-WantedBy=multi-user.target
+ExecStart=/usr/sbin/slapd -u ldap -h 'ldapi://%2Frun%2Fopenldap%2Fldapi'
