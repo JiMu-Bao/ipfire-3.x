@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = gdk-pixbuf2
-version    = 2.24.0
-major_ver  = 2.24
+version    = %{major_ver}.5
+major_ver  = 2.26
 release    = 1
 
 groups     = System/Libraries
@@ -25,18 +25,38 @@ sources    = %{thisapp}.tar.xz
 
 build
 	requires
-		glib2-devel
+		glib2-devel >= 2.31.16
+		gobject-introspection-devel >= 0.9.3
 		libpng-devel
 		libjpeg-devel
 		libtiff-devel
+		libX11-devel
 	end
 
 	configure_options += \
-		--disable-rpath
+		--with-x11 \
+		--with-included-loaders=png
+
+	make_install_targets += RUN_QUERY_LOADER_TEST=false
+
+	install_cmds
+		touch %{BUILDROOT}%{libdir}/gdk-pixbuf-2.0/2.10.0/loaders.cache
+	end
 end
 
 packages
 	package %{name}
+		datafiles
+			%{libdir}/gdk-pixbuf-2.0/2.10.0/loaders.cache
+		end
+
+		script postin
+			gdk-pixbuf-query-loaders --update-cache || :
+		end
+
+		script postup
+			gdk-pixbuf-query-loaders --update-cache || :
+		end
 	end
 
 	package %{name}-devel
