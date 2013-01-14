@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = openvpn
-version    = 2.2.2
+version    = 2.3.0
 release    = 1
 
 groups     = Networking/VPN
@@ -26,29 +26,18 @@ PLUGINS    = auth-pam down-root
 
 build
 	requires
+		iproute2
+		libselinux-devel
 		lzo-devel
 		openssl-devel
 		pam-devel
+		polarssl-devel
 	end
 
 	configure_options += \
-		--enable-pthread \
 		--enable-password-save \
-		--enable-iproute2
-
-	build_cmds
-		for plugin in %{PLUGINS}; do
-			make -C plugin/$plugin
-		done
-	end
-
-	install_cmds
-		mkdir -pv %{BUILDROOT}%{libdir}/%{name}/plugin/lib
-		for plugin in %{PLUGINS}; do
-			install -m 0755 plugin/$plugin/openvpn-$plugin.so \
-				%{BUILDROOT}%{libdir}/%{name}/plugin/lib/openvpn-$plugin.so
-		done
-	end
+		--enable-iproute2 \
+		--enable-systemd
 end
 
 packages
