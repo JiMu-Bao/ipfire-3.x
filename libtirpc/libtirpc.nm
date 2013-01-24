@@ -1,0 +1,62 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libtirpc
+version    = 0.2.2
+release    = 1
+
+groups     = System/Libraries
+url        = http://nfsv4.bullopensource.org/
+license    = SISSL and BSD
+summary    = Transport Independent RPC Library
+
+description
+	This package contains SunLib's implementation of transport-independent
+	RPC (TI-RPC) documentation.  This library forms a piece of the base of 
+	Open Network Computing (ONC), and is derived directly from the 
+	Solaris 2.3 source.
+end
+
+source_dl  = http://downloads.sourceforge.net/libtirpc/
+sources    = %{thisapp}.tar.bz2
+
+build
+	requires
+		autoconf
+		automake
+		libgssglue-devel
+		libtool
+	end
+
+	prepare_cmds
+		sh autogen.sh
+		autoreconf -fisv
+	end
+
+	configure_options += \
+		--enable-gss
+
+	install_cmds
+		# Fix installation path of the man pages.
+		mv %{BUILDROOT}%{mandir}/man3{,t}
+
+		# Fix owner.
+		chown root:root %{BUILDROOT}/etc/netconfig
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+
+		files += %{mandir}/man3t
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
