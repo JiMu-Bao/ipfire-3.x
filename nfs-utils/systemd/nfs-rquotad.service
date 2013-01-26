@@ -1,0 +1,12 @@
+[Unit]
+Description=NFS Remote Quota Server
+BindTo=nfs-server.service
+After=nfs-server.service
+
+[Service]
+Type=forking
+StandardError=syslog+console
+ExecStart=-/usr/sbin/rpc.rquotad
+
+[Install]
+WantedBy=nfs.target

@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = nfs-utils
-version    = 1.2.2
-release    = 2
+version    = 1.2.7
+release    = 1
 
 groups     = Networking/Tools
 url        = http://nfs.sourceforge.net/
@@ -22,34 +22,107 @@ description
 	which are mounted on that host.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+source_dl  = http://www.kernel.org/pub/linux/utils/nfs-utils/%{version}/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
+		autoconf
+		automake
 		libblkid-devel
+		libdevmapper-devel
 		libcap-devel
 		libevent-devel
+		libgssglue-devel
+		libmount-devel
 		libnfsidmap-devel
+		libtirpc-devel
+		libtool
+		shadow-utils
+		sqlite-devel
+		systemd-units
 	end
 
 	configure_options += \
 		--without-tcp-wrappers \
-		--disable-static \
-		--enable-tirpc=no \
-		--enable-nfsv3 \
-		--enable-nfsv4 \
-		--with-krb5=no \
+		--without-krb5 \
 		--disable-gss \
-		--with-rpcgen=internal \
-		--enable-mount
+		--enable-libmount-mount \
+		--enable-mountconfig \
+		--enable-ipv6 \
+		--with-statdpath=/var/lib/nfs/statd
+
+	prepare_cmds
+		sh autogen.sh
+
+		%{create_user}
+	end
+
+	install_cmds
+		mkdir -pv %{BUILDROOT}%{sysconfdir}
+		mkdir -pv %{BUILDROOT}/var/lib/nfs/v4recovery
+		mkdir -pv %{BUILDROOT}/etc/exports.d
+
+		install -s -m 755 tools/rpcdebug/rpcdebug %{BUILDROOT}%{sbindir}
+		install -m 644 utils/mount/nfsmount.conf %{BUILDROOT}%{sysconfdir}
+
+		mkdir -pv %{BUILDROOT}/var/lib/nfs/rpc_pipefs
+		touch %{BUILDROOT}/var/lib/nfs/rmtab
+
+		mkdir -pv %{BUILDROOT}/usr/lib/nfs-utils/scripts
+		install -m 755 %{DIR_SOURCE}/nfs-lock.preconfig \
+			%{BUILDROOT}/usr/lib/nfs-utils/scripts/
+
+		mkdir -pv %{BUILDROOT}/var/lib/nfs/statd/sm{,.bak}
+		chown rpcuser:rpcuser -Rv %{BUILDROOT}/var/lib/nfs/statd
+	end
+end
+
+create_user
+	getent passwd rpcuser >/dev/null || useradd -l -c "RPC Service User" -r \
+		-s /sbin/nologin -u 29 -d /var/lib/nfs rpcuser
+	getent group rpcuser >/dev/null || groupadd -g 29 rpcuser 2>/dev/null
 end
 
 packages
 	package %{name}
+		provides
+			rpc.idmapd  = %{thisver}
+			rpc.mountd  = %{thisver}
+			rpc.nfsd    = %{thisver}
+			rpc.statd   = %{thisver}
+			rpc.gssd    = %{thisver}
+			rpc.svggssd = %{thisver}
+		end
+
 		requires
-			libgssglue
+			libnfsidmap >= 0.25
+			quota
+			rpcbind
 			util-linux
+		end
+
+		nfsnobody_uid = 65534
+
+		script prein
+			%{create_user}
+
+			getent group nfsnobody >/dev/null || groupadd -g %{nfsnobody_uid} nfsnobody
+			getent passwd nfsnobody >/dev/null || useradd -l -c "Anonymous NFS User" -r \
+				-s /sbin/nologin -u %{nfsnobody_uid} -g %{nfsnobody_uid} \
+				-d /var/lib/nfs nfsnobody
+		end
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
 		end
 	end
 
