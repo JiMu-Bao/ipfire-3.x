@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 196
-release    = 2
+release    = 3
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -117,6 +117,9 @@ build
 			-e "s/^#ForwardToSyslog=.*$/ForwardToSyslog=no/" \
 			-e "s/^#ImportKernel=.*$/ImportKernel=yes/" \
 			-i %{BUILDROOT}/etc/systemd/journald.conf
+
+		# Install legacy tmpfile to autocreate /run/lock on startup.
+		install -v -m 644 %{DIR_APP}/tmpfiles.d/legacy.conf %{BUILDROOT}%{prefix}/lib/tmpfiles.d/
 	end
 end
 
