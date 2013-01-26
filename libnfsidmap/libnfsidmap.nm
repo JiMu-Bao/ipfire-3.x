@@ -4,49 +4,48 @@
 ###############################################################################
 
 name       = libnfsidmap
-version    = 0.21
-release    = 2
+version    = 0.25
+release    = 1
 
 groups     = System/Libraries
-url        = http://www.citi.umich.edu/projects/nfsv4/linux/libnfsidmap/
+url        = http://www.citi.umich.edu/projects/nfsv4/linux/
 license    = BSD
 summary    = Library to help mapping id's, mainly for NFSv4.
 
 description
-	libnfsidmap provides functions to map between NFSv4 names \
+	libnfsidmap provides functions to map between NFSv4 names
 	(which are of the form user@domain) and local uid's and gid's.
 end
 
-source_dl  =
+source_dl  = http://www.citi.umich.edu/projects/nfsv4/linux/libnfsidmap/
 
 build
 	requires
+		autoconf
+		automake
 		gcc-c++
+		openldap-devel
 	end
 
-	configure_options += --libdir=/%{lib}
+	configure_options += \
+		--disable-static
+
+	prepare_cmds
+		./autogen.sh
+	end
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}%{libdir}
-
-		mv -v %{BUILDROOT}/%{lib}/pkgconfig %{BUILDROOT}%{libdir}
-
-		rm -vf %{BUILDROOT}/%{lib}/libnfsidmap.so
-		ln -svf ../../%{lib}/libnfsidmap.so.0 \
-			%{BUILDROOT}%{libdir}/libnfsidmap.so
-
-		rm -vf %{BUILDROOT}/%{lib}/libnfsidmap_nsswitch.so
-		ln -svf ../../%{lib}/libnfsidmap_nsswitch.so.0 \
-			%{BUILDROOT}%{libdir}/libnfsidmap_nsswitch.so
-
-		rm -vf %{BUILDROOT}/%{lib}/libnfsidmap_static.so
-		ln -svf ../../%{lib}/libnfsidmap_static.so.0 \
-			%{BUILDROOT}%{libdir}/libnfsidmap_static.so
+		mkdir -pv %{BUILDROOT}%{sysconfdir}
+		install -m 644 idmapd.conf %{BUILDROOT}%{sysconfdir}
 	end
 end
 
 packages
 	package %{name}
+		configfiles
+			%{sysconfdir}/idmapd.conf
+		end
+	end
 
 	package %{name}-devel
 		template DEVEL
