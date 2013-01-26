@@ -4,3 +4,4 @@ check:
 	bash -n bashrc
 	bash -n profile
 	./uidgidlint ./uidgid
+	./serviceslint ./services
