@@ -1,0 +1,79 @@
+From aebb8189069f24e6f4e59cf79f179bcbafe7a098 Mon Sep 17 00:00:00 2001
+From: Jan Kara <jack@suse.cz>
+Date: Tue, 6 Nov 2012 11:04:44 +0100
+Subject: [PATCH 1/2] warnquota: Add MIME-Version header
+
+Warnquota forgot to add MIME-Version header to sent email when Content-type
+etc. fields were set.
+
+Signed-off-by: Jan Kara <jack@suse.cz>
+---
+ warnquota.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/warnquota.c b/warnquota.c
+index 08827f2..80f528c 100644
+--- a/warnquota.c
++++ b/warnquota.c
+@@ -503,6 +503,7 @@ static int mail_user(struct offenderlist *offender, struct configparams *config)
+ 	if (should_cc(offender, config))
+ 		fprintf(fp, "Cc: %s\n", config->cc_to);
+ 	if ((config->charset)[0] != '\0') { /* are we supposed to set the encoding */
++		fprintf(fp, "MIME-Version: 1.0\n");
+ 		fprintf(fp, "Content-Type: text/plain; charset=%s\n", config->charset);
+ 		fprintf(fp, "Content-Disposition: inline\n");
+ 		fprintf(fp, "Content-Transfer-Encoding: 8bit\n");
+-- 
+1.7.11.7
+
+From d8bb9ec3cef26cd3fb62534d896bf9c8feea67f9 Mon Sep 17 00:00:00 2001
+From: Jan Kara <jack@suse.cz>
+Date: Tue, 6 Nov 2012 12:12:19 +0100
+Subject: [PATCH 2/2] warnquota: Use current locale as default charset
+
+If charset in warnquota.conf is not specified, use charset from current
+locale as the charset of the warning email. This is to accomodate possible
+translations of messages via gettext.
+
+Signed-off-by: Jan Kara <jack@suse.cz>
+---
+ warnquota.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/warnquota.c b/warnquota.c
+index 80f528c..5c5a1b9 100644
+--- a/warnquota.c
++++ b/warnquota.c
+@@ -29,6 +29,8 @@
+ #include <grp.h>
+ #include <time.h>
+ #include <getopt.h>
++#include <locale.h>
++#include <langinfo.h>
+ #include <sys/types.h>
+ #include <sys/wait.h>
+ #include <sys/utsname.h>
+@@ -707,6 +709,7 @@ static int readconfigfile(const char *filename, struct configparams *config)
+ 	char *value;
+ 	char *pos;
+ 	int line, len, bufpos;
++	char *locale;
+ 
+ 	/* set default values */
+ 	sstrncpy(config->mail_cmd, MAIL_CMD, CNF_BUFFER);
+@@ -716,6 +719,12 @@ static int readconfigfile(const char *filename, struct configparams *config)
+ 	sstrncpy(config->support, SUPPORT, CNF_BUFFER);
+ 	sstrncpy(config->phone, PHONE, CNF_BUFFER);
+ 	(config->charset)[0] = '\0';
++	setlocale(LC_ALL, NULL);
++	locale = setlocale(LC_MESSAGES, NULL);
++	if (locale && strcasecmp(locale, "posix") && strcasecmp(locale, "c")) {
++		locale = nl_langinfo(CODESET);
++		sstrncpy(config->charset, locale, CNF_BUFFER);
++	}
+ 	maildev[0] = 0;
+ 	config->user_signature = config->user_message = config->group_signature = config->group_message = NULL;
+ 	config->use_ldap_mail = 0;
+-- 
+1.7.11.7
+

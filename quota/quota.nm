@@ -1,0 +1,133 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = quota
+version    = 4.01
+release    = 1
+
+groups     = System/Base
+url        = http://sourceforge.net/projects/linuxquota/
+license    = BSD and GPLv2+
+summary    = System administration tools for monitoring users' disk usage
+
+description
+	The quota package contains system administration tools for monitoring
+	and limiting user and or group disk usage per file system.
+end
+
+source_dl  = http://downloads.sourceforge.net/linuxquota/
+
+build
+	requires
+		dbus-devel
+		e2fsprogs-devel
+		gettext
+		glibc-headers >= 2.17-2
+		libnl-devel
+		openldap-devel
+		systemd-units
+	end
+
+	DIR_APP = %{DIR_SRC}/quota-tools
+
+	configure_options += \
+		--enable-ext2direct \
+		--enable-ldapmail \
+		--enable-netlink \
+		--enable-rpcsetquota \
+		--disable-strip-binaries
+
+	make_install_targets += ROOTDIR=%{BUILDROOT}
+
+	install_cmds
+		mkdir -pv %{BUILDROOT}%{sysconfdir}
+		install -m 644 warnquota.conf %{BUILDROOT}%{sysconfdir}
+
+		# Remove XFS stuff.
+		rm -vf %{BUILDROOT}{%{mandir},%{sbindir}}/{quot,xqmstats}*
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-nld
+		summary = The quota_nld daemon.
+
+		description
+			Daemon that listens on netlink socket and processes received quota warnings.
+			The daemon supports forwarding warning messages to the system D-Bus
+			(so that desktop manager can display a dialog) and writing them to the
+			terminal user has last accessed.
+		end
+
+		requires
+			quota = %{thisver}
+		end
+
+		files
+			%{unitdir}/quota_nld.service
+			%{sbindir}/quota_nld
+			%{mandir}/man8/quota_nld.8*
+		end
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart quota_nld.service >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl --no-reload disable quota_nld.service >/dev/null 2>&1 || :
+			systemctl stop quota_nld.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+	end
+
+	package %{name}-warnquota
+		summary = Send e-mail to users over quota.
+		description
+			Utility that checks disk quota for each local file system and mails a warning
+			message to those users who have reached their soft limit.  It is typically run
+			via cron(8).
+		end
+
+		requires
+			quota = %{thisver}
+		end
+
+		configfiles
+			%{sysconfdir}/quotagrpadmins
+			%{sysconfdir}/quotatab
+			%{sysconfdir}/warnquota.conf
+		end
+
+		files
+			%{configfiles}
+			%{sbindir}/warnquota
+			%{mandir}/man8/warnquota.8*
+		end
+	end
+
+	package %{name}-devel
+		template DEVEL
+
+		# Some header files have previously been
+		# shipped with glibc-headers.
+		conflicts
+			glibc-headers < 2.17-2
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
