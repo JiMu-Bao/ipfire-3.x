@@ -6,7 +6,7 @@
 name       = initscripts
 epoch      = 1
 version    = 2.99
-release    = 18
+release    = 19
 
 groups     = System/Boot
 url        =
@@ -14,7 +14,7 @@ license    = GPLv3+
 summary    = The set of scripts that initalize the system.
 
 description
-	The initscripts package contains the basic system scripts used to boot \
+	The initscripts package contains the basic system scripts used to boot
 	your system and shut the system down cleanly.
 end
 
@@ -47,7 +47,8 @@ build
 		cd src && make install clean DESTDIR=%{BUILDROOT}
 
 		# Install rc.local
-		install -v -m 755 %{DIR_SOURCE}/rc.local %{BUILDROT}/etc/rc.local
+		mkdir -pv %{BUILDROOT}%{sysconfdir}
+		install -v -m 755 %{DIR_SOURCE}/rc.local %{BUILDROOT}%{sysconfdir}/rc.local
 
 		# Install udev rules
 		mkdir -pv %{BUILDROOT}%{prefix}/lib/udev/rules.d/
@@ -81,7 +82,7 @@ packages
 			filesystem  < 002
 		end
 
-		configfiles
+		datafiles
 			/etc/rc.local
 		end
 
