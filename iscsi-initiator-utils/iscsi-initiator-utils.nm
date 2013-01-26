@@ -4,8 +4,9 @@
 ###############################################################################
 
 name       = iscsi-initiator-utils
-version    = 6.2.0.872
-release    = 3
+rel_ver    = 873
+version    = 6.2.0.%{rel_ver}
+release    = 1
 
 groups     = System/Daemons
 url        = http://www.open-iscsi.org/
@@ -19,8 +20,9 @@ description
 	Protocol networks.
 end
 
-source_dl  =
-sources    = open-iscsi-2.0-872-rc4-bnx2i.tar.gz
+thisapp = open-iscsi-2.0-%{rel_ver}
+
+source_dl  = http://www.open-iscsi.org/bits/
 
 build
 	requires
@@ -28,14 +30,8 @@ build
 		python-devel
 	end
 
-	DIR_APP = %{DIR_SRC}/open-iscsi-2.0-872-rc4-bnx2i
-
-	prepare_cmds
-		cd libiscsi && sed -e "s/^all.*/all: lib tests/" -i Makefile
-	end
-
 	build
-		cd %{DIR_APP}/utils/open-isns && ./configure
+		cd %{DIR_APP}/utils/open-isns && ./configure --with-security=no
 		cd %{DIR_APP}/utils/open-isns && make
 		cd %{DIR_APP} && make -C utils/sysdeps
 		cd %{DIR_APP} && make -C utils/fwparam_ibft
@@ -68,11 +64,15 @@ build
 
 		install -p -m 755 libiscsi/build/lib.linux-*/libiscsimodule.so \
 			%{BUILDROOT}%{python_sitelib}
+
+		install -p -m 755 %{DIR_SOURCE}/iscsi_mark_root_nodes %{BUILDROOT}%{prefix}/lib/
 	end
 end
 
 packages
 	package %{name}
+		prerequires += systemd-units
+
 		requires
 			libiscsi = %{thisver}
 		end
@@ -85,6 +85,28 @@ packages
 			if [ ! -f "%{sysconfdir}/iscsi/initiatorname.iscsi" ]; then
 				echo "InitiatorName=$(iscsi-iname)" > %{sysconfdir}/iscsi/initiatorname.iscsi
 			fi
+
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl --no-reload enable iscsid.socket >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl --no-reload disable iscsid.socket >/dev/null 2>&1 || :
+			systemctl --no-reload disable iscsid.service >/dev/null 2>&1 || :
+			systemctl --no-reload disable iscsi.service >/dev/null 2>&1 || :
+			systemctl stop iscsi.service >/dev/null 2>&1 || :
+			systemctl stop iscsid.socket >/dev/null 2>&1 || :
+			systemctl stop iscsid.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart iscsi.service >/dev/null 2>&1 || :
+			systemctl try-restart iscsid.service >/dev/null 2>&1 || :
 		end
 	end
 

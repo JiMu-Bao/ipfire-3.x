@@ -1,8 +1,52 @@
+From ce1f29f2049320af18eeffd3aefccf840c442ce0 Mon Sep 17 00:00:00 2001
+From: Chris Leech <cleech@redhat.com>
+Date: Mon, 19 Nov 2012 16:43:15 -0800
+Subject: add libiscsi
+
+---
+ Makefile                                    |    2 +
+ libiscsi/Makefile                           |   61 ++
+ libiscsi/libiscsi.c                         |  620 +++++++++++
+ libiscsi/libiscsi.doxy                      | 1473 +++++++++++++++++++++++++++
+ libiscsi/libiscsi.h                         |  344 +++++++
+ libiscsi/pylibiscsi.c                       |  638 ++++++++++++
+ libiscsi/setup.py                           |    9 +
+ libiscsi/tests/test_discovery_firmware.c    |   53 +
+ libiscsi/tests/test_discovery_sendtargets.c |   60 ++
+ libiscsi/tests/test_get_auth.c              |   70 ++
+ libiscsi/tests/test_get_initiator_name.c    |   38 +
+ libiscsi/tests/test_get_network_config.c    |   45 +
+ libiscsi/tests/test_login.c                 |   52 +
+ libiscsi/tests/test_logout.c                |   51 +
+ libiscsi/tests/test_params.c                |  103 ++
+ libiscsi/tests/test_set_auth.c              |   58 ++
+ usr/Makefile                                |    2 +-
+ usr/discovery.c                             |    5 +
+ usr/idbm.c                                  |    6 +-
+ usr/idbm.h                                  |    3 +
+ usr/iscsi_ipc.h                             |    2 +
+ 21 files changed, 3691 insertions(+), 4 deletions(-)
+ create mode 100644 libiscsi/Makefile
+ create mode 100644 libiscsi/libiscsi.c
+ create mode 100644 libiscsi/libiscsi.doxy
+ create mode 100644 libiscsi/libiscsi.h
+ create mode 100644 libiscsi/pylibiscsi.c
+ create mode 100644 libiscsi/setup.py
+ create mode 100644 libiscsi/tests/test_discovery_firmware.c
+ create mode 100644 libiscsi/tests/test_discovery_sendtargets.c
+ create mode 100644 libiscsi/tests/test_get_auth.c
+ create mode 100644 libiscsi/tests/test_get_initiator_name.c
+ create mode 100644 libiscsi/tests/test_get_network_config.c
+ create mode 100644 libiscsi/tests/test_login.c
+ create mode 100644 libiscsi/tests/test_logout.c
+ create mode 100644 libiscsi/tests/test_params.c
+ create mode 100644 libiscsi/tests/test_set_auth.c
+
 diff --git a/Makefile b/Makefile
-index db460eb..a4d4ce0 100644
+index c5d9700..6dfbde3 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -32,6 +32,7 @@ user: ;
+@@ -32,6 +32,7 @@ user: utils/open-isns/Makefile
  	$(MAKE) -C utils/fwparam_ibft
  	$(MAKE) -C usr
  	$(MAKE) -C utils
@@ -10,7 +54,7 @@ index db460eb..a4d4ce0 100644
  	@echo
  	@echo "Compilation complete                 Output file"
  	@echo "-----------------------------------  ----------------"
-@@ -53,6 +54,7 @@ kernel: force
+@@ -56,6 +57,7 @@ kernel: force
  force: ;
  
  clean:
@@ -20,16 +64,16 @@ index db460eb..a4d4ce0 100644
  	$(MAKE) -C utils clean
 diff --git a/libiscsi/Makefile b/libiscsi/Makefile
 new file mode 100644
-index 0000000..4aeb44f
+index 0000000..317a7ec
 --- /dev/null
 +++ b/libiscsi/Makefile
-@@ -0,0 +1,62 @@
+@@ -0,0 +1,61 @@
 +# This Makefile will work only with GNU make.
 +
 +OSNAME=$(shell uname -s)
 +OPTFLAGS ?= -O2 -g
 +WARNFLAGS ?= -Wall -Wstrict-prototypes
-+CFLAGS = $(OPTFLAGS) $(WARNFLAGS) -I../include -I../usr -I../utils/open-isns \
++CFLAGS = $(OPTFLAGS) $(WARNFLAGS) -I../include -I../usr \
 +		-D$(OSNAME) -fPIC -D_GNU_SOURCE -fvisibility=hidden
 +LIB = libiscsi.so.0
 +TESTS = tests/test_discovery_sendtargets tests/test_discovery_firmware
@@ -39,7 +83,7 @@ index 0000000..4aeb44f
 +
 +COMMON_SRCS = sysdeps.o
 +# sources shared between iscsid, iscsiadm and iscsistart
-+ISCSI_LIB_SRCS = session_info.o iscsi_util.o io.o auth.o discovery.o login.o log.o md5.o sha1.o iface.o idbm.o sysfs.o iscsi_sysfs.o iscsi_net_util.o iscsid_req.o
++ISCSI_LIB_SRCS = netlink.o transport.o cxgbi.o be2iscsi.o iscsi_timer.o initiator_common.o iscsi_err.o session_info.o iscsi_util.o io.o auth.o discovery.o login.o log.o md5.o sha1.o iface.o idbm.o sysfs.o iscsi_sysfs.o iscsi_net_util.o iscsid_req.o iser.o uip_mgmt_ipc.o
 +FW_PARAM_SRCS = fw_entry.o prom_lex.o prom_parse.tab.o fwparam_ppc.o fwparam_sysfs.o
 +
 +# sources shared with the userspace utils, note we build these separately
@@ -69,14 +113,13 @@ index 0000000..4aeb44f
 +	$(CC) $(CFLAGS) -c $< -o $@
 +
 +$(LIB): $(COMMON_OBJS) $(FW_OBJS) $(USR_OBJS) libiscsi.o
-+	$(CC) $(CFLAGS) -L../utils/open-isns -lisns -shared -Wl,-soname,$(LIB) $^ -o $@
++	$(CC) $(CFLAGS) -shared -Wl,-soname,$(LIB) $^ -o $@
 +	ln -s -f $(LIB) libiscsi.so
 +
 +$(TESTS): $(FW_OBJS) $(COMMON_OBJS) $(USR_OBJS) $(LIB)
-+	$(CC) $(CFLAGS) -L../utils/open-isns -lisns -c $< -o $@
 +
-+html: libiscsi.h libiscsi.doxy
-+	doxygen libiscsi.doxy
++html: libiscsi.h
++#	doxygen libiscsi.doxy
 +
 +clean:
 +	rm -rf *.o common-objs usr-objs fw-objs libuip-objs libiscsi.so* \
@@ -88,10 +131,10 @@ index 0000000..4aeb44f
 +-include .depend ../usr/.depend
 diff --git a/libiscsi/libiscsi.c b/libiscsi/libiscsi.c
 new file mode 100644
-index 0000000..a9eb0a6
+index 0000000..2a176e8
 --- /dev/null
 +++ b/libiscsi/libiscsi.c
-@@ -0,0 +1,563 @@
+@@ -0,0 +1,620 @@
 +/*
 + * iSCSI Administration library
 + *
@@ -131,8 +174,12 @@ index 0000000..a9eb0a6
 +#include "iscsi_proto.h"
 +#include "fw_context.h"
 +#include "iscsid_req.h"
++#include "iscsi_err.h"
 +
 +#define CHECK(a) { context->error_str[0] = 0; rc = a; if (rc) goto leave; }
++
++/* UGLY, not thread safe :( */
++static int sysfs_initialized = 0;
 +
 +struct libiscsi_context {
 +	char error_str[256];
@@ -160,7 +207,10 @@ index 0000000..a9eb0a6
 +		return NULL;
 +
 +	log_init("libiscsi", 1024, libiscsi_log, context);
-+	sysfs_init();
++	if (!sysfs_initialized) {
++		sysfs_init();
++		sysfs_initialized = 1;
++	}
 +	increase_max_files();
 +	if (idbm_init(NULL)) {
 +		sysfs_cleanup();
@@ -179,6 +229,16 @@ index 0000000..a9eb0a6
 +	free_transports();
 +	sysfs_cleanup();
 +	free(context);
++}
++
++static void free_iface_list(struct list_head *ifaces)
++{
++	struct iface_rec *iface, *tmp_iface;
++
++	list_for_each_entry_safe(iface, tmp_iface, ifaces, list) {
++		list_del(&iface->list);
++		free(iface);
++	}
 +}
 +
 +static void free_rec_list(struct list_head *rec_list)
@@ -264,6 +324,8 @@ index 0000000..a9eb0a6
 +			strlcpy((*found_nodes)[found].address,
 +				 rec->conn[0].address, NI_MAXHOST);
 +			(*found_nodes)[found].port = rec->conn[0].port;
++			strlcpy((*found_nodes)[found].iface,
++				 rec->iface.name, LIBISCSI_VALUE_MAXLEN);
 +			found++;
 +		}
 +	}
@@ -276,69 +338,84 @@ index 0000000..a9eb0a6
 +int libiscsi_discover_firmware(struct libiscsi_context *context,
 +	int *nr_found, struct libiscsi_node **found_nodes)
 +{
-+	struct boot_context fw_entry;
-+	struct node_rec rec;
++	struct list_head targets, ifaces, rec_list;
++	discovery_rec_t drec;
 +	int rc = 0;
 +
-+	if (nr_found)
-+		*nr_found = 0;
-+	if (found_nodes)
-+		*found_nodes = NULL;
++	INIT_LIST_HEAD(&targets);
++	INIT_LIST_HEAD(&ifaces);
++	INIT_LIST_HEAD(&rec_list);
 +
-+	memset(&fw_entry, 0, sizeof fw_entry);
-+	rc = fw_get_entry(&fw_entry);
++	if (nr_found) {
++		*nr_found = 0;
++	}
++
++	if (found_nodes) {
++		*found_nodes = NULL;
++	}
++
++	rc = fw_get_targets(&targets);
 +	if (rc) {
-+		strcpy(context->error_str, "Could not read fw values.");
++		log_error("%s: Could not get list of targets from firmware "
++			  "(err %d).\n", __func__, rc);
 +		return rc;
 +	}
 +
-+	memset(&rec, 0, sizeof rec);
-+	idbm_node_setup_defaults(&rec);
++	CHECK(iface_create_ifaces_from_boot_contexts(&ifaces, &targets));
 +
-+	strlcpy(rec.name, fw_entry.targetname, TARGET_NAME_MAXLEN);
-+	rec.tpgt = 1;
-+	strlcpy(rec.conn[0].address, fw_entry.target_ipaddr, NI_MAXHOST);
-+	rec.conn[0].port = fw_entry.target_port;
++	memset(&drec, 0, sizeof(drec));
++	drec.type = DISCOVERY_TYPE_FW;
++	rc = idbm_bind_ifaces_to_nodes(discovery_fw, &drec, &ifaces, &rec_list);
++	if (rc) {
++		log_error("%s: Could not determine target nodes from firmware "
++			  "(err %d).\n", __func__, rc);
++		goto leave;
++	}
 +
-+	iface_setup_defaults(&rec.iface);
-+	strncpy(rec.iface.iname, fw_entry.initiatorname,
-+		sizeof(fw_entry.initiatorname));
-+	strncpy(rec.session.auth.username, fw_entry.chap_name,
-+		sizeof(fw_entry.chap_name));
-+	strncpy((char *)rec.session.auth.password, fw_entry.chap_password,
-+		sizeof(fw_entry.chap_password));
-+	strncpy(rec.session.auth.username_in, fw_entry.chap_name_in,
-+		sizeof(fw_entry.chap_name_in));
-+	strncpy((char *)rec.session.auth.password_in,
-+		fw_entry.chap_password_in,
-+		sizeof(fw_entry.chap_password_in));
-+	rec.session.auth.password_length =
-+				strlen((char *)fw_entry.chap_password);
-+	rec.session.auth.password_in_length =
-+				strlen((char *)fw_entry.chap_password_in);
++	int node_count = 0;
++	struct list_head *pos;
++	list_for_each(pos, &rec_list) {
++		++node_count;
++	}
 +
-+	CHECK(idbm_add_node(&rec, NULL, 1 /* overwrite */))
++	struct libiscsi_node* new_nodes;
++	/* allocate enough space for all the nodes */
++	new_nodes = calloc(node_count, sizeof *new_nodes);
++	if (new_nodes == NULL) {
++		rc = ENOMEM;
++		log_error("%s: %s.\n", __func__, strerror(ENOMEM));
++		goto leave;
++	}
 +
-+	if (nr_found)
-+		*nr_found = 1;
++	struct node_rec *rec;
++	struct libiscsi_node *new_node = new_nodes;
++	/* in one loop, add nodes to idbm and create libiscsi_node entries */
++	list_for_each_entry(rec, &rec_list, list) {
++		CHECK(idbm_add_node(rec, NULL, 1 /* overwrite */));
 +
++		strlcpy(new_node->name, rec->name, LIBISCSI_VALUE_MAXLEN);
++		new_node->tpgt = rec->tpgt;
++		strlcpy(new_node->address, rec->conn[0].address, NI_MAXHOST);
++		new_node->port = rec->conn[0].port;
++		strlcpy(new_node->iface, rec->iface.name, LIBISCSI_VALUE_MAXLEN);
++
++		++new_node;
++	}
++
++	/* update output parameters */
++	if (nr_found) {
++		*nr_found = node_count;
++	}
 +	if (found_nodes) {
-+		*found_nodes = calloc(1, sizeof **found_nodes);
-+		if (*found_nodes == NULL) {
-+			snprintf(context->error_str,
-+				 sizeof(context->error_str), strerror(ENOMEM));
-+			rc = ENOMEM;
-+			goto leave;
-+		}
-+		strlcpy((*found_nodes)[0].name, rec.name,
-+			 LIBISCSI_VALUE_MAXLEN);
-+		(*found_nodes)[0].tpgt = rec.tpgt;
-+		strlcpy((*found_nodes)[0].address,
-+			 rec.conn[0].address, NI_MAXHOST);
-+		(*found_nodes)[0].port = rec.conn[0].port;
++		*found_nodes = new_nodes;
 +	}
 +
 +leave:
++	fw_free_targets(&targets);
++
++	free_iface_list(&ifaces);
++	free_rec_list(&rec_list);
++
 +	return rc;
 +}
 +
@@ -465,9 +542,14 @@ index 0000000..a9eb0a6
 +
 +int login_helper(void *data, node_rec_t *rec)
 +{
++	char *iface = (char*)data;
++	if (strcmp(iface, rec->iface.name))
++		/* different iface, skip it */
++		return -1;
++
 +	int rc = iscsid_req_by_rec(MGMT_IPC_SESSION_LOGIN, rec);
 +	if (rc) {
-+		iscsid_handle_error(rc);
++		iscsi_err_print_msg(rc);
 +		rc = ENOTCONN;
 +	}
 +	return rc;
@@ -478,7 +560,7 @@ index 0000000..a9eb0a6
 +{
 +	int nr_found = 0, rc;
 +
-+	CHECK(idbm_for_each_iface(&nr_found, NULL, login_helper,
++	CHECK(idbm_for_each_iface(&nr_found, (void*)node->iface, login_helper,
 +		(char *)node->name, node->tpgt,
 +		(char *)node->address, node->port))
 +	if (nr_found == 0) {
@@ -501,7 +583,7 @@ index 0000000..a9eb0a6
 +
 +	rc = iscsid_req_by_sid(MGMT_IPC_SESSION_LOGOUT, info->sid);
 +	if (rc) {
-+		iscsid_handle_error(rc);
++		iscsi_err_print_msg(rc);
 +		rc = EIO;
 +	}
 +
@@ -529,18 +611,26 @@ index 0000000..a9eb0a6
 +	const char *parameter, const char *value)
 +{
 +	int nr_found = 0, rc;
-+	struct db_set_param set_param = {
-+		.name = (char *)parameter,
-+		.value = (char *)value,
-+	};
++	struct user_param *param;
++	struct list_head params;
 +
-+	CHECK(idbm_for_each_iface(&nr_found, &set_param, idbm_node_set_param,
++	INIT_LIST_HEAD(&params);
++	param = idbm_alloc_user_param(parameter, value);
++	if (!param) {
++		rc = ENOMEM;
++		goto leave;
++	}
++	list_add_tail(&params, &param->list);
++
++	CHECK(idbm_for_each_iface(&nr_found, &params, idbm_node_set_param,
 +		(char *)node->name, node->tpgt,
 +		(char *)node->address, node->port))
 +	if (nr_found == 0) {
 +		strcpy(context->error_str, "No such node");
 +		rc = ENODEV;
 +	}
++	free(param->name);
++	free(param);
 +leave:
 +	return rc;
 +}
@@ -623,6 +713,11 @@ index 0000000..a9eb0a6
 +{
 +	struct boot_context fw_entry;
 +
++	if (!sysfs_initialized) {
++		sysfs_init();
++		sysfs_initialized = 1;
++	}
++
 +	memset(config, 0, sizeof *config);
 +	memset(&fw_entry, 0, sizeof fw_entry);
 +	if (fw_get_entry(&fw_entry))
@@ -644,6 +739,11 @@ index 0000000..a9eb0a6
 +int libiscsi_get_firmware_initiator_name(char *initiatorname)
 +{
 +	struct boot_context fw_entry;
++
++	if (!sysfs_initialized) {
++		sysfs_init();
++		sysfs_initialized = 1;
++	}
 +
 +	memset(initiatorname, 0, LIBISCSI_VALUE_MAXLEN);
 +	memset(&fw_entry, 0, sizeof fw_entry);
@@ -2136,10 +2236,10 @@ index 0000000..663770f
 +SEARCHENGINE           = NO
 diff --git a/libiscsi/libiscsi.h b/libiscsi/libiscsi.h
 new file mode 100644
-index 0000000..a7d05a5
+index 0000000..756590e
 --- /dev/null
 +++ b/libiscsi/libiscsi.h
-@@ -0,0 +1,343 @@
+@@ -0,0 +1,344 @@
 +/*
 + * iSCSI Administration library
 + *
@@ -2210,6 +2310,7 @@ index 0000000..a7d05a5
 +       get used anywhere, so we keep things simple and assume one connection */
 +    char address[NI_MAXHOST]             /** Portal hostname or IP-address. */;
 +    int port                             /** Portal port number. */;
++    char iface[LIBISCSI_VALUE_MAXLEN]    /** Interface to connect through. */;
 +};
 +
 +/** \brief libiscsi CHAP authentication information struct
@@ -2485,10 +2586,10 @@ index 0000000..a7d05a5
 +#endif
 diff --git a/libiscsi/pylibiscsi.c b/libiscsi/pylibiscsi.c
 new file mode 100644
-index 0000000..454a26a
+index 0000000..4b09aa7
 --- /dev/null
 +++ b/libiscsi/pylibiscsi.c
-@@ -0,0 +1,624 @@
+@@ -0,0 +1,638 @@
 +/*
 + * iSCSI Administration library
 + *
@@ -2689,25 +2790,27 @@ index 0000000..454a26a
 +static int PyIscsiNode_init(PyObject *self, PyObject *args, PyObject *kwds)
 +{
 +	PyIscsiNode *node = (PyIscsiNode *)self;
-+	char *kwlist[] = {"name", "tpgt", "address", "port", NULL};
-+	const char *name = NULL, *address = NULL;
++	char *kwlist[] = {"name", "tpgt", "address", "port", "iface", NULL};
++	const char *name = NULL, *address = NULL, *iface = NULL;
 +	int tpgt = -1, port = 3260;
 +
-+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|isi:node.__init__",
-+					kwlist, &name, &tpgt, &address, &port))
++	if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|isis:node.__init__",
++					 kwlist, &name, &tpgt, &address,
++					 &port, &iface))
 +		return -1;
 +	if (address == NULL) {
 +		PyErr_SetString(PyExc_ValueError, "address not set");
 +		return -1;
 +	}
-+	if (check_string(name) || check_string(address))
++	if (check_string(name) || check_string(address) || check_string(iface))
 +		return -1;
 +
 +	strcpy(node->node.name, name);
 +	node->node.tpgt = tpgt;
 +	strcpy(node->node.address, address);
 +	node->node.port = port;
-+	
++	strcpy(node->node.iface, iface);
++
 +	return 0;
 +}
 +
@@ -2724,6 +2827,8 @@ index 0000000..454a26a
 +		return PyString_FromString(node->node.address);
 +	} else if (!strcmp(attr, "port")) {
 +		return PyInt_FromLong(node->node.port);
++	} else if (!strcmp(attr, "iface")) {
++		return PyString_FromString(node->node.iface);
 +	}
 +	return NULL;
 +}
@@ -2751,6 +2856,10 @@ index 0000000..454a26a
 +		if (!PyArg_Parse(value, "i", &i))
 +			return -1;
 +		node->node.port = i;
++	} else if (!strcmp(attr, "iface")) {
++		if (!PyArg_Parse(value, "s", &str) || check_string(str))
++			return -1;
++		strcpy(node->node.iface, str);
 +	}
 +
 +	return 0;
@@ -2777,6 +2886,10 @@ index 0000000..454a26a
 +		return -1;
 +	if (self->node.port > other->node.port)
 +		return -1;
++
++	res = strcmp(self->node.iface, other->node.iface);
++	if (res)
++		return res;
 +
 +	return 0;
 +}
@@ -2931,6 +3044,8 @@ index 0000000..454a26a
 +		"address", "address"},
 +	{"port", (getter)PyIscsiNode_get, (setter)PyIscsiNode_set,
 +		"port", "port"},
++	{"iface", (getter)PyIscsiNode_get, (setter)PyIscsiNode_set,
++		"iface", "iface"},
 +	{NULL}
 +};
 +
@@ -3712,8 +3827,21 @@ index 0000000..a21f888
 +
 +	return rc;
 +}
+diff --git a/usr/Makefile b/usr/Makefile
+index 1506111..015f1b9 100644
+--- a/usr/Makefile
++++ b/usr/Makefile
+@@ -31,7 +31,7 @@ endif
+ OPTFLAGS ?= -O2 -g
+ WARNFLAGS ?= -Wall -Wstrict-prototypes
+ CFLAGS += $(OPTFLAGS) $(WARNFLAGS) -I../include -I. -I../utils/open-isns \
+-				-D$(OSNAME) $(IPC_CFLAGS)
++				-D$(OSNAME) $(IPC_CFLAGS) -DISNS_ENABLE
+ PROGRAMS = iscsid iscsiadm iscsistart
+ 
+ # libc compat files
 diff --git a/usr/discovery.c b/usr/discovery.c
-index 381f825..2233de7 100644
+index afce6c0..0c93749 100644
 --- a/usr/discovery.c
 +++ b/usr/discovery.c
 @@ -36,6 +36,7 @@
@@ -3724,14 +3852,76 @@ index 381f825..2233de7 100644
  #include "log.h"
  #include "idbm.h"
  #include "iscsi_settings.h"
+@@ -50,9 +51,11 @@
+ #include "iscsi_timer.h"
+ #include "iscsi_err.h"
+ /* libisns includes */
++#ifdef ISNS_ENABLE
+ #include "isns.h"
+ #include "paths.h"
+ #include "message.h"
++#endif
+ 
+ #ifdef SLP_ENABLE
+ #include "iscsi-slp-discovery.h"
+@@ -98,6 +101,7 @@ static int request_initiator_name(void)
+ 	return 0;
+ }
+ 
++#ifdef ISNS_ENABLE
+ void discovery_isns_free_servername(void)
+ {
+ 	if (isns_config.ic_server_name)
+@@ -377,6 +381,7 @@ retry:
+ 	discovery_isns_free_servername();
+ 	return rc;
+ }
++#endif
+ 
+ int discovery_fw(void *data, struct iface_rec *iface,
+ 		 struct list_head *rec_list)
+diff --git a/usr/idbm.c b/usr/idbm.c
+index 806d90e..c20f7d9 100644
+--- a/usr/idbm.c
++++ b/usr/idbm.c
+@@ -1335,9 +1335,9 @@ int idbm_print_all_discovery(int info_level)
+  * fn should return -1 if it skipped the rec, a ISCSI_ERR error code if
+  * the operation failed or 0 if fn was run successfully.
+  */
+-static int idbm_for_each_iface(int *found, void *data,
+-				idbm_iface_op_fn *fn,
+-				char *targetname, int tpgt, char *ip, int port)
++int idbm_for_each_iface(int *found, void *data,
++			idbm_iface_op_fn *fn,
++			char *targetname, int tpgt, char *ip, int port)
+ {
+ 	DIR *iface_dirfd;
+ 	struct dirent *iface_dent;
+diff --git a/usr/idbm.h b/usr/idbm.h
+index 5d81df7..f645561 100644
+--- a/usr/idbm.h
++++ b/usr/idbm.h
+@@ -101,6 +101,9 @@ struct rec_op_data {
+ 	node_rec_t *match_rec;
+ 	idbm_iface_op_fn *fn;
+ };
++extern int idbm_for_each_iface(int *found, void *data,
++			       idbm_iface_op_fn *fn,
++			       char *targetname, int tpgt, char *ip, int port);
+ extern int idbm_for_each_portal(int *found, void *data,
+ 				idbm_portal_op_fn *fn, char *targetname);
+ extern int idbm_for_each_node(int *found, void *data,
 diff --git a/usr/iscsi_ipc.h b/usr/iscsi_ipc.h
-index 74ef948..713914f 100644
+index db5f1f0..e0bf051 100644
 --- a/usr/iscsi_ipc.h
 +++ b/usr/iscsi_ipc.h
-@@ -111,4 +111,6 @@ struct iscsi_ipc {
- 	int (*recv_pdu_end) (struct iscsi_conn *conn);
+@@ -147,4 +147,6 @@ struct iscsi_ipc {
+ 			    uint16_t chap_tbl_idx);
  };
  
 +struct iscsi_ipc *ipc;
 +
  #endif /* ISCSI_IPC_H */
+-- 
+1.7.11.7
+
