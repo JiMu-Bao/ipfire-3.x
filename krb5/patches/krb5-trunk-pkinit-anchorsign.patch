@@ -1,0 +1,40 @@
+commit db83abc7dcfe369bd4467c78eebb7028ba0c0e0d
+Author: Greg Hudson <ghudson@mit.edu>
+Date:   Thu Jun 21 17:20:29 2012 -0400
+
+    Handle PKINIT DH replies with no certs
+    
+    If a PKINIT Diffie-Hellman reply contains no certificates in the
+    SignedData object, that may be because the signer certificate was a
+    trust anchor as transmitted to the KDC.  Heimdal's KDC, for instance,
+    filters client trust anchors out of the returned set of certificates.
+    Match against idctx->trustedCAs and idctx->intermediateCAs to handle
+    this case.  This fix only works with OpenSSL 1.0 or later; when built
+    against OpenSSL 0.9.x, the client will still require a cert in the
+    reply.
+    
+    Code changes suggested by nalin@redhat.com.
+    
+    ticket: 7183
+
+diff --git a/src/plugins/preauth/pkinit/pkinit_crypto_openssl.c b/src/plugins/preauth/pkinit/pkinit_crypto_openssl.c
+index 0136d4f..7120ecf 100644
+--- a/src/plugins/preauth/pkinit/pkinit_crypto_openssl.c
++++ b/src/plugins/preauth/pkinit/pkinit_crypto_openssl.c
+@@ -1398,8 +1398,15 @@ cms_signeddata_verify(krb5_context context,
+         X509_STORE_set_verify_cb_func(store, openssl_callback_ignore_crls);
+     X509_STORE_set_flags(store, vflags);
+ 
+-    /* get the signer's information from the CMS message */
++    /*
++     * Get the signer's information from the CMS message.  Match signer ID
++     * against anchors and intermediate CAs in case no certs are present in the
++     * SignedData.  If we start sending kdcPkId values in requests, we'll need
++     * to match against the source of that information too.
++     */
+     CMS_set1_signers_certs(cms, NULL, 0);
++    CMS_set1_signers_certs(cms, idctx->trustedCAs, CMS_NOINTERN);
++    CMS_set1_signers_certs(cms, idctx->intermediateCAs, CMS_NOINTERN);
+     if (((si_sk = CMS_get0_SignerInfos(cms)) == NULL) ||
+         ((si = sk_CMS_SignerInfo_value(si_sk, 0)) == NULL)) {
+         /* Not actually signed; anonymous case */
