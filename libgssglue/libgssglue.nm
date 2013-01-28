@@ -4,25 +4,24 @@
 ###############################################################################
 
 name       = libgssglue
-version    = 0.1
+version    = 0.4
 release    = 1
 
 groups     = Development/Tools
-url        = http://www.citi.umich.edu/projects/nfsv4/linux/libgssglue/
+url        = http://www.citi.umich.edu/projects/nfsv4/linux/
 license    = BSD
 summary    = This library exports a gssapi interface.
 
 description
-	This library exports a gssapi interface, but doesn't implement any \
-	gssapi mechanisms itself; instead it calls gssapi routines in other \
+	This library exports a gssapi interface, but doesn't implement any
+	gssapi mechanisms itself; instead it calls gssapi routines in other
 	libraries, depending on the mechanism.
 end
 
-source_dl  =
+source_dl  = http://www.citi.umich.edu/projects/nfsv4/linux/%{name}/
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
