@@ -5,7 +5,7 @@
 
 name       = nfs-utils
 version    = 1.2.7
-release    = 1
+release    = 2
 
 groups     = Networking/Tools
 url        = http://nfs.sourceforge.net/
@@ -29,11 +29,13 @@ build
 	requires
 		autoconf
 		automake
+		e2fsprogs-devel
+		krb5-devel
 		libblkid-devel
 		libdevmapper-devel
 		libcap-devel
 		libevent-devel
-		libgssglue-devel
+		libgssglue-devel >= 0.3
 		libmount-devel
 		libnfsidmap-devel
 		libtirpc-devel
@@ -45,8 +47,6 @@ build
 
 	configure_options += \
 		--without-tcp-wrappers \
-		--without-krb5 \
-		--disable-gss \
 		--enable-libmount-mount \
 		--enable-mountconfig \
 		--enable-ipv6 \
