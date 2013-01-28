@@ -1,0 +1,245 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = krb5
+version    = %{version_maj}.%{version_min}
+version_maj= 1.10
+version_min= 2
+release    = 1
+
+groups     = System/Libraries
+url        = http://web.mit.edu/kerberos/www/
+license    = MIT
+summary    = The Kerberos network authentication system.
+
+description
+	Kerberos V5 is a trusted-third-party network authentication system,
+	which can improve your network's security by eliminating the insecure
+	practice of sending passwords over the network in unencrypted form.
+end
+
+# Upstream only provides a "signed" tarball which contains the actual
+# tar archive.
+#source_dl  = http://we1b.mit.edu/kerberos/dist/krb5/%{version_maj}/
+#sources    = %{thisapp}-signed.tar
+
+patches
+	krb5-1.10.2-pam.patch
+	krb5-1.10.2-manpaths.patch
+	krb5-1.10.2-selinux-label.patch
+	krb5-1.3.1-dns.patch
+	krb5-1.3.4-send-pr-tempfile.patch
+	krb5-1.7-ktany.patch
+	krb5-1.8-api.patch
+	krb5-1.9-debuginfo.patch0
+	krb5-1.9-dirsrv-accountlock.patch
+	krb5-1.10-buildconf.patch
+	krb5-1.10-doublelog.patch
+	krb5-1.10-gcc47.patch0
+	krb5-1.10-kpasswd_tcp.patch
+	krb5-1.10-kprop-mktemp.patch
+	krb5-1.10-ksu-access.patch
+	krb5-1.10-ksu-path.patch
+	krb5-1.10.2-keytab-etype.patch
+	krb5-kvno-230379.patch
+	krb5-tex-pdf.sh
+	krb5-trunk-7046.patch
+	krb5-trunk-7047.patch
+	krb5-trunk-7048.patch
+	krb5-trunk-pkinit-anchorsign.patch
+end
+
+build
+	requires
+		autoconf
+		automake
+		bison
+		dejagnu
+		e2fsprogs-devel
+		flex
+		gettext
+		libselinux-devel
+		ncurses-devel
+		openldap-devel
+		openssl-devel
+		pam-devel
+		perl
+		systemd-units
+		tcl-devel
+		texinfo
+	end
+
+	prepare_cmds
+		pushd src
+		for file in appl/sample/sserver/sserver.M \
+				config-files/kdc.conf.M \
+				config-files/krb5.conf.M \
+				gen-manpages/kerberos.M \
+				kadmin/cli/kadmin.M \
+				slave/kpropd.M \
+				slave/kprop.M; do
+			mv -v ${file} ${file}.in
+		done
+
+		rm -vf lib/krb5/krb/deltat.c
+
+		# Regenerate configure scripts.
+		autoheader
+		autoconf
+		popd
+	end
+
+	configure_options += \
+		--enable-shared \
+		--disable-rpath \
+		--localstatedir=/var/kerberos \
+		--with-system-et \
+		--with-system-ss \
+		--with-netlib=-lresolv \
+		--with-tcl \
+		--enable-dns-for-realm \
+		--with-dirsrv \
+		--enable-pkinit \
+		--with-crypto-impl=openssl \
+		--with-pam \
+		--with-selinux
+
+	# Don't use strlcpy that comes with glibc.
+	configure_options += \
+		ac_cv_func_strlcpy=no
+
+	build
+		cd %{DIR_APP}/src
+		./configure \
+			%{configure_options}
+
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make -C src fake-install
+		tmpdir=$(mktemp -d)
+
+		# Disable the following tests, because the don't work in the chroot env.
+		#make -C src/lib check TMPDIR=${tmpdir}
+		#make -C src/kdc check TMPDIR=${tmpdir}
+	end
+
+	install
+		# Install krb5.
+		make -C src install DESTDIR=%{BUILDROOT}
+
+		# Sample KDC config files (bundled kdc.conf and kadm5.acl).
+		mkdir -pv %{BUILDROOT}%{localstatedir}/kerberos/krb5kdc
+		install -pm 600 %{DIR_SOURCE}/kdc.conf %{BUILDROOT}%{localstatedir}/kerberos/krb5kdc/
+		install -pm 600 %{DIR_SOURCE}/kadm5.acl %{BUILDROOT}%{localstatedir}/kerberos/krb5kdc/
+
+		# Default configuration file for everything.
+		mkdir -pv %{BUILDROOT}/etc
+		install -pm 644 %{DIR_SOURCE}/krb5.conf %{BUILDROOT}/etc/krb5.conf
+
+		# Plug-in directories.
+		install -pdm 755 %{BUILDROOT}%{libdir}/krb5/plugins/preauth
+		install -pdm 755 %{BUILDROOT}%{libdir}/krb5/plugins/kdb
+		install -pdm 755 %{BUILDROOT}%{libdir}/krb5/plugins/authdata
+	end
+end
+
+packages
+	package %{name}-server
+		summary = The KDC and related programs for Kerberos 5.
+		description
+			Kerberos is a network authentication system. The krb5-server package
+			contains the programs that must be installed on a Kerberos 5 key
+			distribution center (KDC).  If you are installing a Kerberos 5 KDC,
+			you need to install this package.
+		end
+
+		requires
+			%{name}-libs = %{thisver}
+		end
+
+		script postin
+			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/usr/bin/systemctl --no-reload disable kadmin.service  >/dev/null 2>&1 || :
+			/usr/bin/systemctl --no-reload disable kprop.service >/dev/null 2>&1 || :
+			/usr/bin/systemctl --no-reload disable krb5kdc.service >/dev/null 2>&1 || :
+			/usr/bin/systemctl stop kadmin.service >/dev/null 2>&1 || :
+			/usr/bin/systemctl stop kprop.service >/dev/null 2>&1 || :
+			/usr/bin/systemctl stop krb5kdc.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+			/usr/bin/systemctl try-restart kadmin.service >/dev/null 2>&1 || :
+			/usr/bin/systemctl try-restart kprop.service >/dev/null 2>&1 || :
+			/usr/bin/systemctl try-restart krb5kdc.service >/dev/null 2>&1 || :
+		end
+	end
+
+	package %{name}-workstation
+		summary = Kerberos 5 programs for use on workstations.
+		description
+			Kerberos is a network authentication system. The krb5-workstation
+			package contains the basic Kerberos programs (kinit, klist, kdestroy,
+			kpasswd). If your network uses Kerberos, this package should be
+			installed on every workstation.
+		end
+
+		requires
+			%{name}-libs = %{thisver}
+		end
+
+		files
+			%{bindir}/kdestroy
+			%{bindir}/kinit
+			%{bindir}/klist
+			%{bindir}/kpassword
+			%{bindir}/kswitch
+			%{bindir}/kvno
+			%{bindir}/kadmin
+			%{bindir}/k5srvutil
+			%{bindir}/kutil
+			%{bindir}/ksu
+			%{bindir}/krb5-send-pr
+
+			%{sysconfdir}/pam.d
+
+			%{mandir}/man1/kdestroy.*
+			%{mandir}/man1/kinit.*
+			%{mandir}/man1/klist.*
+			%{mandir}/man1/kpassword.*
+			%{mandir}/man1/kswitch.*
+			%{mandir}/man1/kvno.*
+			%{mandir}/man1/kadmin.*
+			%{mandir}/man1/k5srvutil.*
+			%{mandir}/man1/kutil.*
+			%{mandir}/man1/ksu.*
+		end
+	end
+
+	package %{name}-libs
+		template LIBS
+	end
+
+	package %{name}-devel
+		template DEVEL
+
+		requires
+			libselinux-devel
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
