@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libICE
-version    = 1.0.6
+version    = 1.0.8
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -17,8 +17,7 @@ description
 	X.Org X11 libICE development package.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+source_dl  = http://ftp.x.org/pub/individual/lib/
 
 build
 	requires
@@ -33,7 +32,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
