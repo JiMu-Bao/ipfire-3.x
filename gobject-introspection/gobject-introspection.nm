@@ -7,8 +7,8 @@ name       = gobject-introspection
 version    = %{major_ver}.%{minor_ver}
 release    = 1
 
-major_ver  = 1.31
-minor_ver  = 22
+major_ver  = 1.35
+minor_ver  = 4
 
 groups     = Development/Libraries
 url        = http://live.gnome.org/GObjectIntrospection
@@ -16,9 +16,9 @@ license    = GPLv2+, LGPLv2+, MIT
 summary    = Introspection system for GObject-based libraries.
 
 description
-	GObject Introspection can scan C header and source files in order \
-	to generate introspection "typelib" files. It also provides an API to \
-	examine typelib files, useful for creating language bindings among \
+	GObject Introspection can scan C header and source files in order
+	to generate introspection "typelib" files. It also provides an API to
+	examine typelib files, useful for creating language bindings among
 	other things.
 end
 
@@ -38,10 +38,6 @@ build
 
 	configure_options += \
 		--disable-static
-
-	test
-		make check
-	end
 end
 
 packages
@@ -55,6 +51,8 @@ packages
 		template DEVEL
 
 		requires = %{name}=%{thisver}
+
+		files += %{datadir}/gir*
 	end
 
 	package %{name}-debuginfo
