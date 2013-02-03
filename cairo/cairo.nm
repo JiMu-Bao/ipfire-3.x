@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = cairo
-version    = 1.12.4
+version    = 1.12.12
 release    = 1
 
 groups     = System/Graphics
@@ -25,6 +25,7 @@ build
 		binutils>=2.21.51.0.8-2
 		fontconfig-devel
 		freetype-devel
+		gobject-introspection-devel
 		libX11-devel
 		libXext-devel>=1.3.1
 		libxml2-devel
@@ -37,11 +38,29 @@ build
 	configure_options += \
 		--enable-xlib \
 		--enable-xml \
+		--enable-gobject \
+		--disable-gtk-doc \
 		--disable-static
 end
 
 packages
 	package %{name}
+
+	package %{name}-gobject
+		summary = GObject bindings for cairo.
+		description
+			This package contains functionality to make cairo
+			graphics library integrate well with the GObject object system.
+		end
+
+		requires
+			cairo = %{thisver}
+		end
+
+		files
+			%{libdir}/*gobject.so.*
+		end
+	end
 
 	package %{name}-devel
 		template DEVEL
@@ -52,6 +71,26 @@ packages
 			freetype-devel
 			libpng-devel
 			pixman-devel
+		end
+	end
+
+	package %{name}-gobject-devel
+		summary = Development files for cairo-gobject.
+		description
+			This package contains libraries, header files and developer
+			documentation needed for developing software which uses the
+			cairo Gobject library.
+		end
+
+		requires
+			%{name}-gobject = %{thisver}
+			%{name}-devel = %{thisver}
+		end
+
+		files
+			%{libdir}/*gobject.so
+			%{libdir}/pkgconfig/*gobject.pc
+			%{includedir}/cairo/*gobject.h
 		end
 	end
 
