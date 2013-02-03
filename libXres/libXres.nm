@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libXres
-version    = 1.0.4
+version    = 1.0.6
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -14,12 +14,11 @@ license    = MIT
 summary    = X-Resource extension client library.
 
 description
-	X-Resource is an extension that allows a client to query \
+	X-Resource is an extension that allows a client to query
 	the X server about its usage of various resources.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+source_dl  = http://ftp.x.org/pub/individual/lib/
 
 build
 	requires
@@ -37,7 +36,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
