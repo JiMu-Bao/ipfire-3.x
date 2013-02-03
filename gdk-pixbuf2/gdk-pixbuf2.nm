@@ -4,8 +4,9 @@
 ###############################################################################
 
 name       = gdk-pixbuf2
-version    = %{major_ver}.5
-major_ver  = 2.26
+version    = %{ver_major}.%{ver_minor}
+ver_major  = 2.27
+ver_minor  = 1
 release    = 1
 
 groups     = System/Libraries
@@ -20,7 +21,7 @@ end
 
 thisapp    = gdk-pixbuf-%{version}
 
-source_dl  = http://download.gnome.org/sources/gdk-pixbuf/%{major_ver}/
+source_dl  = http://download.gnome.org/sources/gdk-pixbuf/%{ver_major}/
 sources    = %{thisapp}.tar.xz
 
 build
