@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = xorg-x11-proto-devel
-version    = 7.6
+version    = 7.7
 release    = 1
 arch       = noarch
 
@@ -18,8 +18,6 @@ description
 	Development headers for X.org X11 protocol.
 end
 
-build_requires += pkg-config
-
 source_dl = http://ftp.x.org/pub/individual/proto/
 sources = \
 	bigreqsproto-1.1.2.tar.bz2 \
@@ -31,7 +29,7 @@ sources = \
         fixesproto-5.0.tar.bz2 \
         fontsproto-2.1.2.tar.bz2 \
         glproto-1.4.16.tar.bz2 \
-        inputproto-2.2.tar.bz2 \
+        inputproto-2.2.99.1.tar.bz2 \
         kbproto-1.0.6.tar.bz2 \
         randrproto-1.4.0.tar.bz2 \
         recordproto-1.14.2.tar.bz2 \
@@ -51,6 +49,11 @@ sources = \
         xproxymanagementprotocol-1.0.3.tar.bz2
 
 build
+	requires
+		pkg-config
+		xorg-x11-util-macros
+	end
+
 	prepare
 		# Extract all source tarballs.
 		for object in %{sources}; do
