@@ -1,0 +1,40 @@
+From f7a632ab069e3439f312023fc599dc659c197568 Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Sun, 3 Feb 2013 21:40:16 +0100
+Subject: [PATCH 4/4] build parallelism: New way to figure that out.
+
+The system will now use either the old formula,
+CPU cores * 2 + 1 or the amount of memory in megabytes devided
+by 128 (i.e. each compiler process can have 128M RAM) which ever
+is less.
+---
+ python/pakfire/system.py | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/python/pakfire/system.py b/python/pakfire/system.py
+index a9154de..6d54d5f 100644
+--- a/python/pakfire/system.py
++++ b/python/pakfire/system.py
+@@ -157,14 +157,15 @@ class System(object):
+ 			simulatneously when compiling.
+ 		"""
+ 		# Check how many processes would fit into the
+-		# memory when each process takes up to 500MB.
+-		multiplicator = self.memory / (500 * 1024 * 1024)
++		# memory when each process takes up to 128MB.
++		multiplicator = self.memory / (128 * 1024 * 1024)
+ 		multiplicator = round(multiplicator)
+ 
+ 		# Count the number of online CPU cores.
+-		cpucount = os.sysconf("SC_NPROCESSORS_CONF")
++		cpucount = os.sysconf("SC_NPROCESSORS_CONF") * 2
++		cpucount += 1
+ 
+-		return min(multiplicator, cpucount * 2)
++		return min(multiplicator, cpucount)
+ 
+ 
+ # Create an instance of this class to only keep it once in memory.
+-- 
+1.7.11.7
+
