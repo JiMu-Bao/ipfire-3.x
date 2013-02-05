@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libXpm
-version    = 3.5.8
+version    = 3.5.10
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -17,8 +17,7 @@ description
 	X.Org X11 libXpm runtime library.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+source_dl  = http://ftp.x.org/pub/individual/lib/
 
 build
 	requires
@@ -39,7 +38,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

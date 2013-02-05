@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = xcb-proto
-version    = 1.6
-release    = 2
+version    = 1.8
+release    = 1
 arch       = noarch
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -21,7 +21,6 @@ description
 end
 
 source_dl  = http://xcb.freedesktop.org/dist/
-sources    = %{thisapp}.tar.gz
 
 build
 	requires
@@ -37,5 +36,4 @@ end
 
 packages
 	package %{name}
-	end
 end

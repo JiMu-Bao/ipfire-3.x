@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libxcb
-version    = 1.7
+version    = 1.9
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -14,12 +14,12 @@ license    = MIT
 summary    = A C binding to the X11 protocol.
 
 description
-	The X protocol C-language Binding (XCB) is a replacement for Xlib \
-	featuring a small footprint, latency hiding, direct access to the \
+	The X protocol C-language Binding (XCB) is a replacement for Xlib
+	featuring a small footprint, latency hiding, direct access to the
 	protocol, improved threading support, and extensibility.
 end
 
-source_dl  =
+source_dl  = http://xcb.freedesktop.org/dist/
 
 build
 	requires
@@ -30,7 +30,7 @@ build
 		libxslt-devel
 		pkg-config
 		python-devel
-		xcb-proto
+		xcb-proto >= 1.7
 		xorg-x11-proto-devel
 	end
 
@@ -45,7 +45,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libfontenc
-version    = 1.0.5
+version    = 1.1.1
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -17,7 +17,7 @@ description
 	X.Org X11 libfontenc runtime library.
 end
 
-source_dl  =
+source_dl  = http://ftp.x.org/pub/individual/lib/
 
 build
 	requires
@@ -32,7 +32,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

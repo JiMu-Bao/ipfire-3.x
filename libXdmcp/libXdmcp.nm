@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libXdmcp
-version    = 1.0.3
+version    = 1.1.1
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -17,8 +17,7 @@ description
 	X Display Manager Control Protocol library.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+source_dl  = http://ftp.x.org/pub/individual/lib/
 
 build
 	requires
@@ -32,7 +31,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
