@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = xorg-x11-drv-vesa
-version    = 2.3.0
+version    = 2.3.2
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -17,22 +17,22 @@ description
 	X.Org X11 vesa video driver.
 end
 
-source_dl = http://ftp.x.org/pub/individual/driver/
-sources   = xf86-video-vesa-%{version}.tar.bz2
+# Specify the X Server version to build for.
+x11_server_ver = 1.13.2
 
-DIR_APP = $(DIR_SRC)/xf86-video-vesa-$(PKG_VER)
+thisapp = xf86-video-vesa-%{version}
+
+source_dl = http://ftp.x.org/pub/individual/driver/
 
 build
 	requires
 		libX11-devel
-		libpciaccess-devel
+		libpciaccess-devel >= 0.13.1
 		pkg-config
 		xorg-x11-proto-devel
-		xorg-x11-server-devel
+		xorg-x11-server-devel >= %{x11_server_ver}
 		xorg-x11-util-macros
 	end
-
-	DIR_APP = %{DIR_SRC}/xf86-video-vesa-%{version}
 
 	CFLAGS        += -Wl,-z,lazy
 
@@ -46,6 +46,9 @@ end
 
 packages
 	package %{name}
+		requires
+			xorg-x11-server >= %{x11_server_ver}
+		end
 	end
 
 	package %{name}-debuginfo
