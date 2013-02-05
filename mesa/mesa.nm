@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = mesa
-version    = 7.11.2
-release    = 2
+version    = 9.0.2
+release    = 1
 
 groups     = Development/Tools
 url        = http://www.mesa3d.org
@@ -21,6 +21,8 @@ sources    = MesaLib-%{version}.tar.bz2
 
 build
 	requires
+		autoconf
+		automake
 		bison
 		expat-devel
 		flex
@@ -31,9 +33,11 @@ build
 		libXext-devel
 		libXfixes-devel
 		libXxf86vm-devel
-		libdrm-devel
+		libdrm-devel >= 2.4.40
 		libselinux-devel
+		libtool
 		libxcb-devel
+		libxml2-devel
 		makedepend
 		xorg-x11-proto-devel
 	end
@@ -50,13 +54,10 @@ build
 		--enable-pic \
 		--enable-selinux \
 		--enable-pic \
-		--with-driver=dri \
+		--enable-dri \
 		--with-dri-drivers="nouveau,radeon,r200%{platform_drivers}" \
 		--with-gallium-drivers=swrast \
 		--disable-asm \
-		--disable-glw \
-		--disable-glu \
-		--disable-glut \
 		--disable-gallium-llvm \
 		--disable-gallium-egl \
 		--disable-egl \
@@ -66,11 +67,59 @@ build
 	prepare_cmds
 		# Defaults to dri (not xlib) for libGL on all arches.
 		sed -i 's/^default_driver.*$/default_driver="dri"/' configure.ac
+
+		# Regenerate build system.
+		autoreconf -vfi
 	end
 end
 
 packages
-	package %{name}
+	package dri-drivers
+		summary = Mesa-based DRI drivers.
+		description
+			This package contains the Mesa-based DRI drivers.
+		end
+
+		obsoletes
+			mesa <= 7.11.2-2
+		end
+
+		files
+			%{sysconfdir}/drirc
+			%{libdir}/libdri*.so.*
+			%{libdir}/dri/*
+		end
+	end
+
+	package libGL
+		summary = Mesa libGL runtime library.
+		description
+			This package contains the Mesa libGL runtime libraries.
+		end
+
+		obsoletes
+			mesa <= 7.11.2-2
+		end
+
+		files
+			%{libdir}/libGL.so.*
+		end
+	end
+
+	package libglapi
+		summary = Mesa shared glapi.
+		description
+			This package contains the shared glapi of Mesa.
+		end
+
+		obsoletes
+			mesa <= 7.11.2-2
+		end
+
+		files
+			%{libdir}/libglapi.so.*
+		end
+	end
 
 	package %{name}-devel
 		template DEVEL
