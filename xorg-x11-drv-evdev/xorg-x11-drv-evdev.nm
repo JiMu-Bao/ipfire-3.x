@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = xorg-x11-drv-evdev
-version    = 2.4.99.901
+version    = 2.7.3
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -17,19 +17,22 @@ description
 	X.Org X11 evdev input driver.
 end
 
+# Specify the X Server version to build for.
+x11_server_ver = 1.13.2
+
+thisapp = xf86-input-evdev-%{version}
+
 source_dl  = http://ftp.x.org/pub/individual/driver/
-sources    = xf86-input-evdev-%{version}.tar.bz2
 
 build
 	requires
+		libudev-devel
 		libxkbfile-devel
 		pkg-config
 		xorg-x11-proto-devel
-		xorg-x11-server-devel
+		xorg-x11-server-devel >= %{x11_server_ver}
 		xorg-x11-util-macros
 	end
-
-	DIR_APP        = %{DIR_SRC}/xf86-input-evdev-%{version}
 
 	CFLAGS       += -Wl,-z,lazy
 
@@ -43,6 +46,9 @@ end
 
 packages
 	package %{name}
+		requires
+			xorg-x11-server >= %{x11_server_ver}
+		end
 	end
 
 	package %{name}-devel
