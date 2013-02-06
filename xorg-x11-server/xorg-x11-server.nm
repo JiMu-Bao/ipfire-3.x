@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = xorg-x11-server
-version    = 1.8.2
-release    = 7
+version    = 1.13.2
+release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = X/Server
@@ -20,8 +20,9 @@ description
 	upon.
 end
 
-sources_dl = http://ftp.x.org/pub/individual/xserver/
-sources    = xorg-server-%{version}.tar.bz2
+thisapp = xorg-server-%{version}
+
+source_dl = http://ftp.x.org/pub/individual/xserver/
 
 build
 	requires
@@ -47,29 +48,25 @@ build
 		libudev-devel
 		libxcb-devel
 		libxkbfile-devel
-		mesa-devel
+		mesa-devel >= 9.0.2
 		openssl-devel
 		pixman-devel
 		pkg-config
 		xorg-x11-font-utils-devel
 		xorg-x11-util-macros
-		xorg-x11-proto-devel
+		xorg-x11-proto-devel >= 7.7
 		xorg-x11-xtrans-devel
 	end
-
-	DIR_APP = %{DIR_SRC}/xorg-server-%{version}
 
 	CFLAGS += -Wstrict-overflow -rdynamic
 
 	configure_options += \
 		--enable-xvfb \
-		--enable-xsdl \
 		--enable-xfake \
 		--enable-xfbdev \
 		--enable-xorg \
 		--disable-static \
 		--disable-xnest \
-		--disable-xdmx \
 		--disable-xephyr \
 		--with-pic \
 		--enable-maintainer-mode \
@@ -100,7 +97,6 @@ build
 		-e "s/^CCASFLAGS.*/& -Wl,-z,lazy/" \
 			\
 			hw/xfree86/dixmods/Makefile \
-			hw/xfree86/dixmods/extmod/Makefile \
 			hw/xfree86/dri/Makefile \
 			hw/xfree86/dri2/Makefile \
 			hw/xfree86/exa/Makefile \
@@ -110,7 +106,6 @@ build
 			hw/xfree86/shadowfb/Makefile \
 			hw/xfree86/vbe/Makefile \
 			hw/xfree86/vgahw/Makefile \
-			hw/xfree86/xaa/Makefile
 	end
 
 	make_install_targets += \
@@ -133,10 +128,21 @@ end
 packages
 	package %{name}
 		requires
-			mesa
 			pixman
 			udev
 			xkeyboard-config
+		end
+
+		recommends
+			xorg-x11-drv-ati
+			xorg-x11-drv-evdev
+			xorg-x11-drv-intel
+			xorg-x11-drv-keyboard
+			xorg-x11-drv-modesetting
+			xorg-x11-drv-mouse
+			xorg-x11-drv-nouveau
+			xorg-x11-drv-vesa
+			xorg-x11-drv-vmware
 			xorg-x11-fonts
 			xorg-x11-font-utils
 			xorg-x11-xkb-utils

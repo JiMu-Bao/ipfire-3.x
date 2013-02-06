@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libxkbfile
-version    = 1.0.6
+version    = 1.0.8
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -14,18 +14,18 @@ license    = MIT
 summary    = X.Org X11 libxkbfile runtime library.
 
 description
-	The flex program generates scanners. Scanners are programs which can \
-	recognize lexical patterns in text. Flex takes pairs of regular \
-	expressions and C code as input and generates a C source file as \
-	output.  The output file is compiled and linked with a library to \
-	produce an executable.  The executable searches through its input for \
-	occurrences of the regular expressions. When a match is found, it \
-	executes the corresponding C code. Flex was designed to work with \
-	both Yacc and Bison, and is used by many programs as part of their \
+	The flex program generates scanners. Scanners are programs which can
+	recognize lexical patterns in text. Flex takes pairs of regular
+	expressions and C code as input and generates a C source file as
+	output.  The output file is compiled and linked with a library to
+	produce an executable.  The executable searches through its input for
+	occurrences of the regular expressions. When a match is found, it
+	executes the corresponding C code. Flex was designed to work with
+	both Yacc and Bison, and is used by many programs as part of their
 	build process.
 end
 
-source_dl  =
+source_dl  = http://ftp.x.org/pub/individual/lib/
 
 build
 	requires
@@ -37,7 +37,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

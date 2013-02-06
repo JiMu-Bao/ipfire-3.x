@@ -3,40 +3,53 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = libXv
-version    = 1.0.7
+name       = xorg-x11-drv-modesetting
+version    = 0.6.0
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
-groups     = X/Libraries
+groups     = X/Driver
 url        = http://www.x.org/
 license    = MIT
-summary    = X.Org X11 libXv runtime library.
-
+summary    = Xorg X11 modesetting video driver.
 
 description
-	X.Org X11 libXv runtime library.
+	X.Org X11 modesetting video driver.
 end
 
-source_dl  = http://ftp.x.org/pub/individual/lib/
+# Specify the X Server version to build for.
+x11_server_ver = 1.13.2
+
+thisapp = xf86-video-modesetting-%{version}
+
+source_dl = http://ftp.x.org/pub/individual/driver/
 
 build
 	requires
 		libX11-devel
-		libXext-devel
+		libdrm-devel
+		libudev-devel
 		pkg-config
 		xorg-x11-proto-devel
+		xorg-x11-server-devel >= %{x11_server_ver}
+		xorg-x11-util-macros
 	end
+
+	CFLAGS        += -Wl,-z,lazy
 
 	configure_options += \
 		--disable-static
 end
 
+quality-agent
+	permit_not_full_relro =	yes
+end
+
 packages
 	package %{name}
-
-	package %{name}-devel
-		template DEVEL
+		requires
+			xorg-x11-server >= %{x11_server_ver}
+		end
 	end
 
 	package %{name}-debuginfo

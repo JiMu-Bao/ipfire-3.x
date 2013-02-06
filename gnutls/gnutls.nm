@@ -4,7 +4,9 @@
 ###############################################################################
 
 name       = gnutls
-version    = 3.1.4
+version    = %{ver_maj}.%{ver_min}
+ver_maj    = 3.1
+ver_min    = 7
 release    = 1
 
 groups     = System/Libraries
@@ -19,7 +21,7 @@ description
 	TLS working group.
 end
 
-source_dl  = ftp://ftp.gnu.org/gnu/gnutls/
+source_dl  = ftp://ftp.gnutls.org/gcrypt/gnutls/v%{ver_maj}/
 sources    = %{thisapp}.tar.xz
 
 build

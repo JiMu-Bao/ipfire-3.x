@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libXfont
-version    = 1.4.2
+version    = 1.4.5
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -17,8 +17,7 @@ description
 	X.Org X11 libXfont development package.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+source_dl  = http://ftp.x.org/pub/individual/lib/
 
 build
 	requires
@@ -36,7 +35,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

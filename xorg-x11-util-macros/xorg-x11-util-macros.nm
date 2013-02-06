@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = xorg-x11-util-macros
-version    = 1.10.0
+version    = 1.17
 release    = 1
 arch       = noarch
 
@@ -19,16 +19,15 @@ description
 	packages that comprise the X Window System.
 end
 
+thisapp = util-macros-%{version}
+
 source_dl = http://ftp.x.org/pub/individual/util/
 
-sources   = util-macros-%{version}.tar.bz2
 
 build
 	requires
 		pkg-config
 	end
-
-	DIR_APP = %{DIR_SRC}/util-macros-%{version}
 
 	configure_options += \
 		--disable-static

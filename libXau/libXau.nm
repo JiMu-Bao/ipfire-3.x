@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libXau
-version    = 1.0.6
+version    = 1.0.7
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -14,16 +14,15 @@ license    = MIT
 summary    = Sample Authorization Protocol for X.
 
 description
-	This is a very simple mechanism for providing individual access \
-	to an X Window System display.It uses existing core protocol and \
-	library hooks for specifying authorization data in the connection \
-	setup block to restrict use of the display to only those clients \
-	that show that they know a server-specific key called a \
+	This is a very simple mechanism for providing individual access
+	to an X Window System display.It uses existing core protocol and
+	library hooks for specifying authorization data in the connection
+	setup block to restrict use of the display to only those clients
+	that show that they know a server-specific key called a
 	magic cookie.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+source_dl  = http://ftp.x.org/pub/individual/lib/
 
 build
 	requires
@@ -33,14 +32,10 @@ build
 
 	configure_options +=\
 		--disable-static
-
-	#make_install_targets +=\
-	#	INSTALL="install -p"
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

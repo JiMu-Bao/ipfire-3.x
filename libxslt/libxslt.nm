@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libxslt
-version    = 1.1.26
+version    = 1.1.28
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -14,12 +14,12 @@ license    = MIT
 summary    = Library providing the Gnome XSLT engine.
 
 description
-	This C library allows to transform XML files into other XML files \
-	(or HTML, text, ...) using the standard XSLT stylesheet transformation \
+	This C library allows to transform XML files into other XML files
+	(or HTML, text, ...) using the standard XSLT stylesheet transformation
 	mechanism.
 end
 
-source_dl  =
+source_dl  = ftp://xmlsoft.org/libxslt/
 
 build
 	requires
@@ -32,7 +32,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
