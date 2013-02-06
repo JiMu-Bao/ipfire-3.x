@@ -1,0 +1,54 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-TermReadKey
+version    = 2.30
+release    = 1
+thisapp    = TermReadKey-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/~jstowe/TermReadKey/
+license    = (Copyright only) and (Artistic or GPL+)
+summary    = A perl module for simple terminal control.
+
+description
+	Term::ReadKey is a compiled perl module dedicated to providing simple
+	control over terminal driver modes (cbreak, raw, cooked, etc.)
+	support for non-blocking reads, if the architecture allows, and some
+	generalized handy functions for working with terminals.  One of the
+	main goals is to have the functions as portable as possible, so you
+	can just plug in "use Term::ReadKey" on any architecture and have a
+	good likelyhood of it working.
+end
+
+source_dl  = http://www.cpan.org/authors/id/J/JS/JSTOWE/
+
+build
+	requires
+		perl(AutoLoader)
+		perl(Carp)
+		perl(Exporter)
+		perl(ExtUtils::MakeMaker)
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor
+		make %{PARALLELISMFLAGS}
+	end
+
+	make_install_targets = pure_install
+end
+
+packages
+	package %{name}
+		requires
+			perl
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
