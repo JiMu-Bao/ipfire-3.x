@@ -1,10 +1,10 @@
 [Unit]
-Description=Simple Network Management Protocol (SNMP) Daemon.
+Description=Simple Network Management Protocol (SNMP) Trap Daemon.
 After=syslog.target network.target
 
 [Service]
 Type=notify
-ExecStart=/usr/sbin/snmpd -LS0-6d -f
+ExecStart=/usr/sbin/snmptrapd -Lsd -f
 ExecReload=/bin/kill -HUP $MAINPID
 
 [Install]
