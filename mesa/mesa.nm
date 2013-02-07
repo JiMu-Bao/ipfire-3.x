@@ -5,7 +5,7 @@
 
 name       = mesa
 version    = 9.0.2
-release    = 1
+release    = 1.1
 
 groups     = Development/Tools
 url        = http://www.mesa3d.org
@@ -43,8 +43,6 @@ build
 	end
 
 	DIR_APP = %{DIR_SRC}/Mesa-%{version}
-
-	CFLAGS += -Wl,-z,lazy
 
 	if "%{DISTRO_PLATFORM}" == "x86"
 		platform_drivers = ,i915,i965
