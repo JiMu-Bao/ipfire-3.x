@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = net-snmp
-version    = 5.7.1
-release    = 3
+version    = 5.7.2
+release    = 1
 
 groups     = Networking/Daemons
 url        = http://net-snmp.sourceforge.net
@@ -22,38 +22,143 @@ source_dl  = https://sourceforge.net/projects/net-snmp/files/net-snmp/%{version}
 
 build
 	requires
+		autoconf
+		automake
+		bzip2-devel
+		chrpath
+		elfutils-devel
 		libselinux-devel
-		perl
+		lm-sensors-devel >= 3
+		openssl-devel
+		perl(ExtUtils::Embed)
+		procps
+		python-setuptools
+		python-devel
+		systemd-devel
+		systemd-units
 	end
 
 	PARALLELISMFLAGS = # No parallel build
 
+	prepare_cmds
+		autoreconf -vfi
+	end
+
+	MIBS = host agentx smux \
+		ucd-snmp/diskio tcp-mib udp-mib mibII/mta_sendmail \
+		ip-mib/ipv4InterfaceTable ip-mib/ipv6InterfaceTable \
+		ip-mib/ipAddressPrefixTable/ipAddressPrefixTable \
+		ip-mib/ipDefaultRouterTable/ipDefaultRouterTable \
+		ip-mib/ipv6ScopeZoneIndexTable ip-mib/ipIfStatsTable \
+		sctp-mib rmon-mib etherlike-mib ucd-snmp/lmsensorsMib
+
 	configure_options += \
-		--with-default-snmp-version=2 \
-		--with-sys-contact=root@ \
-		--with-sys-location=localhost \
+		--with-cflags="%{CFLAGS}" \
+		--with-ldflags="%{LDFLAGS}" \
+		--with-sys-contact="root@localhost" \
+		--with-sys-location="Unknown" \
 		--with-logfile=/var/log/snmpd.log \
-		--with-persistent-directory=/var/net-snmp \
-		--without-perl-modules \
-		--disable-embedded-perl
+		--with-persistent-directory=/var/lib/net-snmp \
+		--with-mib-modules="%{MIBS}" \
+		--sysconfdir=%{sysconfdir} \
+		--enable-ipv6 \
+		--enable-ucd-snmp-compatibility \
+		--with-openssl \
+		--with-pic \
+		--enable-embedded-perl \
+		--enable-as-needed \
+		--with-perl-modules="INSTALLDIRS=vendor" \
+		--enable-mfd-rewrites \
+		--enable-local-smux \
+		--with-temp-file-pattern=/var/run/net-snmp/snmp-tmp-XXXXXX \
+		--with-transports="DTLSUDP TLSTCP" \
+		--with-security-modules=tsm \
+		--with-systemd
+
+	build_cmds
+		# Remove rpath from compiled perl libs
+		find perl/blib -type f -name "*.so" -print -exec chrpath --delete {} \;
+
+		# Compile python module
+		pushd python
+		%{python} setup.py --basedir=".." build
+		popd
+	end
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/etc
-		install -v -m644 %{DIR_APP}/python/netsnmp/tests/snmpd.conf %{BUILDROOT}/etc/snmpd.conf
+		# Remove stuff we don't want to distribute.
+		rm -vf %{BUILDROOT}%{bindir}/snmpinform
+		ln -svf snmptrap %{BUILDROOT}%{bindir}/snmpinform
+		rm -vf %{BUILDROOT}%{bindir}/snmpcheck
+		rm -vf %{BUILDROOT}{%{bindir}/fixproc,%{mandir}/man1/fixproc*}
+		rm -vf %{BUILDROOT}%{bindir}/ipf-mod.pl
+
+		# Copy missing mib2c.conf files.
+		install -v -m 644 local/mib2c.*.conf %{BUILDROOT}%{datadir}/snmp
+
+		# Install python module.
+		pushd python
+		%{python} setup.py --basedir=".." install -O1 --skip-build --root %{BUILDROOT}
+		popd
+
+		# Make libs executable.
+		find %{BUILDROOT} -name "*.so" | xargs chmod -v 755
+
+		# Install configuration files.
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/snmp
+		install -v -m644 %{DIR_SOURCE}/snmpd.conf \
+			%{BUILDROOT}%{sysconfdir}/snmp/snmpd.conf
+		install -v -m644 %{DIR_SOURCE}/snmptrapd.conf \
+			%{BUILDROOT}%{sysconfdir}/snmp/snmptrapd.conf
+
+		# Prepare runtime directories.
+		mkdir -pv %{BUILDROOT}%{localstatedir}/{lib,run}/net-snmp
+
+		# Remove more RPATHs.
+		find %{BUILDROOT}{%{bindir},%{sbindir},%{libdir}} -type f -print \
+			-exec chrpath --delete {} \;
 	end
 end
 
 packages
 	package %{name}
-		# XXX Although we don't want to build perl modules,
-		# we have this requirement?!
-		filter_requires
-			^perl
+		configfiles
+			%{sysconfdir}/snmp
+		end
+
+		datafiles
+			%{localstatedir}/lib/net-snmp
+		end
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl --no-reload disable snmpd.service > /dev/null 2>&1 || :
+			systemctl stop snmpd.service > /dev/null 2>&1 || :
+
+			systemctl --no-reload disable snmptrapd.service > /dev/null 2>&1 || :
+			systemctl stop snmptrapd.service > /dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload 2>&1 || :
+			systemctl reload-or-try-restart snmpd.service >/dev/null 2>&1 || :
+			systemctl reload-or-try-restart snmptrapd.service >/dev/null 2>&1 || :
 		end
 	end
 
 	package %{name}-libs
 		template LIBS
+	end
+
+	package %{name}-python
+		template PYTHON
 	end
 
 	package %{name}-devel
