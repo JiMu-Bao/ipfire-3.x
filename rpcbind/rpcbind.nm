@@ -5,7 +5,7 @@
 
 name       = rpcbind
 version    = 0.2.0
-release    = 1
+release    = 2
 
 groups     = System/Daemons
 url        = http://nfsv4.bullopensource.org
@@ -27,6 +27,7 @@ build
 		automake
 		libtirpc-devel
 		libtool
+		quota-devel
 		systemd-units
 	end
 
