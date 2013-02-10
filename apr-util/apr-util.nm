@@ -5,7 +5,7 @@
 
 name       = apr-util
 version    = 1.4.1
-release    = 2
+release    = 3
 
 groups     = System/Libraries
 url        = http://apr.apache.org/
@@ -23,11 +23,10 @@ source_dl  = http://www.apache.org/dist/apr/
 build
 	requires
 		autoconf
-		db4-devel
+		libdb-devel
 		expat-devel
 		libapr-devel
 		libuuid-devel
-		nss-devel
 		openssl-devel
 	end
 
@@ -35,8 +34,7 @@ build
 		--with-apr=/usr \
 		--with-berkeley-db \
 		--with-crypto \
-		--with-openssl \
-		--with-nss
+		--with-openssl
 
 	install_cmds
 		# Remove unneeded file.
@@ -47,25 +45,22 @@ end
 packages
 	package %{name}
 
-	package %{name}-nss
-		summary = APR utility library NSS crytpo support.
-		description = %{summary}
-
-		requires = apr-util=%{thisver}
-
-		files = /usr/lib/apr-util*/apr_crypto_nss*
-	end
-
 	package %{name}-openssl
 		summary = APR utility library OpenSSL crytpo support.
 		description = %{summary}
 
-		requires = apr-util=%{thisver}
+		requires
+			apr-util = %{thisver}
+		end
 
-		files = /usr/lib/apr-util*/apr_crypto_openssl*
+		files = %{libdir}/apr-util*/apr_crypto_openssl*
 	end
 
 	package %{name}-devel
 		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
 	end
 end
