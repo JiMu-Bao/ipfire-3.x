@@ -5,8 +5,8 @@
 
 name       = libsolv
 version    = 0.0.0
-git_ver    = c02d759
-release    = 6.git%{git_ver}
+git_ver    = f663ca2
+release    = 7.git%{git_ver}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -19,9 +19,8 @@ description
 	resolver written in C++.
 end
 
-thisapp        = %{name}-%{version}-%{git_ver}
-
-source_dl  =
+thisapp    = %{name}-%{git_ver}
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -32,12 +31,7 @@ build
 		zlib-devel
 	end
 
-	prepare_cmds
-		# Make sure that libsatsolverext is linked properly to all needed
-		# libraries.
-		echo "TARGET_LINK_LIBRARIES(libsolvext libsolv \${EXPAT_LIBRARY} \${ZLIB_LIBRARY})" \
-			>> ext/CMakeLists.txt
-	end
+	DIR_APP = %{DIR_SRC}/%{name}
 
 	build
 		mkdir build
