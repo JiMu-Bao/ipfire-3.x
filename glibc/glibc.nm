@@ -5,7 +5,7 @@
 
 name       = glibc
 version    = 2.17
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -38,7 +38,6 @@ build
 		kernel-headers >= %{OPTIMIZED_KERNEL}
 		libcap-devel
 		libselinux-devel
-		nss-devel
 		texinfo
 	end
 
@@ -95,7 +94,6 @@ build
 		--with-selinux \
 		--disable-werror \
 		--enable-bind-now \
-		--enable-nss-crypt \
 		--enable-obsolete-rpc \
 		--with-bugurl=http://bugtracker.ipfire.org
 
