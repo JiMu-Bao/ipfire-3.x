@@ -5,7 +5,7 @@
 
 name       = openvpn
 version    = 2.3.0
-release    = 1
+release    = 2
 
 groups     = Networking/VPN
 url        = http://openvpn.net/
@@ -31,7 +31,6 @@ build
 		lzo-devel
 		openssl-devel
 		pam-devel
-		polarssl-devel
 	end
 
 	configure_options += \
