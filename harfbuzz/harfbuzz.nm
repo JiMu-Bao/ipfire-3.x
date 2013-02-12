@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = harfbuzz
-version    = 0.9.4
+version    = 0.9.12
 release    = 1
 
 groups     = System/Libraries
@@ -24,7 +24,11 @@ build
 		cairo-devel
 		freetype-devel
 		glib2-devel
+		icu-devel
 	end
+
+	configure_options += \
+		--disable-static
 
 	test
 		make check
