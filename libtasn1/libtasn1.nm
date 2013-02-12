@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libtasn1
-version    = 3.0
+version    = 3.2
 release    = 1
 
 groups     = System/Libraries
@@ -27,7 +27,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

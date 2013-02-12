@@ -5,7 +5,7 @@
 
 name       = curl
 version    = 7.24.0
-release    = 3
+release    = 4
 
 groups     = Application/Internet
 url        = http://www.curl.haxx.se/
@@ -31,7 +31,6 @@ build
 		libssh2-devel
 		libtool-devel
 		net-tools
-		nss-devel
 		openldap-devel
 		zlib-devel
 	end
@@ -42,12 +41,11 @@ build
 		--with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt \
 		--with-libidn \
 		--with-libssh2 \
-		--with-nss \
+		--with-ssl \
 		--enable-ldaps \
 		--enable-ipv6 \
 		--enable-manual \
-		--enable-threaded-resolver \
-		--without-ssl
+		--enable-threaded-resolver
 
 	prepare_cmds
 		autoreconf -vfi

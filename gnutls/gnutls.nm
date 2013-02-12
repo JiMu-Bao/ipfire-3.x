@@ -6,7 +6,7 @@
 name       = gnutls
 version    = %{ver_maj}.%{ver_min}
 ver_maj    = 3.1
-ver_min    = 7
+ver_min    = 8
 release    = 1
 
 groups     = System/Libraries
@@ -29,7 +29,8 @@ build
 		gettext
 		guile-devel
 		libgcrypt-devel
-		libtasn1-devel >= 3.0
+		libidn-devel
+		libtasn1-devel >= 3.2
 		lzo-devel
 		nettle-devel >= 2.5
 		perl
