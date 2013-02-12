@@ -4,8 +4,9 @@
 ###############################################################################
 
 name       = pango
-major	   = 1.31
-version    = %{major}.0
+version    = %{ver_major}.%{ver_minor}
+ver_major  = 1.32
+ver_minor  = 5
 release    = 1
 
 groups     = System/Libraries
@@ -18,25 +19,26 @@ description
 	emphasis on internationalization.
 end
 
-source_dl  = http://ftp.gnome.org/pub/GNOME/sources/pango/%{major}/
+source_dl  = http://ftp.gnome.org/pub/GNOME/sources/%{name}/%{ver_major}/
 sources    = %{thisapp}.tar.xz
 
 build
 	requires
-		cairo-devel
+		cairo-gobject-devel
 		fontconfig-devel
 		freetype-devel
 		gcc-c++
 		glib2-devel
-		glibc-devel
-		harfbuzz-devel
+		gobject-introspection-devel
+		harfbuzz-devel >= 0.9.9
 		libXft-devel
 		perl
 		pkg-config
 	end
 
 	configure_options += \
-		--sysconfdir=/etc
+		--enable-introspection=yes
+
 end
 
 packages
@@ -47,7 +49,10 @@ packages
 
 		requires
 			glib2-devel
+			harfbuzz-devel
 		end
+
+		files += %{datadir}/gir*
 	end
 
 	package %{name}-debuginfo
