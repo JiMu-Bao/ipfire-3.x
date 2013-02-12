@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = parted
-version    = 2.1
-release    = 3
+version    = 3.1
+release    = 1
 
 groups     = Applications/System
 url        = http://www.gnu.org/software/parted
@@ -19,7 +19,8 @@ description
 	to new hard disks.
 end
 
-source_dl  =
+source_dl  = http://ftp.gnu.org/gnu/parted/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -33,17 +34,8 @@ build
 	end
 
 	configure_options += \
-		--libdir=/%{lib} \
 		--enable-selinux \
 		--disable-Werror
-
-	install_cmds
-		mkdir -pv %{BUILDROOT}%{libdir}
-		mv -v %{BUILDROOT}/%{lib}/pkgconfig %{BUILDROOT}%{libdir}
-		rm -rf %{BUILDROOT}/%{lib}/libparted{,-2.1}.so
-		ln -svf ../../%{lib}/libparted-%{version}.so.0 %{BUILDROOT}%{libdir}/libparted-%{version}.so
-		ln -svf libparted-%{version}.so %{BUILDROOT}%{libdir}/libparted.so
-	end
 end
 
 packages
