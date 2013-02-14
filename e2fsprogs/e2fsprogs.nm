@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = e2fsprogs
-version    = 1.42.2
+version    = 1.42.7
 release    = 1
 
 groups     = System/Filesystems
@@ -13,8 +13,8 @@ license    = GPLv2
 summary    = Utilities for managing the extended (ext2/ext3/ext4) filesystems.
 
 description
-	The e2fsprogs package contains a number of utilities for creating, \
-	checking, modifying, and correcting any inconsistencies in second \
+	The e2fsprogs package contains a number of utilities for creating,
+	checking, modifying, and correcting any inconsistencies in second
 	and third extended (ext2/ext3) filesystems.
 end
 
@@ -77,10 +77,65 @@ packages
 		groups += Base
 	end
 
+	package %{name}-libs
+		template LIBS
+	end
+
 	package %{name}-devel
 		template DEVEL
 	end
 
+	package libcom_err
+		summary = Common error description library.
+		description
+			This is the common error description library, part of e2fsprogs.
+		end
+
+		files
+			%{libdir}/libcom_err.so.*
+		end
+	end
+
+	package libcom_err-devel
+		summary = Development files for libcom_err.
+		description = %{summary}
+
+		files
+			%{bindir}/compile_et
+			%{libdir}/libcom_err.so
+			%{libdir}/pkgconfig/com_err.pc
+			%{includedir}/com_err.h
+			%{includedir}/et
+			%{datadir}/et
+			%{mandir}/man1/compile_et.1*
+			%{mandir}/man3/com_err.3*
+		end
+	end
+
+	package libss
+		summary = Command line interface parsing library.
+		description
+			This is libss, a command line interface parsing library, part of e2fsprogs.
+		end
+
+		files
+			%{libdir}/libss.so.*
+		end
+	end
+
+	package libss-devel
+		summary = Development files for libss.
+		description = %{summary}
+
+		files
+			%{bindir}/mk_cmds
+			%{libdir}/libss.so
+			%{libdir}/pkgconfig/ss.pc
+			%{includedir}/ss
+			%{datadir}/ss
+			%{mandir}/man1/mk_cmds.1*
+		end
+	end
 	package %{name}-debuginfo
 		template DEBUGINFO
 	end
