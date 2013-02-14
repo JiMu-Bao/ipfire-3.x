@@ -6,7 +6,7 @@
 name       = krb5
 version    = %{version_maj}.%{version_min}
 version_maj= 1.10
-version_min= 2
+version_min= 3
 release    = 1
 
 groups     = System/Libraries
@@ -57,10 +57,11 @@ build
 		automake
 		bison
 		dejagnu
-		e2fsprogs-devel
 		flex
 		gettext
+		libcom_err-devel
 		libselinux-devel
+		libss-devel
 		ncurses-devel
 		openldap-devel
 		openssl-devel
@@ -235,6 +236,7 @@ packages
 		template DEVEL
 
 		requires
+			libcom_err-devel
 			libselinux-devel
 		end
 	end
