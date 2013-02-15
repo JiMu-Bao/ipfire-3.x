@@ -1,0 +1,11 @@
+--- a/include/linux/serial_core.h.orig	2012-12-27 11:22:18.332950493 +0000
++++ b/include/linux/serial_core.h	2012-12-27 11:22:33.872012568 +0000
+@@ -84,7 +84,7 @@
+ 	void	(*poll_put_char)(struct uart_port *, unsigned char);
+ 	int		(*poll_get_char)(struct uart_port *);
+ #endif
+-};
++} __no_const;
+ 
+ #define NO_POLL_CHAR		0x00ff0000
+ #define UART_CONFIG_TYPE	(1 << 0)

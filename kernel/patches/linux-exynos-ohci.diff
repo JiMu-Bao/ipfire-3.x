@@ -1,0 +1,11 @@
+--- a/include/linux/platform_data/usb-exynos.h.orig	2012-12-21 16:18:59.426700698 +0000
++++ b/include/linux/platform_data/usb-exynos.h	2012-12-21 16:19:09.887637974 +0000
+@@ -14,7 +14,7 @@
+ struct exynos4_ohci_platdata {
+ 	int (*phy_init)(struct platform_device *pdev, int type);
+ 	int (*phy_exit)(struct platform_device *pdev, int type);
+-};
++} __no_const;
+ 
+ extern void exynos4_ohci_set_platdata(struct exynos4_ohci_platdata *pd);
+ 

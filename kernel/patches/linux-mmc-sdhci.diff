@@ -1,0 +1,11 @@
+--- a/drivers/mmc/host/sdhci.h.orig	2013-01-05 13:34:45.442315463 +0000
++++ b/drivers/mmc/host/sdhci.h	2013-01-05 13:34:56.950138257 +0000
+@@ -279,7 +279,7 @@
+ 	void	(*platform_suspend)(struct sdhci_host *host);
+ 	void	(*platform_resume)(struct sdhci_host *host);
+ 	void	(*platform_init)(struct sdhci_host *host);
+-};
++} __no_const;
+ 
+ #ifdef CONFIG_MMC_SDHCI_IO_ACCESSORS
+ 

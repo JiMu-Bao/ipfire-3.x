@@ -1,0 +1,20 @@
+--- a/include/linux/pm_domain.h.orig	2012-12-22 14:10:32.684513004 +0000
++++ b/include/linux/pm_domain.h	2012-12-22 14:16:52.301700691 +0000
+@@ -44,7 +44,7 @@
+ 	int (*thaw_early)(struct device *dev);
+ 	int (*thaw)(struct device *dev);
+ 	bool (*active_wakeup)(struct device *dev);
+-};
++} __no_const;
+ 
+ struct gpd_cpu_data {
+ 	unsigned int saved_exit_latency;
+@@ -82,7 +82,7 @@
+ 	bool cached_power_down_ok;
+ 	struct device_node *of_node; /* Node in device tree */
+ 	struct gpd_cpu_data *cpu_data;
+-};
++} __no_const;
+ 
+ static inline struct generic_pm_domain *pd_to_genpd(struct dev_pm_domain *pd)
+ {

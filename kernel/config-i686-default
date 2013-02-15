@@ -1,6 +1,5 @@
 # CONFIG_64BIT is not set
 CONFIG_X86_32=y
-# CONFIG_X86_64 is not set
 CONFIG_OUTPUT_FORMAT="elf32-i386"
 CONFIG_ARCH_DEFCONFIG="arch/x86/configs/i386_defconfig"
 # CONFIG_ZONE_DMA32 is not set
@@ -22,6 +21,7 @@ CONFIG_RCU_FANOUT=32
 # Kernel Performance Events And Counters
 #
 CONFIG_ARCH_WANT_IPC_PARSE_VERSION=y
+CONFIG_MODULES_USE_ELF_REL=y
 
 #
 # GCOV-based kernel profiling
@@ -213,12 +213,7 @@ CONFIG_GEODE_WDT=m
 # CONFIG_SBC7240_WDT is not set
 
 #
-# Media drivers
-#
-CONFIG_VIDEOBUF2_DMA_CONTIG=m
-
-#
-# Webcam and/or TV USB devices
+# Media digital TV PCI Adapters
 #
 CONFIG_VIDEO_CAFE_CCIC=m
 

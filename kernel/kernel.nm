@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = kernel
-version    = 3.6.6
-release    = 2
+version    = 3.7.7
+release    = 1
 thisapp    = linux-%{version}
 
-maintainer = Michael Tremer <michael.tremer@ipfire.org>
+maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
 groups     = System/Kernels
 url        = http://www.kernel.org/
 license    = GPLv2
@@ -34,10 +34,9 @@ build
 	# are not available on the remote compilers, we need to disable it here.
 	export ICECC=no
 
-	kernel_logo = /usr/share/pixmaps/kernel-logo.ppm
-
 	requires
 		asciidoc
+		audit-devel
 		binutils >= 2.23.51.0.3-3
 		binutils-devel
 		bison
@@ -45,6 +44,7 @@ build
 		flex
 		gcc-plugin-devel
 		gettext
+		libunwind-devel
 		ncurses-devel
 		net-tools
 		newt-devel
@@ -55,7 +55,6 @@ build
 		xmlto
 
 		/sbin/depmod
-		%{kernel_logo}
 	end
 
 	# i686 needs librmi for cpupower.
@@ -103,6 +102,9 @@ build
 	end
 
 	if "%{DISTRO_ARCH}" == "armv7hl"
+		# Build a kernel for Samsung's Exynos SoCs.
+		build_kernel_exynos = 1
+
 		# Build a kernel for TI OMAP SoCs.
 		build_kernel_omap = 1
 
@@ -113,6 +115,11 @@ build
 	# Build default kernel.
 	if "%{build_kernel_default}" == "1"
 		kernels += default
+	end
+
+	# Build exynos kernel.
+	if "%{build_kernel_exynos}" == "1"
+		kernels += exynos
 	end
 
 	# Build legacy kernel.
@@ -144,7 +151,7 @@ build
 
 		sed -e "s/^HOSTCFLAGS.*=.*/& -fPIC/g" -i Makefile
 
-		cp -vf %{kernel_logo} \
+		cp -vf %{DIR_SOURCE}/%{DISTRO_SNAME}_logo.ppm \
 			drivers/video/logo/logo_linux_clut224.ppm
 
 		# Get rid of unwanted files resulting from patch fuzz.
@@ -215,7 +222,7 @@ build
 			dd if=/dev/zero of=%{BUILDROOT}/boot/initramfs-${fullversion}.img bs=1M count=20
 
 			# Install modules.
-			make ARCH=%{kernel_arch} INSTALL_MOD_PATH=%{BUILDROOT}/usr mod-fw= \
+			make ARCH=%{kernel_arch} INSTALL_MOD_PATH=%{BUILDROOT}/usr mod-fw= V=1 \
 				KERNELRELEASE=${fullversion} modules_install
 
 			# Install vdso.
@@ -273,6 +280,10 @@ build
 				%{BUILDROOT}/usr/src/kernels/${fullversion}
 			ln -sf ../../../src/kernels/${fullversion} \
 				%{BUILDROOT}/usr/lib/modules/${fullversion}/build
+
+			# Fix permissions.
+			find %{BUILDROOT}/usr/src/kernels -name "modules.order" \
+				-exec chmod 644 {} \;
 
 			find %{BUILDROOT}/usr/src/kernels -name ".*.cmd" -exec rm -f {} \;
 		}
@@ -436,6 +447,22 @@ packages
 
 			kernel_name = kernel
 			kernel_release = %{fullver}
+		end
+	end
+
+	if "%{build_kernel_exynos}" == "1"
+		package kernel-exynos
+			template KERNEL
+
+			kernel_name = kernel-exynos
+			kernel_release = %{fullver}.exynos
+		end
+
+		package kernel-exynos-devel
+			template KERNELDEVEL
+
+			kernel_name = kernel-exynos
+			kernel_release = %{fullver}.exynos
 		end
 	end
 

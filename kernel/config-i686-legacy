@@ -3,11 +3,8 @@
 # Processor type and features
 #
 # CONFIG_XEN_PRIVILEGED_GUEST is not set
-# CONFIG_IOMMU_HELPER is not set
 CONFIG_HIGHMEM4G=y
 # CONFIG_HIGHMEM64G is not set
-# CONFIG_ARCH_PHYS_ADDR_T_64BIT is not set
-# CONFIG_ARCH_DMA_ADDR_T_64BIT is not set
 # CONFIG_PHYS_ADDR_T_64BIT is not set
 
 #
@@ -26,6 +23,10 @@ CONFIG_OLPC_XO15_SCI=y
 #
 # CONFIG_SYS_HYPERVISOR is not set
 # CONFIG_CMA is not set
+
+#
+# Bus devices
+#
 CONFIG_OF=y
 
 #
@@ -48,6 +49,7 @@ CONFIG_OF_PCI_IRQ=y
 #
 CONFIG_MDIO_BUS_MUX=m
 CONFIG_MDIO_BUS_MUX_GPIO=m
+CONFIG_MDIO_BUS_MUX_MMIOREG=m
 
 #
 # Input Device Drivers
@@ -62,7 +64,7 @@ CONFIG_MOUSE_PS2_OLPC=y
 #
 # Non-8250 serial port support
 #
-CONFIG_SERIAL_OF_PLATFORM=m
+CONFIG_SERIAL_OF_PLATFORM=y
 
 #
 # I2C system bus drivers (mostly embedded / system-on-chip)
@@ -74,6 +76,11 @@ CONFIG_I2C_PXA_PCI=y
 # Enable PHYLIB and NETWORK_PHY_TIMESTAMPING to see the additional clocks.
 #
 CONFIG_OF_GPIO=y
+
+#
+# I2C GPIO expanders:
+#
+CONFIG_GPIO_ADNP=m
 
 #
 # PCI GPIO expanders:
@@ -90,6 +97,7 @@ CONFIG_BATTERY_OLPC=y
 # Multifunction device drivers
 #
 CONFIG_MFD_CORE=y
+# CONFIG_MFD_SYSCON is not set
 
 #
 # I2C encoder or helper chips
@@ -103,6 +111,11 @@ CONFIG_FB_SYS_FOPS=m
 # Frame buffer hardware drivers
 #
 # CONFIG_BACKLIGHT_OT200 is not set
+
+#
+# on-CPU RTC drivers
+#
+CONFIG_RTC_DRV_SNVS=m
 
 #
 # Microsoft Hyper-V guest support

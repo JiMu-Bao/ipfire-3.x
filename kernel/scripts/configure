@@ -8,7 +8,7 @@ BASEDIR=$(dirname ${0})
 SCRIPTS_DIR=${BASEDIR}
 
 CONFIGS="x86_64:default i686:legacy i686:default"
-CONFIGS="${CONFIGS} armv7hl:omap armv5tel:versatile armv5tel:kirkwood"
+CONFIGS="${CONFIGS} armv7hl:exynos armv7hl:omap armv5tel:versatile armv5tel:kirkwood"
 
 function merge_config() {
 	local arch=${1}
@@ -63,6 +63,9 @@ function merge_config() {
 			;;
 		armv5tel:kirkwood)
 			configs="${configs} config-arm-generic config-armv5tel-kirkwood"
+			;;
+		armv7hl:exynos)
+			configs="${configs} config-arm-generic config-armv7hl-exynos"
 			;;
 		armv7hl:omap)
 			configs="${configs} config-arm-generic config-armv7hl-omap"
