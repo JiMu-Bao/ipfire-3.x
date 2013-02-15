@@ -5,7 +5,7 @@
 
 name       = libXpm
 version    = 3.5.10
-release    = 1
+release    = 2
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = X/Libraries
@@ -30,9 +30,11 @@ build
 		libXt-devel
 		pkg-config
 		xorg-x11-proto-devel
+		xorg-x11-util-macros
 	end
 
 	configure_options += \
+		--disable-selective-werror \
 		--disable-static
 end
 
