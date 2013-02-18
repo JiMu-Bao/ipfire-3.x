@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libatasmart
-version    = 0.18
+version    = 0.19
 release    = 1
 
 groups     = System/Statistics
@@ -18,7 +18,7 @@ description
 end
 
 source_dl  = http://0pointer.de/public/
-sources    = %{thisapp}.tar.gz
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
