@@ -6,7 +6,7 @@
 name       = librsvg2
 version    = 2.34.1
 major_ver  = 2.34
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        =
@@ -32,13 +32,28 @@ build
 		pango-devel
 	end
 
+	export GDK_PIXBUF_QUERYLOADERS=%{bindir}/gdk-pixbuf-query-loaders
+
 	configure_options += \
 		--disable-static \
-		--disable-gtk-theme
+		--disable-gtk-theme \
+		enable_pixbuf_loader=yes
 end
 
 packages
 	package %{name}
+		script postin
+			gdk-pixbuf-query-loaders --update-cache || :
+		end
+
+		script postun
+			gdk-pixbuf-query-loaders --update-cache || :
+		end
+
+		script postup
+			gdk-pixbuf-query-loaders --update-cache || :
+		end
+	end
 
 	package %{name}-devel
 		template DEVEL
