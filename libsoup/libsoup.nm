@@ -4,7 +4,9 @@
 ###############################################################################
 
 name       = libsoup
-version    = 2.33.6
+version    = %{ver_major}.%{ver_minor}
+ver_major  = 2.41
+ver_minor  = 5
 release    = 1
 
 groups     = System/Libraries
@@ -13,36 +15,44 @@ license    = GPL
 summary    = HTTP client/server library for GNOME.
 
 description
-	libsoup is an HTTP client/server library for GNOME. It uses GObjects \
-	and the glib main loop, to integrate well with GNOME applications, \
+	libsoup is an HTTP client/server library for GNOME. It uses GObjects
+	and the glib main loop, to integrate well with GNOME applications,
 	and also has a synchronous API, for use in threaded applications.
 end
 
-source_dl  =
+source_dl  = http://ftp.gnome.org/pub/GNOME/sources/%{name}/%{ver_major}/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
-		glib2-devel
+		glib2-devel >= 2.35.0
 		gnutls-devel
+		gobject-introspection-devel
+		intltool
 		libgcrypt-devel
 		libxml2-devel
 		openssl-devel
 		pkg-config
+		sqlite-devel
 		zlib-devel
 	end
 
 	configure_options += \
+		--enable-introspection=yes \
+		--disable-tls-check \
 	        --without-gnome
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
 
 		requires = libxml2-devel
+
+		files += \
+			%{datadir}/gir*/
 	end
 
 	package %{name}-debuginfo
