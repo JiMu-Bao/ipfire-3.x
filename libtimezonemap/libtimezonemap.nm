@@ -1,0 +1,46 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libtimezonemap
+version    = 0.3.2
+release    = 1
+
+groups     = System/Libraries
+url        = https://launchpad.net/libtimezonemap
+license    = GPL
+summary    = GTK+3 timezone map widget.
+
+description
+	GTK+3 timezone map widget.
+end
+
+source_dl  = https://launchpad.net/ubuntu/+archive/primary/+files/
+sources    = %{name}_%{version}.tar.gz
+
+build
+	requires
+		gtk3-devel
+		gobject-introspection-devel >= 1.35.4
+		json-glib-devel
+		pkg-config
+	end
+
+	DIR_APP = %{DIR_SRC}/timezonemap
+
+	configure_options += \
+		--enable-introspection=yes
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
