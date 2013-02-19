@@ -1,0 +1,32 @@
+From 8be83109b81fde156138afc7de9fb248095cca35 Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Thu, 24 Jan 2013 02:36:10 +0100
+Subject: [PATCH 04/17] Make a variable that contains all python files.
+
+---
+ Makeconfig | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/Makeconfig b/Makeconfig
+index 0c67353..e717238 100644
+--- a/Makeconfig
++++ b/Makeconfig
+@@ -39,6 +39,8 @@ ifeq "$(DEBIAN)" "1"
+ else
+ 	PYTHON_DIR = $(LIBDIR)/python$(PYTHON_VERSION)/site-packages
+ endif
++PYTHON_FILES   = $(addsuffix /*.py,$(addprefix python/,$(PYTHON_MODULES)))
++PYTHON_FILES  += tools/pakfire-multicall.py
+ 
+ # The place, where all internally used scripts and bins are copied.
+ SCRIPT_DIR     = $(PREFIX)/lib/$(PACKAGE_NAME)
+@@ -47,5 +49,4 @@ TOP := $(dir $(lastword $(MAKEFILE_LIST)))
+ 
+ # A list of all files that contain translations and need to
+ # be indexed.
+-TRANS_FILES  = $(addsuffix /*.py,$(addprefix python/,$(PYTHON_MODULES)))
+-TRANS_FILES += python/src/*.c tools/pakfire-multicall.py
++TRANS_FILES  = $(PYTHON_FILES) python/src/*.c
+-- 
+1.8.1.2
+

@@ -1,7 +1,7 @@
 From f7a632ab069e3439f312023fc599dc659c197568 Mon Sep 17 00:00:00 2001
 From: Michael Tremer <michael.tremer@ipfire.org>
 Date: Sun, 3 Feb 2013 21:40:16 +0100
-Subject: [PATCH 4/4] build parallelism: New way to figure that out.
+Subject: [PATCH 11/17] build parallelism: New way to figure that out.
 
 The system will now use either the old formula,
 CPU cores * 2 + 1 or the amount of memory in megabytes devided
@@ -36,5 +36,5 @@ index a9154de..6d54d5f 100644
  
  # Create an instance of this class to only keep it once in memory.
 -- 
-1.7.11.7
+1.8.1.2
 

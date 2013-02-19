@@ -1,0 +1,27 @@
+From 227c1b70277adfeb6e7b3449c44517a42f1fad45 Mon Sep 17 00:00:00 2001
+From: Stefan Schantl <stefan.schantl@ipfire.org>
+Date: Tue, 12 Feb 2013 20:22:31 +0100
+Subject: [PATCH 15/17] Add gir files for gobject-introspection to the DEVEL
+ template.
+
+With this changes all %{datadir}/gir*/ folders (with current gobject-introspection "gir-1.0") automatically will be put into
+into the devel packages.
+---
+ macros/templates.macro | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/macros/templates.macro b/macros/templates.macro
+index a2388b9..693fa12 100644
+--- a/macros/templates.macro
++++ b/macros/templates.macro
+@@ -55,6 +55,7 @@ packages
+ 			%{datadir}/cmake
+ 			%{mandir}/man2
+ 			%{mandir}/man3
++			%{datadir}/gir*/
+ 			%{datadir}/pkgconfig
+ 			%{datadir}/vala
+ 		end
+-- 
+1.8.1.2
+

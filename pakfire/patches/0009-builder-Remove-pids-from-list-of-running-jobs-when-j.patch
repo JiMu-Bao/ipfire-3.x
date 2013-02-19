@@ -1,7 +1,7 @@
 From c3319c905d03176308e01175f344cf33bd926113 Mon Sep 17 00:00:00 2001
 From: Michael Tremer <michael.tremer@ipfire.org>
 Date: Sun, 3 Feb 2013 21:36:00 +0100
-Subject: [PATCH 2/4] builder: Remove pids from list of running jobs when job
+Subject: [PATCH 09/17] builder: Remove pids from list of running jobs when job
  has finished.
 
 ---
@@ -39,5 +39,5 @@ index 9798cc4..2d6280c 100644
  			return True
  
 -- 
-1.7.11.7
+1.8.1.2
 
