@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = python-parted
-version    = 3.0
+version    = 3.9
 release    = 1
 thisapp    = pyparted-%{version}
 
@@ -18,14 +18,34 @@ description
 	partition tables.
 end
 
-source_dl  =
+py3parted_version = 0.1
+
+source_dl  = \
+	https://fedorahosted.org/releases/p/y/pyparted/ \
+	https://github.com/cinnarch/py3parted/archive/
+
+# Also download source tarball for py3parted.
+sources += v%{py3parted_version}.tar.gz
 
 build
 	requires
-		parted-devel
+		parted-devel >= 3.1
 		pkg-config
 		python-decorator
 		python-devel
+		python3-devel
+	end
+
+	DIR_APP3 = %{DIR_SRC}/py3parted-%{py3parted_version}
+
+	build_cmds
+		# Build py3parted.
+		cd %{DIR_APP3} && python3 setup.py build
+	end
+
+	install_cmds
+		# Install py3parted.
+		cd %{DIR_APP3} && python3 setup.py install --root=%{BUILDROOT}
 	end
 end
 
@@ -35,6 +55,10 @@ packages
 		requires
 			python-decorator
 		end
+	end
+
+	package python3-parted
+		template PYTHON3
 	end
 
 	package %{name}-debuginfo
