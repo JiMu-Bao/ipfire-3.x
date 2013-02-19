@@ -1,0 +1,47 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = json-glib
+version    = %{ver_major}.%{ver_minor}
+ver_major  = 0.15
+ver_minor  = 2
+release    = 1
+
+groups     = System/Libraries
+url        = http://live.gnome.org/JsonGlib
+license    = LGPLv2+
+summary    = Library for JavaScript Object Notation format.
+
+description
+	%{name} is a library providing serialization and deserialization support
+	for the JavaScript Object Notation (JSON) format.
+end
+
+source_dl  = http://ftp.gnome.org/pub/GNOME/sources/%{name}/%{ver_major}/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		glib2-devel
+		gobject-introspection-devel
+		pkg-config
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+
+		requires
+			glib2-devel
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
