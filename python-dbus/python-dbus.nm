@@ -4,9 +4,8 @@
 ###############################################################################
 
 name       = python-dbus
-version    = 0.82.4
-release    = 2
-thisapp    = dbus-python-%{version}
+version    = 1.1.1
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.freedesktop.org/software/dbus/
@@ -17,7 +16,9 @@ description
 	D-Bus python bindings for use with python programs.
 end
 
-source_dl  =
+thisapp = dbus-python-%{version}
+
+source_dl  = http://dbus.freedesktop.org/releases/dbus-python/
 
 build
 	requires
@@ -25,14 +26,53 @@ build
 		dbus-glib-devel
 		pkg-config
 		python-devel
+		python3-devel
 	end
 
 	configure_options += \
 		--mandir=/usr/share/man
+
+	DIR_APP3 = %{DIR_APP}-python3
+
+	prepare_cmds
+		cp -av %{DIR_APP} %{DIR_APP3}
+
+		pushd %{DIR_APP3}
+		find -name '*.py' | xargs sed -i '1s|^#!python|#!%{python3}|'
+		popd
+
+		find -name '*.py' | xargs sed -i '1s|^#!python|#!%{python}|'
+	end
+
+	build
+		pushd %{DIR_APP3}
+		export PYTHON=%{python3}
+		./configure  %{configure_options}
+		make %{PARALLELISMFLAGS}
+		popd
+
+		export PYTHON=%{python}
+		./configure  %{configure_options}
+		make %{PARALELLISMFLAGS}
+	end
+
+	install
+		pushd %{DIR_APP3}
+		export PYTHON=%{python3}
+		make install DESTDIR=%{BUILDROOT}
+		popd
+
+		export PYTHON=%{python}
+		make install DESTDIR=%{BUILDROOT}
+	end
 end
 
 packages
 	package %{name}
+
+	package python3-dbus
+		template PYTHON3
+	end
 
 	package %{name}-devel
 		template DEVEL
