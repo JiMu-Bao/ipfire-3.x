@@ -1,0 +1,114 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = pygobject3
+version    = %{ver_major}.%{ver_minor}
+ver_major  = 3.7
+ver_minor  = 4
+release    = 1
+
+groups     = Development/Tools
+url        = http://www.pygtk.org/
+license    = LGPLv2+
+summary    = Python 2 bindings for GObject.
+
+description
+	The %{name} package provides a convenient wrapper for the GObject library
+	for use in Python programs.
+end
+
+thisapp = pygobject-%{version}
+
+source_dl  = http://ftp.gnome.org/pub/GNOME/sources/pygobject/%{ver_major}/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		cairo-gobject-devel >= 1.12.12
+		chrpath
+		glib2-devel >= 2.34.2
+		gobject-introspection-devel >= 1.34.2
+		pkg-config
+		python-cairo-devel
+		python3-cairo-devel
+		python-devel
+		python3-devel
+	end
+
+	DIR_APP3 = %{DIR_APP}-python3
+
+	prepare_cmds
+		cp -av %{DIR_APP} %{DIR_APP3}
+
+		pushd %{DIR_APP3}
+		find -name '*.py' | xargs sed -i '1s|^#!python|#!%{python3}|'
+		popd
+
+		find -name '*.py' | xargs sed -i '1s|^#!python|#!%{python}|'
+	end
+
+	build
+		pushd %{DIR_APP3}
+		export PYTHON=%{python3}
+		./configure  %{configure_options}
+		make %{PARALLELISMFLAGS}
+		popd
+
+		export PYTHON=%{python}
+		./configure  %{configure_options}
+		make %{PARALELLISMFLAGS}
+	end
+
+	install
+		pushd %{DIR_APP3}
+		export PYTHON=%{python3}
+		make install DESTDIR=%{BUILDROOT}
+		chrpath --delete %{BUILDROOT}%{python3_sitearch}/gi/{*.so,*/*.so}
+		popd
+
+		export PYTHON=%{python}
+		make install DESTDIR=%{BUILDROOT}
+		chrpath --delete %{BUILDROOT}%{python_sitearch}/gi/{*.so,*/*.so}
+	end
+end
+
+packages
+	package python-gobject3
+		requires
+			gobject-introspection >= 1.34.2
+			python-cairo
+		end
+	end
+
+	package python3-gobject3
+		template PYTHON3
+
+		requires
+			gobject-introspection >= 1.34.2
+			python3-cairo
+		end
+	end
+
+	package %{name}-devel
+		template DEVEL
+
+		provides
+			python-gobject3-devel
+			python3-gobject3-devel
+		end
+
+		requires
+			glib2-devel
+			gobject-introspection-devel >= 1.34.2
+		end
+
+		files += \
+			%{libdir}/*python3*.so.*
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
