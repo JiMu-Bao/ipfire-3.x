@@ -1,0 +1,68 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = python3-cairo
+version    = 1.10.0
+release    = 1
+
+groups     = Development/Tools
+url        = http://cairographics.org/pycairo
+license    = MPLv1.1 or LGPLv2
+summary    = Python3 bindings for the cairo library.
+
+description
+	Python3 bindings for the cairo library.
+end
+
+thisapp = pycairo-%{version}
+
+source_dl  = http://cairographics.org/releases/
+sources    = %{thisapp}.tar.bz2
+
+build
+	requires
+		cairo-devel
+		pkg-config
+		python3-devel
+	end
+
+	build
+		export PYTHON=python3
+		%{python3} ./waf \
+			--prefix=%{prefix} \
+			--libdir=%{libdir} \
+			configure
+
+		%{python3} ./waf build -v
+	end
+
+	install
+		# remove executable bits from examples
+		find ./examples/ -type f -print0 | xargs -0 chmod -x
+
+		DESTDIR=%{BUILDROOT} %{python3} ./waf install
+
+		# add executable bit to the .so libraries so we strip the debug info
+		find %{BUILDROOT} -name '*.so' | xargs chmod +x
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+
+		# The development headers need the cairo headers.
+		requires
+			cairo-devel
+			python3-devel
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
