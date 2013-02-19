@@ -1,0 +1,196 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = sssd
+version    = 1.9.4
+release    = 1
+
+groups     = System/Tools
+url        = http://fedorahosted.org/sssd/
+license    = GPLv3+
+summary    = System Security Services Daemon.
+
+description
+	Provides a set of daemons to manage access to remote directories and
+	authentication mechanisms. It provides an NSS and PAM interface toward
+	the system and a pluggable backend system to connect to multiple different
+	account sources.
+end
+
+source_dl  = https://fedorahosted.org/released/sssd/
+
+build
+	requires
+		/usr/bin/nsupdate
+		c-ares-devel
+		cyrus-sasl-devel
+		dbus-devel
+		docbook-xsl
+		glib2-devel
+		krb5-devel >= 1.10.3
+		libcollection-devel
+		libdhash-devel
+		libini_config-devel
+		libldb-devel
+		libnl-devel
+		libsemanage-devel
+		libtalloc-devel
+		libtdb-devel
+		libtevent-devel
+		openldap-devel
+		openssl-devel
+		pam-devel
+		pcre-devel
+		popt-devel
+		python-devel
+	end
+
+	configure_options += \
+		--with-crypto=libcrypto \
+		--with-db-path=%{localstatedir}/sss/db \
+		--with-pipe-path=%{localstatedir}/sss/pipe \
+		--with-pubconf-path=%{localstatedir}/sss/pubconf \
+		--with-mcache-path=%{localstatedir}/sss/mc \
+		--with-krb5-rcache-dir=%{localstatedir}/cache/krb5rcache \
+		--with-default-ccache-dir=/run/user/%U \
+		--with-default-ccname-template=DIR:%d/krb5cc \
+		--with-initscript=systemd \
+		--with-systemdunitdir=%{unitdir} \
+		--enable-pammoddir=%{libdir}/security \
+		--disable-static \
+		--disable-rpath
+
+	install_cmds
+		# Prepare empty config file
+		touch %{BUILDROOT}%{sysconfdir}/sssd/sssd.conf
+
+		# Remove old sysVinit stuff.
+		rm -rvf %{BUILDROOT}%{sysconfdir}/rc.d
+	end
+end
+
+packages
+	package %{name}
+		configfiles
+			%{sysconfdir}/sssd/sssd.conf
+		end
+	end
+
+	package %{name}-client
+		summary = SSSD Client libraries.
+		description = %{summary}
+
+		files
+			%{libdir}/libnss_sss.so.*
+			%{libdir}/security/pam_sss.so
+			%{libdir}/krb5/
+			%{mandir}/man8/pam_sss.8*
+			%{mandir}/man8/sssd_krb5*.8*
+		end
+	end
+
+	package %{name}-tools
+		summary = Userspace tools for use with the SSSD.
+		description
+			Provides userspace tools for manipulating users, groups, and nested groups in
+			SSSD when using id_provider = local in /etc/sssd/sssd.conf.
+		end
+
+		requires
+			%{name} = %{thisver}
+		end
+
+		files
+			%{sbindir}/sss_*
+			%{mandir}/man8/sss_*.8*
+		end
+	end
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package libsss_idmap
+		summary = FreeIPA Idmap library.
+		description
+			Utility library to convert SIDs to Unix uids and gids.
+		end
+
+		files
+			%{libdir}/libsss_idmap.so.*
+		end
+	end
+
+	package libsss_idmap-devel
+		summary = Development files for libsss_idmap.
+		description = %{summary}
+
+		files
+			%{libdir}/libsss_idmap.so
+			%{libdir}/pkgconfig/sss_idmap.pc
+			%{includedir}/sss_idmap.h
+		end
+	end
+
+	package libipa_hbac
+		summary = FreeIPA HBAC Evaluator library.
+		description
+			Utility library to validate FreeIPA HBAC rules for authorization requests.
+		end
+
+		files
+			%{libdir}/libipa_hbac.so.*
+		end
+	end
+
+	package libipa_hbac-devel
+		summary = Development files for libipa_hbac.
+		description = %{summary}
+
+		files
+			%{libdir}/libipa_hbac.so
+			%{libdir}/pkgconfig/ipa_hbac.pc
+			%{includedir}/ipa_hbac.h
+		end
+	end
+
+	package python-libipa_hbac
+		summary = Python bindings for the FreeIPA HBAC Evaluator library.
+		description
+			This package contains the bindings so that libipa_hbac can be
+			used by Python applications.
+		end
+
+		files
+			%{python_sitearch}/pyhbac.so
+		end
+	end
+
+	package libsss_sudo
+		summary = A library to allow communication between SUDO and SSSD.
+		description
+			A utility library to allow communication between SUDO and SSSD.
+		end
+
+		files
+			%{libdir}/libsss_sudo.so.*
+		end
+	end
+
+	package libsss_sudo-devel
+		summary = Development header for libsss_sudo.
+		description = %{summary}
+
+		files
+			%{libdir}/libsss_sudo.so
+			%{libdir}/pkgconfig/sss_sudo.pc
+			%{includedir}/sss_sudo.h
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
