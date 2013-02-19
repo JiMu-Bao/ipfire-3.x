@@ -1,0 +1,107 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = mutter
+version    = %{ver_maj}.%{ver_min}
+ver_maj    = 3.7
+ver_min    = 5
+release    = 1
+
+groups     = UI/Desktops
+url        = http://www.clutter-project.org/
+license    = GPLv2+
+summary    = Window and compositing manager based on Clutter
+
+description
+	Mutter is a window and compositing manager that displays and manages
+	your desktop via OpenGL. Mutter combines a sophisticated display engine
+	using the Clutter toolkit with solid window-management logic inherited
+	from the Metacity window manager.
+
+	While Mutter can be used stand-alone, it is primarily intended to be
+	used as the display core of a larger system such as gnome-shell or
+	Moblin. For this reason, Mutter is very extensible via plugins, which
+	are used both to add fancy visual effects and to rework the window
+	management behaviors to meet the needs of the environment.
+end
+
+source_dl  = http://download.gnome.org/sources/%{name}/%{ver_maj}/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		clutter-devel
+		gobject-introspection-devel >= 0.9.6
+		gsettings-desktop-schemas-devel
+		gtk3-devel >= 3.3.3
+		intltool
+		libSM-devel
+		libX11-devel
+		libXcomposite-devel
+		libXcursor-devel
+		libXdamage-devel
+		libXext-devel
+		libXinerama-devel
+		libXrandr-devel
+		pango-devel
+		paxctl
+		zenity
+	end
+
+	configure_options += \
+		--enable-compile-warnings=maximum \
+		--disable-static
+
+	configure_cmds
+		SHOULD_HAVE_DEFINED="HAVE_SM HAVE_SHAPE HAVE_RANDR"
+
+		for I in $SHOULD_HAVE_DEFINED; do
+			if ! grep -q "define $I" config.h; then
+				echo "$I was not defined in config.h"
+				grep "$I" config.h
+				exit 1
+			else
+				echo "$I was defined as it should have been"
+				grep "$I" config.h
+			fi
+		done
+	end
+
+	make_build_targets += V=1
+
+	install_cmds
+		# mutter requires to mmap some memory writable
+		# and executable at the same time. For that we
+		# disable the PAX_MPROTECT feature.
+		paxctl -m %{BUILDROOT}%{bindir}/mutter
+	end
+end
+
+packages
+	package %{name}
+		requires
+			zenity
+		end
+
+		script posttransin
+			glib-compile-schemas %{datadir}/glib-2.0/schemas &> /dev/null || :
+		end
+
+		script postun
+			glib-compile-schemas %{datadir}/glib-2.0/schemas &> /dev/null || :
+		end
+	end
+
+	package %{name}-devel
+		template DEVEL
+
+		files += \
+			%{datadir}/gir*/
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
