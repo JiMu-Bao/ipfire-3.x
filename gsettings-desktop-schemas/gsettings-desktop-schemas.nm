@@ -1,0 +1,56 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = gsettings-desktop-schemas
+version    = %{ver_maj}.%{ver_min}
+ver_maj    = 3.7
+ver_min    = 5
+release    = 1
+
+groups     = System/Libraries
+url        = http://bugzilla.gnome.org/enter_bug.cgi?product=gsettings-desktop-schemas
+license    = LGPLv2+
+summary    = A collection of GSettings schemas
+
+description
+	gsettings-desktop-schemas contains a collection of GSettings schemas for
+	settings shared by various components of a desktop.
+end
+
+source_dl  = http://download.gnome.org/sources/%{name}/%{ver_maj}/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		glib2 >= 2.31.0
+		gobject-introspection-devel
+		intltool
+	end
+
+	configure_options += \
+		--disable-schemas-compile \
+		--enable-introspection=yes
+
+	make_build_targets += V=1
+end
+
+packages
+	package %{name}
+		script posttransin
+			glib-compile-schemas %{datadir}/glib-2.0/schemas &> /dev/null || :
+		end
+
+		script postun
+			glib-compile-schemas %{datadir}/glib-2.0/schemas &> /dev/null || :
+		end
+	end
+
+	package %{name}-devel
+		template DEVEL
+
+		files += \
+			%{datadir}/gir*/
+	end
+end
