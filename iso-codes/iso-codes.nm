@@ -1,0 +1,37 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = iso-codes
+version    = 3.40
+release    = 1
+arch       = noarch
+
+groups     = System/Base
+url        = http://alioth.debian.org/projects/pkg-isocodes/
+license    = LGPLv2+
+summary    = ISO code lists and translations.
+
+description
+	This package provides the ISO 639 Language code list, the ISO 4217
+	Currency code list, the ISO 3166 Territory code list, and ISO 3166-2
+	sub-territory lists, and all their translations in gettext format.
+end
+
+source_dl  = http://pkg-isocodes.alioth.debian.org/downloads/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		gettext
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+end
