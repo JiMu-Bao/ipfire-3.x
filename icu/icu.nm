@@ -8,7 +8,7 @@ version    = %{ver_major}.%{ver_minor}.%{ver_plevel}
 ver_major  = 50
 ver_minor  = 1
 ver_plevel = 2
-release    = 1
+release    = 2
 
 groups     = Development/Tools
 url        = http://www.icu-project.org
@@ -29,6 +29,10 @@ build
 		--disable-static \
 		--with-data-packaging=library \
 		--disable-samples
+
+	prepare_cmds
+		sed -i 's|-nodefaultlibs -nostdlib||' config/mh-linux
+	end
 
 	configure_cmds
 		# There is no source/doc/html/search/ directory
