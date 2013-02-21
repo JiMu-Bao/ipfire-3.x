@@ -8,7 +8,7 @@ version    = %{ver_major}.%{ver_minor}.%{ver_plevel}
 ver_major  = 50
 ver_minor  = 1
 ver_plevel = 2
-release    = 2
+release    = 3
 
 groups     = Development/Tools
 url        = http://www.icu-project.org
@@ -58,6 +58,10 @@ packages
 
 	package lib%{name}-devel
 		template DEVEL
+
+		provides
+			icu-devel = %{thisver}
+		end
 
 		files += \
 			%{bindir}/*config* \
