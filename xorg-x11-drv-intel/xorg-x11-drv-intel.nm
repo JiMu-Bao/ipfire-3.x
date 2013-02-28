@@ -5,7 +5,8 @@
 
 name       = xorg-x11-drv-intel
 version    = 2.21.0
-release    = 1
+release    = 2
+sup_arches = x86_64 i686
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = X/Driver
