@@ -5,21 +5,13 @@
 
 name       = python-pycurl
 version    = 7.19.0
-release    = 4
+release    = 5
 thisapp    = pycurl-%{version}
 
 groups     = Development/Languages
 url        = http://pycurl.sourceforge.net/
 license    = LGPLv2+ or MIT
 summary    = A Python interface to libcurl.
-
-# During its initialization, PycURL checks that the actual libcurl version
-# is not lower than the one used when PycURL was built.
-# Yes, that should be handled by library versioning (which would then get
-# automatically reflected).
-# For now, we have to reflect that dependency.
-LIBCURL_VERSION = $(shell curl-config --version | awk '{ print $NF }')
-PKG_DEPS += libcurl>=%{LIBCURL_VERSION}
 
 description
 	PycURL is a Python interface to libcurl. PycURL can be used to fetch
@@ -56,6 +48,15 @@ end
 
 packages
 	package %{name}
+		# During its initialization, PycURL checks that the actual libcurl version
+		# is not lower than the one used when PycURL was built.
+		# Yes, that should be handled by library versioning (which would then get
+		# automatically reflected).
+		# For now, we have to reflect that dependency.
+		requires
+			libcurl >= %(curl-config --version | awk '{ print $NF }')
+		end
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
