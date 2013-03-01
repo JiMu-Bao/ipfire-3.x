@@ -5,7 +5,7 @@
 
 name       = e2fsprogs
 version    = 1.42.7
-release    = 1
+release    = 2
 
 groups     = System/Filesystems
 url        = http://e2fsprogs.sourceforge.net/
@@ -83,6 +83,11 @@ packages
 
 	package %{name}-devel
 		template DEVEL
+
+		requires
+			libcom_err-devel
+			libss-devel
+		end
 	end
 
 	package libcom_err
