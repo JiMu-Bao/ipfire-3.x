@@ -5,7 +5,7 @@
 
 name       = python-urlgrabber
 version    = 3.9.1
-release    = 3
+release    = 4
 arch       = noarch
 thisapp    = urlgrabber-%{version}
 
@@ -26,6 +26,11 @@ build
 	requires
 		python-devel
 		python-pycurl
+	end
+
+	prepare_cmds
+		# Move everything from /usr/libexec to /usr/lib/urlgrabber.
+		find . -type f | xargs sed -i "s@libexec@lib/urlgrabber@g"
 	end
 
 	build = # Nothing to do
