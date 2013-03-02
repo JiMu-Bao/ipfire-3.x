@@ -6,7 +6,7 @@
 name       = gnutls
 version    = %{ver_maj}.%{ver_min}
 ver_maj    = 3.1
-ver_min    = 8
+ver_min    = 9
 release    = 1
 
 groups     = System/Libraries
@@ -48,6 +48,7 @@ build
 		--disable-openssl-compatibility \
 		--with-libgcrypt
 
+	# Test suite does not work when srp is disabled.
 	#test
 	#	export LD_LIBRARY_PATH=$(pwd)/lib/.libs
 	#	make check
