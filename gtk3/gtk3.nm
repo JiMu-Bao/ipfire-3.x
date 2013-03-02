@@ -7,7 +7,7 @@ name       = gtk3
 version    = %{ver_major}.%{ver_minor}
 ver_major  = 3.7
 ver_minor  = 6
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.gtk.org
@@ -66,6 +66,12 @@ packages
 
 	package %{name}-devel
 		template DEVEL
+
+		requires
+			at-spi2-atk-devel
+			atk-devel
+			glib2-devel
+		end
 
 		files += \
 			%{datadir}/gir*/
