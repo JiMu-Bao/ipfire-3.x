@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = pakfire
-version    = 0.9.24
-release    = 3
+version    = 0.9.25
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Packaging
@@ -118,7 +118,7 @@ packages
 	end
 
 	package %{name}-client
-		summary = The Pakfire XMLRPC client.
+		summary = The Pakfire Hub client.
 		description
 			The pakfire client has the power to create build jobs
 			and communicate with the Pakfire Build Service.
