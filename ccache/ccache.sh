@@ -16,3 +16,4 @@ if [ -z "${CCACHE_DIR:-}" ] && [ -w @CACHEDIR@ ] && [ -d @CACHEDIR@ ] ; then
     unset CCACHE_HARDLINK
 fi
 
+export CCACHE_HASHDIR=
