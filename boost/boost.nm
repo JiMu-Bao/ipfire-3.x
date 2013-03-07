@@ -8,7 +8,7 @@ ver_major  = 1
 ver_minor  = 51
 ver_plevel = 0
 version    = %{ver_major}.%{ver_minor}.%{ver_plevel}
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.boost.org/
@@ -38,6 +38,13 @@ build
 
 	CFLAGS   += -fno-strict-aliasing
 	CXXFLAGS += -fno-strict-aliasing
+
+	# Don't build in parallel on ARM.
+	# The C++ compiles consumes too much memory, so
+	# we cannot run multiple instances at once.
+	if "%{DISTRO_PLATFORM}" == "arm"
+		PARALLELISMFLAGS = -j2
+	end
 
 	configure_options = \
 		--layout=tagged \
