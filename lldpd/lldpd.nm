@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = lldpd
-version    = 0.5.4
-release    = 2
+version    = 0.7.1
+release    = 1
 
 groups     = Networking/Tools
-url        = https://trac.luffy.cx/lldpd/
+url        = http://vincentbernat.github.com/lldpd/
 license    = GPL
 summary    = Utilities for the Link Layer Discovery Protocol.
 
@@ -17,17 +17,20 @@ description
 	the IEEE standard 802.1AB Link Layer Discovery Protocol.
 end
 
-source_dl  =
+source_dl = http://media.luffy.cx/files/lldpd/
 
 build
 	requires
+		libevent-devel
 		libxml2-devel
 		pkg-config
+		readline-devel
 		shadow-utils
 		zlib-devel
 	end
 
 	configure_options += \
+		--with-readline \
 		--with-xml \
 		--with-privsep-user=lldpd \
 		--with-privsep-group=lldpd
@@ -77,6 +80,10 @@ packages
 			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
 			/bin/systemctl try-restart lldpd.service >/dev/null 2>&1 || :
 		end
+	end
+
+	package %{name}-devel
+		template DEVEL
 	end
 
 	package %{name}-debuginfo
