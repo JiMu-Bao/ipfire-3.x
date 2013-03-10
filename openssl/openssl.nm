@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openssl
-version    = 1.0.1b
-release    = 2
+version    = 1.0.1e
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -34,6 +34,9 @@ build
 	export RPM_OPT_FLAGS = %{CFLAGS}
 
 	prepare_cmds
+		sed -e 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' \
+			-i crypto/opensslv.h
+
 		find crypto/ -name Makefile -exec \
 			sed 's/^ASFLAGS=/&-Wa,--noexecstack /' -i {} \;
 

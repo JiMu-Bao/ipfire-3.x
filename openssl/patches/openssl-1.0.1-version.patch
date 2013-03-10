@@ -18,18 +18,6 @@ diff -up openssl-1.0.1/crypto/cversion.c.version openssl-1.0.1/crypto/cversion.c
  
 +__asm__(".symver _original_SSLeay,SSLeay@");
 +__asm__(".symver _current_SSLeay,SSLeay@@OPENSSL_1.0.1");
-diff -up openssl-1.0.1/crypto/opensslv.h.version openssl-1.0.1/crypto/opensslv.h
---- openssl-1.0.1/crypto/opensslv.h.version	2012-03-14 20:58:19.914337879 +0100
-+++ openssl-1.0.1/crypto/opensslv.h	2012-03-14 20:58:20.630352536 +0100
-@@ -83,7 +83,7 @@
-  * should only keep the versions that are binary compatible with the current.
-  */
- #define SHLIB_VERSION_HISTORY ""
--#define SHLIB_VERSION_NUMBER "1.0.0"
-+#define SHLIB_VERSION_NUMBER "1.0.1b"
- 
- 
- #endif /* HEADER_OPENSSLV_H */
 diff -up openssl-1.0.1/Makefile.shared.version openssl-1.0.1/Makefile.shared
 --- openssl-1.0.1/Makefile.shared.version	2012-03-14 20:58:20.553350959 +0100
 +++ openssl-1.0.1/Makefile.shared	2012-03-14 20:58:20.631352556 +0100
