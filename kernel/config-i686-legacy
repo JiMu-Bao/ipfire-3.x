@@ -55,6 +55,7 @@ CONFIG_MDIO_BUS_MUX_MMIOREG=m
 # Input Device Drivers
 #
 CONFIG_MOUSE_PS2_OLPC=y
+CONFIG_INPUT_PWM_BEEPER=m
 
 #
 # Serial drivers
@@ -65,6 +66,7 @@ CONFIG_MOUSE_PS2_OLPC=y
 # Non-8250 serial port support
 #
 CONFIG_SERIAL_OF_PLATFORM=y
+# CONFIG_SERIAL_XILINX_PS_UART is not set
 
 #
 # I2C system bus drivers (mostly embedded / system-on-chip)
@@ -92,6 +94,7 @@ CONFIG_GPIO_CS5535=y
 # 1-wire Slaves
 #
 CONFIG_BATTERY_OLPC=y
+CONFIG_POWER_RESET_GPIO=y
 
 #
 # Multifunction device drivers
@@ -110,7 +113,13 @@ CONFIG_FB_SYS_FOPS=m
 #
 # Frame buffer hardware drivers
 #
+CONFIG_BACKLIGHT_PWM=m
 # CONFIG_BACKLIGHT_OT200 is not set
+
+#
+# Console display driver support
+#
+CONFIG_FB_SSD1307=m
 
 #
 # on-CPU RTC drivers
@@ -133,10 +142,9 @@ CONFIG_XO1_RFKILL=m
 CONFIG_OF_IOMMU=y
 
 #
-# Non-executable pages
+# Rpmsg drivers (EXPERIMENTAL)
 #
-CONFIG_PAX_KERNEXEC=y
-CONFIG_PAX_KERNEXEC_MODULE_TEXT=4
+CONFIG_PWM=y
 
 #
 # Miscellaneous hardening features
