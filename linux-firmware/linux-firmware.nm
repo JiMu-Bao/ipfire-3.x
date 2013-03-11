@@ -4,13 +4,15 @@
 ###############################################################################
 
 name       = linux-firmware
-version    = 20110311
-release    = 3
+version    = 20130307
+git_ver    = c530a75
+release    = 1.git%{git_ver}
 arch       = noarch
+thisapp    = %{name}-%{git_ver}
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
 groups     = System/Libraries
-url        = http://www.kernel.org/pub/linux/kernel/people/dwmw2/firmware/
+url        = https://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git/
 license    = Non-GPL
 summary    = Firmware Binaries for some Devices.
 
@@ -21,7 +23,7 @@ description
 	for the specific firmware.
 end
 
-source_dl  =
+source_dl  = https://git.kernel.org/cgit/linux/kernel/git/firmware/linux-firmware.git/snapshot/
 
 build
 	build
