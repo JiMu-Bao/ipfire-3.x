@@ -5,7 +5,7 @@
 
 name       = grub
 version    = 2.00
-release    = 2
+release    = 3
 sup_arches = x86_64 i686
 
 groups     = System/Boot
@@ -46,10 +46,6 @@ build
 	prepare_cmds
 		cp -vf %{unifont} unifont.pcf.gz
 		./autogen.sh
-
-		# Create a copy of the source tree to build
-		# an EFI enabled version of grub.
-		cp -pR . %{DIR_SRC}/%{thisapp}-efi
 	end
 
 	# As the modules contain always 32 bit code, they
@@ -62,51 +58,17 @@ build
 		--program-transform-name=s,grub,grub, \
 		--disable-werror \
 		CFLAGS="$(echo %{CFLAGS} | sed \
+			-e 's/-Wp,-D_FORTIFY_SOURCE=2//g' \
+			-e 's/-fstack-protector-all//g' \
 			-e 's/-fstack-protector//g' \
+			-e 's/-fPIC//g' \
 			-e 's/--param=ssp-buffer-size=4//g' \
 			-e 's/-mregparm=3/-mregparm=4/g' \
 			-e 's/-fexceptions//g' \
 			-e 's/-m64//g' \
 			-e 's/-fasynchronous-unwind-tables//g' )"
 
-	build_cmds
-		cd ../%{thisapp}-efi
-		./configure \
-			%{configure_options} \
-			--with-platform=efi \
-			CFLAGS="$(echo %{CFLAGS} | sed \
-				-e 's/-O.//g' \
-				-e 's/-fstack-protector//g' \
-				-e 's/--param=ssp-buffer-size=4//g' \
-				-e 's/-mregparm=3/-mregparm=4/g' \
-				-e 's/-fexceptions//g' \
-				-e 's/-m64//g' \
-				-e 's/-fasynchronous-unwind-tables//g' )"
-
-		make %{PARALLELISMFLAGS}
-
-		./grub-mkimage \
-			-O i386-efi \
-			-p /EFI/%{DISTRO_SNAME}/grub-efi \
-			-o grub.efi \
-			-d grub-core part_gpt hfsplus fat ext2 btrfs normal chain \
-			boot configfile linux appleldr minicmd loadbios reboot halt \
-			search font gfxterm echo video all_video
-	end
-
-	install
-		cd ../%{thisapp}-efi
-		make install DESTDIR=%{BUILDROOT}
-
-		install -m 755 -d %{BUILDROOT}/boot/efi/EFI/%{DISTRO_SNAME}/
-		install -d %{BUILDROOT}/boot/efi/EFI/%{DISTRO_SNAME}/grub-efi
-		touch %{BUILDROOT}/boot/efi/EFI/%{DISTRO_SNAME}/grub-efi/grub.cfg
-		ln -svf ../boot/efi/EFI/%{DISTRO_SNAME}/grub-efi/grub.cfg %{BUILDROOT}/etc/grub-efi.cfg
-		install -m 755 grub.efi %{BUILDROOT}/boot/efi/EFI/%{DISTRO_SNAME}/grub-efi/grub.efi
-
-		cd -
-		make install DESTDIR=%{BUILDROOT}
-
+	install_cmds
 		# Install empty configuration file.
 		mkdir -pv %{BUILDROOT}/boot/grub
 		touch %{BUILDROOT}/boot/grub/grub.cfg
@@ -148,28 +110,14 @@ packages
 			system-logos >= 2
 		end
 
+		# An EFI version of grub does not exist any more.
+		obsoletes
+			grub-efi <= 2.0.0-2
+		end
+
 		configfiles
 			/boot/grub/grub.cfg
 			/etc/default/grub
-		end
-	end
-
-	package %{name}-efi
-		description
-			EFI version of GRUB, the Grand Unified Boot Loader.
-		end
-		summary = %{description}
-
-		requires += grub = %{thisver}
-
-		configfiles
-			/boot/efi/EFI/%{DISTRO_SNAME}/grub-efi/grub.cfg
-		end
-
-		files
-			/boot/efi
-			/etc/grub-efi.cfg
-			/usr/lib/grub/i386-efi
 		end
 	end
 
