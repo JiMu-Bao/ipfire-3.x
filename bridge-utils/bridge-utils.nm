@@ -28,9 +28,6 @@ build
 		automake
 	end
 
-	configure_options += \
-		--sbindir=/sbin
-
 	prepare_cmds
 		autoconf
 	end
