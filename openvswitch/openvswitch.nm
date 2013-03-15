@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openvswitch
-version    = 1.7.0
-release    = 3
+version    = 1.9.0
+release    = 1
 
 groups     = Networking/Tools
 url        = http://openvswitch.org/
@@ -29,7 +29,8 @@ build
 
 	configure_options += \
 		--enable-ssl \
-		--with-pkidir=%{sharedstatedir}/openvswitch/pki
+		--with-pkidir=%{sharedstatedir}/openvswitch/pki \
+		OVSKMOD=openvswitch
 
 	install_cmds
 		# Install logrotate file.
