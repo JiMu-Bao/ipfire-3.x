@@ -1,0 +1,49 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-libintl-perl
+version    = 1.23
+release    = 1
+thisapp    = libintl-perl-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/libintl-perl/
+license    = GPL+ or Artistic
+summary    = An internationalization library for Perl
+
+description
+	The package libintl-perl is an internationalization library for Perl
+	that aims to be compatible with the Uniforum message translations
+	system as implemented for example in GNU gettext.
+end
+
+source_dl  = http://search.cpan.org/CPAN/authors/id/G/GU/GUIDO/
+
+build
+	requires
+		# required for perl macros
+		pakfire-builder >= 0.9.23-6
+		perl(ExtUtils::MakeMaker)
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make test
+	end
+
+	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
