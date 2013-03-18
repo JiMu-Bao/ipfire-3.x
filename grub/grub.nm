@@ -5,7 +5,7 @@
 
 name       = grub
 version    = 2.00
-release    = 3
+release    = 4
 sup_arches = x86_64 i686
 
 groups     = System/Boot
@@ -39,6 +39,7 @@ build
 		gettext
 		libdevmapper-devel
 		ncurses-devel
+		paxctl
 		zlib-devel
 		%{unifont}
 	end
@@ -91,6 +92,11 @@ build
 		%{BUILDROOT}%{bindir}/grub-mkfont -o DejaVuSans-Bold-14.pf2 \
 			-s 14 %{datadir}/fonts/dejavu/DejaVuSans-Bold.ttf
 		popd
+
+		# Disable hardening.
+		paxctl -mpes \
+			%{BUILDROOT}%{sbindir}/grub-bios-setup \
+			%{BUILDROOT}%{sbindir}/grub-probe
 	end
 
 	debuginfo_strict_build_id = false
@@ -98,7 +104,7 @@ end
 
 quality-agent
 	whitelist_nx
-		/usr/bin/*|/usr/sbin/*
+		%{bindir}/*|%{sbindir}/*
 	end
 end
 
