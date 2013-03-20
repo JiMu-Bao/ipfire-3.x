@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 3.8.3
-release    = 1
+release    = 2
 thisapp    = linux-%{version}
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -72,22 +72,21 @@ build
 	kernel_build_flags =
 
 	kernel_target = bzImage
+	kernel_image = arch/%{kernel_arch}/boot/%{kernel_target}
+
 	if "%{DISTRO_ARCH}" == "i686"
 		# Build a default and legacy kernel for the
 		# i686 architecture.
 		build_kernel_default = 1
 		build_kernel_legacy = 1
 
-		kernel_arch  = x86
-		kernel_image = arch/%{kernel_arch}/boot/bzImage
-
+		kernel_arch = x86
 	end
 
 	if "%{DISTRO_ARCH}" == "x86_64"
 		build_kernel_default = 1
 
-		kernel_arch  = x86
-		kernel_image = arch/%{kernel_arch}/boot/bzImage
+		kernel_arch = x86
 	end
 
 	if "%{DISTRO_ARCH}" == "armv5tel"
@@ -97,8 +96,8 @@ build
 		# Build a kernel for Marvell Kirkwood-based devices.
 		build_kernel_kirkwood = 1
 
-		kernel_arch  = arm
-		kernel_image = arch/%{kernel_arch}/boot/zImage
+		kernel_arch = arm
+		kernel_target = zImage
 
 		# http://lists.infradead.org/pipermail/linux-arm-kernel/2012-March/091404.html
 		kernel_build_flags = KALLSYMS_EXTRA_PASS=1
@@ -111,8 +110,13 @@ build
 		# Build a kernel for TI OMAP SoCs.
 		build_kernel_omap = 1
 
-		kernel_arch  = arm
-		kernel_image = arch/%{kernel_arch}/boot/zImage
+		kernel_arch = arm
+		kernel_target = uImage
+	end
+
+	# mkimage is a requirement to build uImage images.
+	if "%{kernel_target}" == "uImage"
+		requires += u-boot-tools
 	end
 
 	# Build default kernel.
