@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = libnetfilter_conntrack
-version    = 1.0.2
-release    = 3
+version    = 1.0.3
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.netfilter.org/projects/libnetfilter_conntrack/index.html
