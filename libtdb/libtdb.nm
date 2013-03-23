@@ -1,0 +1,50 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libtdb
+version    = 1.2.11
+release    = 1
+
+groups     = System/Libraries
+url        = http://tdb.samba.org/
+license    = LGPLv3+
+summary    = The tdb library.
+
+description
+	A library that implements a trivial database.
+end
+
+thisapp = tdb-%{version}
+
+source_dl  = http://samba.org/ftp/tdb/
+
+build
+	requires
+		docbook-utils
+		docbook-xsl
+		python-devel
+	end
+
+	configure_options += \
+		--disable-rpath \
+		--disable-rpath-install \
+		--bundled-libraries=NONE
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package pytdb
+		template PYTHON
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

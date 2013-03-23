@@ -1,0 +1,208 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = ding-libs
+version    = 0.2.91
+release    = 1
+
+groups     = System/Libraries
+url        = http://fedorahosted.org/sssd/
+license    = GPLv3+
+summary    = "Ding is not GLib" assorted utility libraries.
+
+description
+	A set of helpful libraries used by projects such as SSSD.
+end
+
+source_dl  = http://fedorahosted.org/releases/d/i/ding-libs/
+
+build
+	configure_options += \
+		--disable-static
+
+	test
+		make check
+	end
+end
+
+packages
+	# ding-libs is a meta package,
+	# which requires all sub-packages.
+	package %{name}
+		requires
+			libbasicobjects = %{thisver}
+			libcollection = %{thisver}
+			libdhash = %{thisver} 
+			libini_config = %{thisver}
+			libpath_utils = %{thisver}
+			libref_array = %{thisver}
+		end
+	end
+
+	# ding-libs-devel is a meta package,
+	# which requires all devel sub-packages.
+	package %{name}-devel
+		template DEVEL
+
+		requires
+			libbasicobjects-devel = %{thisver}
+			libcollection-devel = %{thisver}
+			libdhash-devel = %{thisver}
+			libini_config-devel = %{thisver}
+			libpath_utils-devel = %{thisver}
+			libref_array-devel = %{thisver}
+		end
+	end
+
+	package libbasicobjects
+		template LIBS
+
+		summary = Basic object types for C.
+		description = %{summary}
+
+		files
+			%{libdir}/libbasicobjects.so.*
+		end
+	end
+
+	package libbasicobjects-devel
+		summary = Development files for libbasicobjects.
+		description = %{summary}
+
+		files
+			%{libdir}/libbasicobjects.so
+			%{libdir}/pkgconfig/basicobjects.pc
+			%{includedir}/simplebuffer.h
+		end
+	end
+			
+	package libcollection
+		template LIBS
+
+		summary = Collection data-type for C.
+		description
+			A data-type to collect data in a hierarchical structure 
+			for easy iteration and serialization.
+		end
+
+		files
+			%{libdir}/libcollection.so.*
+		end
+	end
+
+	package libcollection-devel
+		summary = Development files for libcollection.
+		description = %{summary}
+
+		files
+			%{libdir}/libcollection.so
+			%{libdir}/pkgconfig/collection.pc
+			%{includedir}/collection*.h
+		end
+	end
+
+	package libdhash
+		template LIBS
+
+		summary = Dynamic hash table.
+		description
+			A hash table which will dynamically resize to achieve
+			optimal storage & access time properties.
+		end
+
+		files
+			%{libdir}/libdhash.so.*
+		end
+	end
+
+	package libdhash-devel
+		summary = Development files for libdhash.
+		description = %{summary}
+
+		files
+			%{libdir}/libdhash.so
+			%{libdir}/pkgconfig/dhash.pc
+			%{includedir}/dhash*.h
+		end
+	end
+
+	package libini_config
+		template LIBS
+
+		summary = INI file parsr for C.
+		description
+			Library to process config files in INI format into a
+			libcollection data structure.
+		end
+
+		files
+			%{libdir}/libini_config.so.*
+		end
+	end
+
+	package libini_config-devel
+		summary = Development files for libini_config.
+		description = %{summary}
+
+		files
+			%{libdir}/libini_config.so
+			%{libdir}/pkgconfig/ini_config.pc
+			%{includedir}/ini_config*.h
+		end
+	end
+
+	package libpath_utils
+		template LIBS
+
+		summary = Filesystem Path Utilities.
+		description
+			Utility functions to manipulate filesystem pathnames.
+		end
+
+		files
+			%{libdir}/libpath_utils.so.*
+		end
+	end
+
+	package libpath_utils-devel
+		summary = Development files for libpath_utils.
+		description = %{summary}
+
+		files
+			%{libdir}/libpath_utils.so
+			%{libdir}/pkgconfig/path_utils.pc
+			%{includedir}/path_utils*.h
+		end
+	end
+
+	package libref_array
+		template LIBS
+
+		summary = A refcounted array for C.
+		description
+			A dynamically-growing, reference-counted array.
+		end
+
+		files
+			%{libdir}/libref_array.so.*
+		end
+	end
+
+	package libref_array-devel
+		summary = Development files for libref_array.
+		description = %{summary}
+
+		files
+			%{libdir}/libref_array.so
+			%{libdir}/pkgconfig/ref_array.pc
+			%{includedir}/ref_array*.h
+		end
+	end
+	
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
+

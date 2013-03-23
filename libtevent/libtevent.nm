@@ -1,0 +1,53 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libtevent
+version    = 0.9.17
+release    = 1
+
+groups     = System/Libraries
+url        = http://tevent.samba.org/
+license    = LGPLv3+
+summary    = The tevent library.
+
+description
+	Tevent is an event system based on the talloc memory management library.
+	Tevent has support for many event types, including timers, signals, and
+	the classic file descriptor events.
+end
+
+thisapp = tevent-%{version}
+
+source_dl  = http://samba.org/ftp/tevent/
+
+build
+	requires
+		docbook-utils
+		docbook-xsl
+		libtalloc-devel
+		python-devel
+	end
+
+	configure_options += \
+		--disable-rpath \
+		--disable-rpath-install \
+		--bundled-libraries=NONE
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package pytevent
+		template PYTHON
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

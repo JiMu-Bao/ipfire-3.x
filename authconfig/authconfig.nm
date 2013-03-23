@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = authconfig
-version    = 6.2.2
-release    = 5
+version    = 6.2.5
+release    = 1
 
 groups     = System/Base
 url        = https://fedorahosted.org/authconfig
@@ -75,7 +75,6 @@ packages
 		requires
 			libpwquality
 			newt-python
-			nss_ldap
 		end
 
 		configfiles

@@ -1,0 +1,50 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libtalloc
+version    = 2.0.8
+release    = 1
+
+groups     = System/Libraries
+url        = http://talloc.samba.org/
+license    = LGPLv3+
+summary    = The talloc library.
+
+description
+	A library that implements a hierarchical allocator with destructors.
+end
+
+thisapp = talloc-%{version}
+
+source_dl  = http://samba.org/ftp/talloc/
+
+build
+	requires
+		docbook-utils
+		docbook-xsl
+		python-devel
+	end
+
+	configure_options += \
+		--disable-rpath \
+		--disable-rpath-install \
+		--bundled-libraries=NONE
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package pytalloc
+		template PYTHON
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

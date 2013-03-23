@@ -1,0 +1,39 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = c-ares
+version    = 1.9.1
+release    = 1
+
+groups     = System/Libraries
+url        = http://c-ares.haxx.se/
+license    = MIT
+summary    = A library that performs asynchronous DNS operations.
+
+description
+	c-ares is a C library that performs DNS requests and name resolves 
+	asynchronously. c-ares is a fork of the library named 'ares', written 
+	by Greg Hudson at MIT.
+end
+
+source_dl  = http://c-ares.haxx.se/download/
+
+build
+	configure_options += \
+		--enable-shared \
+		--disable-static
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
