@@ -5,7 +5,7 @@
 
 name       = sssd
 version    = 1.9.4
-release    = 1
+release    = 2
 
 groups     = System/Tools
 url        = http://fedorahosted.org/sssd/
@@ -41,7 +41,7 @@ build
 		libtevent-devel
 		openldap-devel
 		openssl-devel
-		pam-devel
+		pam-devel >= 1.1.6
 		pcre-devel
 		popt-devel
 		python-devel
@@ -63,8 +63,9 @@ build
 		--disable-rpath
 
 	install_cmds
-		# Prepare empty config file
-		touch %{BUILDROOT}%{sysconfdir}/sssd/sssd.conf
+		# Install default config file.
+		install -m 600 %{DIR_SOURCE}/sssd.conf \
+			%{BUILDROOT}%{sysconfdir}/sssd/sssd.conf
 
 		# Remove old sysVinit stuff.
 		rm -rvf %{BUILDROOT}%{sysconfdir}/rc.d
@@ -73,14 +74,46 @@ end
 
 packages
 	package %{name}
+		groups += Base
+
 		configfiles
 			%{sysconfdir}/sssd/sssd.conf
+		end
+
+		prerequires += systemd-units
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl --no-reload disable sssd.service >/dev/null 2>&1 || :
+			systemctl stop sssd.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart sssd.service >/dev/null 2>&1 || :
 		end
 	end
 
 	package %{name}-client
 		summary = SSSD Client libraries.
 		description = %{summary}
+		groups += Base
+
+		requires
+			%{name} = %{thisver}
+		end
+
+		obsoletes
+			nss_ldap
+			pam_ldap
+		end
 
 		files
 			%{libdir}/libnss_sss.so.*
@@ -88,6 +121,17 @@ packages
 			%{libdir}/krb5/
 			%{mandir}/man8/pam_sss.8*
 			%{mandir}/man8/sssd_krb5*.8*
+		end
+
+		prerequires += \
+			authconfig >= 6.2.5
+
+		script postin
+			authconfig --update --enableldap --enablesssd --enablesssdauth
+		end
+
+		script postun
+			authconfig --update --disableldap --disablesssd --disablesssdauth
 		end
 	end
 
