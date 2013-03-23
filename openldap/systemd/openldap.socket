@@ -1,5 +1,5 @@
 [Socket]
-ListenStream=/run/openldap/ldapi
+ListenStream=/run/ldapi
 
 [Install]
 WantedBy=sockets.target
