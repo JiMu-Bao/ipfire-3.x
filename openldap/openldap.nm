@@ -5,7 +5,7 @@
 
 name       = openldap
 version    = 2.4.32
-release    = 3
+release    = 4
 
 groups     = System/Daemons
 url        = http://www.openldap.org/
@@ -50,6 +50,8 @@ build
 		--enable-overlays=mod \
 		--enable-sql=no \
 		--enable-ndb=no \
+		--enable-hdb=yes \
+		--enable-monitor=yes \
 		--disable-static
 
 	prepare_cmds
@@ -69,6 +71,7 @@ build
 		ln -svf	slapd %{BUILDROOT}/usr/sbin/slaptest
 
 		# Remove unneeded files.
+		rm -rvf %{BUILDROOT}%{sysconfidir}/slapd.{conf,ldif}
 		rm -rvf %{BUILDROOT}%{localstatedir}/openldap-data
 		rm -rvf %{BUILDROOT}%{localstatedir}/run
 
@@ -76,9 +79,10 @@ build
 			chmod -v 0755 %{BUILDROOT}%{libdir}/$(readlink %{BUILDROOT}%{libdir}/lib${LINK}.so)
 		done
 
-		# Install configuration
-		mkdir -pv %{BUILDROOT}/etc/%{name}
-		cp -vf %{DIR_SOURCE}/slapd.conf %{BUILDROOT}%{sysconfdir}/%{name}/slapd.conf
+		# Install configuration file.
+		mkdir -pv %{BUILDROOT}%{datadir}/%{name}
+		cp -vf %{DIR_SOURCE}/openldap-conf.ldif \
+			 %{BUILDROOT}%{datadir}/%{name}/
 
 		# Create directoires.
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/%{name}/slapd.d

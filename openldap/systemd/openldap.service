@@ -3,4 +3,4 @@ Description=OpenLDAP
 After=basic.target sockets.target
 
 [Service]
-ExecStart=/usr/sbin/slapd -u ldap -h 'ldapi://%2Frun%2Fopenldap%2Fldapi'
+ExecStart=/usr/sbin/slapd -u ldap -h 'ldapi://'
