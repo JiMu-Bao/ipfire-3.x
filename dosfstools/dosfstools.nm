@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = dosfstools
-version    = 3.0.10
+version    = 3.0.16
 release    = 1
 
 groups     = System/Filesystems
@@ -18,8 +18,8 @@ description
 	drives or on floppies.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+source_dl  = http://www.daniel-baumann.ch/files/software/dosfstools/
+sources    = %{thisapp}.tar.gz
 
 build
 	install
