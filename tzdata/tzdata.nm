@@ -3,8 +3,8 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-tzdata_version = 2011n
-tzcode_version = 2011i
+tzdata_version = 2013b
+tzcode_version = 2013b
 
 name       = tzdata
 version    = %{tzdata_version}
@@ -12,7 +12,7 @@ release    = 1
 arch       = noarch
 
 groups     = System/Base
-url        = ftp://munnari.oz.au/pub/
+url        = http://www.iana.org/time-zones
 license    = Public Domain
 summary    = Timezone data.
 
@@ -21,8 +21,8 @@ description
 	the world.
 end
 
-source_dl += ftp://elsie.nci.nih.gov/pub/
-sources    = tzdata-base-0.tar.bz2 tzdata%{tzdata_version}.tar.gz tzcode%{tzcode_version}.tar.gz
+source_dl += http://www.iana.org/time-zones/repository/releases/
+sources    = tzdata%{tzdata_version}.tar.gz tzcode%{tzcode_version}.tar.gz
 
 build
 	requires
@@ -30,25 +30,20 @@ build
 		perl
 	end
 
-	DIR_APP = %{DIR_SRC}/tzdata
+	DIR_APP = %{DIR_SRC}/tzdata%{tzdata_version}
 
 	prepare
-		%{MACRO_EXTRACT} %{DIR_DL}/tzdata-base-0.tar.bz2
-		cd %{DIR_APP}
-
-		mkdir tzdata%{tzdata_version} tzcode%{tzcode_version}
+		mkdir tzdata%{tzdata_version}
+		%{MACRO_EXTRACT} %{DIR_DL}/tzcode%{tzcode_version}.tar.gz -C tzdata%{tzdata_version}
 		%{MACRO_EXTRACT} %{DIR_DL}/tzdata%{tzdata_version}.tar.gz -C tzdata%{tzdata_version}
-		%{MACRO_EXTRACT} %{DIR_DL}/tzcode%{tzcode_version}.tar.gz -C tzcode%{tzcode_version}
-
-		sed -e 's|@objpfx@|'`pwd`'/obj/|' \
-			-e 's|@datadir@|/usr/share|' \
-			-e 's|@install_root@|%{BUILDROOT}|' \
-			Makeconfig.in > Makeconfig
 	end
-
-	#test
-	#	make check
-	#end
+	install
+		make TOPDIR=%{BUILDROOT}/usr ETCDIR=/tmp LIBDIR=/tmp MANDIR=/tmp \
+			TZDIR=%{BUILDROOT}/usr/share/zoneinfo install
+		mv %{BUILDROOT}/usr/share/zoneinfo-posix/ %{BUILDROOT}/usr/share/posix
+		mv %{BUILDROOT}/usr/share/zoneinfo-leaps/ %{BUILDROOT}/usr/share/right
+		rm -f %{BUILDROOT}/usr/share/zoneinfo/localtime
+	end
 end
 
 packages
