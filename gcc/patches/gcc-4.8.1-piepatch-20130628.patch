@@ -1,0 +1,874 @@
+diff -Nur gcc-4.8.1-vanilla/configure gcc-4.8.1/configure
+--- gcc-4.8.1-vanilla/configure	2013-02-15 18:45:54.000000000 +0100
++++ gcc-4.8.1/configure	2013-06-27 23:57:54.004095553 +0200
+@@ -670,6 +670,7 @@
+ CFLAGS
+ CC
+ EXTRA_CONFIGARGS_LIBJAVA
++enable_esp
+ target_subdir
+ host_subdir
+ build_subdir
+@@ -748,6 +749,7 @@
+ enable_libquadmath
+ enable_libquadmath_support
+ enable_libada
++enable_esp
+ enable_libssp
+ enable_libstdcxx
+ enable_static_libjava
+@@ -1464,6 +1466,11 @@
+   --disable-libquadmath-support
+                           disable libquadmath support for Fortran
+   --enable-libada         build libada directory
++  --enable-esp            Enable Stack protector and Position independent
++                          executable as default if we have suppot for it when
++                          compiling and link with and -z now as default.
++                          Linux targets supported i*86, x86_64, x32,
++                          powerpc, powerpc64, ia64, arm and mips.
+   --enable-libssp         build libssp directory
+   --disable-libstdcxx     do not build libstdc++-v3 directory
+   --enable-static-libjava[=ARG]
+@@ -3068,6 +3075,24 @@
+   noconfigdirs="$noconfigdirs gnattools"
+ fi
+ 
++# Check whether --enable-esp was given and target have the support.
++# Check whether --enable-esp was given.
++if test "${enable_esp+set}" = set; then :
++  enableval=$enable_esp;
++  case $target in
++    i?86*-*-linux* | x86_64-*-linux* | powerpc*-*-linux* | mips*-*-linux* | arm*-*-linux* | ia64-*-linux*)
++      enable_esp=yes
++      ;;
++    *)
++      { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: *** --enable-esp is not supported on this $target target." >&5
++$as_echo "$as_me: WARNING: *** --enable-esp is not supported on this $target target." >&2;}
++      ;;
++  esac
++
++fi
++
++
++
+ # Check whether --enable-libssp was given.
+ if test "${enable_libssp+set}" = set; then :
+   enableval=$enable_libssp; ENABLE_LIBSSP=$enableval
+@@ -14456,6 +14481,11 @@
+     esac ;;
+ esac
+ 
++# Disable -fstack-protector on stage1
++if test x$enable_esp = xyes; then
++  stage1_cflags="$stage1_cflags -fno-stack-protector"
++fi
++
+ 
+ 
+ # Enable --enable-checking in stage1 of the compiler.
+diff -Nur gcc-4.8.1-vanilla/configure.ac gcc-4.8.1/configure.ac
+--- gcc-4.8.1-vanilla/configure.ac	2013-02-15 18:45:54.000000000 +0100
++++ gcc-4.8.1/configure.ac	2013-06-27 23:57:53.999095429 +0200
+@@ -423,6 +423,26 @@
+   noconfigdirs="$noconfigdirs gnattools"
+ fi
+ 
++# Check whether --enable-esp was given and target have the support.
++AC_ARG_ENABLE([esp],
++[AS_HELP_STRING([--enable-esp],
++               [Enable Stack protector and Position independent executable as
++                default if we have suppot for it when compiling
++                and link with -z relro and -z now as default.
++                Linux targets supported i*86, x86_64, x32,
++                powerpc, powerpc64, ia64, arm and mips.])],
++[
++  case $target in
++    i?86*-*-linux* | x86_64-*-linux* | powerpc*-*-linux* | mips-*-linux* | arm*-*-linux* | ia64-*-linux*)
++      enable_esp=yes
++      ;;
++    *)
++      AC_MSG_WARN([*** --enable-esp is not supported on this $target target.])
++      ;;
++  esac
++])
++AC_SUBST([enable_esp])
++
+ AC_ARG_ENABLE(libssp,
+ [AS_HELP_STRING([--enable-libssp], [build libssp directory])],
+ ENABLE_LIBSSP=$enableval,
+@@ -3241,6 +3261,11 @@
+     esac ;;
+ esac
+ 
++# Disable -fstack-protector on stage1
++if test x$enable_esp = xyes; then
++  stage1_cflags="$stage1_cflags -fno-stack-protector"
++fi
++
+ AC_SUBST(stage1_cflags)
+ 
+ # Enable --enable-checking in stage1 of the compiler.
+diff -Nur gcc-4.8.1-vanilla/gcc/common.opt gcc-4.8.1/gcc/common.opt
+--- gcc-4.8.1-vanilla/gcc/common.opt	2013-03-14 10:13:36.000000000 +0100
++++ gcc-4.8.1/gcc/common.opt	2013-06-27 23:57:54.024096050 +0200
+@@ -2393,6 +2393,9 @@
+ nodefaultlibs
+ Driver
+ 
++nopie
++Driver
++
+ nostartfiles
+ Driver
+ 
+diff -Nur gcc-4.8.1-vanilla/gcc/config/arm/arm.h gcc-4.8.1/gcc/config/arm/arm.h
+--- gcc-4.8.1-vanilla/gcc/config/arm/arm.h	2013-03-17 17:28:55.000000000 +0100
++++ gcc-4.8.1/gcc/config/arm/arm.h	2013-06-27 23:57:54.031096224 +0200
+@@ -2328,6 +2328,11 @@
+ # define MCPU_MTUNE_NATIVE_SPECS ""
+ #endif
+ 
+-#define DRIVER_SELF_SPECS MCPU_MTUNE_NATIVE_SPECS
+-
++#ifdef ENABLE_ESP
++# define DRIVER_SELF_SPECS \
++  MCPU_MTUNE_NATIVE_SPECS, \
++  ESP_DRIVER_SELF_SPEC
++#else
++# define DRIVER_SELF_SPECS MCPU_MTUNE_NATIVE_SPECS
++#endif
+ #endif /* ! GCC_ARM_H */
+diff -Nur gcc-4.8.1-vanilla/gcc/config/arm/elf.h gcc-4.8.1/gcc/config/arm/elf.h
+--- gcc-4.8.1-vanilla/gcc/config/arm/elf.h	2013-01-10 21:38:27.000000000 +0100
++++ gcc-4.8.1/gcc/config/arm/elf.h	2013-06-27 23:57:54.031096224 +0200
+@@ -49,7 +49,11 @@
+ #endif
+ 
+ #undef SUBSUBTARGET_EXTRA_SPECS
++#ifdef ENABLE_ESP
++#define SUBSUBTARGET_EXTRA_SPECS ESP_EXTRA_SPECS
++#else
+ #define SUBSUBTARGET_EXTRA_SPECS
++#endif
+ 
+ #ifndef ASM_SPEC
+ #define ASM_SPEC "\
+diff -Nur gcc-4.8.1-vanilla/gcc/config/esp.h gcc-4.8.1/gcc/config/esp.h
+--- gcc-4.8.1-vanilla/gcc/config/esp.h	1970-01-01 01:00:00.000000000 +0100
++++ gcc-4.8.1/gcc/config/esp.h	2013-06-27 23:57:54.033096274 +0200
+@@ -0,0 +1,127 @@
++/* License terms see GNU GENERAL PUBLIC LICENSE Version 3.
++ * Version 20130214.1
++ * Magnus Granberg (Zorry) <zorry@gentoo.org>  */
++#ifndef GCC_ESP_H
++#define GCC_ESP_H
++
++/*	This file will add -fstack-protector-all, -fPIE, -pie and -z now 
++	as default if the defines and the spec allow it.
++	Added a hack for gcc-specs-* in toolchain-funcs.eclass and _filter-hardened in flag-o-matic.eclass
++	to support older hardened GCC patches and we don't need to change the code on gcc-specs-* and _filter-hardened.
++	This will add some unsupported upstream commands options as -nopie and -nonow.
++	-D__KERNEL__ is added so we don't have -fPIE, -pie and -fstack-protector-all when building kernels.
++	ESP_CC1_SPEC is added to CC1_SPEC.
++	ESP_CC1_STRICT_OVERFLOW_SPEC is added so we don't disable the strict-overflow check.
++	ESP_LINK_PIE_CHECK_SPEC check for -pie, -p, -pg, -profile and -static.
++	ENABLE_CRTBEGINP add support for crtbeginP.o, build -static with -fPIE or -fpie.
++*/
++#ifdef ENABLE_ESP
++	
++	/* Hack to support gcc-specs-* in toolchain-funcs.eclass and _filter-hardened in flag-o-matic.eclass  */
++	#define ESP_CC1_SPEC " %(esp_cc1_ssp) %(esp_cc1_pie) %(esp_cc1_strict_overflow)"
++	#if defined ( EFAULT_SSP ) || defined ( EFAULT_PIE_SSP )
++		#define ESP_CC1_SSP_SPEC "%{!fno-stack-protector: %{!fno-stack-protector-all: }}"
++	#else
++		#define ESP_CC1_SSP_SPEC ""
++	#endif
++	#if defined ( EFAULT_PIE ) || defined ( EFAULT_PIE_SSP )
++		#define ESP_CC1_PIE_SPEC "%{!nopie: }"
++	#else
++		#define ESP_CC1_PIE_SPEC ""
++	#endif
++	#define ESP_CC1_STRICT_OVERFLOW_SPEC "%{!fstrict-overflow:%{!fno-strict-overflow: -fno-strict-overflow}}"
++
++	/*	ESP_LINK_SPEC is added to LINK_PIE_SPEC if esp is enable
++		-z now will be added if we don't have -vanilla spec. We do a -pie incompatible check
++		Don't remove the specs in the end  */
++	#define ESP_LINK_SPEC "%(esp_link_now) %(esp_link_pie_check) "
++	#define ESP_LINK_NOW_SPEC "%{!nonow:-z now}"
++
++	/*	We use ESP_ESP_DRIVER_SELF_SPEC to add pie and ssp command-line options.  */
++	#define ESP_DRIVER_SELF_SPEC "%{D__KERNEL__:;:%{!nopie:%(esp_options_pie) \
++		%(esp_link_pie)} %(esp_options_ssp) }"
++	
++	/*  This will add -fstack-protector-all if we don't have -nostdlib -nodefaultlibs -fno-stack-protector -fstack-protector
++		-fstack-protector-all and we have EFAULT_SSP or EFAULT_PIE_SSP defined.  */
++	#if defined ( EFAULT_SSP ) || defined ( EFAULT_PIE_SSP )
++		#define ESP_OPTIONS_SSP_SPEC \
++			"%{nostdlib|nodefaultlibs|fno-stack-protector| \
++			fstack-protector|fstack-protector-all:;:-fstack-protector-all}"
++	#else
++		#define ESP_OPTIONS_SSP_SPEC ""
++	#endif
++
++	/* If EFAULT_PIE or EFAULT_PIE_SSP is defined we will add -fPIE -pie  */
++	#if defined ( EFAULT_PIE ) || defined ( EFAULT_PIE_SSP )
++
++		/*  This will add -fPIE if we don't have -pie -fpic -fPIC -fpie -fPIE -fno-pic -fno-PIC -fno-pie -fno-PIE -shared -static
++			-nostdlib -nostartfiles.  */
++		/*  With ENABLE_CRTBEGINP we don't need to check for -static  */
++		#ifdef ENABLE_CRTBEGINP
++			#define ESP_OPTIONS_PIE_SPEC \
++				"%{!pie: %{!fpic:%{!fPIC:%{!fpie:%{!fPIE: %{!fno-pic:%{!fno-PIC:%{!fno-pie:%{!fno-PIE: \
++				%{!shared: %{!nostdlib: %{!nostartfiles:-fPIE}} } }}}} }}}} }"
++		#else
++			#define ESP_OPTIONS_PIE_SPEC \
++				"%{!pie: %{!fpic:%{!fPIC:%{!fpie:%{!fPIE: %{!fno-pic:%{!fno-PIC:%{!fno-pie:%{!fno-PIE: \
++				%{!shared: %{!static: %{!nostdlib: %{!nostartfiles:-fPIE}} } }}}} }}}} }}"
++		#endif
++
++		/*  This will add -pie if we don't have -pie -A -fno-pic -fno-PIC -fno-pie -fno-PIE -shared -static -r -nostdlib 
++			-nostartfiles  */
++		/*  With ENABLE_CRTBEGINP we don't need to check for -static
++			and we add -pie only to get the start and endfiles. -pie will not go to the linker. */
++		#ifdef ENABLE_CRTBEGINP
++			#define ESP_LINK_PIE_SPEC \
++				"%{!pie:%{!A:%{!fno-pie:%{!fno-PIE:%{!fno-pic:%{!fno-PIC:%{!shared:%{!r: \
++				%{!nostdlib:%{!nostartfiles:-pie}}}}}}}}}}"
++		#else
++			#define ESP_LINK_PIE_SPEC \
++				"%{!pie:%{!A:%{!fno-pie:%{!fno-PIE:%{!fno-pic:%{!fno-PIC:%{!shared:%{!static:%{!r: \
++				%{!nostdlib:%{!nostartfiles:-pie}}}}}}}}}}}"
++		#endif
++		
++		/*  This will check if -pie is set when (-static) -pg -p -profile. If set it will make gcc print out
++			"-pie and (static)|pg|p|profile are incompatible when linking"  */
++		/*  With ENABLE_CRTBEGINP we don't need to check for -static  */
++		#ifdef ENABLE_CRTBEGINP
++			#define ESP_LINK_PIE_CHECK_SPEC \
++				"%{pie:%{pg|p|profile:%e-pie and -pg|p|profile are incompatible when linking}}"
++		#else
++			#define ESP_LINK_PIE_CHECK_SPEC \
++				"%{pie:%{static|pg|p|profile:%e-pie and -static|pg|p|profile are incompatible when linking}}"
++		#endif
++
++		/*  We don't pass -pie to the linker when -static.  */
++		#ifdef ENABLE_CRTBEGINP
++			#define LINK_PIE_SPEC "%{!static:%{pie:-pie}} %(esp_link)"
++		#else
++			#define LINK_PIE_SPEC "%{pie:-pie} %(esp_link)"
++		#endif
++
++	#else
++		#define ESP_OPTIONS_PIE_SPEC ""
++		#define ESP_LINK_PIE_CHECK_SPEC ""
++		#define ESP_LINK_PIE_SPEC ""
++		#define LINK_PIE_SPEC "%{pie:-pie} %(esp_link)"
++	#endif
++
++	/*  We add extra spec name's to the EXTRA_SPECS list  */
++	#define ESP_EXTRA_SPECS \
++		{ "esp_cc1",								ESP_CC1_SPEC },					\
++		{ "esp_cc1_pie",							ESP_CC1_PIE_SPEC },				\
++		{ "esp_cc1_ssp",							ESP_CC1_SSP_SPEC },				\
++		{ "esp_cc1_strict_overflow",					ESP_CC1_STRICT_OVERFLOW_SPEC },	\
++		{ "esp_link",								ESP_LINK_SPEC },				\
++		{ "esp_link_now",							ESP_LINK_NOW_SPEC },			\
++		{ "esp_link_pie",							ESP_LINK_PIE_SPEC },			\
++		{ "esp_link_pie_check",						ESP_LINK_PIE_CHECK_SPEC },		\
++		{ "esp_driver_self",							ESP_DRIVER_SELF_SPEC },		\
++		{ "esp_options_pie",						ESP_OPTIONS_PIE_SPEC },			\
++		{ "esp_options_ssp",						ESP_OPTIONS_SSP_SPEC }
++
++	static const char *esp_driver_self_spec = ESP_DRIVER_SELF_SPEC;
++	static const char *cc1_spec = CC1_SPEC ESP_CC1_SPEC;
++
++#endif
++#endif /* End GCC_ESP_H */
+diff -Nur gcc-4.8.1-vanilla/gcc/config/gnu-user.h gcc-4.8.1/gcc/config/gnu-user.h
+--- gcc-4.8.1-vanilla/gcc/config/gnu-user.h	2013-03-08 18:16:45.000000000 +0100
++++ gcc-4.8.1/gcc/config/gnu-user.h	2013-06-27 23:57:54.024096050 +0200
+@@ -40,7 +40,11 @@
+    provides part of the support for getting C++ file-scope static
+    object constructed before entering `main'.  */
+    
+-#if defined HAVE_LD_PIE
++#if defined (HAVE_LD_PIE) && defined (ENABLE_CRTBEGINP)
++#define GNU_USER_TARGET_STARTFILE_SPEC \
++  "%{!shared: %{pg|p|profile:gcrt1.o%s;pie:Scrt1.o%s;:crt1.o%s}} crti.o%s \
++   %{static:%{pie:crtbeginP.o%s;:crtbeginT.o%s}} %{!static:%{shared|pie:crtbeginS.o%s;:crtbegin.o%s}}"
++#elif defined (HAVE_LD_PIE) && ! defined (ENABLE_CRTBEGINP)
+ #define GNU_USER_TARGET_STARTFILE_SPEC \
+   "%{!shared: %{pg|p|profile:gcrt1.o%s;pie:Scrt1.o%s;:crt1.o%s}} \
+    crti.o%s %{static:crtbeginT.o%s;shared|pie:crtbeginS.o%s;:crtbegin.o%s}"
+diff -Nur gcc-4.8.1-vanilla/gcc/config/i386/gnu-user-common.h gcc-4.8.1/gcc/config/i386/gnu-user-common.h
+--- gcc-4.8.1-vanilla/gcc/config/i386/gnu-user-common.h	2013-01-10 21:38:27.000000000 +0100
++++ gcc-4.8.1/gcc/config/i386/gnu-user-common.h	2013-06-27 23:57:54.030096199 +0200
+@@ -70,3 +70,7 @@
+ 
+ /* Static stack checking is supported by means of probes.  */
+ #define STACK_CHECK_STATIC_BUILTIN 1
++
++#ifdef ENABLE_ESP
++#define DRIVER_SELF_SPECS ESP_DRIVER_SELF_SPEC
++#endif
+diff -Nur gcc-4.8.1-vanilla/gcc/config/i386/gnu-user.h gcc-4.8.1/gcc/config/i386/gnu-user.h
+--- gcc-4.8.1-vanilla/gcc/config/i386/gnu-user.h	2013-02-08 19:08:12.000000000 +0100
++++ gcc-4.8.1/gcc/config/i386/gnu-user.h	2013-06-27 23:57:54.030096199 +0200
+@@ -70,9 +70,16 @@
+   "--32 %{!mno-sse2avx:%{mavx:-msse2avx}} %{msse2avx:%{!mavx:-msse2avx}}"
+ 
+ #undef  SUBTARGET_EXTRA_SPECS
++#ifdef ENABLE_ESP
++#define SUBTARGET_EXTRA_SPECS \
++  { "link_emulation", GNU_USER_LINK_EMULATION },\
++  { "dynamic_linker", GNU_USER_DYNAMIC_LINKER }, \
++  ESP_EXTRA_SPECS
++#else
+ #define SUBTARGET_EXTRA_SPECS \
+   { "link_emulation", GNU_USER_LINK_EMULATION },\
+   { "dynamic_linker", GNU_USER_DYNAMIC_LINKER }
++#endif
+ 
+ #define GNU_USER_TARGET_LINK_SPEC "-m %(link_emulation) %{shared:-shared} \
+   %{!shared: \
+diff -Nur gcc-4.8.1-vanilla/gcc/config/i386/i386.h gcc-4.8.1/gcc/config/i386/i386.h
+--- gcc-4.8.1-vanilla/gcc/config/i386/i386.h	2013-01-28 21:42:55.000000000 +0100
++++ gcc-4.8.1/gcc/config/i386/i386.h	2013-06-27 23:57:54.031096224 +0200
+@@ -643,13 +643,16 @@
+    Do not define this macro if it does not need to do anything.  */
+ 
+ #ifndef SUBTARGET_EXTRA_SPECS
++#ifdef ENABLE_ESP
++#define SUBTARGET_EXTRA_SPECS ESP_EXTRA_SPECS
++#else
+ #define SUBTARGET_EXTRA_SPECS
+ #endif
++#endif
+ 
+ #define EXTRA_SPECS							\
+   { "cc1_cpu",  CC1_CPU_SPEC },						\
+   SUBTARGET_EXTRA_SPECS
+-
+ 
+ /* Set the value of FLT_EVAL_METHOD in float.h.  When using only the
+    FPU, assume that the fpcw is set to extended precision; when using
+diff -Nur gcc-4.8.1-vanilla/gcc/config/ia64/ia64.h gcc-4.8.1/gcc/config/ia64/ia64.h
+--- gcc-4.8.1-vanilla/gcc/config/ia64/ia64.h	2013-01-10 21:38:27.000000000 +0100
++++ gcc-4.8.1/gcc/config/ia64/ia64.h	2013-06-27 23:57:54.033096274 +0200
+@@ -41,8 +41,12 @@
+ } while (0)
+ 
+ #ifndef SUBTARGET_EXTRA_SPECS
++#ifdef ENABLE_ESP
++#define SUBTARGET_EXTRA_SPECS ESP_EXTRA_SPECS
++#else
+ #define SUBTARGET_EXTRA_SPECS
+ #endif
++#endif
+ 
+ #define EXTRA_SPECS \
+   { "asm_extra", ASM_EXTRA_SPEC }, \
+diff -Nur gcc-4.8.1-vanilla/gcc/config/ia64/linux.h gcc-4.8.1/gcc/config/ia64/linux.h
+--- gcc-4.8.1-vanilla/gcc/config/ia64/linux.h	2013-01-10 21:38:27.000000000 +0100
++++ gcc-4.8.1/gcc/config/ia64/linux.h	2013-06-27 23:57:54.032096249 +0200
+@@ -88,3 +88,7 @@
+ 
+ /* Define this to be nonzero if static stack checking is supported.  */
+ #define STACK_CHECK_STATIC_BUILTIN 1
++
++#ifdef ENABLE_ESP
++#define DRIVER_SELF_SPECS ESP_DRIVER_SELF_SPEC
++#endif
+diff -Nur gcc-4.8.1-vanilla/gcc/config/mips/gnu-user64.h gcc-4.8.1/gcc/config/mips/gnu-user64.h
+--- gcc-4.8.1-vanilla/gcc/config/mips/gnu-user64.h	2013-01-10 21:38:27.000000000 +0100
++++ gcc-4.8.1/gcc/config/mips/gnu-user64.h	2013-06-27 23:57:54.032096249 +0200
+@@ -26,9 +26,16 @@
+   " %{!mabi=*: -" MULTILIB_ABI_DEFAULT "}"
+ 
+ #undef DRIVER_SELF_SPECS
++#ifdef ENABLE_ESP
+ #define DRIVER_SELF_SPECS \
+   BASE_DRIVER_SELF_SPECS, \
++  ESP_DRIVER_SELF_SPEC, \
+   LINUX64_DRIVER_SELF_SPECS
++# else
++#define DRIVER_SELF_SPECS \
++  BASE_DRIVER_SELF_SPECS, \
++  LINUX64_DRIVER_SELF_SPECS
++#endif
+ 
+ #undef GNU_USER_TARGET_LINK_SPEC
+ #define GNU_USER_TARGET_LINK_SPEC "\
+diff -Nur gcc-4.8.1-vanilla/gcc/config/mips/gnu-user.h gcc-4.8.1/gcc/config/mips/gnu-user.h
+--- gcc-4.8.1-vanilla/gcc/config/mips/gnu-user.h	2013-01-10 21:38:27.000000000 +0100
++++ gcc-4.8.1/gcc/config/mips/gnu-user.h	2013-06-27 23:57:54.032096249 +0200
+@@ -125,9 +125,16 @@
+   "%{mabi=64:%{!msym32:%<mplt}}"
+ 
+ #undef DRIVER_SELF_SPECS
++#ifdef ENABLE_ESP
+ #define DRIVER_SELF_SPECS \
+   BASE_DRIVER_SELF_SPECS, \
++  ESP_DRIVER_SELF_SPEC, \
+   LINUX_DRIVER_SELF_SPECS
++# else
++#define DRIVER_SELF_SPECS \
++  BASE_DRIVER_SELF_SPECS, \
++  LINUX_DRIVER_SELF_SPECS
++#endif
+ 
+ /* Similar to standard Linux, but adding -ffast-math support.  */
+ #undef	GNU_USER_TARGET_MATHFILE_SPEC
+diff -Nur gcc-4.8.1-vanilla/gcc/config/mips/mips.h gcc-4.8.1/gcc/config/mips/mips.h
+--- gcc-4.8.1-vanilla/gcc/config/mips/mips.h	2013-02-25 14:53:16.000000000 +0100
++++ gcc-4.8.1/gcc/config/mips/mips.h	2013-06-27 23:57:54.032096249 +0200
+@@ -1197,9 +1197,13 @@
+   SUBTARGET_EXTRA_SPECS
+ 
+ #ifndef SUBTARGET_EXTRA_SPECS
++#ifdef ENABLE_ESP
++#define SUBTARGET_EXTRA_SPECS ESP_EXTRA_SPECS
++#else
+ #define SUBTARGET_EXTRA_SPECS
+ #endif
+-
++#endif
++
+ #define DBX_DEBUGGING_INFO 1		/* generate stabs (OSF/rose) */
+ #define DWARF2_DEBUGGING_INFO 1         /* dwarf2 debugging info */
+ 
+diff -Nur gcc-4.8.1-vanilla/gcc/config/rs6000/linux64.h gcc-4.8.1/gcc/config/rs6000/linux64.h
+--- gcc-4.8.1-vanilla/gcc/config/rs6000/linux64.h	2013-01-10 21:38:27.000000000 +0100
++++ gcc-4.8.1/gcc/config/rs6000/linux64.h	2013-06-27 23:57:54.029096174 +0200
+@@ -180,7 +180,7 @@
+ #endif
+ 
+ #define ASM_SPEC32 "-a32 \
+-%{mrelocatable} %{mrelocatable-lib} %{fpic:-K PIC} %{fPIC:-K PIC} \
++%{mrelocatable} %{mrelocatable-lib} %{fpic|fPIC|fpie|fPIE:-K PIC} \
+ %{memb} %{!memb: %{msdata=eabi: -memb}} \
+ %{!mlittle: %{!mlittle-endian: %{!mbig: %{!mbig-endian: \
+     %{mcall-freebsd: -mbig} \
+diff -Nur gcc-4.8.1-vanilla/gcc/config/rs6000/sysv4.h gcc-4.8.1/gcc/config/rs6000/sysv4.h
+--- gcc-4.8.1-vanilla/gcc/config/rs6000/sysv4.h	2013-01-10 21:38:27.000000000 +0100
++++ gcc-4.8.1/gcc/config/rs6000/sysv4.h	2013-06-27 23:57:54.030096199 +0200
+@@ -627,8 +627,13 @@
+ 
+ #define LINK_OS_DEFAULT_SPEC ""
+ 
++#ifdef ENABLE_ESP
++#define DRIVER_SELF_SPECS "%{mfpu=none: %<mfpu=* \
++	%<msingle-float %<mdouble-float}", ESP_DRIVER_SELF_SPECS
++#else
+ #define DRIVER_SELF_SPECS "%{mfpu=none: %<mfpu=* \
+  	%<msingle-float %<mdouble-float}"
++#endif
+ 
+ /* Override rs6000.h definition.  */
+ #undef	CPP_SPEC
+@@ -769,7 +774,12 @@
+ %{!mnewlib: %{pthread:-lpthread} %{shared:-lc} \
+ %{!shared: %{profile:-lc_p} %{!profile:-lc}}}"
+ 
+-#ifdef HAVE_LD_PIE
++#if defined (HAVE_LD_PIE) && defined (ENABLE_CRTBEGINP)
++#define STARTFILE_LINUX_SPEC "\
++%{!shared: %{pg|p|profile:gcrt1.o%s;pie:Scrt1.o%s;:crt1.o%s}} \
++%{mnewlib:ecrti.o%s;:crti.o%s} \
++%{static:%{pie:crtbeginP.o%s;:crtbeginT.o%s}} %{!static:%{shared|pie:crtbeginS.o%s;:crtbegin.o%s}}"
++#elif defined (HAVE_LD_PIE) && ! defined (ENABLE_CRTBEGINP)
+ #define	STARTFILE_LINUX_SPEC "\
+ %{!shared: %{pg|p|profile:gcrt1.o%s;pie:Scrt1.o%s;:crt1.o%s}} \
+ %{mnewlib:ecrti.o%s;:crti.o%s} \
+@@ -933,7 +943,11 @@
+   { "cpp_os_openbsd",		CPP_OS_OPENBSD_SPEC },			\
+   { "cpp_os_default",		CPP_OS_DEFAULT_SPEC },			\
+   { "fbsd_dynamic_linker",	FBSD_DYNAMIC_LINKER },			\
+-  SUBSUBTARGET_EXTRA_SPECS
++  SUBSUBTARGET_EXTRA_SPECS ESP_EXTRA_SPECS
++  
++#ifndef ENABLE_ESP
++#define ESP_EXTRA_SPECS
++#endif
+ 
+ #define	SUBSUBTARGET_EXTRA_SPECS
+ 
+diff -Nur gcc-4.8.1-vanilla/gcc/config.in gcc-4.8.1/gcc/config.in
+--- gcc-4.8.1-vanilla/gcc/config.in	2013-05-31 11:09:26.000000000 +0200
++++ gcc-4.8.1/gcc/config.in	2013-06-27 23:57:54.009095677 +0200
+@@ -52,6 +52,12 @@
+ #endif
+ 
+ 
++/* Define to 1 to enable crtbeginP.o. */
++#ifndef USED_FOR_TARGET
++#undef ENABLE_CRTBEGINP
++#endif
++
++
+ /* Define to 1 to specify that we are using the BID decimal floating point
+    format instead of DPD */
+ #ifndef USED_FOR_TARGET
+@@ -71,6 +77,12 @@
+ #endif
+ 
+ 
++/* Define to 1 to enable esp. */
++#ifndef USED_FOR_TARGET
++#undef ENABLE_ESP
++#endif
++
++
+ /* Define to 1 to enable fixed-point arithmetic extension to C. */
+ #ifndef USED_FOR_TARGET
+ #undef ENABLE_FIXED_POINT
+diff -Nur gcc-4.8.1-vanilla/gcc/configure gcc-4.8.1/gcc/configure
+--- gcc-4.8.1-vanilla/gcc/configure	2013-05-08 13:36:36.000000000 +0200
++++ gcc-4.8.1/gcc/configure	2013-06-27 23:57:54.008095652 +0200
+@@ -600,6 +600,8 @@
+ 
+ ac_subst_vars='LTLIBOBJS
+ LIBOBJS
++enable_crtbeginP
++enable_esp
+ enable_plugin
+ pluginlibs
+ CLOOGINC
+@@ -920,6 +922,7 @@
+ enable_plugin
+ enable_libquadmath_support
+ with_linker_hash_style
++enable_esp
+ '
+       ac_precious_vars='build_alias
+ host_alias
+@@ -1633,6 +1636,11 @@
+   --enable-plugin         enable plugin support
+   --disable-libquadmath-support
+                           disable libquadmath support for Fortran
++  --enable-esp            Enable Stack protector and Position independent
++                          executable as default if we have suppot for it when
++                          compiling and link with -z now as default.
++                          Linux targets supported i*86, x86_64, x32,
++                          powerpc, powerpc64, ia64, arm and mips.
+ 
+ Optional Packages:
+   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+@@ -27431,6 +27439,59 @@
+ 
+ fi
+ 
++# --------------
++# Esp checks
++# --------------
++
++# Check whether --enable-esp was given and target have the support.
++# Check whether --enable-esp was given.
++if test "${enable_esp+set}" = set; then :
++  enableval=$enable_esp; enable_esp=$enableval
++else
++  enable_esp=no
++fi
++
++if test $enable_esp = yes ; then
++  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if $target support esp" >&5
++$as_echo_n "checking if $target support esp... " >&6; }
++  case "$target" in
++    i?86*-*-linux* | x86_64-*-linux* | powerpc*-*-linux* | mips*-*-linux* | arm*-*-linux* | ia64-*-linux*)
++      enable_esp=yes
++
++$as_echo "#define ENABLE_ESP 1" >>confdefs.h
++
++      ;;
++    *)
++      enable_esp=no
++      ;;
++  esac
++{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_esp" >&5
++$as_echo "$enable_esp" >&6; }
++fi
++
++if test $enable_esp = yes ; then
++  { $as_echo "$as_me:${as_lineno-$LINENO}: checking checking for crtbeginP.o support" >&5
++$as_echo_n "checking checking for crtbeginP.o support... " >&6; }
++    if test x$enable_esp = xyes ; then
++      case "$target" in
++        ia64*-*-linux*)
++          enable_crtbeginP=no ;;
++        *-*-linux*)
++          if test x$gcc_cv_ld_pie = xyes && test x$lt_cv_prog_compiler_static_works = xyes; then
++            enable_crtbeginP=yes
++
++$as_echo "#define ENABLE_CRTBEGINP 1" >>confdefs.h
++
++          fi
++          ;;
++        *) enable_crtbeginP=no ;;
++      esac
++    fi
++  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_crtbeginP" >&5
++$as_echo "$enable_crtbeginP" >&6; }
++fi
++
++
+ # Configure the subdirectories
+ # AC_CONFIG_SUBDIRS($subdirs)
+ 
+diff -Nur gcc-4.8.1-vanilla/gcc/configure.ac gcc-4.8.1/gcc/configure.ac
+--- gcc-4.8.1-vanilla/gcc/configure.ac	2013-05-08 13:36:36.000000000 +0200
++++ gcc-4.8.1/gcc/configure.ac	2013-06-27 23:57:54.001095478 +0200
+@@ -5297,6 +5297,55 @@
+                                          [The linker hash style])
+ fi
+ 
++# --------------
++# Esp checks
++# --------------
++
++# Check whether --enable-esp was given and target have the support.
++AC_ARG_ENABLE([esp],
++[AS_HELP_STRING([--enable-esp],
++               [Enable Stack protector and Position independent executable as
++                default if we have suppot for it when compiling
++                and link with -z now as default.
++                Linux targets supported i*86, x86_64, x32,
++                powerpc, powerpc64, ia64, arm and mips.])],
++  enable_esp=$enableval,
++  enable_esp=no)
++if test $enable_esp = yes ; then
++  AC_MSG_CHECKING(if $target support esp)
++  case "$target" in
++    i?86*-*-linux* | x86_64-*-linux* | powerpc*-*-linux* | mips-*-linux* | arm*-*-linux* | ia64-*-linux*)
++      enable_esp=yes
++      AC_DEFINE(ENABLE_ESP, 1,
++        [Define if your target support esp and you have enable it.])
++      ;;
++    *)
++      enable_esp=no
++      ;;
++  esac
++AC_MSG_RESULT($enable_esp)
++fi
++AC_SUBST([enable_esp])
++if test $enable_esp = yes ; then
++  AC_MSG_CHECKING(checking for crtbeginP.o support)
++    if test x$enable_esp = xyes ; then
++      case "$target" in
++        ia64*-*-linux*)
++          enable_crtbeginP=no ;;
++        *-*-linux*)
++          if test x$gcc_cv_ld_pie = xyes && test x$lt_cv_prog_compiler_static_works = xyes; then
++            enable_crtbeginP=yes
++            AC_DEFINE(ENABLE_CRTBEGINP, 1,
++              [Define if your compiler will support crtbeginP.])
++          fi
++          ;;
++        *) enable_crtbeginP=no ;;
++      esac
++    fi
++  AC_MSG_RESULT($enable_crtbeginP)
++fi
++AC_SUBST([enable_crtbeginP])
++
+ # Configure the subdirectories
+ # AC_CONFIG_SUBDIRS($subdirs)
+ 
+diff -Nur gcc-4.8.1-vanilla/gcc/doc/invoke.texi gcc-4.8.1/gcc/doc/invoke.texi
+--- gcc-4.8.1-vanilla/gcc/doc/invoke.texi	2013-03-29 14:41:29.000000000 +0100
++++ gcc-4.8.1/gcc/doc/invoke.texi	2013-06-27 23:57:54.029096174 +0200
+@@ -8877,6 +8877,11 @@
+ @opindex fstack-protector-all
+ Like @option{-fstack-protector} except that all functions are protected.
+ 
++NOTE: When --enable-esp this option is enabled by default 
++for C, C++, ObjC, ObjC++, if neither @option{-fno-stack-protector}
++or @option{-nostdlib} or @option{-nodefaultlibs} or 
++@option{-fstack-protector} are found.
++
+ @item -fsection-anchors
+ @opindex fsection-anchors
+ Try to reduce the number of symbolic address calculations by using
+@@ -9905,6 +9910,12 @@
+ used for compilation (@option{-fpie}, @option{-fPIE},
+ or model suboptions) when you specify this linker option.
+ 
++NOTE: When --enable-esp this option is enabled by default
++for C, C++, ObjC, ObjC++, if neither @option{-fno-pie} or @option{-fno-PIE}
++or @option{-fno-pic} or @option{-fno-PIC} or @option{-nostdlib} or
++@option{-nostartfiles} or @option{-shared} or @option{-pg} or @option{-p}
++are found.
++
+ @item -rdynamic
+ @opindex rdynamic
+ Pass the flag @option{-export-dynamic} to the ELF linker, on targets
+@@ -20360,6 +20371,11 @@
+ @code{__pie__} and @code{__PIE__}.  The macros have the value 1
+ for @option{-fpie} and 2 for @option{-fPIE}.
+ 
++NOTE: When --enable-esp this option is enabled by default
++for C, C++, ObjC, ObjC++, if neither @option{-fno-pie} or @option{-fno-PIE}
++or @option{-fno-pic} or @option{-fno-PIC} or @option{-nostdlib} or
++@option{-nostartfiles} or @option{-shared} are found.
++
+ @item -fno-jump-tables
+ @opindex fno-jump-tables
+ Do not use jump tables for switch statements even where it would be
+diff -Nur gcc-4.8.1-vanilla/gcc/gcc.c gcc-4.8.1/gcc/gcc.c
+--- gcc-4.8.1-vanilla/gcc/gcc.c	2013-05-17 14:24:26.000000000 +0200
++++ gcc-4.8.1/gcc/gcc.c	2013-06-27 23:57:54.021095975 +0200
+@@ -42,6 +42,7 @@
+ #include "opts.h"
+ #include "params.h"
+ #include "vec.h"
++#include "config/esp.h" /* for --enable-esp support */
+ #include "filenames.h"
+ 
+ /* By default there is no special suffix for target executables.  */
+@@ -773,7 +774,9 @@
+ 
+ static const char *asm_debug = ASM_DEBUG_SPEC;
+ static const char *cpp_spec = CPP_SPEC;
++#ifndef ENABLE_ESP
+ static const char *cc1_spec = CC1_SPEC;
++#endif
+ static const char *cc1plus_spec = CC1PLUS_SPEC;
+ static const char *link_gcc_c_sequence_spec = LINK_GCC_C_SEQUENCE_SPEC;
+ static const char *link_ssp_spec = LINK_SSP_SPEC;
+diff -Nur gcc-4.8.1-vanilla/gcc/Makefile.in gcc-4.8.1/gcc/Makefile.in
+--- gcc-4.8.1-vanilla/gcc/Makefile.in	2013-05-21 18:00:49.000000000 +0200
++++ gcc-4.8.1/gcc/Makefile.in	2013-06-27 23:57:54.019095926 +0200
+@@ -235,6 +235,14 @@
+ LINKER_FLAGS = $(CFLAGS)
+ endif
+ 
++# We don't want to compile the compiler with -fPIE, it make PCH fail.
++enable_esp = @enable_esp@
++ifeq ($(enable_esp),yes)
++ESP_NOPIE_CFLAGS = -fno-PIE
++else
++ESP_NOPIE_CFLAGS=
++endif
++
+ # -------------------------------------------
+ # Programs which operate on the build machine
+ # -------------------------------------------
+@@ -986,12 +994,13 @@
+ 
+ # This is the variable actually used when we compile. If you change this,
+ # you probably want to update BUILD_CFLAGS in configure.ac
+-ALL_CFLAGS = $(T_CFLAGS) $(CFLAGS-$@) \
++ALL_CFLAGS = $(ESP_NOPIE_CFLAGS) $(T_CFLAGS) $(CFLAGS-$@) \
+   $(CFLAGS) $(INTERNAL_CFLAGS) $(COVERAGE_FLAGS) $(WARN_CFLAGS) @DEFS@
+ 
+ # The C++ version.
+-ALL_CXXFLAGS = $(T_CFLAGS) $(CFLAGS-$@) $(CXXFLAGS) $(INTERNAL_CFLAGS) \
+-  $(COVERAGE_FLAGS) $(NOEXCEPTION_FLAGS) $(WARN_CXXFLAGS) @DEFS@
++ALL_CXXFLAGS = $(ESP_NOPIE_CFLAGS) $(T_CFLAGS) $(CFLAGS-$@) $(CXXFLAGS) \
++  $(INTERNAL_CFLAGS) $(COVERAGE_FLAGS) $(NOEXCEPTION_FLAGS) \
++  $(WARN_CXXFLAGS) @DEFS@
+ 
+ # Likewise.  Put INCLUDES at the beginning: this way, if some autoconf macro
+ # puts -I options in CPPFLAGS, our include files in the srcdir will always
+@@ -1808,6 +1817,8 @@
+ 	echo GCC_CFLAGS = '$(GCC_CFLAGS)' >> tmp-libgcc.mvars
+ 	echo INHIBIT_LIBC_CFLAGS = '$(INHIBIT_LIBC_CFLAGS)' >> tmp-libgcc.mvars
+ 	echo TARGET_SYSTEM_ROOT = '$(TARGET_SYSTEM_ROOT)' >> tmp-libgcc.mvars
++	echo enable_esp = '$(enable_esp)' >> tmp-libgcc.mvars
++	echo enable_crtbeginP = '@enable_crtbeginP@' >> tmp-libgcc.mvars
+ 
+ 	mv tmp-libgcc.mvars libgcc.mvars
+ 
+diff -Nur gcc-4.8.1-vanilla/gcc/varasm.c gcc-4.8.1/gcc/varasm.c
+--- gcc-4.8.1-vanilla/gcc/varasm.c	2013-05-10 03:54:06.000000000 +0200
++++ gcc-4.8.1/gcc/varasm.c	2013-06-27 23:57:54.023096025 +0200
+@@ -5939,7 +5939,11 @@
+   bool is_local;
+ 
+   is_local = targetm.binds_local_p (decl);
+-  if (!flag_shlib)
++  #ifdef ENABLE_ESP
++    if (!flag_pic)
++  #else
++    if (!flag_shlib)
++  #endif
+     {
+       if (is_local)
+ 	kind = TLS_MODEL_LOCAL_EXEC;
+diff -Nur gcc-4.8.1-vanilla/libgcc/Makefile.in gcc-4.8.1/libgcc/Makefile.in
+--- gcc-4.8.1-vanilla/libgcc/Makefile.in	2013-02-04 20:06:20.000000000 +0100
++++ gcc-4.8.1/libgcc/Makefile.in	2013-06-27 23:57:54.019095926 +0200
+@@ -220,6 +220,17 @@
+ DECNUMINC =
+ endif
+ 
++ifeq ($(enable_esp),yes)
++ESP_NOPIE_CFLAGS = -fno-PIE
++else
++ESP_NOPIE_CFLAGS=
++endif
++
++# We add crtbeginP.o to the EXTRA_PARTS list if enable_crtbeginP = yes
++ifeq ($(enable_crtbeginP),yes)
++EXTRA_PARTS += crtbeginP.o
++endif
++
+ # Options to use when compiling libgcc2.a.
+ #
+ LIBGCC2_DEBUG_CFLAGS = -g
+@@ -280,7 +291,7 @@
+ CRTSTUFF_CFLAGS = -O2 $(GCC_CFLAGS) $(INCLUDES) $(MULTILIB_CFLAGS) -g0 \
+   -finhibit-size-directive -fno-inline -fno-exceptions \
+   -fno-zero-initialized-in-bss -fno-toplevel-reorder -fno-tree-vectorize \
+-  -fno-stack-protector \
++  -fno-stack-protector $(ESP_NOPIE_CFLAGS) \
+   $(INHIBIT_LIBC_CFLAGS)
+ 
+ # Extra flags to use when compiling crt{begin,end}.o.
+@@ -969,6 +980,13 @@
+ # This is a version of crtbegin for -static links.
+ crtbeginT$(objext): $(srcdir)/crtstuff.c
+ 	$(crt_compile) $(CRTSTUFF_T_CFLAGS) -c $< -DCRT_BEGIN -DCRTSTUFFT_O
++
++# This is a version of crtbegin for -static -fPIE links.
++ifeq ($(enable_crtbeginP),yes)
++crtbeginP$(objext): $(srcdir)/crtstuff.c
++	$(crt_compile) $(CRTSTUFF_T_CFLAGS_S) \
++	  -c $< -DCRT_BEGIN -DCRTSTUFFT_O -DCRTSTUFFS_O
++endif
+ endif
+ 
+ ifeq ($(CUSTOM_CRTIN),)
+diff -Nur gcc-4.8.1-vanilla/Makefile.in gcc-4.8.1/Makefile.in
+--- gcc-4.8.1-vanilla/Makefile.in	2013-03-30 12:25:03.000000000 +0100
++++ gcc-4.8.1/Makefile.in	2013-06-27 23:57:54.017095876 +0200
+@@ -360,9 +360,17 @@
+ BUILD_PREFIX = @BUILD_PREFIX@
+ BUILD_PREFIX_1 = @BUILD_PREFIX_1@
+ 
++# Some stuff don't compile with SSP
++enable_esp = @enable_esp@
++ifeq ($(enable_esp),yes)
++ESP_NOSSP_CFLAGS = -fno-stack-protector
++else
++ESP_NOSSP_CFLAGS=
++endif
++
+ # Flags to pass to stage2 and later makes.  They are defined
+ # here so that they can be overridden by Makefile fragments.
+-BOOT_CFLAGS= -g -O2
++BOOT_CFLAGS= -g -O2 $(ESP_NOSSP_CFLAGS)
+ BOOT_LDFLAGS=
+ BOOT_ADAFLAGS= -gnatpg
+ 
+@@ -408,9 +416,9 @@
+ 
+ CFLAGS = @CFLAGS@
+ LDFLAGS = @LDFLAGS@
+-LIBCFLAGS = $(CFLAGS)
++LIBCFLAGS = $(CFLAGS) $(ESP_NOSSP_CFLAGS)
+ CXXFLAGS = @CXXFLAGS@
+-LIBCXXFLAGS = $(CXXFLAGS) -fno-implicit-templates
++LIBCXXFLAGS = $(CXXFLAGS) -fno-implicit-templates $(ESP_NOSSP_CFLAGS)
+ GOCFLAGS = $(CFLAGS)
+ 
+ TFLAGS =
