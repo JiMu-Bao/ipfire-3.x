@@ -3,4 +3,5 @@ Description=OpenLDAP
 After=basic.target sockets.target
 
 [Service]
-ExecStart=/usr/sbin/slapd -u ldap -h 'ldapi://'
+Type=forking
+ExecStart=/usr/sbin/slapd -u ldap -h 'ldapi:// ldaps://'

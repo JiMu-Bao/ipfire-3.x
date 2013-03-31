@@ -5,7 +5,7 @@
 
 name       = openldap
 version    = 2.4.32
-release    = 4
+release    = 5
 
 groups     = System/Daemons
 url        = http://www.openldap.org/
@@ -84,8 +84,13 @@ build
 		cp -vf %{DIR_SOURCE}/openldap-conf.ldif \
 			 %{BUILDROOT}%{datadir}/%{name}/
 
+		# Install ldapcert.sh script.
+		install -m 0755 %{DIR_SOURCE}/ldapcert.sh \
+			%{BUILDROOT}%{datadir}/%{name}/
+
 		# Create directoires.
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/%{name}/slapd.d
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/%{name}/certs
 		mkdir -pv %{BUILDROOT}/run/%{name}
 		mkdir -pv %{BUILDROOT}%{sharedstatedir}/ldap
 
@@ -105,7 +110,10 @@ end
 
 packages
 	package %{name}
-		prerequires += shadow-utils
+		prerequires
+			openssl
+			shadow-utils
+		end
 
 		script prein
 			%{create_user}
@@ -113,6 +121,7 @@ packages
 
 		datafiles
 			%{sysconfdir}/%{name}/slapd.d
+			%{sysconfdir}/%{name}/certs
 			%{sharedstatedir}/ldap
 		end
 
