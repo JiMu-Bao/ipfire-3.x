@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = python-tornado
-version    = 2.4
+version    = 3.0
 release    = 1
 arch       = noarch
 thisapp    = tornado-%{version}
@@ -21,15 +21,14 @@ description
 	and reasonably fast.
 end
 
-source_dl  = http://github.com/downloads/facebook/tornado/
+source_dl  = https://pypi.python.org/packages/source/t/tornado/
+source_dl += http://github.com/downloads/facebook/tornado/
 
 build
 	requires
 		pakfire-builder >= 0.9.23-2
 		python-devel
 		python3-devel
-		python3-setuptools
-		python3-tools
 	end
 
 	DIR_APP3 = %{DIR_APP}-python3
@@ -38,7 +37,6 @@ build
 		find tornado -name "*py" | xargs sed -e '/^#!\//, 1d' -i
 
 		cp -a %{DIR_APP} %{DIR_APP3}
-		2to3 --write --nobackups %{DIR_APP3}
 	end
 
 	build
