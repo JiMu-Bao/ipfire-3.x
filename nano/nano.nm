@@ -4,8 +4,10 @@
 ###############################################################################
 
 name       = nano
-version    = 2.3.0
-release    = 3
+mainversion	= 2.3
+subversion	= 2
+version    = %{mainversion}.%{subversion}
+release    = 1
 
 groups     = Application/Editors
 url        = http://www.nano-editor.org/
@@ -16,7 +18,7 @@ description
 	GNU nano is a small and friendly text editor.
 end
 
-source_dl  =
+source_dl  = http://www.nano-editor.org/dist/v%{mainversion}/
 
 build
 	requires
