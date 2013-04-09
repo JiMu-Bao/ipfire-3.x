@@ -5,8 +5,8 @@
 
 name       = network
 epoch      = 1
-version    = 005
-release    = 2
+version    = 006
+release    = 1
 arch       = noarch
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -25,6 +25,11 @@ end
 source_dl  = http://source.ipfire.org/releases/network/
 
 build
+	requires
+		docbook-xsl
+		libxslt
+	end
+
 	install_cmds
 		# Create some dummy configuration files.
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/{firewall,network}
@@ -37,6 +42,8 @@ packages
 		requires
 			aiccu
 			bash >= 4.0
+			batctl
+			curl
 			dhclient >= 4.2.4-2
 			dhcp >= 4.2.4-1
 			ebtables
