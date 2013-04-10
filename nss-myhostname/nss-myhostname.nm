@@ -5,7 +5,7 @@
 
 name       = nss-myhostname
 version    = 0.3
-release    = 2
+release    = 3
 
 groups     = System/Libraries
 url        = http://0pointer.de/lennart/projects/nss-myhostname/
@@ -16,7 +16,9 @@ description
 	nss-myhostname is a plugin for the GNU Name Service Switch (NSS)
 	functionality of the GNU C Library (glibc) providing host name
 	resolution for the locally configured system hostname as returned by
-	gethostname(2). Various software relies on an always resolvable local
+	gethostname(2).
+
+	Various software relies on an always resolvable local
 	host name. When using dynamic hostnames this is usually achieved by
 	patching /etc/hosts at the same time as changing the host name. This
 	however is not ideal since it requires a writable /etc file system and
@@ -31,12 +33,9 @@ end
 source_dl  =
 
 build
-	configure_options += \
-		--libdir=/%{lib}
-
 	install_cmds
 		mkdir -pv %{BUILDROOT}%{libdir}
-		ln -svf ../../%{lib}/libnss_myhostname.so.2 \
+		ln -svf libnss_myhostname.so.2 \
 			%{BUILDROOT}%{libdir}/libnss_myhostname.so
 
 		rm -rf %{BUILDROOT}/usr/share/doc/nss-myhostname
@@ -45,6 +44,33 @@ end
 
 packages
 	package %{name}
+		groups += Base
+
+		prerequires
+			/etc/nsswitch.conf
+		end
+
+		# Add myhostname to the hosts line of /etc/nsswitch.conf
+		script postin
+			if [ -f "/etc/nsswitch.conf" ]; then
+				sed -i.bak -e '
+					/^hosts:/ !b
+					/\<myhostname\>/ b
+					s/[[:blank:]]*$/ myhostname/
+					' /etc/nsswitch.conf
+			fi
+		end
+
+		# Remove myhostname from the hosts line of /etc/nsswitch.conf
+		script postun
+			if [ -f "/etc/nsswitch.conf" ]; then
+				sed -i.bak -e '
+					/^hosts:/ !b
+					s/[[:blank:]]\+myhostname\>//
+					' /etc/nsswitch.conf
+			fi
+		end
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
