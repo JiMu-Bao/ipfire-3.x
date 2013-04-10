@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = coreutils
-version    = 8.19
+version    = 8.21
 release    = 1
 
 groups     = System/Base
@@ -25,6 +25,7 @@ build
 		autoconf
 		automake
 		e2fsprogs-devel
+		gettext-devel
 		gmp-devel
 		libacl-devel
 		libattr-devel
@@ -50,8 +51,7 @@ build
 		gl_cv_func_mknod_works=yes
 
 	prepare_cmds
-		aclocal -I m4
-		autoconf --force
+		autoreconf -vfi
 	end
 
 	test
