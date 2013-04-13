@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = bash-completion
-version    = 1.99
-release    = 2
+version    = 2.1
+release    = 1
 arch       = noarch
 
 groups     = Development/Languages
