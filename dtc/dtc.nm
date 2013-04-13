@@ -1,0 +1,66 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = dtc
+version    = 1.3.0
+release    = 1
+thisapp    = %{name}-v%{version}
+
+groups     = Development/Tools
+url        = http://git.jdl.com/gitweb/?p=dtc.git;a=summary
+license    = GPLv2+
+summary    = Device Tree Compiler
+
+description
+	The Device Tree Compiler generates flattened Open Firmware style
+	device trees for use with PowerPC machines that lack an Open Firmware
+	implementation.
+end
+
+sources    = %{thisapp}.tgz
+source_dl  = http://www.jdl.com/software/
+
+build
+	requires
+		bison
+		flex
+	end
+
+	make_install_targets += PREFIX=/usr LIBDIR=%{libdir}
+
+	install_cmds
+		# we don't want or need ftdump and it conflicts with
+		# freetype-demos
+		rm -vf %{BUILDROOT}%{bindir}/ftdump
+	end
+end
+
+packages
+	package %{name}
+
+	package libfdt
+		template LIBS
+
+		files
+			%{libdir}/libfdt-%{version}.so
+			%{libdir}/libfdt.so.1
+		end
+	end
+
+	package libfdt-devel
+		template DEVEL
+
+		requires += libfdt = %{thisver}
+
+		files
+			%{includedir}
+			%{libdir}/libfdt.so
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
