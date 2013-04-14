@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = systemd
-version    = 196
-release    = 3
+version    = 201
+release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -54,7 +54,9 @@ build
 	end
 
 	configure_options += \
-		--with-distro=ipfire \
+		--with-sysvinit-path= \
+		--with-sysvrcnd-path= \
+		--enable-introspection=yes \
 		--disable-static
 
 	prepare_cmds
@@ -101,15 +103,18 @@ build
 
 		# Replace absolute symlinks by relative ones.
 		cd %{BUILDROOT}%{unitdir}/../user
-		for i in bluetooth local-fs printer remote-fs shutdown sockets sound swap; do
+		for i in bluetooth local-fs paths printer remote-fs shutdown smartcard sockets sound swap timers; do
 			ln -svf ../system/${i}.target ${i}.target || exit 1
 		done
 
 		# Remove tmpfile for X11
 		rm -rfv %{BUILDROOT}/usr/lib/tmpfiles.d/x11.conf
 
-		# Remove unneeded symlink for xdg
-		rm -rfv %{BUILDROOT}/etc/xdg/systemd
+		# Remove unneeded stuff for xdg
+		rm -rfv %{BUILDROOT}/etc/xdg
+
+		# Remove unneeded stuff for rpm.
+		rm -rvf %{BUILDROOT}/etc/rpm
 
 		# Use journald. Enable the import of kernel messages.
 		# Stop forwarding to a syslog daemon.
@@ -134,6 +139,7 @@ packages
 			hwdata
 			python-cairo
 			python-dbus
+			python-gobject3
 			%{name}-units=%{thisver}
 			util-linux>=2.19
 		end
@@ -151,6 +157,7 @@ packages
 		end
 
 		conflicts
+			bash-completion < 2.1
 			dracut < 019
 			filesystem < 002
 			rsyslog < 5.8.6-4
