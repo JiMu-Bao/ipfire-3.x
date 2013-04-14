@@ -5,7 +5,7 @@
 
 name       = aiccu
 version    = 20070115
-release    = 1
+release    = 2
 
 groups     = System/Daemons
 url        = http://www.sixxs.net/tools/aiccu/
@@ -19,6 +19,7 @@ description
 end
 
 source_dl  = http://www.sixxs.net/archive/sixxs/aiccu/unix/
+sources = %{name}_%{version}.tar.gz
 
 build
 	requires
@@ -27,11 +28,10 @@ build
 
 	DIR_APP = %{DIR_SRC}/%{name}
 
-	build
-		%{DO_FIX_LIBTOOL}
-		make %{PARALLELISMFLAGS} RPM_OPT_FLAGS="%{CFLAGS}"
-	end
+	make_build_targets += \
+		RPM_OPT_FLAGS="%{CFLAGS}"
 
+	# Remove old sysvinit stuff and emtpy usr/share directory.
 	install_cmds
 		rm -rvf %{BUILDROOT}/{etc,usr/share}
 	end
@@ -39,6 +39,17 @@ end
 
 packages
 	package %{name}
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
 	end
 
 	package %{name}-debuginfo
