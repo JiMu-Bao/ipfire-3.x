@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = diffutils
-version    = 3.2
-release    = 5
+version    = 3.3
+release    = 1
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/diffutils/diffutils.html
@@ -20,6 +20,7 @@ description
 end
 
 source_dl  = http://ftp.gnu.org/gnu/diffutils/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
