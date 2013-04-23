@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = transmission
-version    = 2.22
+version    = 2.77
 release    = 1
 
 groups     = Internet/P2P
@@ -18,7 +18,7 @@ description
 end
 
 source_dl  = http://download.transmissionbt.com/files/
-sources    = %{thisapp}.tar.bz2
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -26,11 +26,92 @@ build
 		libcurl-devel
 		libevent-devel
 		openssl-devel
+		shadow-utils
+		zlib-devel
 	end
+
+	prepare_cmds
+		# Create transmission user and group.
+		%{create_user}
+	end
+
+	install_cmds
+		# Create missing folders and set correct ownership.
+		mkdir -pv %{BUILDROOT}%{sharedstatedir}/transmission
+		chown transmission:transmission %{BUILDROOT}%{sharedstatedir}/transmission
+	end
+end
+
+create_user
+	getent group transmission >/dev/null || groupadd -r transmission
+	getent passwd transmission >/dev/null || \
+	useradd -r -g transmission -d %{sharedstatedir}/transmission -s /sbin/nologin \
+		-c "transmission daemon" transmission
 end
 
 packages
 	package %{name}
+
+	package %{name}-cli
+		summary = Transmission command line implementation.
+		description
+			Command line version of Transmission BitTorrent client.
+		end
+
+		requires
+			transmission = %{thisver}
+		end
+
+		files
+			%{bindir}/transmission-cli
+			%{mandir}/man1/transmission-cli*
+		end
+	end
+
+	package %{name}-daemon
+		summary = Transmission daemon.
+		description
+			Transmission BitTorrent client daemon.
+		end
+
+		prerequires += shadow-utils
+
+		requires
+			transmission = %{thisver}
+		end
+
+		datadir
+			%{sharedstatedir}/transmission
+		end
+
+		files
+			%{bindir}/transmission-daemon
+			%{mandir}/man1/transmission-daemon*
+			%{unitdir}/transmission-daemon.service
+			%{sharedstatedir}/transmission
+		end
+
+		script prein
+			%{create_user}
+		end
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl --no-reload disable transmission-daemon.service >/dev/null 2>&1 || :
+			systemctl stop transmission-daemon.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart transmission-daemon.service >/dev/null 2>&1 || :
+		end
 	end
 
 	package %{name}-debuginfo
