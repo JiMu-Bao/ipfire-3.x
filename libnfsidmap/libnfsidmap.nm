@@ -5,7 +5,7 @@
 
 name       = libnfsidmap
 version    = 0.25
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.citi.umich.edu/projects/nfsv4/linux/
@@ -28,6 +28,7 @@ build
 	end
 
 	configure_options += \
+		--with-pluginpath=%{libdir}/%{name} \
 		--disable-static
 
 	prepare_cmds
