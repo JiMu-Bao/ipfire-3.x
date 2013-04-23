@@ -6,7 +6,7 @@
 name       = ntp
 version    = %{ver_major}.6p5
 ver_major  = 4.2
-release    = 1
+release    = 2
 
 groups     = System/Daemons
 url        = http://www.ntp.org/
@@ -41,6 +41,9 @@ build
 		ln -svf ../ntpstat-0.2 .
 
 		%{MACRO_PATCHES}
+
+		# Create ntp user and group.
+		%{create_user}
 	end
 
 	configure_options += \
@@ -116,7 +119,16 @@ build
 
 		mkdir -pv %{unitdir}/ntp-units.d
 		echo "ntpd.service" > %{unitdir}/ntp-units.d/60-ntpd.list
+
+		# Fix ownership.
+		chown -R ntp:ntp %{BUILDROOT}%{sharedstatedir}/ntp
 	end
+end
+
+create_user
+	getent group ntp >/dev/null || groupadd -g 38 ntp || :
+	getent passwd ntp >/dev/null || useradd -u 38 -g 38 -s /sbin/nologin \
+		-M -r -d %{sysconfdir}/ntp ntp || :
 end
 
 packages
@@ -162,9 +174,7 @@ packages
 		end
 
 		script prein
-			getent group ntp >/dev/null || groupadd -g 38 ntp || :
-			getent passwd ntp >/dev/null || useradd -u 38 -g 38 -s /sbin/nologin \
-				-M -r -d %{sysconfdir}/ntp ntp || :
+			%{create_user}
 		end
 
 		script postin
