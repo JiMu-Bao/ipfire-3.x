@@ -4,8 +4,10 @@
 ###############################################################################
 
 name       = libpng
-version    = 1.5.9
+version    = 1.6.2
 release    = 1
+
+compat_ver = 1.5.15
 
 groups     = System/Libraries
 url        = http://www.libpng.org/pub/png/
@@ -20,13 +22,35 @@ description
 	data compression algorithm.
 end
 
-source_dl  = http://downloads.sourceforge.net/project/libpng/libpng15/%{version}/
+source_dl  = http://downloads.sourceforge.net/project/libpng/libpng16/%{version}/
+
+# Source URL for comat package.
+source_dl +=  http://downloads.sourceforge.net/project/libpng/libpng15/%{compat_ver}/
+
 sources    = %{thisapp}.tar.xz
+
+# File for compat package.
+sources   += %{name}-%{compat_ver}.tar.xz
 
 build
 	requires
 		pkg-config
 		zlib-devel
+	end
+
+	# Build compat package.
+	build_cmds
+		cd %{DIR_SRC}/%{name}-%{compat_ver}
+		./configure %{configure_options}
+
+		make %{PARALLELISMFLAGS}
+	end
+
+	# Install compat package.
+	install_cmds
+		cd %{DIR_SRC}/%{name}-%{compat_ver}
+		install -m 755 .libs/libpng15.so.15.15.0 %{BUILDROOT}%{libdir}
+		ln -svf libpng15.so.15.15.0 %{BUILDROOT}%{libdir}/libpng15.so.15
 	end
 end
 
@@ -37,6 +61,14 @@ packages
 		template DEVEL
 
 		requires = zlib-devel
+	end
+
+	package %{name}-compat
+		summary = Compat libraries of %{thisapp}.
+
+		files
+			%{libdir}/%{name}15.so*
+		end
 	end
 
 	package %{name}-debuginfo
