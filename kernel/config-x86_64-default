@@ -15,6 +15,11 @@ CONFIG_ARCH_CLOCKSOURCE_DATA=y
 CONFIG_GENERIC_TIME_VSYSCALL=y
 
 #
+# CPU/Task time and stats accounting
+#
+# CONFIG_VIRT_CPU_ACCOUNTING_GEN is not set
+
+#
 # RCU Subsystem
 #
 # CONFIG_RCU_USER_QS is not set
@@ -27,6 +32,7 @@ CONFIG_RCU_FANOUT=64
 CONFIG_ARCH_WANT_COMPAT_IPC_PARSE_VERSION=y
 CONFIG_ARCH_WANT_OLD_COMPAT_IPC=y
 CONFIG_MODULES_USE_ELF_RELA=y
+CONFIG_COMPAT_OLD_SIGACTION=y
 
 #
 # Partition Types
@@ -160,12 +166,17 @@ CONFIG_AMD_IOMMU_STATS=y
 CONFIG_IRQ_REMAP=y
 
 #
+# Magnetometer sensors
+#
+# CONFIG_NTB is not set
+
+#
 # File systems
 #
 CONFIG_QUOTACTL_COMPAT=y
 
 #
-# Kernel hacking
+# RCU Debugging
 #
 # CONFIG_DEBUG_TLBFLUSH is not set
 # CONFIG_IOMMU_DEBUG is not set
