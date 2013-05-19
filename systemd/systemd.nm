@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 204
-release    = 1
+release    = 2
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
