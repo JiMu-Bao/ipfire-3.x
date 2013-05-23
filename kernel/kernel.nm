@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kernel
-version    = 3.8.6
-release    = 2
+version    = 3.9.3
+release    = 0.1
 thisapp    = linux-%{version}
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -39,6 +39,7 @@ build
 	requires
 		asciidoc
 		audit-devel
+		bc
 		binutils >= 2.23.51.0.3-3
 		binutils-devel
 		bison
@@ -104,14 +105,14 @@ build
 	end
 
 	if "%{DISTRO_ARCH}" == "armv7hl"
+		# Build the default unified kernel.
+		build_kernel_default = 1
+
 		# Build a kernel for Samsung's Exynos SoCs.
 		build_kernel_exynos = 1
 
-		# Build a kernel for TI OMAP SoCs.
-		build_kernel_omap = 1
-
 		kernel_arch = arm
-		kernel_target = uImage
+		kernel_target = zImage
 	end
 
 	# mkimage is a requirement to build uImage images.
@@ -137,11 +138,6 @@ build
 	# Build ARM kirkwood kernel.
 	if "%{build_kernel_kirkwood}" == "1"
 		kernels += kirkwood
-	end
-
-	# Build ARM omap kernel.
-	if "%{build_kernel_omap}" == "1"
-		kernels += omap
 	end
 
 	prepare_cmds
@@ -458,18 +454,43 @@ packages
 	end
 
 	if "%{build_kernel_default}" == "1"
-		package kernel
-			template KERNEL
+		if "%{DISTRO_ARCH}" == "armv7hl"
+			package kernel
+				template KERNEL
 
-			kernel_name = kernel
-			kernel_release = %{fullver}
-		end
+				kernel_name = kernel
+				kernel_release = %{fullver}
 
-		package kernel-devel
-			template KERNELDEVEL
+				# Replace the OMAP kernel.
+				obsoletes += kernel-omap < %{kernel_release}
+				conflicts += kernel-omap < %{kernel_release}
+			end
 
-			kernel_name = kernel
-			kernel_release = %{fullver}
+			package kernel-devel
+				template KERNELDEVEL
+
+				kernel_name = kernel
+				kernel_release = %{fullver}
+
+				# Replace the OMAP kernel.
+				obsoletes += kernel-omap-devel < %{kernel_release}
+				conflicts += kernel-omap-devel < %{kernel_release}
+			end
+
+		else
+			package kernel
+				template KERNEL
+
+				kernel_name = kernel
+				kernel_release = %{fullver}
+			end
+
+			package kernel-devel
+				template KERNELDEVEL
+
+				kernel_name = kernel
+				kernel_release = %{fullver}
+			end
 		end
 	end
 
@@ -518,22 +539,6 @@ packages
 
 			kernel_name = kernel-kirkwood
 			kernel_release = %{fullver}.kirkwood
-		end
-	end
-
-	if "%{build_kernel_omap}" == "1"
-		package kernel-omap
-			template KERNEL
-
-			kernel_name = kernel-omap
-			kernel_release = %{fullver}.omap
-		end
-
-		package kernel-omap-devel
-			template KERNELDEVEL
-
-			kernel_name = kernel-omap
-			kernel_release = %{fullver}.omap
 		end
 	end
 
