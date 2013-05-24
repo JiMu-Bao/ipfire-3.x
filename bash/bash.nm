@@ -5,7 +5,7 @@
 
 name       = bash
 version    = 4.2
-release    = 10
+release    = 11
 
 groups     = System/Tools
 url        = http://www.gnu.org/software/bash/
@@ -13,9 +13,9 @@ license    = GPLv2+
 summary    = Bash is short for born again shell.
 
 description
-	Bash is the shell, or command language interpreter, that will appear in \
-	the GNU operating system. Bash is an sh-compatible shell that incorporates \
-	useful features from the Korn shell (ksh) and C shell (csh). It is intended \
+	Bash is the shell, or command language interpreter, that will appear in
+	the GNU operating system. Bash is an sh-compatible shell that incorporates
+	useful features from the Korn shell (ksh) and C shell (csh). It is intended
 	to conform to the IEEE POSIX P1003.2/ISO 9945.2 Shell and Tools standard.
 end
 
@@ -52,9 +52,14 @@ build
 	#end
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/{etc/profile.d,root}
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/{profile.d,skel}
+		mkdir -pv %{BUILDROOT}/root
 
 		# Bash startup files
+		cp -vf %{DIR_SOURCE}/dot_bash_logout %{BUILDROOT}%{sysconfdir}/skel/.bash_logout
+		cp -vf %{DIR_SOURCE}/dot_bash_profile %{BUILDROOT}%{sysconfdir}/skel/.bash_profile
+		cp -vf %{DIR_SOURCE}/dot_bashrc %{BUILDROOT}%{sysconfdir}/skel/.bashrc
+
 		cp -vf %{DIR_SOURCE}/dot_bash_logout %{BUILDROOT}/root/.bash_logout
 		cp -vf %{DIR_SOURCE}/dot_bash_profile %{BUILDROOT}/root/.bash_profile
 		cp -vf %{DIR_SOURCE}/dot_bashrc %{BUILDROOT}/root/.bashrc
