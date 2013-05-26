@@ -5,22 +5,22 @@
 
 name       = ppp
 version    = 2.4.5
-release    = 5
+release    = 6
 
 groups     = System/Daemons
-url        = ftp://ftp.samba.org/pub/ppp/
+url        = http://ppp.samba.org/
 license    = BSD and LGPLv2+ and GPLv2+ and Public Domain
 summary    = The PPP (Point-to-Point Protocol) daemon.
 
 description
-	The ppp package contains the PPP (Point-to-Point Protocol) daemon and \
-	documentation for PPP support. The PPP protocol provides a method for \
-	transmitting datagrams over serial point-to-point links. PPP is \
-	usually used to dial in to an ISP or other organization over a modem \
+	The ppp package contains the PPP (Point-to-Point Protocol) daemon and
+	documentation for PPP support. The PPP protocol provides a method for
+	transmitting datagrams over serial point-to-point links. PPP is
+	usually used to dial in to an ISP or other organization over a modem
 	and phone line.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.samba.org/pub/ppp/
 
 build
 	requires
@@ -59,11 +59,18 @@ build
 		chmod -v 600 %{BUILDROOT}/etc/ppp/secrets
 		ln -svf secrets %{BUILDROOT}/etc/ppp/pap-secrets
 		ln -svf secrets %{BUILDROOT}/etc/ppp/chap-secrets
+
+		mkdir -pv %{BUILDROOT}%{localstatedir}/lock/ppp
+		mkdir -pv %{BUILDROOT}/run/ppp
 	end
 end
 
 packages
 	package %{name}
+		requires
+			/usr/lib/network/helpers/pppd-angel
+		end
+
 		script postin
 			systemctl daemon-reload >/dev/null 2>&1 || :
 		end

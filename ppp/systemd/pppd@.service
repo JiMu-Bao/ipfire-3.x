@@ -1,14 +1,7 @@
 [Unit]
 Description=Point-to-Point protocol daemon on %I
-BindTo=dev-%I.device
-After=dev-%I.device
 
 [Service]
-Type=forking
-ExecStartPre=/usr/lib/network/helpers/pppd-config-helper create %I
-ExecStart=/usr/sbin/pppd file /run/network/ppp/%I/pppd.conf
-ExecStopPost=/usr/lib/network/helpers/pppd-config-helper remove %I
-PIDFile=/run/ppp-%I.pid
-Restart=failure
+ExecStart=/usr/lib/network/helpers/pppd-angel %I
 UtmpIdentifier=%I
 KillMode=process
