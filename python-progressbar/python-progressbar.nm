@@ -4,13 +4,13 @@
 ###############################################################################
 
 name       = python-progressbar
-version    = 2.2
+version    = 2.3
 release    = 1
 arch       = noarch
 thisapp    = progressbar-%{version}
 
 groups     = System/Libraries
-url        = http://pypi.python.org/pypi/progressbar
+url        = http://code.google.com/p/python-progressbar/
 license    = LGPLv2+
 summary    = Text progressbar library for python.
 
@@ -20,10 +20,11 @@ description
 	processing is under way.
 end
 
-source_dl  =
+source_dl  = https://%{name}.googlecode.com/files/
 
 build
 	requires
+		python-setuptools
 		python-devel
 	end
 

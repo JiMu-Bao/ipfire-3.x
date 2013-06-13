@@ -1,0 +1,12 @@
+Index: progressbar-2.3/progressbar/__init__.py
+===================================================================
+--- progressbar-2.3.orig/progressbar/__init__.py
++++ progressbar-2.3/progressbar/__init__.py
+@@ -141,6 +141,7 @@ class ProgressBar(object):
+             try:
+                 self._handle_resize()
+                 signal.signal(signal.SIGWINCH, self._handle_resize)
++                signal.siginterrupt(signal.SIGWINCH, False)
+                 self.signal_set = True
+             except (SystemExit, KeyboardInterrupt): raise
+             except:
