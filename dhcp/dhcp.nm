@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = dhcp
-version    = 4.2.4
-release    = 2
+version    = 4.2.5
+release    = 1
 
 groups     = Networking/Daemons
 url        = http://isc.org/products/DHCP/
@@ -24,45 +24,47 @@ source_dl  = ftp://ftp.isc.org/isc/dhcp/%{version}/
 
 # Apply patches in a special order.
 patches = \
-	dhcp-4.2.2-remove-bind.patch \
+	dhcp-4.2.5-remove-bind.patch \
 	dhcp-4.2.4-P1-remove-dst.patch \
 	dhcp-4.2.0-errwarn-message.patch \
-	dhcp-4.2.4-options.patch \
+	dhcp-4.2.4-dhclient-options.patch \
 	dhcp-4.2.0-release-by-ifup.patch \
 	dhcp-4.2.0-dhclient-decline-backoff.patch \
 	dhcp-4.2.4-unicast-bootp.patch \
-	dhcp-4.2.2-dhclient-usage.patch \
 	dhcp-4.2.0-default-requested-options.patch \
 	dhcp-4.2.2-xen-checksum.patch \
-	dhcp-4.2.1-manpages.patch \
+	dhcp-4.2.5-manpages.patch \
 	dhcp-4.2.4-paths.patch \
 	dhcp-4.2.2-CLOEXEC.patch \
 	dhcp-4.2.0-garbage-chars.patch \
-	dhcp-4.2.0-missing-ipv6-not-fatal.patch \
 	dhcp-4.2.0-add_timeout_when_NULL.patch \
 	dhcp-4.2.4-64_bit_lease_parse.patch \
 	dhcp-4.2.2-capability.patch \
 	dhcp-4.2.0-logpid.patch \
 	dhcp-4.2.4-UseMulticast.patch \
-	dhcp-4.2.1-sendDecline.patch \
+	dhcp-4.2.5-sendDecline.patch \
 	dhcp-4.2.1-retransmission.patch \
-	dhcp-4.2.4-rfc3442-classless-static-routes.patch \
+	dhcp-4.2.5-rfc3442-classless-static-routes.patch \
 	dhcp-4.2.0-honor-expired.patch \
-	dhcp-4.2.2-sharedlib.patch \
-	dhcp-4.2.4-PPP.patch \
-	dhcp-4.2.3-paranoia.patch \
-	dhcp-4.2.4-lpf-ib.patch \
+	dhcp-4.2.5-sharedlib.patch \
+	dhcp-4.2.5-PPP.patch \
+	dhcp-4.2.5-paranoia.patch \
+	dhcp-4.2.5-lpf-ib.patch \
 	dhcp-4.2.4-improved-xid.patch \
 	dhcp-4.2.2-gpxe-cid.patch \
-	dhcp-4.2.4-systemtap.patch \
+	dhcp-4.2.5-systemtap.patch \
 	dhcp-4.2.3-dhclient-decline-onetry.patch \
 	dhcp-4.2.3-P2-log_perror.patch \
 	dhcp-4.2.4-getifaddrs.patch \
 	dhcp-4.2.4-send_release.patch \
-	dhcp-4.2.3-P2-rfc5970-dhcpv6-options-for-network-boot.patch \
-	dhcp-4.2.4-failOverPeer.patch  \
-	dhcp-4.2.4-P1-dhclient6-leases_semicolon_expected.patch \
-	dhcp-4.2.4-P1-interval.patch
+	dhcp-4.2.5-rfc5970-dhcpv6-options-for-network-boot.patch \
+	dhcp-4.2.4-failOverPeer.patch \
+	dhcp-4.2.5b1-atf-pkgconfig.patch \
+	dhcp-4.2.4-P1-interval.patch \
+	dhcp-4.2.4-P2-conflex-do-forward-updates.patch \
+	dhcp-4.2.4-P2-dupl-key.patch \
+	dhcp-4.2.5-range6.patch \
+	dhcp-4.2.5-next-server.patch
 
 build
 	requires
