@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = keepalived
-version    = 1.2.2
-release    = 2
+version    = 1.2.7
+release    = 1
 
 groups     = Applications/System
 url        = http://www.keepalived.org/
@@ -29,15 +29,16 @@ source_dl  = http://www.keepalived.org/software/
 
 build
 	requires
+		kernel-devel
+		net-snmp-devel >= 5.7.2-2
 		libnl-devel
 		openssl-devel
 		popt-devel
 	end
 
 	configure_options += \
-		--sysconfdir=/etc
-
-#		--with-kernel-dir=$(ls -1d --sort t /lib/modules/*/build | head 1)
+		--enable-snmp \
+		--enable-vrrp
 
 	make_targets += STRIP=/bin/true
 
