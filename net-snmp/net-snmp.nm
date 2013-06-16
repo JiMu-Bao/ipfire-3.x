@@ -5,7 +5,7 @@
 
 name       = net-snmp
 version    = 5.7.2
-release    = 1
+release    = 2
 
 groups     = Networking/Daemons
 url        = http://net-snmp.sourceforge.net
@@ -115,7 +115,7 @@ build
 		mkdir -pv %{BUILDROOT}%{localstatedir}/{lib,run}/net-snmp
 
 		# Remove more RPATHs.
-		find %{BUILDROOT}{%{bindir},%{sbindir},%{libdir}} -type f -print \
+		find %{BUILDROOT}%{bindir} -type f -print \
 			-exec chrpath --delete {} \;
 	end
 end
@@ -163,6 +163,10 @@ packages
 
 	package %{name}-devel
 		template DEVEL
+
+		requires
+			lm-sensors-devel
+		end
 	end
 
 	package %{name}-debuginfo
