@@ -1,0 +1,47 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = ipvsadm
+version    = 1.26
+release    = 1
+
+groups     = Applications/System
+url        = http://www.linuxvirtualserver.org/software/ipvs.html
+license    = GPLv2+
+summary    = Utility to administer the Linux Virtual Server.
+
+description
+	ipvsadm is a utility to administer the IP Virtual Server services
+	offered by the Linux kernel.
+end
+
+source_dl  = http://www.linuxvirtualserver.org/software/kernel-2.6/
+
+build
+	requires
+		libnl-devel
+		popt-devel
+	end
+
+	PARALLELISMFLAGS = # parallel build not supported
+
+	make_build_targets += CFLAGS="%{CFLAGS}"
+
+	make_install_targets += BUILD_ROOT="%{BUILDROOT}" \
+		SBIN="%{BUILDROOT}%{sbindir}" MANDIR="%{mandir}"
+
+	install_cmds
+		# Remove unwanted files.
+		rm -vfr %{BUILDROOT}/etc
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
