@@ -1,0 +1,41 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = tree
+version    = 1.6.0
+release    = 1
+
+groups     = Applications/File
+url        = http://mama.indstate.edu/users/ice/tree/
+license    = GPLv2+
+summary    = File system tree viewer.
+
+description
+	The tree utility recursively displays the contents of directories in a
+	tree-like format.  Tree is basically a UNIX port of the DOS tree
+	utility.
+end
+
+source_dl  = ftp://mama.indstate.edu/linux/tree/
+sources    = %{thisapp}.tgz
+
+build
+	build
+		make CFLAGS="%{CFLAGS} $(getconf LFS_CFLAGS)" %{PARALLELISMFLAGS}
+	end
+
+	install
+		make install BINDIR=%{BUILDROOT}%{bindir} \
+			MANDIR=%{BUILDROOT}%{mandir}/man1
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
