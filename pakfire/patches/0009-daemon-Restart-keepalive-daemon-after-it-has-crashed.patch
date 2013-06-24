@@ -1,0 +1,57 @@
+From 11ec9629f460bbd6169e8f934d0194912ff257e0 Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Sat, 30 Mar 2013 12:21:29 +0000
+Subject: [PATCH 09/19] daemon: Restart keepalive daemon after it has crashed.
+
+---
+ python/pakfire/daemon.py | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/python/pakfire/daemon.py b/python/pakfire/daemon.py
+index 8c453e0..267b330 100644
+--- a/python/pakfire/daemon.py
++++ b/python/pakfire/daemon.py
+@@ -73,6 +73,10 @@ class PakfireDaemon(object):
+ 		while self.__running:
+ 			time_started = time.time()
+ 
++			# Check if keepalive process is still alive.
++			if not self.keepalive.is_alive():
++				self.restart_keepalive(wait=10)
++
+ 			# Spawn a sufficient number of worker processes.
+ 			self.spawn_workers_if_needed()
+ 
+@@ -96,6 +100,29 @@ class PakfireDaemon(object):
+ 		log.info(_("Shutting down..."))
+ 		self.__running = False
+ 
++	def restart_keepalive(self, wait=None):
++		log.critial(_("Restarting keepalive process"))
++
++		# Send SIGTERM to really end the process.
++		self.keepalive.terminate()
++
++		# Wait for the process to terminate.
++		if wait:
++			self.keepalive.join(wait)
++
++		# Remove the keepalive process from the process list.
++		try:
++			self.__workers.remove(self.keepalive)
++		except ValueError:
++			pass
++
++		# Create a new process and start it.
++		self.keepalive = PakfireDaemonKeepalive(self.config)
++		self.keepalive.start()
++
++		# Add the process to the process list.
++		self.__workers.append(self.keepalive)
++
+ 	def spawn_workers_if_needed(self, *args, **kwargs):
+ 		"""
+ 			Spawns more workers if needed.
+-- 
+1.8.1.4
+

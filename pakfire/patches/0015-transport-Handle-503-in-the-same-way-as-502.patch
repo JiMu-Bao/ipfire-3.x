@@ -1,0 +1,36 @@
+From bd3e05167686bb559d2439a092c87fe8234b7ae6 Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Sun, 23 Jun 2013 18:03:58 +0200
+Subject: [PATCH 15/19] transport: Handle 503 in the same way as 502.
+
+---
+ python/pakfire/transport.py | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/python/pakfire/transport.py b/python/pakfire/transport.py
+index f301652..982f540 100644
+--- a/python/pakfire/transport.py
++++ b/python/pakfire/transport.py
+@@ -260,7 +260,7 @@ class PakfireHubTransport(object):
+ 					raise TransportNotFoundError, url
+ 				elif e.code == 500:
+ 					raise TransportInternalServerError, url
+-				elif e.code == 503:
++				elif e.code in (502, 503):
+ 					raise TransportBadGatewayError, url
+ 				elif e.code == 504:
+ 					raise TransportConnectionTimeoutError, url
+@@ -278,8 +278,8 @@ class PakfireHubTransport(object):
+ 			try:
+ 				return self.one_request(url, **kwargs)
+ 
+-			# 500 - Internal Server Error
+-			except TransportInternalServerError, e:
++			# 500 - Internal Server Error, 502 + 503 Bad Gateway Error
++			except (TransportInternalServerError, TransportBadGateway), e:
+ 				log.exception("%s" % e.__class__.__name__)
+ 
+ 				# Wait a minute before trying again.
+-- 
+1.8.1.4
+

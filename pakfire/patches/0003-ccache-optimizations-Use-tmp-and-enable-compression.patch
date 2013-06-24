@@ -1,0 +1,75 @@
+From 27f559296e5301c16e2be42acfde3bcf7e374290 Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Tue, 5 Mar 2013 01:20:54 +0100
+Subject: [PATCH 03/19] ccache optimizations: Use /tmp and enable compression.
+
+When the cache is on an NFS share, a lot of preprocessed files
+will be transferred to that share, because ccache usually uses
+$CCACHE_DIR/tmp as directory for its temporary files.
+/tmp is always local and only the final data has to be live in
+the cache is transferred over the wire.
+
+To decrease the size of the cache, we enable compression. That
+will cost a bit of CPU performance, but processors are usually
+very fast nowadays and the bottleneck when compiling code is IO.
+---
+ examples/builder.conf     |  5 +++++
+ python/pakfire/builder.py | 15 +++++++++++++++
+ 2 files changed, 20 insertions(+)
+
+diff --git a/examples/builder.conf b/examples/builder.conf
+index ff42733..128a118 100644
+--- a/examples/builder.conf
++++ b/examples/builder.conf
+@@ -9,6 +9,7 @@ file = /var/log/pakfire-builder.log
+ #distro = ipfire3
+ 
+ # Use ccache in order to build rebuilds in less time.
++# See also the [ccache] section.
+ #use_ccache = true
+ 
+ # Use icecream in order to speed up builds.
+@@ -21,3 +22,7 @@ file = /var/log/pakfire-builder.log
+ 
+ # Create loop devices in build environment.
+ #use_loop_devices = true
++
++[ccache]
++# Turn on compression to get more files into the cache.
++#compress = true
+diff --git a/python/pakfire/builder.py b/python/pakfire/builder.py
+index 1cf1e8e..250a659 100644
+--- a/python/pakfire/builder.py
++++ b/python/pakfire/builder.py
+@@ -119,6 +119,12 @@ class BuildEnviron(object):
+ 			"buildroot_tmpfs"     : self.config.get_bool("builder", "use_tmpfs", False),
+ 		}
+ 
++		# Get ccache settings.
++		if self.settings.get("enable_ccache", False):
++			self.settings.update({
++				"ccache_compress" : self.config.get_bool("ccache", "compress", True),
++			})
++
+ 		# Try to get the configured host key. If it is available,
+ 		# we will automatically sign all packages with it.
+ 		if self.keyring.get_host_key(secret=True):
+@@ -615,6 +621,15 @@ class BuildEnviron(object):
+ 		# Inherit environment from distro
+ 		env.update(self.pakfire.distro.environ)
+ 
++		# ccache environment settings
++		if self.settings.get("enable_ccache", False):
++			compress = self.settings.get("ccache_compress", False)
++			if compress:
++				env["CCACHE_COMPRESS"] = "1"
++
++			# Let ccache create its temporary files in /tmp.
++			env["CCACHE_TEMPDIR"] = "/tmp"
++
+ 		# Icecream environment settings
+ 		if self.settings.get("enable_icecream", False):
+ 			# Set the toolchain path
+-- 
+1.8.1.4
+
