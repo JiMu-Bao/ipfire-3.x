@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 204
-release    = 3
+release    = 4
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -290,8 +290,6 @@ packages
 		end
 
 		conflicts
-			nss-myhostname <= 0.3-3
-
 			# Ensure that the version of systemd matches systemd-libs.
 			systemd > %{thisver}
 			systemd < %{thisver}
