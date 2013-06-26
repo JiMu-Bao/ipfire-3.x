@@ -1,0 +1,50 @@
+From 74ffafed27a27f12511274f2e6cf2c5b26ec8d5c Mon Sep 17 00:00:00 2001
+From: Stefan Schantl <stefan.schantl@ipfire.org>
+Date: Sun, 23 Jun 2013 16:42:19 +0200
+Subject: [PATCH 16/19] Add systemd service file for pakfire-daemon.
+
+---
+ Makefile                       |  4 ++++
+ systemd/pakfire-daemon.service | 15 +++++++++++++++
+ 2 files changed, 19 insertions(+)
+ create mode 100644 systemd/pakfire-daemon.service
+
+diff --git a/Makefile b/Makefile
+index c873463..00ea0fa 100644
+--- a/Makefile
++++ b/Makefile
+@@ -38,6 +38,10 @@ install: build
+ 		cp -rvf examples/$${file} $(DESTDIR)/etc/pakfire/; \
+ 	done
+ 
++	# Install systemd file.
++	-mkdir -pv $(DESTDIR)/usr/lib/systemd/system
++	cp -vf systemd/*.systemd $(DESTDIR)/usr/lib/systemd/system
++
+ .PHONY: check
+ check: all
+ 	PYTHONPATH=python/src/ pylint -E python/pakfire
+diff --git a/systemd/pakfire-daemon.service b/systemd/pakfire-daemon.service
+new file mode 100644
+index 0000000..f4c8f2b
+--- /dev/null
++++ b/systemd/pakfire-daemon.service
+@@ -0,0 +1,15 @@
++[Unit]
++Description=Pakfire Daemon
++After=network.target
++Requires=network.target
++
++[Service]
++KillMode=process
++SendSIGKILL=false
++TimeoutStopSec=0
++
++ExecStart=/usr/bin/pakfire-daemon
++Restart=on-failure
++
++[Install]
++WantedBy=multi-user.target
+-- 
+1.8.1.4
+

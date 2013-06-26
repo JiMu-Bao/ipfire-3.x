@@ -1,0 +1,37 @@
+From 60c7a320b14c490487ae4105ccb125a190de828d Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Mon, 24 Jun 2013 21:24:49 +0000
+Subject: [PATCH 17/19] Warn if the host key is not in the key store.
+
+---
+ python/pakfire/keyring.py | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/python/pakfire/keyring.py b/python/pakfire/keyring.py
+index 8fe052e..7bd54fb 100644
+--- a/python/pakfire/keyring.py
++++ b/python/pakfire/keyring.py
+@@ -71,15 +71,17 @@ class Keyring(object):
+ 		os.chmod(filename, 600)
+ 
+ 	def dump_key(self, keyfp):
+-		ret = []
+-
+ 		key = self.get_key(keyfp, secret=False)
+-		key_priv = self.get_key(keyfp, secret=True)
++		if not key:
++			return ["  " + _("Not in key store: %s") % keyfp, ""]
+ 
++		ret = []
+ 		for uid in key.uids:
+ 			ret.append(uid.uid)
+ 
+ 		ret.append("  " + _("Fingerprint: %s") % keyfp)
++
++		key_priv = self.get_key(keyfp, secret=True)
+ 		if key_priv:
+ 			ret.append("    " + _("Private key available!"))
+ 		ret.append("")
+-- 
+1.8.1.4
+

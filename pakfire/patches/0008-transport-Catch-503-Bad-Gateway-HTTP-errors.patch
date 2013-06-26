@@ -1,0 +1,41 @@
+From 3577457e20575bc2feff3f012f83c52fff85b9ac Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Sat, 30 Mar 2013 12:18:39 +0000
+Subject: [PATCH 08/19] transport: Catch 503 Bad Gateway HTTP errors.
+
+---
+ python/pakfire/errors.py    | 4 ++++
+ python/pakfire/transport.py | 2 ++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/python/pakfire/errors.py b/python/pakfire/errors.py
+index 87c64e3..2da3822 100644
+--- a/python/pakfire/errors.py
++++ b/python/pakfire/errors.py
+@@ -102,6 +102,10 @@ class TransportError(Error):
+ 	pass
+ 
+ 
++class TransportBadGatewayError(TransportError):
++	pass
++
++
+ class TransportConnectionError(TransportError):
+ 	pass
+ 
+diff --git a/python/pakfire/transport.py b/python/pakfire/transport.py
+index 1adb1c6..f301652 100644
+--- a/python/pakfire/transport.py
++++ b/python/pakfire/transport.py
+@@ -260,6 +260,8 @@ class PakfireHubTransport(object):
+ 					raise TransportNotFoundError, url
+ 				elif e.code == 500:
+ 					raise TransportInternalServerError, url
++				elif e.code == 503:
++					raise TransportBadGatewayError, url
+ 				elif e.code == 504:
+ 					raise TransportConnectionTimeoutError, url
+ 
+-- 
+1.8.1.4
+

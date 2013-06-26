@@ -5,7 +5,7 @@
 
 name       = pakfire
 version    = 0.9.25
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Packaging
@@ -29,6 +29,7 @@ build
 		libsolv-devel >= 0.0.0-4
 		popt-devel
 		python-devel
+		systemd-units
 		xz-devel
 	end
 
@@ -151,6 +152,24 @@ packages
 			%{bindir}/pakfire-daemon
 		end
 		configfiles = %{sysconfdir}/pakfire/daemon.conf
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl --no-reload disable pakfire-daemon.service > /dev/null 2>&1 || :
+			systemctl stop pakfire-daemon.service > /dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload 2>&1 || :
+			systemctl reload-or-try-restart pakfire-daemon.service >/dev/null 2>&1 || :
+		end
 	end
 
 	package quality-agent

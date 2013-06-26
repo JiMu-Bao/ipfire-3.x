@@ -1,7 +1,8 @@
 From 0d6d6fd2b89c609a6f8daff225c6c98b54a041cc Mon Sep 17 00:00:00 2001
 From: Michael Tremer <michael.tremer@ipfire.org>
 Date: Mon, 4 Mar 2013 17:18:52 +0100
-Subject: [PATCH] database: Add inst_size column when creating new databases.
+Subject: [PATCH 01/19] database: Add inst_size column when creating new
+ databases.
 
 ---
  python/pakfire/repository/database.py | 1 +
@@ -20,5 +21,5 @@ index fc8a1a9..d8751e9 100644
  				provides	TEXT,
  				requires	TEXT,
 -- 
-1.7.11.7
+1.8.1.4
 
