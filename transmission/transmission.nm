@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = transmission
-version    = 2.77
+version    = 2.80
 release    = 1
 
 groups     = Internet/P2P
