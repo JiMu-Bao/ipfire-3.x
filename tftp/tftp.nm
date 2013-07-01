@@ -1,0 +1,125 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = tftp
+version    = 5.2
+release    = 1
+
+groups     = Applications/Network
+url        = http://www.kernel.org/pub/software/network/tftp/
+license    = BSD
+summary    = Client and server for the Trivial File Transfer Protocol (TFTP).
+
+description
+	The Trivial File Transfer Protocol (TFTP) is normally used only for
+	booting diskless workstations.
+end
+
+thisapp = %{name}-hpa-%{version}
+
+source_dl  = http://www.kernel.org/pub/software/network/tftp/tftp-hpa/
+
+
+build
+	requires
+		autoconf
+		readline-devel
+		shadow-utils
+	end
+
+	prepare_cmds
+		autoreconf -vfi
+		%{create_user}
+	end
+
+	make_install_targets += \
+		INSTALLROOT=%{BUILDROOT}
+
+	install_cmds
+		mkdir -pv %{BUILDROOT}%{sharedstatedir}/tftpboot
+		chown tftp:tftp %{BUILDROOT}%{sharedstatedir}/tftpboot
+	end
+end
+
+create_user
+	getent group tftp >/dev/null || /usr/sbin/groupadd -r tftp
+	getent passwd tftp >/dev/null || /usr/sbin/useradd -r -g tftp \
+		-d %{sharedstatedir}/tftpboot -s /sbin/nologin tftp
+end
+
+packages
+	package %{name}
+		requires
+			%{name}-client = %{thisver}
+			%{name}-server = %{thisver}
+		end
+	end
+
+	package %{name}-client
+		summary = A client programm for the Trivial File Transfer Protocol (TFTP).
+		description
+			The tftp-client package provides the user
+			interface for TFTP, which allows users to transfer files to and from a
+			remote machine.  This program and TFTP provide very little security,
+			and should not be enabled unless it is expressly needed.
+		end
+
+		files
+			%{bindir}/tftp
+			%{mandir}/man1/tftp*
+		end
+	end
+
+	package %{name}-server
+		summary = A Trivial File Transfer Protocol (TFTP) server.
+		description
+			The tftp-server package provides the
+			server for TFTP, which allows users to transfer files to and from a
+			remote machine. TFTP provides very little security, and should not be
+			enabled unless it is expressly needed.
+		end
+
+		prerequires += \
+			shadow-utils
+
+		datafiles
+			%{sharedstatedir}/tftpboot
+		end
+
+		files
+			%{sbindir}/in.tftpd
+			%{mandir}/man8/*
+			%{unitdir}/tftp.*
+			%{sharedstatedir}/tftpboot
+		end
+
+		script prein
+			%{create_user}
+		end
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl --no-reload disable tftp.socket >/dev/null 2>&1 || :
+			systemctl stop tftp.socket >/dev/null 2>&1 || :
+			systemctl stop tftp.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart tftp.service >/dev/null 2>&1 || :
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

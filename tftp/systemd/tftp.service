@@ -1,0 +1,6 @@
+[Unit]
+Description=Tftp Server
+
+[Service]
+ExecStart=/usr/sbin/in.tftpd -u tftp -s /var/lib/tftpboot
+StandardInput=socket
