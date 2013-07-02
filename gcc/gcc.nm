@@ -7,8 +7,8 @@
 build_cloog_ppl = 1
 
 name       = gcc
-version    = 4.7.2
-release    = 3
+version    = 4.8.1
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -30,7 +30,7 @@ sources    = %{thisapp}.tar.gz
 build
 	requires
 		autogen
-		binutils>=%{required_binutils_version}
+		binutils >= %{required_binutils_version}
 		dejagnu
 		elfutils-devel
 		expect
@@ -55,6 +55,9 @@ build
 	# Build libquadmath (only on x86).
 	build_libquadmath = 0
 
+	# Build libtasn (only on x86_64).
+	build_libtsan = 0
+
 	# A couple of configure arguments depending on the architecture and
 	# configuration.
 	configure_options =
@@ -65,6 +68,7 @@ build
 		configure_options = --disable-multilib
 
 		build_libquadmath = 1
+		build_libtsan = 1
 	end
 
 	if "%{DISTRO_ARCH}" == "i686"
@@ -100,8 +104,7 @@ build
 	end
 
 	# CFLAGS for hardening.
-	HARD_CFLAGS = -DEFAULT_PIE -DEFAULT_SSP -DEFAULT_PIE_SSP -DEFAULT_ESP_SPP \
-		-DENABLE_ESP_SSP -DEFAULT_RELRO -DEFAULT_BIND_NOW
+	HARD_CFLAGS = -DENABLE_ESP -DEFAULT_PIE_SSP -DEFAULT_RELRO -DEFAULT_BIND_NOW
 
 	prepare_cmds
 		mkdir -v %{DIR_SRC}/gcc-build
@@ -133,20 +136,14 @@ build
 		# we want to be able to control the pie patch logic via something other
 		# than ALL_CFLAGS and ALL_CXXFLAGS...
 		sed -i gcc/Makefile.in \
-			-e '/^ALL_CFLAGS/iHARD_CFLAGS = ' \
+			-e '/^ALL_CFLAGS/iHARD_CFLAGS = %{HARD_CFLAGS}' \
 			-e 's|^ALL_CFLAGS = |ALL_CFLAGS = $(HARD_CFLAGS) |' \
-			-e '/^ALL_CXXFLAGS/iHARD_CFLAGS = ' \
+			-e '/^ALL_CXXFLAGS/iHARD_CFLAGS = %{HARD_CFLAGS}' \
 			-e 's|^ALL_CXXFLAGS = |ALL_CXXFLAGS = $(HARD_CFLAGS) |'
 
-		# Enable the GCC hardening by default.
-		sed -i gcc/Makefile.in \
-			-e "s|^HARD_CFLAGS = |HARD_CFLAGS = %{HARD_CFLAGS} |"
-
-		# Compile the compiler with -fPIC as well.
 		# However, genautomata crashes with a "Bus Error" when compiled
 		# with PIC.
 		sed -i gcc/Makefile.in \
-			-e "s|^ESP_NOPIE_CFLAGS = .*|ESP_NOPIE_CFLAGS =|" \
 			-e 's|^build/genautomata$(build_exeext) .*|& -fno-PIC|'
 
 		# Default to -gdwarf-4 -fno-debug-types-section rather than -gdwarf-2
@@ -156,7 +153,7 @@ build
 			-e '/dwarf_record_gcc_switches/s/Init(0)/Init(1)/' \
 			-e 's/\(may be either 2, 3 or 4; the default version is \)2\./\14./'
 
-		./contrib/gcc_update --touch
+		#./contrib/gcc_update --touch
 	end
 
 	build
@@ -180,7 +177,7 @@ build
 			--prefix=/usr \
 			--libdir=%{libdir} \
 			--libexecdir=%{libdir} \
-			--mandir=/usr/share/man \
+			--mandir=%{mandir} \
 			--enable-esp \
 			--enable-shared \
 			--enable-threads=posix \
@@ -189,8 +186,6 @@ build
 			--enable-languages=c,c++,lto \
 			--enable-bootstrap \
 			--enable-checking=release \
-			--disable-build-with-cxx \
-			--disable-build-poststage1-with-cxx \
 			--disable-werror \
 			--disable-libssp \
 			--disable-static \
@@ -200,6 +195,8 @@ build
 			--enable-gnu-unique-object \
 			--enable-linker-build-id \
 			--with-linker-hash-style=gnu \
+			--enable-plugin \
+			--enable-initfini-array \
 			%{configure_options}
 
 		# GCC does not support a parallel build.
@@ -268,7 +265,7 @@ build
 		chmod 755 %{BUILDROOT}%{libdir}/libgomp.so.1.*
 
 		# libstdc++
-		ln -svf ../../../libstdc++.so.6.0.17 ${FULLPATH}/libstdc++.so
+		ln -svf ../../../libstdc++.so.6.0.18 ${FULLPATH}/libstdc++.so
 
 		# libmudflap
 		ln -svf ../../../libmudflap.so.0.0.0 ${FULLPATH}/libmudflap.so
@@ -527,6 +524,45 @@ packages
 			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/itm.h
 			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/itm_weak.h
 			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/libitm.so
+		end
+	end
+
+	package libatomic
+		summary = The GNU Atomic library
+		description
+			This package contains the GNU Atomic library which is a
+			GCC support runtime library for atomisc operations not
+			supported by hardware.
+		end
+
+		files
+			%{libdir}/libatomic.so.1*
+		end
+	end
+
+	package libasan
+		summary = The Address Sanitizer runtime library
+		description
+			This package contains the Address Sanitizer library
+			which is used for -fsanitize=address instrumented programs.
+		end
+
+		files
+			%{libdir}/libasan.so.0*
+		end
+	end
+
+	if "%{build_libtsan}" == "1"
+		package libtsan
+			summary = The Thread Sanitizer runtime library
+			description
+				This package contains the Thread Sanitizer library
+				which is used for -fsanitize=thread instrumented programs.
+			end
+
+			files
+				%{libdir}/libtsan.so.0*
+			end
 		end
 	end
 
