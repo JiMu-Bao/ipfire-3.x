@@ -1,0 +1,47 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = doxygen
+version    = 1.8.4
+release    = 1
+
+groups     = Development/Tools
+url        = http://www.stack.nl/~dimitri/doxygen/index.html
+license    = GPL+
+summary    = A documentation system for C/C++.
+
+description
+	Doxygen can generate an online class browser (in HTML) and/or a
+	reference manual (in LaTeX) from a set of documented source files.
+end
+
+source_dl  = ftp://ftp.stack.nl/pub/users/dimitri/
+sources = %{name}-%{version}.src.tar.gz
+
+build
+	requires
+		/usr/bin/perl
+		bison
+		flex
+	end
+
+	# Not autoconf-based, so we cannot use our default configure macro.
+	configure_options = \
+		--prefix %{prefix} \
+		--shared \
+		--release
+
+	# Use or CFLAGS.
+	make_build_targets += \
+		CFLAGS="%{CFLAGS}"
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

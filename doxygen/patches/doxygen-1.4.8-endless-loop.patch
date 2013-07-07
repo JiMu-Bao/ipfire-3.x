@@ -1,0 +1,27 @@
+commit 5e056236c9ef3b3675d014cab43480700027d60b
+Author: Dimitri van Heesch <dimitri@stack.nl>
+Date:   Thu May 30 20:01:15 2013 +0200
+
+    Bug 701295 - Doxygen 1.8.4 goes into an endless loop
+
+diff --git a/src/util.cpp b/src/util.cpp
+index 0d70d43..0c36fc0 100644
+--- a/src/util.cpp
++++ b/src/util.cpp
+@@ -1843,11 +1843,15 @@ int findParameterList(const QString &name)
+         ++templateDepth;
+         pos=nextOpenPos-1;
+       }
+-      else
++      else if (nextClosePos!=-1)
+       {
+         --templateDepth;
+         pos=nextClosePos-1;
+       }
++      else // more >'s than <'s, see bug701295
++      {
++        return -1;
++      }
+     }
+     else
+     {
