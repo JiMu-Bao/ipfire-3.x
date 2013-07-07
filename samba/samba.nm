@@ -4,10 +4,9 @@
 ###############################################################################
 
 name       = samba
-version    = 3.6.5
-release    = 2
+version    = 3.6.16
+release    = 1
 
-maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
 url        = http://www.samba.org/
 license    = GPLv3+ and LGPLv3+
