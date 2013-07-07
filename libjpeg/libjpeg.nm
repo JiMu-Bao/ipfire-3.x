@@ -5,7 +5,7 @@
 
 name       = libjpeg
 version    = 1.2.0
-release    = 1
+release    = 2
 thisapp    = libjpeg-turbo-%{version}
 
 groups     = System/Libraries
@@ -48,7 +48,7 @@ packages
 	package %{name}-devel
 		template DEVEL
 
-		files += !/usr/lib/libturbojpeg.so
+		files += !%{libdir}/libturbojpeg.so
 	end
 
 	package %{name}-debuginfo
