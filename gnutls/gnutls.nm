@@ -7,7 +7,7 @@ name       = gnutls
 version    = %{ver_maj}.%{ver_min}
 ver_maj    = 3.2
 ver_min    = 1
-release    = 1.1
+release    = 1.2
 
 groups     = System/Libraries
 url        = http://www.gnu.org/software/gnutls/
