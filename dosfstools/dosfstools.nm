@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = dosfstools
-version    = 3.0.16
+version    = 3.0.20
 release    = 1
 
 groups     = System/Filesystems
@@ -13,13 +13,12 @@ license    = GPLv3+
 summary    = Utilities for making and checking MS-DOS FAT filesystems on Linux.
 
 description
-	The dosfstools package includes the mkdosfs and dosfsck utilities, \
-	which respectively make and check MS-DOS FAT filesystems on hard \
+	The dosfstools package includes the mkdosfs and dosfsck utilities,
+	which respectively make and check MS-DOS FAT filesystems on hard
 	drives or on floppies.
 end
 
 source_dl  = http://www.daniel-baumann.ch/files/software/dosfstools/
-sources    = %{thisapp}.tar.gz
 
 build
 	install
@@ -30,7 +29,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
