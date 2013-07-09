@@ -1,0 +1,41 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libunistring
+version    = 0.9.3
+release    = 1
+
+groups     = System/Libraries
+url        = http://www.gnu.org/software/libunistring/
+license    = LGPLv3+
+summary    = GNU Unicode string library.
+
+description
+	This portable C library implements Unicode string types in three flavours:
+	(UTF-8, UTF-16, UTF-32), together with functions for character processing
+	(names, classifications, properties) and functions for string processing
+	(iteration, formatted output, width, word breaks, line breaks, normalization,
+	case folding and regular expressions).
+end
+
+source_dl  = ftp://ftp.gnu.org/gnu/libunistring/
+
+build
+	configure_options += \
+		--disable-static \
+		--disable-rpath
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
