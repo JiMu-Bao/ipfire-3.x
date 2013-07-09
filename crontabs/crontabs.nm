@@ -1,0 +1,56 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = crontabs
+version    = 1.11
+snap_rel   = 20121102git
+release    = 1.%{snap_rel}
+arch       = noarch
+
+groups     = System/Base
+url        = https://fedorahosted.org/crontabs
+license    = Public Domain and GPLv2
+summary    = Root crontab files used to schedule the execution of programs.
+
+description
+	This package is used mainly for executing files by cron.
+
+	The crontabs package contains root crontab files and directories.
+	You will need to install cron daemon to run the jobs from the crontabs.
+	The cron daemon such as cronie or fcron checks the crontab files to
+	see when particular commands are scheduled to be executed.  If commands
+	are scheduled, it executes them.
+
+	Crontabs handles a basic system function, so it should be installed on
+	your system.
+end
+
+source_dl  = https://fedorahosted.org/releases/c/r/crontabs/
+sources    = %{name}-%{version}-1.%{snap_rel}.tar.gz
+
+build
+	build
+		# empty
+	end
+
+	install
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/cron.{hourly,daily,weekly,monthly}
+		mkdir -pv %{BUILDROOT}%{bindir} %{BUILDROOT}%{mandir}/man4
+
+		install -m 644 crontab %{BUILDROOT}%{sysconfdir}/crontab
+		install -m 755 run-parts %{BUILDROOT}%{bindir}/run-parts
+		install -m 644 {crontabs,run-parts}.4 %{BUILDROOT}%{mandir}/man4
+	end
+end
+
+packages
+	package %{name}
+		groups += Base
+
+		requires
+			/etc/cron.d
+		end
+	end
+end
