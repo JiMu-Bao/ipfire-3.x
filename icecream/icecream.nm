@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = icecream
-version    = 0.9.7
-release    = 3
+version    = 1.0.0
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -24,9 +24,7 @@ description
 end
 
 source_dl  = ftp://ftp.suse.com/pub/projects/icecream/
-sources    = \
-	icecc-%{version}.tar.bz2 \
-	icecream-manpages.tar.bz2
+sources    = icecc-%{version}.tar.bz2
 
 build
 	requires
@@ -39,34 +37,21 @@ build
 		--disable-static \
 		--enable-shared
 
-	prepare
-		cd %{DIR_SRC} && %{MACRO_EXTRACT} %{DIR_DL}/icecc-%{version}.tar.bz2
-		cd %{DIR_APP} && %{MACRO_EXTRACT} %{DIR_DL}/icecream-manpages.tar.bz2
-
-		%{MACRO_PATCHES}
-	end
-
 	install_cmds
 		mkdir -pv %{BUILDROOT}%{libdir}/icecc/bin
 		for i in gcc g++ cc c++; do
-			ln -svf ../../../bin/icecc %{BUILDROOT}%{libdir}/icecc/bin/${i}
-			ln -svf ../../../bin/icecc %{BUILDROOT}%{libdir}/icecc/bin/%{DISTRO_BUILDTARGET}-${i}
+			ln -svf ../../../bin/icecc %{BUILDROOT}%{prefix}/lib/icecc/bin/${i}
+			ln -svf ../../../bin/icecc %{BUILDROOT}%{prefix}/lib/icecc/bin/%{DISTRO_BUILDTARGET}-${i}
 		done
-		sed -e 's|^#!.*|#!/bin/bash|' -i %{BUILDROOT}%{libdir}/icecc/icecc-create-env
+		ln -svf icecc %{BUILDROOT}%{bindir}/icerun
+		sed -e 's|^#!.*|#!/bin/bash|' -i %{BUILDROOT}%{prefix}/lib/icecc/icecc-create-env
 
 		mkdir -pv %{BUILDROOT}/etc/profile.d
-		sed -e "s|@LIBDIR@|%{libdir}|g" \
+		sed -e "s|@LIBDIR@|%{prefix}/lib|g" \
 			< %{DIR_SOURCE}/icecream.sh > %{BUILDROOT}/etc/profile.d/icecream.sh
 
 		# create default working dir
 		mkdir -pv %{BUILDROOT}/var/cache/icecream
-
-		# install manpages
-		mkdir -pv %{BUILDROOT}/usr/share/man/man{1,7,8}
-		mv mans/scheduler.1 mans/icecc-scheduler.1
-		for i in mans/*.1 mans/*.7; do
-			install -m 644 $i %{BUILDROOT}/usr/share/man/man${i##*.}
-		done
 
 		# Remove unwanted symlinks.
 		rm -rvf %{BUILDROOT}/usr/bin/c++

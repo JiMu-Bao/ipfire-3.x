@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = cronie
-version    = 1.4.8
+version    = 1.4.9
 release    = 1
 
 groups     = System/Environment/Base
@@ -30,21 +30,44 @@ build
 		libselinux-devel
 		pam-devel
 		readline-devel
+		systemd-units
 		texinfo
 	end
 
 	configure_options += \
 		--with-pam \
 		--with-audit \
-		--with-selinux
+		--with-selinux \
+		--with-inotify \
+		--enable-anacron \
+		--enable-pie \
+		--enable-relro
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}%{localstatedir}/spool/cron
+		mkdir -pv %{BUILDROOT}%{localstatedir}/spool/{ana,}cron
+
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/cron.d
+		touch %{BUILDROOT}%{sysconfdir}/cron.deny
+
+		# Install anacron
+		install -m 644 contrib/anacrontab %{BUILDROOT}%{sysconfdir}/anacrontab
+
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/cron.hourly
+		install -c -m 755 contrib/0anacron %{BUILDROOT}%{sysconfdir}/cron.hourly/0anacron
+		for i in daily weekly monthly; do
+			touch %{BUILDROOT}%{localstatedir}/spool/anacron/cron.${i}
+		done
+
+		install -c -m 755 contrib/0hourly %{BUILDROOT}%{sysconfdir}/cron.d/0hourly
 	end
 end
 
 packages
 	package %{name}
+		requires
+			dailyjobs
+		end
+
 		# Just search for new unit files that were just installed.
 		script postin
 			systemctl daemon-reload >/dev/null 2>&1 || :
@@ -68,6 +91,47 @@ packages
 		script postup
 			systemctl daemon-reload >/dev/null 2>&1 || :
 			systemctl try-restart cronie.service >/dev/null 2>&1 || :
+		end
+	end
+
+	package anacron
+		summary = Utility for running regular jobs.
+		description
+			Anacron is part of cronie that is used for running jobs with regular
+			periodicity which do not have exact time of day of execution.
+
+			The default settings of anacron execute the daily, weekly, and monthly
+			jobs, but anacron allows setting arbitrary periodicity of jobs.
+
+			Using anacron allows running the periodic jobs even if the system is often
+			powered off and it also allows randomizing the time of the job execution
+			for better utilization of resources shared among multiple systems.
+		end
+		groups = System/Base Base
+
+		provides
+			dailyjobs
+		end
+
+		requires
+			cronie = %{thisver}
+			crontabs
+		end
+
+		files
+			%{sbindir}/anacron
+			%{sysconfdir}/cron.hourly/0anacron
+			%{sysconfdir}/anacrontab
+			%{localstatedir}/spool/anacron
+			%{mandir}/man*/anacron*
+		end
+
+		configfiles
+			%{sysconfdir}/anacrontab
+		end
+
+		datafiles
+			%{localstatedir}/spool/anacron/*
 		end
 	end
 

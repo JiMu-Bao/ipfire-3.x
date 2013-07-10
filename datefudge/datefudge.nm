@@ -1,0 +1,46 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = datefudge
+version    = 1.18
+release    = 1
+
+groups     = System/Tools
+url        = http://anonscm.debian.org/gitweb/?p=users/robert/datefudge.git;a=summary
+license    = GPLv2
+summary    = A tool for faking the system date.
+
+description
+	Datefudge fakes the system date so that a program think the wall clock
+	is different. The faking is not complete; timestamp on files are not
+	affected in any way. This package is useful if you want to test the date
+	handling of your programs without changing the system clock.
+end
+
+source_dl  = http://ftp.de.debian.org/debian/pool/main/d/%{name}/
+sources    = %{name}_%{version}.tar.gz
+
+build
+	# Honor our CFLAGS.
+	make_build_targets += \
+		CFLAGS="%{CFLAGS}" \
+		LDFLAGS="%{LDFLAGS}"
+
+	test
+		make test
+	end
+
+	# Install libs to the correct place.
+	make_install_targets += \
+		libdir=%{libdir}/%{name}
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

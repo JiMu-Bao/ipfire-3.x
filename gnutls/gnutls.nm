@@ -5,9 +5,9 @@
 
 name       = gnutls
 version    = %{ver_maj}.%{ver_min}
-ver_maj    = 3.1
-ver_min    = 9
-release    = 1
+ver_maj    = 3.2
+ver_min    = 1
+release    = 1.2
 
 groups     = System/Libraries
 url        = http://www.gnu.org/software/gnutls/
@@ -26,13 +26,14 @@ sources    = %{thisapp}.tar.xz
 
 build
 	requires
+		datefudge
 		gettext
 		guile-devel
 		libgcrypt-devel
 		libidn-devel
 		libtasn1-devel >= 3.2
 		lzo-devel
-		nettle-devel >= 2.5
+		nettle-devel >= 2.7
 		perl
 		p11-kit-devel >= 0.14
 		readline-devel
@@ -44,21 +45,20 @@ build
 
 	configure_options += \
 		--with-included-libcfg \
-		--disable-srp-authentication \
 		--disable-openssl-compatibility \
 		--with-libgcrypt
 
 	# Test suite does not work when srp is disabled.
-	#test
-	#	export LD_LIBRARY_PATH=$(pwd)/lib/.libs
-	#	make check
-	#end
+	test
+		export LD_LIBRARY_PATH=$(pwd)/lib/.libs
+		make check
+	end
 end
 
 packages
 	package %{name}
 		requires
-			nettle >= 2.5
+			nettle >= 2.7
 			p11-kit >= 0.14
 		end
 	end
