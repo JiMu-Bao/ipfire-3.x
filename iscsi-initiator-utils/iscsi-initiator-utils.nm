@@ -6,7 +6,7 @@
 name       = iscsi-initiator-utils
 rel_ver    = 873
 version    = 6.2.0.%{rel_ver}
-release    = 1
+release    = 2
 
 groups     = System/Daemons
 url        = http://www.open-iscsi.org/
@@ -26,19 +26,18 @@ source_dl  = http://www.open-iscsi.org/bits/
 
 build
 	requires
+		doxygen
+		kmod-devel
 		openssl-devel
 		python-devel
 	end
 
 	build
-		cd %{DIR_APP}/utils/open-isns && ./configure --with-security=no
-		cd %{DIR_APP}/utils/open-isns && make
-		cd %{DIR_APP} && make -C utils/sysdeps
-		cd %{DIR_APP} && make -C utils/fwparam_ibft
-		cd %{DIR_APP} && make -C usr
-		cd %{DIR_APP} && make -C utils
-		cd %{DIR_APP} && make -C libiscsi
-		cd %{DIR_APP}/libiscsi && python setup.py build
+		make OPTFLAGS="%{CFLAGS} -DUSE_KMOD -lkmod"
+
+		pushd libiscsi
+		python setup.py build
+		popd
 	end
 
 	install
