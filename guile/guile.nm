@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = guile
-version    = 1.8.8
-release    = 2
+version    = 2.0.9
+release    = 1
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/guile/
@@ -19,12 +19,17 @@ description
 	as a library during the building of extensible programs.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.gnu.org/gnu/guile/
 
 build
 	requires
+		gc-devel
+		gettext-devel
 		gmp-devel
+		libffi-devel >= 3.0.13
 		libtool-devel
+		libunistring-devel
+		readline-devel
 	end
 
 	configure_options += \
@@ -33,12 +38,6 @@ build
 
 	test
 		make check
-	end
-end
-
-quality-agent
-	whitelist_rpath
-		/usr/lib
 	end
 end
 
