@@ -1,4 +1,6 @@
 # HOST_ARCH		platform	targets
 # --------------------------------------------
-armv5tel		dreamplug	u-boot.bin
+armv5tel		dreamplug	u-boot.bin u-boot.kwb
 armv7hl			omap4_panda	u-boot.bin u-boot.img
+armv7hl			wandboard_solo	u-boot.imx
+armv7hl			wandboard_dl	u-boot.imx

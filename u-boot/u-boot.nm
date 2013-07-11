@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = u-boot
-version    = 2013.04
+version    = 2013.07
 rc         = 2
 release    = 0.1.rc%{rc}
 thisapp    = %{name}-%{version}-rc%{rc}
@@ -33,11 +33,26 @@ build
 			# Skip all other architectures.
 			[ "${arch}" = "%{DISTRO_ARCH}" ] || continue
 
-			builddir="$(pwd)/build-${platform}"
-			mkdir -p ${builddir}
+			make CROSS_COMPILE="" ${platform}_config
+			make HOSTCC="gcc %{CFLAGS}" CROSS_COMPILE="" all ${targets}
 
-			make CROSS_COMPILE="" O=${builddir} ${platform}_config
-			make HOSTCC="gcc %{CFLAGS}" CROSS_COMPILE="" O=${builddir}
+			# install
+			installdir="%{BUILDROOT}/usr/lib/%{name}/${platform}"
+			mkdir -pv ${installdir}
+
+			for target in ${targets}; do
+				install -D -m 644 ${target} ${installdir}
+			done
+			if [ -e "MLO" ]; then
+				install -D -m 644 MLO ${installdir}
+			fi
+			for f in spl/*.bin; do
+				[ -e "${f}" ] || continue
+				install -D -m 644 ${f} ${installdir}
+			done
+
+			# Clean out the build environment.
+			make distclean
 		done < %{DIR_SOURCE}/targets
 
 		# Build tools.
@@ -49,26 +64,6 @@ build
 	end
 
 	install
-		while read arch platform targets; do
-			# Skip all other architectures.
-			[ "${arch}" = "%{DISTRO_ARCH}" ] || continue
-
-			builddir="build-${platform}"
-			installdir="%{BUILDROOT}/usr/lib/%{name}/${platform}"
-			mkdir -pv ${installdir}
-
-			for target in ${targets}; do
-				install -D -m 644 ${builddir}/${target} ${installdir}
-			done
-			if [ -e "${builddir}/MLO" ]; then
-				install -D -m 644 ${builddir}/MLO ${installdir}
-			fi
-			for f in ${builddir}/spl/*.bin; do
-				[ -e "${f}" ] || continue
-				install -D -m 644 ${f} ${installdir}
-			done
-		done < %{DIR_SOURCE}/targets
-
 		# Install tools.
 		mkdir -pv %{BUILDROOT}/usr/bin %{BUILDROOT}/usr/share/man/man1
 		install -p -m 0755 tools/mkimage %{BUILDROOT}/usr/bin
