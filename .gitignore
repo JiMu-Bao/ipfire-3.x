@@ -1,16 +1,1 @@
-/.build_spy*
-/.config
-/build
-/cache
-/ccache
-/doc/ChangeLog
-/doc/packages-list.txt
-/logs
-/tmp
-/vm
-/*.diff
-/*.iso
-/*.tar.gz
-*.py[co]
 *~
-*.py[co]
