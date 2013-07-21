@@ -5,7 +5,7 @@
 
 name       = vim
 version    = 7.3
-release    = 3
+release    = 4
 
 groups     = Applications/Editors
 url        = http://www.vim.org
@@ -13,8 +13,8 @@ license    = PublicDomain/Charityware
 summary    = Very feature- and powerful editor.
 
 description
-	Vim is a highly configurable text editor built to enable efficient \
-	text editing. It is an improved version of the vi editor \
+	Vim is a highly configurable text editor built to enable efficient
+	text editing. It is an improved version of the vi editor
 	distributed with most UNIX systems.
 end
 
@@ -44,24 +44,28 @@ build
 		--with-compiled-by="<bugzilla@ipfire.org>"
 
 	configure_cmds
-		echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
+		echo '#define SYS_VIMRC_FILE "%{sysconfdir}/vimrc"' >> src/feature.h
 	end
 
 	install_cmds
-		ln -sfv vim %{BUILDROOT}/usr/bin/vi
+		ln -sfv vim %{BUILDROOT}%{bindir}/vi
 
 		# Install configuration
-		mkdir -pv %{BUILDROOT}/etc
-		cp -vf %{DIR_SOURCE}/vimrc %{BUILDROOT}/etc/vimrc
+		mkdir -pv %{BUILDROOT}%{sysconfdir}
+		cp -vf %{DIR_SOURCE}/vimrc %{BUILDROOT}%{sysconfdir}/vimrc
 
 		# Remove script for c-shell
-		rm -rf %{BUILDROOT}/usr/share/vim/vim73/tools/vim132
+		rm -rf %{BUILDROOT}%{datadir}/vim/vim73/tools/vim132
 	end
 end
 
 packages
 	package %{name}
 		groups += Base
+
+		configfiles
+			%{sysconfidir}/vimrc
+		end
 	end
 
 	package %{name}-debuginfo
