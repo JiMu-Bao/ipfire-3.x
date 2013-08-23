@@ -4,7 +4,9 @@
 ###############################################################################
 
 name       = crda
-version    = 1.1.1
+version    = %{ver_crda}-%{ver_regdb}
+ver_crda   = 1.1.3
+ver_regdb  = 2013.02.13
 release    = 1
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -20,27 +22,47 @@ description
 	communication from the kernel.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+source_dl  = \
+	http://wireless.kernel.org/download/crda/ \
+	https://www.kernel.org/pub/software/network/wireless-regdb/
+sources    = crda-%{ver_crda}.tar.bz2 wireless-regdb-%{ver_regdb}.tar.xz
 
 build
 	requires
 		libgcrypt-devel
 		libnl-devel
+		openssl
 		python-m2crypto
-		wireless-regdb
 	end
 
-	prepare_cmds
-		cp -vf /usr/lib/crda/pubkeys/root.key.pub.pem %{DIR_APP}/pubkeys/
+	build
+		pushd %{DIR_SRC}/wireless-regdb-%{ver_regdb}
+		make ${PARALLELISMFLAGS} maintainer-clean
+		make ${PARALLELISMFLAGS} REGDB_PRIVKEY=key.priv.pem REGDB_PUBKEY=key.pub.pem
+		popd
+
+		pushd %{DIR_SRC}/crda-%{ver_crda}
+		cp ../wireless-regdb-%{ver_regdb}/key.pub.pem pubkeys
+
+		make ${PARALLELISMFLAGS} REG_BIN=../wireless-regdb-%{ver_regdb}/regulatory.bin
+		popd
+	end
+
+	install
+		pushd %{DIR_SRC}/wireless-regdb-%{ver_regdb}
+		make install DESTDIR=%{BUILDROOT} PREFIX=%{prefix} MANDIR=%{mandir}
+		popd
+
+		pushd %{DIR_SRC}/crda-%{ver_crda}
+		make install DESTDIR=%{BUILDROOT} PREFIX=%{prefix} MANDIR=%{mandir}
+		popd
 	end
 end
 
 packages
 	package %{name}
-		requires
-			wireless-regdb
-		end
+		provides = wireless-regdb = %{ver_regdb}
+		obsoletes = wireless-regdb < %{ver_regdb}
 	end
 
 	package %{name}-debuginfo
