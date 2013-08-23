@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = iw
-version    = 3.0
+version    = 3.10
 release    = 1
 
 groups     = System/Base
@@ -13,29 +13,22 @@ license    = BSD
 summary    = A nl80211 based wireless configuration tool.
 
 description
-	iw is a new nl80211 based CLI configuration utility for wireless \
-	devices. It supports almost all new drivers that have been added \
+	iw is a new nl80211 based CLI configuration utility for wireless
+	devices. It supports almost all new drivers that have been added
 	to the kernel recently.
 end
 
-source_dl  =
+source_dl  = https://www.kernel.org/pub/software/network/iw/
 sources    = %{thisapp}.tar.bz2
 
 build
 	requires
 		libnl-devel
-		pkg-config
-	end
-
-	install_cmds
-		mkdir -pv %{BUILDROOT}/sbin
-		mv -v %{BUILDROOT}/usr/sbin/iw %{BUILDROOT}/sbin/iw
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
