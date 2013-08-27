@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = hostapd
-version    = 1.0
-release    = 2
+version    = 2.0
+release    = 1
 
 groups     = Networking/Tools
 url        = http://hostap.epitest.fi/hostapd/
@@ -33,8 +33,11 @@ build
 		# Create our custom configuration.
 		cat defconfig > .config
 		sed -i .config \
-			-e "/^#CONFIG_IEEE80211N=y/s/^#//" \
-			-e "/^#CONFIG_RADIUS_SERVER=y/s/^#//"
+			-e '/^#CONFIG_DRIVER_NL80211=y/s/^#//' \
+			-e '/^#CONFIG_DRIVER_NONE=y/s/^#//' \
+			-e '/^#CONFIG_DRIVER_WIRED=y/s/^#//' \
+			-e '/^#CONFIG_IEEE80211N=y/s/^#//' \
+			-e '/^#CONFIG_RADIUS_SERVER=y/s/^#//'
 	end
 
 	build

@@ -5,9 +5,7 @@
 
 name       = u-boot
 version    = 2013.07
-rc         = 2
-release    = 0.1.rc%{rc}
-thisapp    = %{name}-%{version}-rc%{rc}
+release    = 1
 sup_arches = armv5tel armv7hl
 
 groups     = Development/Tools
