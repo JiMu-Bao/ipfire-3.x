@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kernel
-version    = 3.9.5
-release    = 0.3
+version    = 3.10.9
+release    = 1
 thisapp    = linux-%{version}
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -144,7 +144,7 @@ build
 		rm -f %{DIR_APP}/localversion-grsec
 
 		# Remove -Werror flag to fix ARMv5 build.
-		sed -e "s/-Werror//g" -i grsecurity/Makefile
+		sed -e "s/-Werror//g" -i grsecurity/Makefile || :
 
 		# Disable the colorize plugin.
 		# It's generally very nice but it clutters our

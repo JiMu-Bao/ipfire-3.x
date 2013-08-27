@@ -13,9 +13,22 @@ CONFIG_ARCH_HWEIGHT_CFLAGS="-fcall-saved-ecx -fcall-saved-edx"
 CONFIG_KTIME_SCALAR=y
 
 #
+# Timers subsystem
+#
+CONFIG_NO_HZ_IDLE=y
+
+#
+# CPU/Task time and stats accounting
+#
+# CONFIG_TICK_CPU_ACCOUNTING is not set
+CONFIG_IRQ_TIME_ACCOUNTING=y
+
+#
 # RCU Subsystem
 #
 CONFIG_RCU_FANOUT=32
+# CONFIG_RCU_NOCB_CPU_NONE is not set
+# CONFIG_RCU_NOCB_CPU_ZERO is not set
 
 #
 # Kernel Performance Events And Counters
@@ -72,7 +85,9 @@ CONFIG_X86_ALIGNMENT_16=y
 CONFIG_X86_INTEL_USERCOPY=y
 CONFIG_X86_USE_PPRO_CHECKSUM=y
 CONFIG_X86_MINIMUM_CPU_FAMILY=5
+CONFIG_CPU_SUP_CYRIX_32=y
 CONFIG_CPU_SUP_TRANSMETA_32=y
+CONFIG_CPU_SUP_UMC_32=y
 CONFIG_NR_CPUS=32
 # CONFIG_X86_ANCIENT_MCE is not set
 CONFIG_VM86=y
@@ -81,6 +96,9 @@ CONFIG_TOSHIBA=m
 # CONFIG_NOHIGHMEM is not set
 # CONFIG_HIGHMEM4G is not set
 CONFIG_HIGHMEM64G=y
+CONFIG_VMSPLIT_3G=y
+# CONFIG_VMSPLIT_2G is not set
+# CONFIG_VMSPLIT_1G is not set
 CONFIG_PAGE_OFFSET=0xC0000000
 CONFIG_HIGHMEM=y
 CONFIG_X86_PAE=y
@@ -217,6 +235,11 @@ CONFIG_GEODE_WDT=m
 CONFIG_VIDEO_CAFE_CCIC=m
 
 #
+# Camera sensor devices
+#
+CONFIG_VIDEO_OV7670=m
+
+#
 # Graphics support
 #
 # CONFIG_AGP_ALI is not set
@@ -284,6 +307,11 @@ CONFIG_GRKERNSEC_VM86=y
 # Logging Options
 #
 # CONFIG_INTEL_TXT is not set
+
+#
+# Crypto core or helper
+#
+CONFIG_CRYPTO_GLUE_HELPER_X86=m
 
 #
 # Ciphers
