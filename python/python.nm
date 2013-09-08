@@ -5,8 +5,8 @@
 
 name       = python
 major_ver  = 2.7
-version    = %{major_ver}.3
-release    = 2
+version    = %{major_ver}.5
+release    = 1
 thisapp    = Python-%{version}
 
 groups     = Development/Languages
@@ -30,9 +30,10 @@ build
 		autoconf
 		automake
 		bzip2-devel
-		db4-devel >= 1:4.8
 		expat-devel
+		gdbm-devel
 		glibc-headers >= 2.16-4
+		libdb-devel
 		libffi-devel
 		libselinux-devel
 		ncurses-devel
@@ -41,6 +42,7 @@ build
 		readline-devel
 		sqlite-devel
 		tar
+		util-linux
 		zlib-devel
 	end
 
@@ -51,8 +53,7 @@ build
 		rm -rf Modules/{expat,zlib}
 		rm -rf Modules/_ctypes/{darwin,libffi,libffi_arm_wince,libffi_msvc,libffi_osx}
 
-		# Remove autoconf version check and reconfigure
-		sed -e "s/^version_required.*//" -i configure.in
+		# Reconfigure
 		autoreconf --force
 	end
 
@@ -71,6 +72,10 @@ build
 				%{configure_options}
 
 		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		WITHIN_PYTHON_RPM_BUILD= EXTRATESTOPTS="--verbose" make test || :
 	end
 
 	install_cmds
