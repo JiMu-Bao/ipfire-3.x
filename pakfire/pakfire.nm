@@ -4,12 +4,12 @@
 ###############################################################################
 
 name       = pakfire
-version    = 0.9.25
-release    = 3
+version    = 0.9.26
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Packaging
-url        = http://www.ipfire.org/
+url        = http://git.ipfire.org/?p=pakfire.git;a=summary
 license    = GPLv3+
 summary    = Package installer/updater.
 
@@ -22,13 +22,17 @@ source_dl  = http://source.ipfire.org/releases/pakfire/
 
 build
 	requires
+		autoconf
+		automake
 		beecrypt-devel
 		elfutils-devel
-		gettext
+		gettext-devel
+		intltool
 		libcap-devel
 		libsolv-devel >= 0.0.0-4
 		popt-devel
 		python-devel
+		systemd-devel
 		systemd-units
 		xz-devel
 	end
@@ -37,12 +41,14 @@ build
 	requires += gcc >= 4.6.2-4
 	requires += beecrypt >= 4.2.1-2
 
-	CFLAGS += -fno-strict-aliasing
+	prepare_cmds
+		# Generate the build system, if this was not a release
+		# tarball.
+		[ -x "configure" ] || sh ./autogen.sh
+	end
 
 	test
-		# Check, if the binary modules are loadable.
-		cd %{DIR_APP}/python/src/ && python -c "import _pakfire"
-		cd %{DIR_APP}/python/src/ && python -c "import _lzma"
+		make check
 	end
 
 	install_cmds
@@ -56,10 +62,13 @@ packages
 	package %{name}
 		groups += Base
 
-		requires = pakfire-common = %{thisver}
-	end
+		provides
+			pakfire-common = %{thisver}
+		end
+		obsoletes
+			pakfire-common < %{thisver}
+		end
 
-	package %{name}-common
 		requires
 			libsolv >= 0.0.0-4
 			pygpgme
@@ -68,13 +77,6 @@ packages
 			system-release
 		end
 
-		files
-			%{sysconfdir}/pakfire/general.conf
-			%{bindir}/pakfire-key
-			/usr/lib/pakfire/pakfire-multicall.py
-			%{libdir}/python*/site-packages/pakfire*
-			/usr/share/locale
-		end
 		configfiles = %{sysconfdir}/pakfire/general.conf
 	end
 
@@ -103,18 +105,18 @@ packages
 		end
 
 		configfiles
-			/etc/pakfire/builder.conf
-			/etc/pakfire/distros
+			%{sysconfdir}/pakfire/builder.conf
+			%{sysconfdir}/pakfire/distros
 		end
 
 		files
-			/etc/pakfire/builder.conf
-			/etc/pakfire/distros
+			%{sysconfdir}/pakfire/builder.conf
+			%{sysconfdir}/pakfire/distros
 			%{libdir}/libpakfire_preload.so
 			%{bindir}/pakfire-builder
-			%{bindir}/pakfire-server
-			/usr/lib/pakfire/*
-			!/usr/lib/pakfire/pakfire-multicall.py
+
+			%{prefix}/lib/pakfire
+			%{libdir}/pakfire
 		end
 	end
 
