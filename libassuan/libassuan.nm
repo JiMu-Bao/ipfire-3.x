@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libassuan
-version    = 2.0.1
+version    = 2.1.1
 release    = 1
 
 groups     = System/Libraries
@@ -13,15 +13,15 @@ license    = LGPLv2+
 summary    = GnuPG IPC library.
 
 description
-	The Libassuan package contains an IPC library used by some of the other \
-	GnuPG related packages. Libassuan's primary use is to allow a client to \
-	interact with a non-persistent server. Libassuan is not, however, limited \
-	to use with GnuPG servers and clients. It was designed to be flexible \
-	enough to meet the demands of many transaction based environments with \
+	The Libassuan package contains an IPC library used by some of the other
+	GnuPG related packages. Libassuan's primary use is to allow a client to
+	interact with a non-persistent server. Libassuan is not, however, limited
+	to use with GnuPG servers and clients. It was designed to be flexible
+	enough to meet the demands of many transaction based environments with
 	non-persistent servers.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.gnupg.org/gcrypt/libassuan/
 sources    = %{thisapp}.tar.bz2
 
 build
@@ -40,7 +40,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
