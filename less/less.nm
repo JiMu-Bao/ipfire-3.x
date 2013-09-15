@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = less
-version    = 451
+version    = 458
 release    = 1
 
 groups     = Applications/Text
