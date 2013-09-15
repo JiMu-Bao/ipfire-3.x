@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = libgpg-error
-version    = 1.9
-release    = 3
+version    = 1.12
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.gnupg.org/
@@ -18,7 +18,7 @@ description
 	pinentry, SmartCard Daemon and possibly more in the future.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.gnupg.org/gcrypt/libgpg-error/
 sources    = %{thisapp}.tar.bz2
 
 build
