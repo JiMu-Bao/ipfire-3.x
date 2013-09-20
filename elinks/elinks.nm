@@ -4,8 +4,10 @@
 ###############################################################################
 
 name       = elinks
-version    = 0.11.7
-release    = 2
+version    = 0.12
+ver_suffix = pre6
+release    = 1.%{ver_suffix}
+thisapp    = %{name}-%{version}%{ver_suffix}
 
 groups     = Applications/Internet
 url        = http://elinks.or.cz/
@@ -19,7 +21,8 @@ description
 	It is quite portable and runs on a variety of platforms.
 end
 
-source_dl  =
+source_dl  = http://elinks.or.cz/download/
+sources    = %{thisapp}.tar.bz2
 
 build
 	requires
