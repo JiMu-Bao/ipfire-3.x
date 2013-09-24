@@ -4,10 +4,10 @@
 ###############################################################################
 
 name       = libpng
-version    = 1.6.5
+version    = 1.6.6
 release    = 1
 
-compat_ver = 1.5.15
+compat_ver = 1.5.17
 
 groups     = System/Libraries
 url        = http://www.libpng.org/pub/png/
@@ -23,9 +23,11 @@ description
 end
 
 source_dl  = http://downloads.sourceforge.net/project/libpng/libpng16/%{version}/
+source_dl += http://downloads.sourceforge.net/project/libpng/history/libpng16/%{version}/
 
 # Source URL for comat package.
 source_dl +=  http://downloads.sourceforge.net/project/libpng/libpng15/%{compat_ver}/
+source_dl +=  http://downloads.sourceforge.net/project/libpng/history/libpng15/%{compat_ver}/
 
 sources    = %{thisapp}.tar.xz
 
@@ -49,8 +51,8 @@ build
 	# Install compat package.
 	install_cmds
 		cd %{DIR_SRC}/%{name}-%{compat_ver}
-		install -m 755 .libs/libpng15.so.15.15.0 %{BUILDROOT}%{libdir}
-		ln -svf libpng15.so.15.15.0 %{BUILDROOT}%{libdir}/libpng15.so.15
+		install -m 755 .libs/libpng15.so.15.17.0 %{BUILDROOT}%{libdir}
+		ln -svf libpng15.so.15.17.0 %{BUILDROOT}%{libdir}/libpng15.so.15
 	end
 end
 
