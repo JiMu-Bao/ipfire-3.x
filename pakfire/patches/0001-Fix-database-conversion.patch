@@ -1,0 +1,27 @@
+From 32468054fe6aa6d181388252ac4c3f6286dfacf1 Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Wed, 25 Sep 2013 00:51:36 +0100
+Subject: [PATCH] Fix database conversion.
+
+The new dependencies table was not correctly generated
+from older databases, which is fixed in this patch.
+---
+ src/pakfire/repository/database.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/pakfire/repository/database.py b/src/pakfire/repository/database.py
+index d22bdb5..379ae1c 100644
+--- a/src/pakfire/repository/database.py
++++ b/src/pakfire/repository/database.py
+@@ -281,7 +281,7 @@ class DatabaseLocal(Database):
+ 
+ 				for type, deps in dependencies:
+ 					c.executemany("INSERT INTO dependencies(pkg, type, dependency) VALUES(?, ?, ?)",
+-						((pkg_id, type, d) for d in deps))
++						((pkg_id, type, d) for d in deps.splitlines()))
+ 
+ 			c.executescript("""
+ 				CREATE TABLE packages_(
+-- 
+1.8.3.1
+
