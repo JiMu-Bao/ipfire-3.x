@@ -5,7 +5,9 @@
 
 name       = guile
 version    = 2.0.9
-release    = 1
+release    = 2
+
+compat_ver = 1.8.8
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/guile/
@@ -13,13 +15,14 @@ license    = GPLv2+ and LGPLv2+ and GFDL and OFSFDL
 summary    = A GNU implementation of Scheme for application extensibility.
 
 description
-	GUILE (GNU's Ubiquitous Intelligent Language for Extension) is a library \
-	implementation of the Scheme programming language, written in C. GUILE \
-	provides a machine-independent execution platform that can be linked in \
+	GUILE (GNU's Ubiquitous Intelligent Language for Extension) is a library
+	implementation of the Scheme programming language, written in C. GUILE
+	provides a machine-independent execution platform that can be linked in
 	as a library during the building of extensible programs.
 end
 
 source_dl  = ftp://ftp.gnu.org/gnu/guile/
+sources   += %{name}-%{compat_ver}.tar.gz
 
 build
 	requires
@@ -36,13 +39,39 @@ build
 		--disable-static \
 		--disable-error-on-warning
 
+	build_cmds
+		pushd %{DIR_SRC}/%{name}-%{compat_ver}
+		./configure %{configure_options}
+		make %{PARALLELISMFLAGS}
+		popd
+	end
+
 	test
 		make check
+
+		#pushd %{DIR_SRC}/%{name}-%{compat_ver}
+		#make check
+		#popd
+	end
+
+	install_cmds
+		pushd %{DIR_SRC}/%{name}-%{compat_ver}
+		install -m 755 libguile/.libs/libguile.so.17.4.0 %{BUILDROOT}%{libdir}
+		ln -svf libguile.so.17.4.0 %{BUILDROOT}%{libdir}/libguile.so.17
+		popd
 	end
 end
 
 packages
 	package %{name}
+
+	package %{name}-compat
+		summary = Compat libraries of %{thisapp}.
+
+		files
+			%{libdir}/libguile.so.17*
+		end
+	end
 
 	package %{name}-devel
 		template DEVEL
