@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = autogen
-version    = 5.14
+version    = 5.18.1
 release    = 1
 
 groups     = Development/Tools
@@ -13,9 +13,9 @@ license    = GPLv3
 summary    = Automated text file generator.
 
 description
-	AutoGen is a tool designed to simplify the creation and maintenance of \
-	programs that contain large amounts of repetitious text. It is especially \
-	valuable in programs that have several blocks of text that must be kept \
+	AutoGen is a tool designed to simplify the creation and maintenance of
+	programs that contain large amounts of repetitious text. It is especially
+	valuable in programs that have several blocks of text that must be kept
 	synchronised.
 end
 
@@ -23,19 +23,22 @@ source_dl  = ftp://ftp.gnu.org/gnu/autogen/rel%{version}/
 
 build
 	requires
-		guile-devel
+		guile-devel >= 2.0.9-3
 		libtool
 		libxml2-devel
 	end
 
-	LDFLAGS += -lguile
-
 	prepare_cmds
+		# Fix Libtool to remove rpaths.
 		rm -vf libtool
 		cp -vf $(which libtool) libtool
 
 		# Omit unused direct shared library dependencies.
 		sed --in-place --expression 's! -shared ! -Wl,--as-needed\0!g' ./libtool
+	end
+
+	test
+		make check
 	end
 
 	install_cmds
