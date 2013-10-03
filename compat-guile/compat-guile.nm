@@ -1,0 +1,70 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = compat-guile
+version    = 1.8.8
+release    = 1
+thisapp    = guile-%{version}
+
+groups     = Development/Tools
+url        = http://www.gnu.org/software/guile/
+license    = GPLv2+ and LGPLv2+ and GFDL and OFSFDL
+summary    = A GNU implementation of Scheme for application extensibility.
+
+description
+	GUILE (GNU's Ubiquitous Intelligent Language for Extension) is a library
+	implementation of the Scheme programming language, written in C. GUILE
+	provides a machine-independent execution platform that can be linked in
+	as a library during the building of extensible programs.
+end
+
+source_dl  = ftp://ftp.gnu.org/gnu/guile/
+
+build
+	requires
+		gc-devel
+		gettext-devel
+		gmp-devel
+		libffi-devel >= 3.0.13
+		libtool-devel
+		libunistring-devel
+		readline-devel
+	end
+
+	configure_options += \
+		--disable-static \
+		--disable-error-on-warning
+
+	install_cmds
+		# Drop unneeded stuff.
+		rm -rvf %{BUILDROOT}%{bindir}
+		rm -rvf %{BUILDROOT}%{includedir}
+		rm -rvf %{BUILDROOT}%{libdir}/pkgconfig
+		rm -rvf %{BUILDROOT}%{libdir}/*.so
+		rm -rvf %{BUILDROOT}%{datadir}/aclocal
+		rm -rvf %{BUILDROOT}%{datadir}/info
+		rm -rvf %{BUILDROOT}%{datadir}/man
+	end
+end
+
+packages
+	package %{name}
+		provides
+			guile = %{thisver}
+		end
+
+		obsoletes
+			guile-compat <= %{thisver}
+		end
+
+		conflicts
+			guile <= %{thisver}
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
