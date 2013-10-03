@@ -5,9 +5,7 @@
 
 name       = guile
 version    = 2.0.9
-release    = 2
-
-compat_ver = 1.8.8
+release    = 3
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/guile/
@@ -22,7 +20,6 @@ description
 end
 
 source_dl  = ftp://ftp.gnu.org/gnu/guile/
-sources   += %{name}-%{compat_ver}.tar.gz
 
 build
 	requires
@@ -39,44 +36,19 @@ build
 		--disable-static \
 		--disable-error-on-warning
 
-	build_cmds
-		pushd %{DIR_SRC}/%{name}-%{compat_ver}
-		./configure %{configure_options}
-		make %{PARALLELISMFLAGS}
-		popd
-	end
-
 	test
 		make check
-
-		#pushd %{DIR_SRC}/%{name}-%{compat_ver}
-		#make check
-		#popd
-	end
-
-	install_cmds
-		pushd %{DIR_SRC}/%{name}-%{compat_ver}
-		install -m 755 libguile/.libs/libguile.so.17.4.0 %{BUILDROOT}%{libdir}
-		ln -svf libguile.so.17.4.0 %{BUILDROOT}%{libdir}/libguile.so.17
-		popd
 	end
 end
 
 packages
 	package %{name}
 
-	package %{name}-compat
-		summary = Compat libraries of %{thisapp}.
-
-		files
-			%{libdir}/libguile.so.17*
-		end
-	end
-
 	package %{name}-devel
 		template DEVEL
 
 		requires
+			gc-devel
 			gmp-devel
 			libtool-devel
 		end
