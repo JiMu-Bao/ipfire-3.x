@@ -14,7 +14,7 @@ CONFIGS="x86_64:default"
 CONFIGS="${CONFIGS} i686:legacy i686:default"
 
 # armv7hl
-CONFIGS="${CONFIGS} armv7hl:exynos armv7hl:default"
+CONFIGS="${CONFIGS} armv7hl:default"
 
 # armv5tel
 CONFIGS="${CONFIGS} armv5tel:versatile armv5tel:kirkwood"
@@ -75,10 +75,6 @@ function merge_config() {
 			;;
 		armv7hl:default)
 			configs="${configs} config-arm-generic config-armv7hl-default"
-			;;
-		armv7hl:exynos)
-			configs="${configs} config-arm-generic config-armv7hl-default"
-			configs="${configs} config-armv7hl-exynos"
 			;;
 		*)
 			echo >&2 "ERROR: Invalid parameters given: $@"
@@ -250,11 +246,6 @@ function diff_configs() {
 			i686:legacy)
 				# Legacy depends directly on the default configuration.
 				${SCRIPTS_DIR}/configdiff.py ${tmpdir}/config-i686-default \
-					${filename} > ${filename}.tmp
-				;;
-			armv7hl:exynos)
-				# Exynos depends directly on the default configuration.
-				${SCRIPTS_DIR}/configdiff.py ${tmpdir}/config-armv7hl-default \
 					${filename} > ${filename}.tmp
 				;;
 			armv5tel:versatile)

@@ -138,6 +138,11 @@ CONFIG_SGI_IOC4=m
 # CONFIG_CS5535_MFGPT is not set
 
 #
+# SCSI Transports
+#
+CONFIG_SCSI_FLASHPOINT=y
+
+#
 # PC SMBus host controller drivers
 #
 # CONFIG_I2C_ALI1535 is not set
@@ -176,7 +181,7 @@ CONFIG_AMD_IOMMU_STATS=y
 CONFIG_IRQ_REMAP=y
 
 #
-# Magnetometer sensors
+# Pressure Sensors
 #
 # CONFIG_NTB is not set
 
@@ -186,7 +191,7 @@ CONFIG_IRQ_REMAP=y
 CONFIG_QUOTACTL_COMPAT=y
 
 #
-# RCU Debugging
+# Runtime Testing
 #
 # CONFIG_IOMMU_DEBUG is not set
 

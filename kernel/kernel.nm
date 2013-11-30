@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kernel
-version    = 3.10.9
-release    = 2
+version    = 3.11.6
+release    = 1
 thisapp    = linux-%{version}
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -108,9 +108,6 @@ build
 		# Build the default unified kernel.
 		build_kernel_default = 1
 
-		# Build a kernel for Samsung's Exynos SoCs.
-		build_kernel_exynos = 1
-
 		kernel_arch = arm
 		kernel_target = zImage
 	end
@@ -123,11 +120,6 @@ build
 	# Build default kernel.
 	if "%{build_kernel_default}" == "1"
 		kernels += default
-	end
-
-	# Build exynos kernel.
-	if "%{build_kernel_exynos}" == "1"
-		kernels += exynos
 	end
 
 	# Build legacy kernel.
@@ -465,6 +457,10 @@ packages
 				kernel_name = kernel
 				kernel_release = %{fullver}
 
+				# Replace the Exynos kernel.
+				obsoletes += kernel-exynos < %{kernel_release}
+				conflicts += kernel-exynos < %{kernel_release}
+
 				# Replace the OMAP kernel.
 				obsoletes += kernel-omap < %{kernel_release}
 				conflicts += kernel-omap < %{kernel_release}
@@ -475,6 +471,10 @@ packages
 
 				kernel_name = kernel
 				kernel_release = %{fullver}
+
+				# Replace the Exynos kernel.
+				obsoletes += kernel-exynos-devel < %{kernel_release}
+				conflicts += kernel-exynos-devel < %{kernel_release}
 
 				# Replace the OMAP kernel.
 				obsoletes += kernel-omap-devel < %{kernel_release}
@@ -495,22 +495,6 @@ packages
 				kernel_name = kernel
 				kernel_release = %{fullver}
 			end
-		end
-	end
-
-	if "%{build_kernel_exynos}" == "1"
-		package kernel-exynos
-			template KERNEL
-
-			kernel_name = kernel-exynos
-			kernel_release = %{fullver}.exynos
-		end
-
-		package kernel-exynos-devel
-			template KERNELDEVEL
-
-			kernel_name = kernel-exynos
-			kernel_release = %{fullver}.exynos
 		end
 	end
 
