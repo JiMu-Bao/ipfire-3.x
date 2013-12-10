@@ -28,7 +28,18 @@ CONFIG_OLPC_XO15_SCI=y
 # Generic Driver Options
 #
 # CONFIG_SYS_HYPERVISOR is not set
-# CONFIG_CMA is not set
+CONFIG_DMA_CMA=y
+
+#
+# Default contiguous memory area size:
+#
+CONFIG_CMA_SIZE_MBYTES=16
+CONFIG_CMA_SIZE_SEL_MBYTES=y
+# CONFIG_CMA_SIZE_SEL_PERCENTAGE is not set
+# CONFIG_CMA_SIZE_SEL_MIN is not set
+# CONFIG_CMA_SIZE_SEL_MAX is not set
+CONFIG_CMA_ALIGNMENT=8
+CONFIG_CMA_AREAS=7
 
 #
 # Bus devices
@@ -43,7 +54,6 @@ CONFIG_PROC_DEVICETREE=y
 CONFIG_OF_PROMTREE=y
 CONFIG_OF_ADDRESS=y
 CONFIG_OF_IRQ=y
-CONFIG_OF_I2C=m
 CONFIG_OF_NET=y
 CONFIG_OF_MDIO=y
 CONFIG_OF_PCI=y
@@ -91,8 +101,9 @@ CONFIG_I2C_PXA=m
 CONFIG_I2C_PXA_PCI=y
 
 #
-# Enable PHYLIB and NETWORK_PHY_TIMESTAMPING to see the additional clocks.
+# Pin controllers
 #
+# CONFIG_PINCTRL_SINGLE is not set
 CONFIG_OF_GPIO=y
 
 #
@@ -174,7 +185,7 @@ CONFIG_OF_IOMMU=y
 # CONFIG_EXYNOS_ADC is not set
 
 #
-# Pressure Sensors
+# Temperature sensors
 #
 CONFIG_PWM=y
 CONFIG_PWM_SYSFS=y
