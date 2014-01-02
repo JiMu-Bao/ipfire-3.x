@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libpcap
-version    = 1.1.1
+version    = 1.5.2
 release    = 1
 
 groups     = System/Libraries
@@ -13,16 +13,16 @@ license    = BSD with advertising
 summary    = A system-independent interface for user-level packet capture.
 
 description
-	Libpcap provides a portable framework for low-level network \
-	monitoring.  Libpcap can provide network statistics collection, \
-	security monitoring and network debugging.  Since almost every \
-	system vendor provides a different interface for packet capture, \
-	the libpcap authors created this system-independent API to ease in \
-	porting and to alleviate the need for several system-dependent \
+	Libpcap provides a portable framework for low-level network
+	monitoring.  Libpcap can provide network statistics collection,
+	security monitoring and network debugging.  Since almost every
+	system vendor provides a different interface for packet capture,
+	the libpcap authors created this system-independent API to ease in
+	porting and to alleviate the need for several system-dependent
 	packet capture modules in each application.
 end
 
-source_dl  =
+source_dl  = http://www.tcpdump.org/release/
 
 build
 	requires
@@ -30,16 +30,10 @@ build
 		flex
 		libnl-devel
 	end
-
-	install
-		mkdir -pv %{BUILDROOT}/usr/bin
-		make install install-shared-so DESTDIR=%{BUILDROOT}
-	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
