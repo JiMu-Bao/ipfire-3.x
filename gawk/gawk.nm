@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = gawk
-version    = 4.0.1
-release    = 2
+version    = 4.1.0
+release    = 1
 
 groups     = System/Tools
 url        = http://www.gnu.org/software/gawk/gawk.html
@@ -24,6 +24,7 @@ sources    = %{thisapp}.tar.xz
 
 build
 	requires
+		mpfr-devel
 		util-linux
 	end
 
