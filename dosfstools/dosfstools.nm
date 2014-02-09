@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = dosfstools
-version    = 3.0.24
+version    = 3.0.25
 release    = 1
 
 groups     = System/Filesystems
@@ -21,10 +21,8 @@ end
 source_dl  = http://www.daniel-baumann.ch/files/software/dosfstools/
 
 build
-	install
-		make install-bin DESTDIR=%{BUILDROOT} \
-			PREFIX=/usr SBINDIR=/sbin
-	end
+	make_install_targets += \
+		PREFIX=%{prefix}
 end
 
 packages
