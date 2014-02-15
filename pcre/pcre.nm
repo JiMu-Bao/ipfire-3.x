@@ -5,7 +5,7 @@
 
 name       = pcre
 version    = 8.34
-release    = 1
+release    = 2
 
 compat_version = 8.21
 
@@ -34,11 +34,13 @@ build
 	configure_options += \
 		--disable-static \
 		--docdir=/usr/share/doc/pcre-%{version} \
-		--enable-utf8 \
 		--enable-jit \
-		--enable-pcregrep-libz \
-		--enable-pcregrep-libbz2 \
-		--enable-unicode-properties
+		--enable-pcre8 \
+		--enable-pcre16 \
+		--enable-pcre32 \
+		--enable-utf \
+		--enable-unicode-properties \
+		--enable-pcretest-libreadline
 
 	build_cmds
 		cd %{DIR_SRC}/%{name}-%{compat_version}
