@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = kernel
-version    = 3.12.4
+version    = 3.13.2
 release    = 1
 thisapp    = linux-%{version}
 
@@ -107,6 +107,7 @@ build
 	if "%{DISTRO_ARCH}" == "armv7hl"
 		# Build the default unified kernel.
 		build_kernel_default = 1
+		build_kernel_lpae = 1
 
 		kernel_arch = arm
 		kernel_target = zImage
@@ -127,10 +128,19 @@ build
 		kernels += legacy
 	end
 
+	# Build lpae kernel
+	if "%{build_kernel_lpae}" == "1"
+		kernels += lpae
+	end
+
 	# Build ARM kirkwood kernel.
 	if "%{build_kernel_kirkwood}" == "1"
 		kernels += kirkwood
 	end
+
+	perf_make = make %{MAKETUNING} -C tools/perf V=1 WERROR=0 \
+		NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_LIBNUMA=1 \
+		NO_STRLCPY=1 NO_BIONIC=1 prefix=%{prefix} perfexecdir=lib/perf-core
 
 	prepare_cmds
 		rm -f %{DIR_APP}/localversion-grsec
@@ -177,6 +187,10 @@ build
 		for kernel in %{kernels}; do
 			configure_kernel ${kernel}
 		done
+
+		# Tools
+		# Prevent perf from installing any files in /usr/libexec
+		sed -i %{DIR_APP}/tools/perf/config/Makefile -e "s/libexec/lib/g"
 	end
 
 	build
@@ -303,19 +317,43 @@ build
 		done
 
 		# Build tools.
+		# perf
+		%{perf_make} DESTDIR=%{BUILDROOT} all
+
 		# cpupower
 		chmod +x tools/power/cpupower/utils/version-gen.sh
 		make -C tools/power/cpupower CPUFREQ_BENCH=false %{PARALLELISMFLAGS}
 
 		if [ "%{DISTRO_ARCH}" = "x86_64" ]; then
 			pushd tools/power/cpupower/debug/x86_64
-			make %{MAKETUNING}
+			make %{MAKETUNING} centrino-decode powernow-k8-decode
 			popd
 		elif [ "%{DISTRO_ARCH}" = "i686" ]; then
 			pushd tools/power/cpupower/debug/i386
-			make %{MAKETUNING}
+			make %{MAKETUNING} centrino-decode powernow-k8-decode
 			popd
 		fi
+
+		# Should be built for all x86 architectures
+		if [ "%{DISTRO_ARCH}" = "x86_64" ]; then
+			# Won't compile on i686
+			# x86_energy_perf_policy.c: In function ‘validate_cpuid’:
+			# x86_energy_perf_policy.c:154:2: error: PIC register clobbered by ‘ebx’ in ‘asm’
+			#   asm("cpuid" : "=a" (fms), "=c" (ecx), "=d" (edx) : "a" (1) : "ebx");
+			#   ^
+			pushd tools/power/x86/x86_energy_perf_policy
+			make
+			popd
+
+			# Same as above
+			pushd tools/power/x86/turbostat
+			make
+			popd
+		fi
+
+		pushd tools/thermal/tmon
+		make
+		popd
 	end
 
 	install
@@ -339,9 +377,7 @@ build
 		rm -rfv %{BUILDROOT}/lib/firmware
 
 		# Install tools.
-		make -C tools/perf DESTDIR=%{BUILDROOT} WERROR=0 \
-			HAVE_CPLUS_DEMANGLE=1 prefix=/usr perfexecdir=lib/perf-core \
-			install install-man install-python_ext
+		%{perf_make} DESTDIR=%{BUILDROOT} install-bin install-python_ext
 
 		# cpupower
 		make -C tools/power/cpupower DESTDIR=%{BUILDROOT} libdir=%{libdir} \
@@ -364,6 +400,24 @@ build
 		fi
 
 		chmod 0755 %{BUILDROOT}%{libdir}/libcpupower.so*
+
+		# This should be built for all x86 architectures
+		if [ "%{DISTRO_ARCH}" = "x86_64" ]; then
+			mkdir -pv %{BUILDROOT}%{mandir}/man8
+
+			pushd tools/power/x86/x86_energy_perf_policy
+			make DESTDIR=%{BUILDROOT} install
+			popd
+
+			pushd tools/power/x86/turbostat
+			make DESTDIR=%{BUILDROOT} install
+			popd
+		fi
+
+		# tmon
+		pushd tools/thermal/tmon
+		make INSTALL_ROOT=%{BUILDROOT} install
+		popd
 	end
 end
 
@@ -511,6 +565,22 @@ packages
 
 			kernel_name = kernel-legacy
 			kernel_release = %{fullver}.legacy
+		end
+	end
+
+	if "%{build_kernel_lpae}" == "1"
+		package kernel-lpae
+			template KERNEL
+
+			kernel_name = kernel-lpae
+			kernel_release = %{fullver}.lpae
+		end
+
+		package kernel-lpae-devel
+			template KERNELDEVEL
+
+			kernel_name = kernel-lpae
+			kernel_release = %{fullver}.lpae
 		end
 	end
 

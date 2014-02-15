@@ -75,7 +75,6 @@ CONFIG_MDIO_BUS_MUX_MMIOREG=m
 # Input Device Drivers
 #
 CONFIG_MOUSE_PS2_OLPC=y
-CONFIG_INPUT_PWM_BEEPER=m
 
 #
 # Hardware I/O ports
@@ -121,6 +120,11 @@ CONFIG_GPIO_ADNP=m
 #
 CONFIG_GPIO_CS5535=y
 # CONFIG_GPIO_SODAVILLE is not set
+
+#
+# MODULbus GPIO expanders:
+#
+# CONFIG_GPIO_BCM_KONA is not set
 
 #
 # 1-wire Slaves
@@ -191,6 +195,11 @@ CONFIG_PWM=y
 CONFIG_PWM_SYSFS=y
 CONFIG_PWM_PCA9685=m
 CONFIG_IRQCHIP=y
+
+#
+# PHY Subsystem
+#
+CONFIG_PHY_EXYNOS_DP_VIDEO=m
 
 #
 # Non-executable pages

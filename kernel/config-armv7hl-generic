@@ -1,0 +1,311 @@
+CONFIG_MIGHT_HAVE_PCI=y
+CONFIG_ARCH_HAS_CPUFREQ=y
+CONFIG_ARCH_HAS_BANDGAP=y
+
+#
+# IRQ subsystem
+#
+CONFIG_GENERIC_IRQ_CHIP=y
+CONFIG_SPARSE_IRQ=y
+CONFIG_ARCH_HAS_TICK_BROADCAST=y
+CONFIG_GENERIC_CLOCKEVENTS_BROADCAST=y
+
+#
+# RCU Subsystem
+#
+CONFIG_TREE_RCU=y
+CONFIG_RCU_STALL_COMMON=y
+CONFIG_RCU_FANOUT=32
+CONFIG_RCU_FANOUT_LEAF=16
+# CONFIG_RCU_FANOUT_EXACT is not set
+
+#
+# Kernel Performance Events And Counters
+#
+CONFIG_SLUB_CPU_PARTIAL=y
+
+#
+# IO Schedulers
+#
+CONFIG_MUTEX_SPIN_ON_OWNER=y
+
+#
+# System Type
+#
+CONFIG_ARCH_MULTIPLATFORM=y
+# CONFIG_ARCH_VERSATILE is not set
+# CONFIG_ARCH_KIRKWOOD is not set
+
+#
+# CPU Core family selection
+#
+CONFIG_ARCH_MULTI_V7=y
+CONFIG_ARCH_MULTI_V6_V7=y
+# CONFIG_ARCH_MULTI_CPU_AUTO is not set
+
+#
+# OMAP Feature Selections
+#
+CONFIG_OMAP_MUX=y
+# CONFIG_OMAP_MUX_DEBUG is not set
+CONFIG_OMAP_MUX_WARNINGS=y
+CONFIG_OMAP_32K_TIMER=y
+CONFIG_OMAP_DM_TIMER=y
+CONFIG_OMAP_PM_NOOP=y
+CONFIG_MACH_OMAP_GENERIC=y
+CONFIG_ARCH_OMAP=y
+CONFIG_SOC_OMAP5=y
+CONFIG_ARCH_OMAP2PLUS=y
+
+#
+# TI OMAP2/3/4 Specific Features
+#
+CONFIG_ARCH_OMAP2PLUS_TYPICAL=y
+CONFIG_SOC_HAS_REALTIME_COUNTER=y
+
+#
+# OMAP Legacy Platform Data Board Type
+#
+CONFIG_ARCH_TEGRA=y
+
+#
+# NVIDIA Tegra options
+#
+CONFIG_TEGRA_AHB=y
+# CONFIG_TEGRA_EMC_SCALING_ENABLE is not set
+
+#
+# Processor Type
+#
+CONFIG_CPU_V7=y
+CONFIG_CPU_32v6K=y
+CONFIG_CPU_32v7=y
+CONFIG_CPU_ABRT_EV7=y
+CONFIG_CPU_PABRT_V7=y
+CONFIG_CPU_CACHE_V7=y
+CONFIG_CPU_CACHE_VIPT=y
+CONFIG_CPU_COPY_V6=y
+CONFIG_CPU_TLB_V7=y
+CONFIG_CPU_HAS_ASID=y
+
+#
+# Processor Features
+#
+# CONFIG_ARM_THUMBEE is not set
+CONFIG_ARM_VIRT_EXT=y
+CONFIG_SWP_EMULATE=y
+# CONFIG_CPU_BPREDICT_DISABLE is not set
+CONFIG_MIGHT_HAVE_CACHE_L2X0=y
+CONFIG_ARM_L1_CACHE_SHIFT_6=y
+CONFIG_ARM_L1_CACHE_SHIFT=6
+CONFIG_ARM_DMA_MEM_BUFFERABLE=y
+CONFIG_ARM_ERRATA_798181=y
+# CONFIG_ARM_ERRATA_773022 is not set
+CONFIG_TI_PRIV_EDMA=y
+
+#
+# Kernel Features
+#
+CONFIG_SMP=y
+CONFIG_SMP_ON_UP=y
+CONFIG_ARM_CPU_TOPOLOGY=y
+# CONFIG_MCPM is not set
+# CONFIG_BIG_LITTLE is not set
+CONFIG_HOTPLUG_CPU=y
+CONFIG_ARCH_NR_GPIO=1024
+CONFIG_ARCH_HAS_HOLES_MEMORYMODEL=y
+CONFIG_SPLIT_PTLOCK_CPUS=4
+
+#
+# Boot options
+#
+# CONFIG_ARM_ATAG_DTB_COMPAT is not set
+
+#
+# CPU Frequency scaling
+#
+# CONFIG_CPU_FREQ is not set
+
+#
+# At least one emulation must be selected
+#
+CONFIG_VFPv3=y
+CONFIG_NEON=y
+
+#
+# Power management options
+#
+CONFIG_PM_SLEEP_SMP=y
+
+#
+# Classification
+#
+CONFIG_RPS=y
+CONFIG_RFS_ACCEL=y
+CONFIG_XPS=y
+CONFIG_NET_FLOW_LIMIT=y
+
+#
+# Bluetooth device drivers
+#
+# CONFIG_RFKILL_REGULATOR is not set
+
+#
+# Generic Driver Options
+#
+CONFIG_SOC_BUS=y
+
+#
+# Non-8250 serial port support
+#
+CONFIG_I2C=y
+
+#
+# I2C system bus drivers (mostly embedded / system-on-chip)
+#
+CONFIG_I2C_OMAP=y
+
+#
+# Enable PHYLIB and NETWORK_PHY_TIMESTAMPING to see the additional clocks.
+#
+CONFIG_PINCTRL=y
+
+#
+# Pin controllers
+#
+# CONFIG_DEBUG_PINCTRL is not set
+# CONFIG_PINCTRL_SINGLE is not set
+CONFIG_ARCH_REQUIRE_GPIOLIB=y
+
+#
+# Memory mapped GPIO drivers:
+#
+# CONFIG_GPIO_GENERIC_PLATFORM is not set
+
+#
+# I2C GPIO expanders:
+#
+# CONFIG_GPIO_SX150X is not set
+
+#
+# SPI GPIO expanders:
+#
+# CONFIG_GPIO_MCP23S08 is not set
+
+#
+# 1-wire Bus Masters
+#
+# CONFIG_HDQ_MASTER_OMAP is not set
+
+#
+# 1-wire Slaves
+#
+# CONFIG_CHARGER_MANAGER is not set
+
+#
+# Multifunction device drivers
+#
+CONFIG_MFD_OMAP_USB_HOST=y
+CONFIG_REGULATOR=y
+# CONFIG_REGULATOR_DEBUG is not set
+# CONFIG_REGULATOR_VIRTUAL_CONSUMER is not set
+# CONFIG_REGULATOR_USERSPACE_CONSUMER is not set
+
+#
+# Multimedia core support
+#
+CONFIG_VIDEO_V4L2=y
+
+#
+# Media ancillary drivers (tuners, sensors, i2c, frontends)
+#
+CONFIG_VIDEO_IR_I2C=y
+
+#
+# soc_camera sensor drivers
+#
+CONFIG_MEDIA_TUNER=y
+CONFIG_MEDIA_TUNER_SIMPLE=y
+CONFIG_MEDIA_TUNER_TDA8290=y
+CONFIG_MEDIA_TUNER_TDA827X=y
+CONFIG_MEDIA_TUNER_TDA18271=y
+CONFIG_MEDIA_TUNER_TDA9887=y
+CONFIG_MEDIA_TUNER_MT20XX=y
+CONFIG_MEDIA_TUNER_XC2028=y
+CONFIG_MEDIA_TUNER_XC5000=y
+CONFIG_MEDIA_TUNER_XC4000=y
+CONFIG_MEDIA_TUNER_MC44S803=y
+
+#
+# I2C HID support
+#
+CONFIG_USB_ARCH_HAS_EHCI=y
+
+#
+# USB Host Controller Drivers
+#
+CONFIG_USB_EHCI_HCD_OMAP=y
+
+#
+# USB Physical Layer drivers
+#
+CONFIG_NOP_USB_XCEIV=y
+CONFIG_USB_ULPI_VIEWPORT=y
+
+#
+# Speakup console speech
+#
+# CONFIG_MFD_NVEC is not set
+
+#
+# Android
+#
+# CONFIG_DRM_IMX is not set
+CONFIG_COMMON_CLK=y
+
+#
+# Common Clock Framework
+#
+# CONFIG_COMMON_CLK_DEBUG is not set
+
+#
+# Hardware Spinlock drivers
+#
+CONFIG_ARM_ARCH_TIMER=y
+CONFIG_ARM_ARCH_TIMER_EVTSTREAM=y
+# CONFIG_OMAP_IOMMU is not set
+# CONFIG_TEGRA_IOMMU_SMMU is not set
+
+#
+# Temperature sensors
+#
+CONFIG_ARM_GIC=y
+
+#
+# File systems
+#
+CONFIG_DCACHE_WORD_ACCESS=y
+
+#
+# Memory Debugging
+#
+# CONFIG_DEBUG_PER_CPU_MAPS is not set
+
+#
+# RCU Debugging
+#
+# CONFIG_RCU_CPU_STALL_INFO is not set
+
+#
+# Runtime Testing
+#
+CONFIG_DEBUG_LL_INCLUDE="mach/debug-macro.S"
+# CONFIG_DEBUG_UART_PL01X is not set
+# CONFIG_DEBUG_UART_8250 is not set
+CONFIG_UNCOMPRESS_INCLUDE="debug/uncompress.h"
+# CONFIG_PID_IN_CONTEXTIDR is not set
+
+#
+# Library routines
+#
+CONFIG_CPU_RMAP=y

@@ -119,7 +119,6 @@ CONFIG_PHYSICAL_ALIGN=0x400000
 #
 # Power management and ACPI options
 #
-CONFIG_ACPI_BLACKLIST_YEAR=1999
 CONFIG_X86_APM_BOOT=y
 CONFIG_APM=y
 # CONFIG_APM_IGNORE_USER_SUSPEND is not set
@@ -220,11 +219,6 @@ CONFIG_I2C_SIS630=m
 # Other I2C/SMBus bus drivers
 #
 CONFIG_SCx200_ACB=m
-
-#
-# PCI GPIO expanders:
-#
-# CONFIG_GPIO_LANGWELL is not set
 
 #
 # Watchdog Device Drivers

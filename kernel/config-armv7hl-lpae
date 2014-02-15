@@ -1,0 +1,500 @@
+
+#
+# Timers subsystem
+#
+CONFIG_NO_HZ_IDLE=y
+# CONFIG_NO_HZ_FULL is not set
+
+#
+# CPU/Task time and stats accounting
+#
+CONFIG_TICK_CPU_ACCOUNTING=y
+# CONFIG_VIRT_CPU_ACCOUNTING_GEN is not set
+# CONFIG_IRQ_TIME_ACCOUNTING is not set
+
+#
+# RCU Subsystem
+#
+# CONFIG_RCU_USER_QS is not set
+# CONFIG_RCU_FAST_NO_HZ is not set
+# CONFIG_RCU_NOCB_CPU is not set
+
+#
+# CPU Core family selection
+#
+# CONFIG_ARCH_MULTI_V6 is not set
+# CONFIG_ARCH_MVEBU is not set
+# CONFIG_ARCH_BCM is not set
+# CONFIG_ARCH_HIGHBANK is not set
+# CONFIG_ARCH_KEYSTONE is not set
+# CONFIG_ARCH_MXC is not set
+
+#
+# OMAP Feature Selections
+#
+# CONFIG_OMAP_RESET_CLOCKS is not set
+# CONFIG_ARCH_OMAP3 is not set
+# CONFIG_ARCH_OMAP4 is not set
+# CONFIG_SOC_AM33XX is not set
+# CONFIG_SOC_AM43XX is not set
+
+#
+# TI OMAP2/3/4 Specific Features
+#
+# CONFIG_SOC_HAS_OMAP2_SDRC is not set
+# CONFIG_SOC_DRA7XX is not set
+
+#
+# OMAP Legacy Platform Data Board Type
+#
+# CONFIG_ARCH_ROCKCHIP is not set
+# CONFIG_ARCH_SOCFPGA is not set
+# CONFIG_ARCH_STI is not set
+# CONFIG_ARCH_SHMOBILE_MULTI is not set
+# CONFIG_ARCH_SUNXI is not set
+# CONFIG_ARCH_SIRF is not set
+
+#
+# NVIDIA Tegra options
+#
+# CONFIG_ARCH_TEGRA_2x_SOC is not set
+# CONFIG_ARCH_TEGRA_3x_SOC is not set
+# CONFIG_ARCH_TEGRA_114_SOC is not set
+# CONFIG_ARCH_TEGRA_124_SOC is not set
+# CONFIG_ARCH_U8500 is not set
+# CONFIG_ARCH_VEXPRESS is not set
+# CONFIG_ARCH_VIRT is not set
+# CONFIG_ARCH_WM8850 is not set
+# CONFIG_ARCH_ZYNQ is not set
+
+#
+# Processor Features
+#
+CONFIG_ARM_LPAE=y
+CONFIG_ARCH_PHYS_ADDR_T_64BIT=y
+# CONFIG_CACHE_L2X0 is not set
+# CONFIG_ARM_ERRATA_430973 is not set
+# CONFIG_ARM_ERRATA_643719 is not set
+# CONFIG_ARM_ERRATA_720789 is not set
+# CONFIG_ARM_ERRATA_754322 is not set
+# CONFIG_ARM_ERRATA_754327 is not set
+# CONFIG_ARM_ERRATA_764369 is not set
+# CONFIG_ARM_ERRATA_775420 is not set
+
+#
+# PCI host controller drivers
+#
+# CONFIG_PCI_TEGRA is not set
+CONFIG_PCCARD=m
+# CONFIG_PCMCIA is not set
+CONFIG_CARDBUS=y
+
+#
+# PC-card bridges
+#
+CONFIG_YENTA=m
+CONFIG_YENTA_O2=y
+CONFIG_YENTA_RICOH=y
+CONFIG_YENTA_TI=y
+CONFIG_YENTA_ENE_TUNE=y
+CONFIG_YENTA_TOSHIBA=y
+
+#
+# Kernel Features
+#
+# CONFIG_SCHED_MC is not set
+# CONFIG_SCHED_SMT is not set
+CONFIG_NR_CPUS=4
+# CONFIG_ARM_PSCI is not set
+# CONFIG_THUMB2_KERNEL is not set
+CONFIG_SYS_SUPPORTS_HUGETLBFS=y
+CONFIG_PHYS_ADDR_T_64BIT=y
+CONFIG_ZONE_DMA_FLAG=0
+CONFIG_DEFAULT_MMAP_MIN_ADDR=32768
+# CONFIG_TRANSPARENT_HUGEPAGE is not set
+CONFIG_FORCE_MAX_ZONEORDER=11
+# CONFIG_UACCESS_WITH_MEMCPY is not set
+# CONFIG_XEN is not set
+
+#
+# Boot options
+#
+CONFIG_CMDLINE="console=ttyAM0,115200 root=/dev/sda1 rootdelay=20"
+
+#
+# CPU Idle
+#
+# CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED is not set
+
+#
+# At least one emulation must be selected
+#
+# CONFIG_KERNEL_MODE_NEON is not set
+
+#
+# Generic Driver Options
+#
+# CONFIG_FIRMWARE_IN_KERNEL is not set
+CONFIG_REGMAP_I2C=m
+
+#
+# Bus devices
+#
+# CONFIG_OMAP_OCP2SCP is not set
+# CONFIG_OMAP_INTERCONNECT is not set
+# CONFIG_MTD is not set
+
+#
+# Device Tree and Open Firmware support
+#
+CONFIG_PARPORT=m
+CONFIG_PARPORT_PC=m
+CONFIG_PARPORT_SERIAL=m
+# CONFIG_PARPORT_PC_FIFO is not set
+# CONFIG_PARPORT_PC_SUPERIO is not set
+# CONFIG_PARPORT_GSC is not set
+# CONFIG_PARPORT_AX88796 is not set
+CONFIG_PARPORT_1284=y
+CONFIG_PARPORT_NOT_PC=y
+# CONFIG_PARIDE is not set
+CONFIG_BLK_DEV_RAM_SIZE=16384
+# CONFIG_MG_DISK is not set
+
+#
+# Misc devices
+#
+# CONFIG_SRAM is not set
+
+#
+# SCSI Transports
+#
+CONFIG_SCSI_PPA=m
+CONFIG_SCSI_IMM=m
+# CONFIG_SCSI_IZIP_EPP16 is not set
+# CONFIG_SCSI_IZIP_SLOW_CTR is not set
+
+#
+# PIO-only SFF controllers
+#
+# CONFIG_PATA_PLATFORM is not set
+
+#
+# Distributed Switch Architecture drivers
+#
+CONFIG_VORTEX=m
+CONFIG_PCMCIA_XIRCOM=m
+
+#
+# MII PHY device drivers
+#
+# CONFIG_PLIP is not set
+
+#
+# Input device support
+#
+# CONFIG_INPUT_FF_MEMLESS is not set
+CONFIG_INPUT_MATRIXKMAP=m
+
+#
+# Input Device Drivers
+#
+# CONFIG_KEYBOARD_TEGRA is not set
+# CONFIG_KEYBOARD_SAMSUNG is not set
+# CONFIG_KEYBOARD_OMAP4 is not set
+# CONFIG_MOUSE_GPIO is not set
+
+#
+# Hardware I/O ports
+#
+# CONFIG_SERIO_PARKBD is not set
+
+#
+# Non-8250 serial port support
+#
+# CONFIG_SERIAL_OMAP is not set
+CONFIG_SERIAL_SCCNXP=m
+CONFIG_SERIAL_ARC=m
+CONFIG_PRINTER=m
+CONFIG_LP_CONSOLE=y
+CONFIG_PPDEV=m
+CONFIG_HW_RANDOM_OMAP=y
+CONFIG_I2C_ALGOBIT=m
+
+#
+# I2C system bus drivers (mostly embedded / system-on-chip)
+#
+# CONFIG_I2C_TEGRA is not set
+
+#
+# External I2C/SMBus adapter drivers
+#
+CONFIG_I2C_PARPORT=m
+
+#
+# PPS clients support
+#
+# CONFIG_PPS_CLIENT_PARPORT is not set
+
+#
+# Pin controllers
+#
+# CONFIG_PINMUX is not set
+# CONFIG_PINCONF is not set
+
+#
+# Texas Instruments thermal drivers
+#
+# CONFIG_TI_SOC_THERMAL is not set
+
+#
+# Watchdog Device Drivers
+#
+# CONFIG_OMAP_WATCHDOG is not set
+
+#
+# Multifunction device drivers
+#
+CONFIG_MFD_CORE=m
+# CONFIG_MFD_AS3711 is not set
+# CONFIG_MFD_AS3722 is not set
+# CONFIG_PMIC_ADP5520 is not set
+# CONFIG_MFD_AAT2870_CORE is not set
+# CONFIG_PMIC_DA903X is not set
+# CONFIG_MFD_DA9052_I2C is not set
+# CONFIG_MFD_DA9055 is not set
+# CONFIG_MFD_DA9063 is not set
+# CONFIG_HTC_I2CPLD is not set
+# CONFIG_MFD_88PM800 is not set
+# CONFIG_MFD_88PM805 is not set
+# CONFIG_MFD_88PM860X is not set
+# CONFIG_MFD_MAX77686 is not set
+# CONFIG_MFD_MAX77693 is not set
+# CONFIG_MFD_MAX8907 is not set
+# CONFIG_MFD_MAX8925 is not set
+# CONFIG_MFD_MAX8997 is not set
+# CONFIG_MFD_MAX8998 is not set
+# CONFIG_MFD_RC5T583 is not set
+# CONFIG_MFD_SEC_CORE is not set
+# CONFIG_MFD_SMSC is not set
+# CONFIG_ABX500_CORE is not set
+# CONFIG_MFD_STMPE is not set
+# CONFIG_MFD_SYSCON is not set
+# CONFIG_MFD_LP8788 is not set
+# CONFIG_MFD_PALMAS is not set
+# CONFIG_MFD_TPS65090 is not set
+# CONFIG_MFD_TPS6586X is not set
+# CONFIG_MFD_TPS65910 is not set
+# CONFIG_MFD_TPS65912 is not set
+# CONFIG_MFD_TPS65912_I2C is not set
+# CONFIG_MFD_TPS80031 is not set
+# CONFIG_TWL4030_CORE is not set
+# CONFIG_TWL6040_CORE is not set
+# CONFIG_MFD_TC3589X is not set
+# CONFIG_MFD_WM8400 is not set
+# CONFIG_MFD_WM831X_I2C is not set
+# CONFIG_MFD_WM8350_I2C is not set
+# CONFIG_MFD_WM8994 is not set
+# CONFIG_REGULATOR_FIXED_VOLTAGE is not set
+# CONFIG_REGULATOR_AD5398 is not set
+# CONFIG_REGULATOR_DA9210 is not set
+# CONFIG_REGULATOR_FAN53555 is not set
+# CONFIG_REGULATOR_GPIO is not set
+# CONFIG_REGULATOR_ISL6271A is not set
+# CONFIG_REGULATOR_LP3971 is not set
+# CONFIG_REGULATOR_LP3972 is not set
+# CONFIG_REGULATOR_LP872X is not set
+# CONFIG_REGULATOR_LP8755 is not set
+# CONFIG_REGULATOR_MAX1586 is not set
+# CONFIG_REGULATOR_MAX8649 is not set
+# CONFIG_REGULATOR_MAX8660 is not set
+# CONFIG_REGULATOR_MAX8952 is not set
+# CONFIG_REGULATOR_MAX8973 is not set
+# CONFIG_REGULATOR_PFUZE100 is not set
+# CONFIG_REGULATOR_TI_ABB is not set
+# CONFIG_REGULATOR_TPS51632 is not set
+# CONFIG_REGULATOR_TPS62360 is not set
+# CONFIG_REGULATOR_TPS65023 is not set
+# CONFIG_REGULATOR_TPS6507X is not set
+# CONFIG_REGULATOR_VEXPRESS is not set
+
+#
+# Supported MMC/SDIO adapters
+#
+# CONFIG_MEDIA_PARPORT_SUPPORT is not set
+
+#
+# Graphics support
+#
+# CONFIG_TEGRA_HOST1X is not set
+CONFIG_DRM=m
+CONFIG_DRM_USB=m
+CONFIG_DRM_KMS_HELPER=m
+
+#
+# I2C encoder or helper chips
+#
+# CONFIG_DRM_EXYNOS is not set
+CONFIG_DRM_UDL=m
+# CONFIG_DRM_TEGRA is not set
+CONFIG_VIDEO_OUTPUT_CONTROL=m
+# CONFIG_FB_MODE_HELPERS is not set
+
+#
+# Frame buffer hardware drivers
+#
+# CONFIG_OMAP2_DSS is not set
+CONFIG_LCD_PLATFORM=m
+CONFIG_BACKLIGHT_PWM=m
+
+#
+# Console display driver support
+#
+CONFIG_SND_MTS64=m
+CONFIG_SND_PORTMAN2X4=m
+CONFIG_SND_LX6464ES=m
+
+#
+# USB Host Controller Drivers
+#
+# CONFIG_USB_EHCI_TEGRA is not set
+
+#
+# USB port drivers
+#
+CONFIG_USB_USS720=m
+CONFIG_USB_SERIAL_MOS7715_PARPORT=y
+
+#
+# USB Physical Layer drivers
+#
+# CONFIG_OMAP_CONTROL_USB is not set
+# CONFIG_OMAP_USB3 is not set
+CONFIG_SAMSUNG_USBPHY=m
+CONFIG_SAMSUNG_USB2PHY=m
+CONFIG_SAMSUNG_USB3PHY=m
+CONFIG_MMC=m
+
+#
+# MMC/SD/SDIO Card Drivers
+#
+CONFIG_MMC_BLOCK=m
+
+#
+# MMC/SD/SDIO Host Controller Drivers
+#
+CONFIG_MMC_SDHCI=m
+# CONFIG_MMC_SDHCI_TEGRA is not set
+# CONFIG_MMC_OMAP is not set
+# CONFIG_MMC_OMAP_HS is not set
+
+#
+# LED drivers
+#
+# CONFIG_LEDS_GPIO is not set
+CONFIG_LEDS_PWM=m
+# CONFIG_LEDS_REGULATOR is not set
+
+#
+# LED Triggers
+#
+CONFIG_LEDS_TRIGGER_HEARTBEAT=m
+
+#
+# on-CPU RTC drivers
+#
+# CONFIG_RTC_DRV_TEGRA is not set
+
+#
+# DMA Devices
+#
+# CONFIG_TEGRA20_APB_DMA is not set
+# CONFIG_TI_EDMA is not set
+# CONFIG_DMA_OMAP is not set
+# CONFIG_TI_CPPI41 is not set
+
+#
+# Microsoft Hyper-V guest support
+#
+# CONFIG_PANEL is not set
+
+#
+# Common Clock Framework
+#
+# CONFIG_COMMON_CLK_SI5351 is not set
+
+#
+# Hardware Spinlock drivers
+#
+# CONFIG_HWSPINLOCK_OMAP is not set
+# CONFIG_OMAP2PLUS_MBOX is not set
+# CONFIG_ARM_SMMU is not set
+
+#
+# Rpmsg drivers
+#
+# CONFIG_TI_EMIF is not set
+
+#
+# Temperature sensors
+#
+CONFIG_PWM=y
+CONFIG_PWM_SYSFS=y
+CONFIG_PWM_PCA9685=m
+# CONFIG_PWM_TEGRA is not set
+
+#
+# PHY Subsystem
+#
+# CONFIG_OMAP_USB2 is not set
+
+#
+# Pseudo filesystems
+#
+# CONFIG_HUGETLBFS is not set
+
+#
+# Lock Debugging (spinlocks, mutexes, etc...)
+#
+# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
+# CONFIG_DEBUG_LOCK_ALLOC is not set
+# CONFIG_PROVE_LOCKING is not set
+# CONFIG_LOCK_STAT is not set
+
+#
+# RCU Debugging
+#
+CONFIG_RCU_CPU_STALL_TIMEOUT=21
+
+#
+# Non-executable pages
+#
+# CONFIG_PAX_NOEXEC is not set
+
+#
+# Miscellaneous hardening features
+#
+# CONFIG_PAX_REFCOUNT is not set
+
+#
+# Memory Protections
+#
+# CONFIG_GRKERNSEC_OLD_ARM_USERLAND is not set
+
+#
+# Crypto core or helper
+#
+# CONFIG_CRYPTO_PCRYPT is not set
+
+#
+# Random Number Generation
+#
+# CONFIG_CRYPTO_DEV_OMAP_SHAM is not set
+# CONFIG_CRYPTO_DEV_OMAP_AES is not set
+# CONFIG_CRYPTO_DEV_TEGRA_AES is not set
+
+#
+# Library routines
+#
+CONFIG_HAS_IOPORT=y
+# CONFIG_DDR is not set
+# CONFIG_KVM is not set
