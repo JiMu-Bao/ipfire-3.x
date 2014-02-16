@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = glibc
-version    = 2.17
-release    = 4
+version    = 2.19
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -74,8 +74,6 @@ build
 		# Build nscd with -fstack-protector-all, instead of -fstack-protector:
 		sed -e "s/fstack-protector/&-all/" -i nscd/Makefile
 
-		cat %{DIR_SOURCE}/glibc-stack_chk_fail.c > debug/stack_chk_fail.c
-
 		# Use gnu hash style
 		sed -i Makeconfig \
 			-e "s/-Wl,--hash-style=both/-Wl,--hash-style=gnu -Wl,-O1/"
@@ -95,7 +93,8 @@ build
 		--disable-werror \
 		--enable-bind-now \
 		--enable-obsolete-rpc \
-		--with-bugurl=http://bugtracker.ipfire.org
+		--with-bugurl=http://bugtracker.ipfire.org \
+		--enable-lock-elision
 
 	if "%{DISTRO_ARCH}" == "armv5tel"
 		# Disable hardware FP for ARM.
