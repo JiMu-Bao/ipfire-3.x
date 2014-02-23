@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = grep
-version    = 2.16
+version    = 2.17
 release    = 1
 
 groups     = Applications/Text
@@ -41,6 +41,14 @@ build
 	test
 		make check
 	end
+
+	install_cmds
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/profile.d
+		install -m 644 %{DIR_SOURCE}/colorgrep.sh \
+			%{BUILDROOT}%{sysconfdir}/profile.d
+		install -m 644 %{DIR_SOURCE}/GREP_COLORS \
+			%{BUILDROOT}%{sysconfdir}
+	end
 end
 
 packages
@@ -49,10 +57,16 @@ packages
 
 		provides
 			/bin/grep
+			bundled(gnulib)
 		end
 
 		conflicts
 			filesystem < 002
+		end
+
+		configfiles
+			%{sysconfdir}/profile.d/colorgrep.sh
+			%{sysconfdir}/GREP_COLORS
 		end
 	end
 
