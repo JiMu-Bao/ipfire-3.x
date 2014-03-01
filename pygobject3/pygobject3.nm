@@ -7,7 +7,7 @@ name       = pygobject3
 version    = %{ver_major}.%{ver_minor}
 ver_major  = 3.7
 ver_minor  = 4
-release    = 1
+release    = 2
 
 groups     = Development/Tools
 url        = http://www.pygtk.org/
@@ -80,6 +80,9 @@ packages
 			gobject-introspection >= 1.34.2
 			python-cairo
 		end
+
+		files += \
+			{libdir}/*python2*.so.*
 	end
 
 	package python3-gobject3
@@ -89,6 +92,9 @@ packages
 			gobject-introspection >= 1.34.2
 			python3-cairo
 		end
+
+		files += \
+			%{libdir}/*python3*.so.*
 	end
 
 	package %{name}-devel
@@ -105,7 +111,7 @@ packages
 		end
 
 		files += \
-			%{libdir}/*python3*.so.*
+			%{libdir}/*python3*.so
 	end
 
 	package %{name}-debuginfo
