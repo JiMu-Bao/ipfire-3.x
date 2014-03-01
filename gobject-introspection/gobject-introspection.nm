@@ -7,8 +7,8 @@ name       = gobject-introspection
 version    = %{major_ver}.%{minor_ver}
 release    = 1
 
-major_ver  = 1.35
-minor_ver  = 4
+major_ver  = 1.39
+minor_ver  = 3
 
 groups     = Development/Libraries
 url        = http://live.gnome.org/GObjectIntrospection
