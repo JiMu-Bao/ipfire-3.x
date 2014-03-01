@@ -4,7 +4,9 @@
 ###############################################################################
 
 name       = gnome-themes-standard
-version    = 3.7.6
+ver_major  = 3.11
+ver_minor  = 5
+version    = %{ver_major}.%{ver_minor}
 release    = 1
 
 groups     = 
@@ -18,7 +20,7 @@ description
 	window borders and GTK+ applications.
 end
 
-source_dl  = http://download.gnome.org/sources/%{name}/3.7/
+source_dl  = http://download.gnome.org/sources/%{name}/%{ver_major}/
 sources    = %{thisapp}.tar.xz
 
 build
