@@ -7,7 +7,7 @@ name       = mutter
 version    = %{ver_maj}.%{ver_min}
 ver_maj    = 3.7
 ver_min    = 5
-release    = 1
+release    = 2
 
 groups     = UI/Desktops
 url        = http://www.clutter-project.org/
@@ -83,6 +83,11 @@ packages
 	package %{name}
 		requires
 			zenity
+		end
+
+		recommends
+			gnome-themes-standard
+			gsettings-desktop-schemas
 		end
 
 		script posttransin
