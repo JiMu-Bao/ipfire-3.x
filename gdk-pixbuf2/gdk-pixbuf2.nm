@@ -5,8 +5,8 @@
 
 name       = gdk-pixbuf2
 version    = %{ver_major}.%{ver_minor}
-ver_major  = 2.27
-ver_minor  = 1
+ver_major  = 2.30
+ver_minor  = 5
 release    = 1
 
 groups     = System/Libraries
@@ -26,7 +26,7 @@ sources    = %{thisapp}.tar.xz
 
 build
 	requires
-		glib2-devel >= 2.31.16
+		glib2-devel >= 2.37.6
 		gobject-introspection-devel >= 0.9.3
 		libpng-devel
 		libjpeg-devel
