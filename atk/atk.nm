@@ -5,8 +5,8 @@
 
 name       = atk
 version    = %{ver_major}.%{ver_minor}
-ver_major  = 2.7
-ver_minor  = 4
+ver_major  = 2.11
+ver_minor  = 6
 release    = 1
 
 groups     = System/Libraries
@@ -25,7 +25,7 @@ sources    = %{thisapp}.tar.xz
 build
 	requires
 		glib2-devel >= 2.31.2
-		gobject-introspection-devel
+		gobject-introspection-devel >= 1.39.3
 	end
 
 	configure_options += \
