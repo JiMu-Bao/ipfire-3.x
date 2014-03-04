@@ -6,7 +6,7 @@
 name       = gnutls
 version    = %{ver_maj}.%{ver_min}
 ver_maj    = 3.2
-ver_min    = 8
+ver_min    = 12
 release    = 1
 
 groups     = System/Libraries
@@ -28,7 +28,6 @@ build
 	requires
 		datefudge
 		gettext
-		guile-devel
 		libgcrypt-devel
 		libidn-devel
 		libtasn1-devel >= 3.2
@@ -46,7 +45,9 @@ build
 	configure_options += \
 		--with-included-libcfg \
 		--disable-openssl-compatibility \
-		--with-libgcrypt
+		--disable-srp-authentication \
+		--disable-non-suiteb-curves \
+		--disable-guile
 
 	# Test suite does not work when srp is disabled.
 	test
