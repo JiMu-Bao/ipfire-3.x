@@ -4,9 +4,9 @@
 ###############################################################################
 
 name       = libsolv
-version    = 0.0.0
-git_ver    = f663ca2
-release    = 7.git%{git_ver}
+version    = 0.4.1
+git_ver    = bcedc98
+release    = 1.git%{git_ver}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -39,7 +39,9 @@ build
 			-DCMAKE_BUILD_TYPE=RelWithDebInfo \
 			-DENABLE_PERL=0 \
 			-DENABLE_PYTHON=0 \
-			-DENABLE_RUBY=0
+			-DENABLE_RUBY=0 \
+			-DMULTI_SEMANTICS=1
+
 		make %{PARALLELISMFLAGS}
 	end
 
