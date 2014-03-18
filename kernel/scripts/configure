@@ -17,7 +17,7 @@ CONFIGS="${CONFIGS} i686:legacy i686:default"
 CONFIGS="${CONFIGS} armv7hl:lpae armv7hl:default"
 
 # armv5tel
-CONFIGS="${CONFIGS} armv5tel:versatile armv5tel:kirkwood"
+CONFIGS="${CONFIGS} armv5tel:default"
 
 function merge_config() {
 	local arch=${1}
@@ -67,18 +67,14 @@ function merge_config() {
 			;;
 
 		# ARM
-		armv5tel:versatile)
-			configs="${configs} config-arm-generic"
-			;;
-		armv5tel:kirkwood)
-			configs="${configs} config-arm-generic config-armv5tel-kirkwood"
+		armv5tel:default)
+			configs="${configs} config-arm-generic config-armv5tel-default"
 			;;
 		armv7hl:default)
-			configs="${configs} config-arm-generic config-armv7hl-generic"
-			configs="${configs} config-armv7hl-default"
+			configs="${configs} config-arm-generic config-armv7hl-default"
 			;;
 		armv7hl:lpae)
-			configs="${configs} config-arm-generic config-armv7hl-generic"
+			configs="${configs} config-arm-generic config-armv7hl-default"
 			configs="${configs} config-armv7hl-lpae"
 			;;
 		*)
@@ -192,8 +188,11 @@ function diff_configs() {
 
 		merge_config ${arch} ${flavour} ${filename} ${extra_configs}
 
-		# Do not include i686 legacy.
+		# Do not include leaf configuration.
 		case "${config}" in
+			armv7hl:lpae)
+				continue
+				;;
 			i686:legacy)
 				continue
 				;;
@@ -230,14 +229,6 @@ function diff_configs() {
 			${tmpdir}/config-${arch}-common > ${tmpdir}/config-${arch}-generic
 	done
 
-	for arch in armv7hl; do
-		${SCRIPTS_DIR}/configcommon.py ${subarch_configs[${arch}]} \
-			> ${tmpdir}/config-${arch}-common
-
-		${SCRIPTS_DIR}/configdiff.py ${tmpdir}/config-arm-common \
-			${tmpdir}/config-${arch}-common > ${tmpdir}/config-${arch}-generic
-	done
-
 	for config in ${CONFIGS}; do
 		arch=${config%:*}
 		flavour=${config#*:}
@@ -253,19 +244,10 @@ function diff_configs() {
 		filename=${tmpdir}/config-${arch}-${flavour}
 
 		case "${config}" in
-			i686:legacy)
+			armv7hl:lpae|i686:legacy)
 				# Legacy depends directly on the default configuration.
-				${SCRIPTS_DIR}/configdiff.py ${tmpdir}/config-i686-default \
+				${SCRIPTS_DIR}/configdiff.py ${tmpdir}/config-${arch}-default \
 					${filename} > ${filename}.tmp
-				;;
-			armv7hl:*)
-				# armv7hl depends on a config-armv7hl
-				${SCRIPTS_DIR}/configdiff.py ${tmpdir}/config-${arch}-common \
-					${filename} > ${filename}.tmp
-				;;
-			armv5tel:versatile)
-				rm -f ${filename}
-				continue
 				;;
 			*)
 				${SCRIPTS_DIR}/configdiff.py ${tmpdir}/config-${suparch}-common \
