@@ -1,0 +1,52 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = rng-tools
+version    = 4
+release    = 1
+
+groups     = System/Base
+url        = http://sourceforge.net/projects/gkernel/
+license    = GPLv2+
+summary    = Random number generator related utilities.
+
+description
+	%{summary}
+end
+
+source_dl  = http://downloads.sourceforge.net/project/gkernel/rng-tools/%{version}/
+
+build
+	requires
+		gettext
+		groff
+	end
+end
+
+packages
+	package %{name}
+		script postin
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			/bin/systemctl --no-reload disable rngd.service > /dev/null 2>&1 || :
+			/bin/systemctl stop rngd.service > /dev/null 2>&1 || :
+		end
+
+		script postun
+			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			/bin/systemctl daemon-reload 2>&1 || :
+			/bin/systemctl reload-or-try-restart rngd.service >/dev/null 2>&1 || :
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
