@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = grep
-version    = 2.17
+version    = 2.18
 release    = 1
 
 groups     = Applications/Text
@@ -28,11 +28,6 @@ build
 		gettext-devel
 		pcre-devel
 		texinfo
-	end
-
-	prepare_cmds
-		sed -e "s/gnulib-tests//" -i Makefile.am
-		autoreconf -vfi
 	end
 
 	configure_options += \
