@@ -1,0 +1,77 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = compat-gmp
+version    = 4.3.2
+release    = 1
+thisapp    = gmp-%{version}
+
+groups     = System/Libraries
+url        = http://gmplib.org/
+license    = LGPLv3+
+summary    = A GNU arbitrary precision library.
+
+description
+	The gmp package contains GNU MP, a library for arbitrary precision
+	arithmetic, signed integers operations, rational numbers and floating
+	point numbers. GNU MP is designed for speed, for both small and very
+	large operands. GNU MP is fast because it uses fullwords as the basic
+	arithmetic type, it uses fast algorithms, it carefully optimizes
+	assembly code for many CPUs' most common inner loops, and it generally
+	emphasizes speed over simplicity/elegance in its operations.
+end
+
+source_dl += https://gmplib.org/download/gmp/ ftp://ftp.gnu.org/gnu/gmp/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		gcc-c++
+		m4
+	end
+
+	export ABI = standard
+
+	if "%{DISTRO_ARCH}" == "x86_64"
+		ABI = 64
+	end
+
+	if "%{DISTRO_ARCH}" == "i686"
+		ABI = 32
+	end
+
+	configure_options += \
+		--enable-cxx \
+		--enable-mpbsd \
+		--disable-static
+
+	test
+		export LD_LIBRARY_PATH=$(pwd)/.libs
+		make check
+	end
+
+	install
+		# Install just the library and no headers.
+		mkdir -pv %{BUILDROOT}%{libdir}
+		install -m 644 .libs/libgmp.so.3.5.2 %{BUILDROOT}%{libdir}
+		ln -svf libgmp.so.3.5.2 %{BUILDROOT}%{libdir}/libgmp.so.3
+	end
+end
+
+packages
+	package %{name}
+		provides
+			gmp = %{thisver}
+		end
+
+		obsoletes
+			gmp <= %{thisver}
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

@@ -1,0 +1,13 @@
+https://gmplib.org/list-archives/gmp-bugs/2011-October/002417.html
+
+--- tests/mpz/t-scan.c	2011-05-08 11:49:29.000000000 +0200
++++ tests/mpz/t-scan.c	2011-10-10 16:37:13.657829003 +0200
+@@ -79,7 +79,7 @@
+ 
+               for (isize = 0; isize <= size; isize++)
+                 {
+-                  for (oindex = 0; oindex <= numberof (offset); oindex++)
++                  for (oindex = 0; oindex < numberof (offset); oindex++)
+                     {
+                       o = offset[oindex];
+                       if ((int) isize*GMP_NUMB_BITS < -o)

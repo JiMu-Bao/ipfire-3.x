@@ -4,10 +4,8 @@
 ###############################################################################
 
 name       = gmp
-version    = 5.0.5
+version    = 6.0.0
 release    = 1
-
-compat_version = 4.3.2
 
 groups     = System/Libraries
 url        = http://gmplib.org/
@@ -24,8 +22,8 @@ description
 	emphasizes speed over simplicity/elegance in its operations.
 end
 
-source_dl += ftp://ftp.gnu.org/gnu/gmp/
-sources    = %{thisapp}.tar.bz2 %{name}-%{compat_version}.tar.bz2
+source_dl += https://gmplib.org/download/gmp/ ftp://ftp.gnu.org/gnu/gmp/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -55,6 +53,12 @@ build
 		--enable-mpbsd \
 		--disable-static
 
+	if "%{DISTRO_ARCH}" == "armv7hl"
+		# GMP cannot be built with THUMB support.
+		CFLAGS   := %(echo "%{CFLAGS}"   | sed -e "s/-mthumb//g")
+		CXXFLAGS := %(echo "%{CXXFLAGS}" | sed -e "s/-mthumb//g")
+	end
+
 	prepare_cmds
 		for version in %{build_versions}; do
 			mkdir -p build-${version}
@@ -66,10 +70,8 @@ build
 	end
 
 	build_one
-		CFLAGS="${CFLAGS}" \
-		CXXFLAGS="${CXXFLAGS}" \
-			./configure \
-				%{configure_options}
+		./configure \
+			%{configure_options}
 
 		# Kill RPATHs.
 		sed -e 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' \
@@ -91,18 +93,14 @@ build
 			CXXFLAGS="%{CXXFLAGS}"
 			if [ "${version}" = "sse2" ]; then
 				# Enable sse2.
-				CFLAGS="${CFLAGS} -march=pentium4"
-				CXXFLAGS="${CXXFLAGS} -march=pentium4"
+				CFLAGS="%{CFLAGS} -march=pentium4"
+				CXXFLAGS="%{CXXFLAGS} -march=pentium4"
 			fi
 
 			%{build_one}
 
 			cd ..
 		done
-
-		# Build compat version of library.
-		cd %{DIR_SRC}/%{name}-%{compat_version}
-		%{build_one}
 	end
 
 	test
@@ -114,12 +112,6 @@ build
 
 			cd ..
 		done
-
-		# Check compat version of library.
-		cd %{DIR_SRC}/%{name}-%{compat_version}
-
-		export LD_LIBRARY_PATH=$(pwd)/.libs
-		make check
 	end
 
 	install
@@ -137,21 +129,12 @@ build
 				install -m 755 .libs/libgmpxx.so.*.* %{BUILDROOT}/usr/lib/sse2
 				cp -a .libs/libgmpxx.so.? %{BUILDROOT}/usr/lib/sse2
 				chmod 755 %{BUILDROOT}/usr/lib/sse2/libgmpxx.so.?
-
-				install -m 755 .libs/libmp.so.*.* %{BUILDROOT}/usr/lib/sse2
-				cp -a .libs/libmp.so.? %{BUILDROOT}/usr/lib/sse2
-				chmod 755 %{BUILDROOT}/usr/lib/sse2/libmp.so.?
 			else
 				make install DESTDIR="%{BUILDROOT}"
 			fi
 
 			cd ..
 		done
-
-		# Install compat version of library.
-		cd %{DIR_SRC}/%{name}-%{compat_version}
-		install -m 644 .libs/libgmp.so.3.5.2 %{BUILDROOT}%{libdir}
-		ln -svf libgmp.so.3.5.2 %{BUILDROOT}%{libdir}/libgmp.so.3
 	end
 end
 
@@ -160,14 +143,6 @@ packages
 
 	package %{name}-devel
 		template DEVEL
-	end
-
-	package %{name}-compat
-		summary = Compatibility version of %{thisapp} (%{compat_version}).
-
-		files
-			%{libdir}/libgmp.so.3*
-		end
 	end
 
 	package %{name}-debuginfo
