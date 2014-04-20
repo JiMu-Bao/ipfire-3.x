@@ -1,0 +1,48 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-XML-SAX-Base
+version    = 1.08
+release    = 1
+arch       = noarch
+
+thisapp    = XML-SAX-Base-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/XML-SAX-Base/
+license    = GPL+ or Artistic
+summary    = Base class SAX drivers and filters.
+
+description
+	This module has a very simple task - to be a base class for Perl SAX drivers
+	and filters. Its default behavior is to pass the input directly to the
+	output unchanged. It can be useful to use this module as a base class so
+	you don't have to, for example, implement the characters() callback.
+end
+
+source_dl  = http://www.cpan.org/authors/id/G/GR/GRANTM/
+
+build
+	requires
+		perl(base)
+		perl(Carp)
+		perl(ExtUtils::MakeMaker) >= 6.42
+		perl(Test)
+		perl(Test::More) >= 0.47
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make test
+	end
+end
+
+packages
+	package %{name}
+end
