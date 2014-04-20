@@ -1,0 +1,82 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-XML-SAX
+version    = 0.99
+release    = 1
+arch       = noarch
+
+thisapp    = XML-SAX-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/XML-SAX/
+license    = GPLv2+
+summary    = SAX parser access API for Perl.
+
+description
+	Perl programs can use the SGMLSpm module to help convert SGML, HTML or XML
+	documents into new formats.
+end
+
+# Original source
+# http://www.cpan.org/authors/id/G/GR/GRANTM/XML-SAX-%%{version}.tar.gz
+#
+# XML-SAX contains patented code that we cannot ship. Therefore we use
+# a script to remove the patented code before shipping it.
+#
+# Download the upstream tarball and run the following script in the
+# tarball's directory like this:
+# ./generate-tarball.sh %%{version}
+#
+# Finally we have to store the new tarball on one of our source server.
+
+sources = %{thisapp}-nopatents.tar.gz
+
+build
+	requires
+		perl(base)
+		perl(Carp)
+		perl(constant)
+		perl(Encode)
+		perl(Exporter)
+		perl(ExtUtils::MakeMaker)
+		perl(Fatal)
+		perl(File::Path)
+		perl(File::Spec)
+		perl(File::Temp)
+		perl(IO::File)
+		perl(Test)
+		perl(XML::NamespaceSupport)
+		perl(XML::SAX::Base)
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make test
+	end
+
+	install
+		make pure_install DESTDIR=%{BUILDROOT}
+
+		touch %{BUILDROOT}%{perl_vendorlib}/XML/SAX/ParserDetails.ini
+	end
+end
+
+packages
+	package %{name}
+		configfiles
+			%{perl_vendorlib}/XML/SAX/ParserDetails.ini
+		end
+
+		#Filter string for very weird dependencies.
+		filter_requires
+			XML::SAX::PurePerl
+		end
+	end
+end
