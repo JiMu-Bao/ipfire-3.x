@@ -6,7 +6,7 @@
 name       = nftables
 version    = 0.100
 snapshot   = 20140412
-release    = 1.%{snapshot}
+release    = 2.%{snapshot}
 thisapp    = %{name}-%{snapshot}
 
 groups     = Networking/Tools
@@ -27,7 +27,8 @@ build
 		autogen
 		automake
 		bison
-		docbook-dtds
+		docbook2X
+		docbook-xsl
 		flex
 		gmp-devel
 		libtool
