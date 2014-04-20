@@ -1,0 +1,52 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-XML-NamespaceSupport
+version    = 1.11
+release    = 1
+arch       = noarch
+
+thisapp    = XML-NamespaceSupport-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/XML-NamespaceSupport/
+license    = GPL+ or Artistic
+summary    = A simple generic namespace support class.
+
+description
+	This module offers a simple to process namespaced XML names (unames) from
+	within any application that may need them. It also helps maintain a prefix
+	to namespace URI map, and provides a number of basic checks.
+end
+
+source_dl  = http://www.cpan.org/authors/id/P/PE/PERIGRIN/
+
+build
+	requires
+		perl(constant)
+		perl(Cwd)
+		perl(ExtUtils::MakeMaker) >= 6.42
+		perl(File::Path)
+		perl(Test::More) >= 0.47
+	end
+
+	prepare_cmds
+		# Fix permissions.
+		chmod 644 lib/XML/NamespaceSupport.pm
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make test
+	end
+end
+
+packages
+	package %{name}
+end
