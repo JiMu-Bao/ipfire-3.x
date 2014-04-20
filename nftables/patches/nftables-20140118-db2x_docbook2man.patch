@@ -1,0 +1,53 @@
+diff -Nur nftables-20140118.orig/configure nftables-20140118/configure
+--- nftables-20140118.orig/configure	2014-01-17 22:28:04.000000000 -0700
++++ nftables-20140118/configure	2014-01-18 15:42:10.427000000 -0700
+@@ -3310,8 +3310,8 @@
+   rm -f conftest.sed
+ 
+ 
+-# Extract the first word of "docbook2x-man", so it can be a program name with args.
+-set dummy docbook2x-man; ac_word=$2
++# Extract the first word of "db2x_docbook2man", so it can be a program name with args.
++set dummy db2x_docbook2man; ac_word=$2
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+ $as_echo_n "checking for $ac_word... " >&6; }
+ if test "${ac_cv_prog_CONFIG_MAN+set}" = set; then :
+@@ -3350,8 +3350,8 @@
+ 
+ if test "$CONFIG_MAN" != "y"
+ then
+-	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: docbookx2-man not found, no manpages will be built" >&5
+-$as_echo "$as_me: WARNING: docbookx2-man not found, no manpages will be built" >&2;}
++	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: db2x_docbook2man not found, no manpages will be built" >&5
++$as_echo "$as_me: WARNING: db2x_docbook2man not found, no manpages will be built" >&2;}
+ fi
+ 
+ # Extract the first word of "db2pdf", so it can be a program name with args.
+diff -Nur nftables-20140118.orig/configure.ac nftables-20140118/configure.ac
+--- nftables-20140118.orig/configure.ac	2014-01-17 22:28:00.000000000 -0700
++++ nftables-20140118/configure.ac	2014-01-18 15:42:24.483000000 -0700
+@@ -25,10 +25,10 @@
+ AC_PROG_INSTALL
+ AC_PROG_SED
+ 
+-AC_CHECK_PROG(CONFIG_MAN, docbook2x-man, y, n)
++AC_CHECK_PROG(CONFIG_MAN, db2x_docbook2man, y, n)
+ if test "$CONFIG_MAN" != "y"
+ then
+-	AC_MSG_WARN([docbookx2-man not found, no manpages will be built])
++	AC_MSG_WARN([db2x_docbook2man not found, no manpages will be built])
+ fi
+ 
+ AC_CHECK_PROG(CONFIG_PDF, db2pdf, y, n)
+diff -Nur nftables-20140118.orig/Makefile.rules.in nftables-20140118/Makefile.rules.in
+--- nftables-20140118.orig/Makefile.rules.in	2014-01-17 22:28:00.000000000 -0700
++++ nftables-20140118/Makefile.rules.in	2014-01-18 15:27:45.759000000 -0700
+@@ -37,7 +37,7 @@
+ 
+ %.8:			%.xml	$(makedeps)
+ 			@echo -e "  MAN\t\t$@"
+-			(cd $(SUBDIR); docbook2x-man ../$<)
++			(cd $(SUBDIR); db2x_docbook2man ../$<)
+ 
+ %.pdf:			%.xml	$(makedeps)
+ 			@echo -e "  PDF\t\t$@"
