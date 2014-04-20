@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = iproute2
-version    = 3.5.1
-release    = 3
+version    = 3.14.0
+release    = 1
 
 groups     = Networking/Tools
 url        = http://www.linuxfoundation.org/en/Net:Iproute2
@@ -13,8 +13,8 @@ license    = GPLv2+
 summary    = Advanced IP routing and network device configuration tools.
 
 description
-	The iproute package contains networking utilities (ip and rtmon, for \
-	example) which are designed to use the advanced networking \
+	The iproute package contains networking utilities (ip and rtmon, for
+	example) which are designed to use the advanced networking
 	capabilities of the Linux 2.4.x and 2.6.x kernel.
 end
 
@@ -24,15 +24,15 @@ sources    = %{thisapp}.tar.xz
 build
 	requires
 		bison
-		db4-devel
 		flex
+		libdb-devel
 		libnl-devel
 		linux-atm-devel >= 2.5.1
 		iptables-devel >= 1.4.19
 	end
 
 	prepare_cmds
-		sed -e "s/_VERSION_/%{version}/" -i man/man8/ss.8
+		sed -e "s/^LIBDIR=/LIBDIR?=/" -i Makefile
 	end
 
 	export RPM_OPT_FLAGS = %{CFLAGS}
@@ -52,8 +52,8 @@ build
 			%{BUILDROOT}%{sysconfdir}/iproute2
 
 		# Install binaries.
-		for bin in genl/genl ip/{ifcfg,ip,routef,routel,rtmon,rtpr} tc/tc \
-				misc/{arpd,ifstat,lnstat,nstat,rtacct,ss}; do
+		for bin in bridge/bridge genl/genl ip/{ifcfg,ip,routef,routel,rtmon,rtpr} \
+				tc/tc misc/{arpd,ifstat,lnstat,nstat,rtacct,ss}; do
 			install -v -m 755 ${bin} %{BUILDROOT}%{sbindir}
 		done
 		ln -svf lnstat %{BUILDROOT}%{sbindir}/ctstat
@@ -82,9 +82,6 @@ build
 
 		# Install configuration.
 		install -v -m 644 etc/iproute2/* %{BUILDROOT}%{sysconfdir}/iproute2
-
-		# bridge should be installed as 'br', following upstream
-		install -v -m 755 bridge/bridge %{BUILDROOT}%{sbindir}/br
 	end
 
 	# Keep libnetlink.a.
