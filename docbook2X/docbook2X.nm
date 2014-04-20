@@ -1,0 +1,55 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = docbook2X
+version    = 0.8.8
+release    = 1
+
+groups     = Application/Text
+url        = http://docbook2x.sourceforge.net/
+license    = MIT
+summary    = Convert docbook into man and Texinfo.
+
+description
+	docbook2X converts DocBook documents into man pages and Texinfo
+	documents.
+end
+
+source_dl  = http://downloads.sourceforge.net/docbook2x/
+
+build
+	requires
+		%{bindir}/sgml2xml
+		libxslt
+		openjade
+		perl(Exporter)
+		perl(IO::File)
+		perl(Text::Wrap)
+		perl(XML::SAX::ParserFactory)
+		perl(vars)
+		texinfo
+	end
+
+	configure_options += \
+			--program-transform-name='s/docbook2/db2x_docbook2/'
+
+	install_cmds
+		# Remove unsused files.
+		rm -rvf %{BUILDROOT}%{datadir}/doc
+		rm -rvf %{BUILDROOT}%{infodir}/dir
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
