@@ -1,5 +1,10 @@
 
 #
+# Kernel Performance Events And Counters
+#
+# CONFIG_CC_STACKPROTECTOR is not set
+
+#
 # Processor type and features
 #
 # CONFIG_XEN_PRIVILEGED_GUEST is not set
@@ -28,6 +33,7 @@ CONFIG_OLPC_XO15_SCI=y
 # Generic Driver Options
 #
 # CONFIG_SYS_HYPERVISOR is not set
+CONFIG_REGMAP_MMIO=m
 CONFIG_DMA_CMA=y
 
 #
@@ -75,6 +81,7 @@ CONFIG_MDIO_BUS_MUX_MMIOREG=m
 # Input Device Drivers
 #
 CONFIG_MOUSE_PS2_OLPC=y
+# CONFIG_INPUT_GPIO_BEEPER is not set
 
 #
 # Hardware I/O ports
@@ -94,6 +101,11 @@ CONFIG_SERIAL_OF_PLATFORM=y
 # CONFIG_SERIAL_XILINX_PS_UART is not set
 
 #
+# Multiplexer I2C Chip support
+#
+# CONFIG_I2C_ARB_GPIO_CHALLENGE is not set
+
+#
 # I2C system bus drivers (mostly embedded / system-on-chip)
 #
 CONFIG_I2C_PXA=m
@@ -102,7 +114,15 @@ CONFIG_I2C_PXA_PCI=y
 #
 # Pin controllers
 #
+CONFIG_PINMUX=y
+CONFIG_PINCONF=y
+CONFIG_GENERIC_PINCONF=y
+CONFIG_PINCTRL_AS3722=y
+# CONFIG_PINCTRL_CAPRI is not set
+CONFIG_PINCTRL_MSM=y
+CONFIG_PINCTRL_MSM8X74=m
 # CONFIG_PINCTRL_SINGLE is not set
+CONFIG_PINCTRL_PALMAS=y
 CONFIG_OF_GPIO=y
 
 #
@@ -122,6 +142,11 @@ CONFIG_GPIO_CS5535=y
 # CONFIG_GPIO_SODAVILLE is not set
 
 #
+# SPI GPIO expanders:
+#
+# CONFIG_GPIO_MCP23S08 is not set
+
+#
 # MODULbus GPIO expanders:
 #
 # CONFIG_GPIO_BCM_KONA is not set
@@ -130,12 +155,23 @@ CONFIG_GPIO_CS5535=y
 # 1-wire Slaves
 #
 CONFIG_BATTERY_OLPC=y
+CONFIG_POWER_RESET_AS3722=y
 CONFIG_POWER_RESET_GPIO=y
+
+#
+# ACPI drivers
+#
+# CONFIG_THERMAL_OF is not set
+
+#
+# Watchdog Device Drivers
+#
+# CONFIG_GPIO_WATCHDOG is not set
 
 #
 # Multifunction device drivers
 #
-CONFIG_MFD_CORE=y
+CONFIG_MFD_AS3722=y
 
 #
 # Frame buffer hardware drivers
@@ -149,9 +185,26 @@ CONFIG_BACKLIGHT_PWM=m
 # CONFIG_FB_SSD1307 is not set
 
 #
+# USB Imaging devices
+#
+CONFIG_USB_MUSB_DSPS=m
+CONFIG_USB_MUSB_AM335X_CHILD=m
+
+#
+# MMC/SD/SDIO Host Controller Drivers
+#
+CONFIG_MMC_SDHCI_OF_ARASAN=m
+
+#
 # LED drivers
 #
 CONFIG_LEDS_PWM=m
+
+#
+# I2C RTC drivers
+#
+CONFIG_RTC_DRV_AS3722=m
+CONFIG_RTC_DRV_HYM8563=m
 
 #
 # on-CPU RTC drivers
@@ -177,6 +230,13 @@ CONFIG_XO1_RFKILL=m
 # Common Clock Framework
 #
 # CONFIG_COMMON_CLK_SI5351 is not set
+CONFIG_COMMON_CLK_SI570=m
+CONFIG_COMMON_CLK_QCOM=m
+CONFIG_MSM_GCC_8660=m
+CONFIG_MSM_GCC_8960=m
+CONFIG_MSM_MMCC_8960=m
+CONFIG_MSM_GCC_8974=m
+CONFIG_MSM_MMCC_8974=m
 
 #
 # Hardware Spinlock drivers
@@ -193,7 +253,10 @@ CONFIG_OF_IOMMU=y
 #
 CONFIG_PWM=y
 CONFIG_PWM_SYSFS=y
+CONFIG_PWM_LP3943=m
 CONFIG_PWM_PCA9685=m
+CONFIG_PWM_TWL=m
+CONFIG_PWM_TWL_LED=m
 CONFIG_IRQCHIP=y
 
 #
