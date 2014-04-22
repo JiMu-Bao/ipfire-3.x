@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = sudo
-version    = 1.8.5
+version    = 1.8.10
 release    = 1
 
 groups     = Applications/System
