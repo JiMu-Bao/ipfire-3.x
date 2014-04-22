@@ -3,9 +3,11 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = pcre
-version    = 8.35
-release    = 3
+name       = compat-pcre
+version    = 8.21
+release    = 1
+
+thisapp    = pcre-%{version}
 
 groups     = System/Libraries
 url        = http://www.pcre.org/
@@ -18,7 +20,7 @@ description
 	API are also supplied in the library libpcreposix.
 end
 
-source_dl  = ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
+source_dl  = http://sourceforge.net/projects/pcre/files/pcre/%{version}/
 
 build
 	requires
@@ -42,13 +44,28 @@ build
 	test
 		make check
 	end
+
+	install
+		# Only install libraries.
+		mkdir -pv %{BUILDROOT}%{libdir}
+		install -m 755 .libs/libpcre.so.0.0.1 %{BUILDROOT}%{libdir}
+		ln -svf libpcre.so.0.0.1 %{BUILDROOT}%{libdir}/libpcre.so.0
+	end
 end
 
 packages
 	package %{name}
+		provides
+			pcre = %{thisver}
+		end
 
-	package %{name}-devel
-		template DEVEL
+		obsoletes
+			pcre-compat
+		end
+
+		conflicts
+			pcre <= %{thisver}
+		end
 	end
 
 	package %{name}-debuginfo
