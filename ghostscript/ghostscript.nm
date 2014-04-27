@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = ghostscript
-version    = 9.05
-release    = 2.1
+version    = 9.14
+release    = 1
 
 groups     = Applications/Printing
 url        = http://ghostscript.com
@@ -30,9 +30,14 @@ source_dl  = http://downloads.ghostscript.com/public/
 
 build
 	requires
+		autoconf
+		automake
+		cups-devel >= 1.1.13
 		dbus-devel
 		expat-devel
+		freetype-devel
 		glib2-devel
+		lcms2-devel >= 2.4
 		libidn-devel
 		libjpeg-devel
 		libpng-devel
@@ -44,7 +49,14 @@ build
 	end
 
 	prepare_cmds
-		rm -rvf libpng zlib jpeg jasper expat
+		# Fix build with local zlib.
+		sed -i 's/ZLIBDIR=src/ZLIBDIR=$includedir/' configure.ac
+
+		# Remove shipped source code.
+		rm -rvf expat freetype icclib jasper jpeg jpegxr lcms lcms2 \
+			libpng openjpeg zlib cups/libs
+
+		autoconf --force
 	end
 
 	CFLAGS += -fno-strict-aliasing
@@ -55,7 +67,9 @@ build
 		--with-drivers=ALL \
 		--disable-compile-inits \
 		--with-system-libtiff \
-		--with-install-cups
+		--with-install-cups \
+		\
+		CFLAGS="%{CFLAGS}"
 
 	PARALLELISMFLAGS = # Disable this
 end
