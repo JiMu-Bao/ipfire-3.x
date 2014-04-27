@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = ppp
-version    = 2.4.5
-release    = 6
+version    = 2.4.6
+release    = 1
 
 groups     = System/Daemons
 url        = http://ppp.samba.org/
@@ -25,6 +25,7 @@ source_dl  = ftp://ftp.samba.org/pub/ppp/
 build
 	requires
 		libpcap-devel
+		libudev-devel
 		linux-atm-devel
 		openssl-devel
 		pam-devel

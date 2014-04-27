@@ -1,5 +1,30 @@
---- ppp-2.3.3/sample/auth-down.sample	Tue Jan  6 17:53:27 1998
-+++ ppp-2.3.3/sample/auth-down	Tue Jan  6 17:53:27 1998
+From d7faeb88f684c8b2ae193b2c5b5b358ac757fcfa Mon Sep 17 00:00:00 2001
+From: Michal Sekletar <msekleta@redhat.com>
+Date: Fri, 4 Apr 2014 11:39:09 +0200
+Subject: [PATCH 04/25] doc: add configuration samples
+
+---
+ sample/auth-down     |  17 ++++++
+ sample/auth-up       |  17 ++++++
+ sample/ip-down       |  22 ++++++++
+ sample/ip-up         |  23 ++++++++
+ sample/options       | 153 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ sample/options.ttyXX |  14 +++++
+ sample/pap-secrets   |  28 ++++++++++
+ 7 files changed, 274 insertions(+)
+ create mode 100644 sample/auth-down
+ create mode 100644 sample/auth-up
+ create mode 100644 sample/ip-down
+ create mode 100644 sample/ip-up
+ create mode 100644 sample/options
+ create mode 100644 sample/options.ttyXX
+ create mode 100644 sample/pap-secrets
+
+diff --git a/sample/auth-down b/sample/auth-down
+new file mode 100644
+index 0000000..edde65d
+--- /dev/null
++++ b/sample/auth-down
 @@ -0,0 +1,17 @@
 +#!/bin/sh
 +#
@@ -18,8 +43,11 @@
 +echo auth-down `date +'%y/%m/%d %T'` $* >> /var/log/pppstats
 +
 +# last line
---- ppp-2.3.3/sample/auth-up.sample	Tue Jan  6 17:53:27 1998
-+++ ppp-2.3.3/sample/auth-up	Tue Jan  6 17:53:27 1998
+diff --git a/sample/auth-up b/sample/auth-up
+new file mode 100644
+index 0000000..54722a3
+--- /dev/null
++++ b/sample/auth-up
 @@ -0,0 +1,17 @@
 +#!/bin/sh
 +#
@@ -38,8 +66,11 @@
 +echo auth-up `date +'%y/%m/%d %T'` $* >> /var/log/pppstats
 +
 +# last line
---- ppp-2.3.3/sample/ip-down.sample	Tue Jan  6 17:53:27 1998
-+++ ppp-2.3.3/sample/ip-down	Tue Jan  6 17:53:27 1998
+diff --git a/sample/ip-down b/sample/ip-down
+new file mode 100644
+index 0000000..b771fb6
+--- /dev/null
++++ b/sample/ip-down
 @@ -0,0 +1,22 @@
 +#!/bin/sh
 +#
@@ -63,13 +94,16 @@
 +export PATH
 +
 +# last line
---- ppp-2.3.3/sample/ip-up.sample	Tue Jan  6 17:53:27 1998
-+++ ppp-2.3.3/sample/ip-up	Tue Jan  6 17:53:27 1998
+diff --git a/sample/ip-up b/sample/ip-up
+new file mode 100644
+index 0000000..7ce7c8d
+--- /dev/null
++++ b/sample/ip-up
 @@ -0,0 +1,23 @@
 +#!/bin/sh
 +#
 +# This script is run by the pppd after the link is established.
-+# It should be used to add routes, set IP address, run the mailq 
++# It should be used to add routes, set IP address, run the mailq
 +# etc.
 +#
 +# This script is called with the following arguments:
@@ -89,8 +123,11 @@
 +export PATH
 +
 +# last line
---- ppp-2.3.3/sample/options.sample	Tue Jan  6 17:53:27 1998
-+++ ppp-2.3.3/sample/options	Tue Jan  6 17:53:27 1998
+diff --git a/sample/options b/sample/options
+new file mode 100644
+index 0000000..8d0a3f9
+--- /dev/null
++++ b/sample/options
 @@ -0,0 +1,153 @@
 +# /etc/ppp/options
 +
@@ -245,8 +282,11 @@
 +noipx
 +
 +# ---<End of File>---
---- ppp-2.3.3/sample/options.ttyXX.sample	Tue Jan  6 17:53:27 1998
-+++ ppp-2.3.3/sample/options.ttyXX	Tue Jan  6 17:53:27 1998
+diff --git a/sample/options.ttyXX b/sample/options.ttyXX
+new file mode 100644
+index 0000000..d4202f5
+--- /dev/null
++++ b/sample/options.ttyXX
 @@ -0,0 +1,14 @@
 +# If you need to set up multiple serial lines then copy this file to
 +# options.<ttyname> for each tty with a modem on it.
@@ -262,8 +302,11 @@
 +# is the IP address of your host
 +#
 +hostname-s1:hostname
---- ppp-2.3.3/sample/pap-secrets.sample	Tue Jan  6 17:53:27 1998
-+++ ppp-2.3.3/sample/pap-secrets	Tue Jan  6 17:53:27 1998
+diff --git a/sample/pap-secrets b/sample/pap-secrets
+new file mode 100644
+index 0000000..098971b
+--- /dev/null
++++ b/sample/pap-secrets
 @@ -0,0 +1,28 @@
 +# Secrets for authentication using PAP
 +# client	server	secret			IP addresses
@@ -293,3 +336,6 @@
 +#root		hostname	"*"	-
 +#support	hostname	"*"	-
 +#stats		hostname	"*"	-
+-- 
+1.8.3.1
+
