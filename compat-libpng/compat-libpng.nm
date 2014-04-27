@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = libpng
-version    = 1.6.10
-release    = 2
+name       = compat-libpng
+version    = 1.5.18
+release    = 1
+thisapp    = libpng-%{version}
 
 groups     = System/Libraries
 url        = http://www.libpng.org/pub/png/
@@ -20,23 +21,38 @@ description
 	data compression algorithm.
 end
 
-source_dl  = http://downloads.sourceforge.net/project/libpng/libpng16/%{version}/
-source_dl += http://downloads.sourceforge.net/project/libpng/history/libpng16/%{version}/
+source_dl +=  http://downloads.sourceforge.net/project/libpng/libpng15/%{version}/
+source_dl +=  http://downloads.sourceforge.net/project/libpng/history/libpng15/%{version}/
+
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
 		pkg-config
 		zlib-devel
 	end
+
+	install
+		# Install just the library and no headers.
+		mkdir -pv %{BUILDROOT}%{libdir}
+		install -m 755 .libs/libpng15.so.15.18.0 %{BUILDROOT}%{libdir}
+		ln -svf libpng15.so.15.18.0 %{BUILDROOT}%{libdir}/libpng15.so.15
+	end
 end
 
 packages
 	package %{name}
+		provides
+			libpng = %{thisver}
+		end
 
-	package %{name}-devel
-		template DEVEL
+		obsoletes
+			libpng-compat
+		end
 
-		requires = zlib-devel
+		conflicts
+			libpng <= %{thisver}
+		end
 	end
 
 	package %{name}-debuginfo
