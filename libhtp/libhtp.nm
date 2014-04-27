@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libhtp
-version    = 0.2.9
+version    = 0.5.10
 release    = 1
 
 groups     = System/Libraries
@@ -19,7 +19,7 @@ end
 
 thisapp = htp-%{version}
 
-source_dl  = http://www.openinfosecfoundation.org/download/
+source_dl  = https://github.com/ironbee/%{name}/releases/download/%{version}/
 sources    = %{thisapp}.tar.gz
 
 build
@@ -38,7 +38,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
