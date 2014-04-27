@@ -4,9 +4,10 @@
 ###############################################################################
 
 name       = ulogd2
-version    = 2.0.2
+version    = 2.0.4
 release    = 1
 epoch      = 1
+
 thisapp    = ulogd-%{version}
 
 groups     = Networking/Statistics
