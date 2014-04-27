@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = suricata
-version    = 1.3.2
-release    = 3
+version    = 2.0
+release    = 1
 
 groups     = Networking/IDS
 url        = http://www.openinfosecfoundation.org/
@@ -29,10 +29,10 @@ build
 		libnet-devel
 		libpcap-devel
 		libyaml-devel
-		libhtp-devel
+		libhtp-devel >= 0.5.5
 		pcre-devel
 		pkg-config
-		zlib-devel>=1.2.5-2
+		zlib-devel >= 1.2.5-2
 	end
 
 	configure_options += \
@@ -61,7 +61,7 @@ packages
 		prerquires = systemd-units
 
 		configfiles
-			%{BUILDROOT}%{sysconfdir}/suricata/suricata.conf
+			%{sysconfdir}/suricata/suricata.conf
 		end
 
 		script postin
