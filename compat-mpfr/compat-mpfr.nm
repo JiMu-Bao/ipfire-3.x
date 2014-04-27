@@ -3,9 +3,11 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = mpfr
-version    = 3.1.2
+name       = compat-mpfr
+version    = 2.4.2
 release    = 1
+
+thisapp    = mpfr-%{version}
 
 groups     = System/Libraries
 url        = http://www.mpfr.org/
@@ -21,11 +23,12 @@ description
 	library.
 end
 
-source_dl  = http://mpfr.loria.fr/mpfr-%{version}/
+source_dl  = http://ftp.gnu.org/gnu/mpfr/
 
 build
 	requires
 		gmp-devel >= 4.3.2
+		gmp-devel < 6.0.0
 	end
 
 	configure_options += \
@@ -33,16 +36,31 @@ build
 		--disable-assert
 
 	test
-		export LD_LIBRARY_PATH=$(pwd)/src/.libs
+		export LD_LIBRARY_PATH=$(pwd)/.libs
 		make check
+	end
+
+	install
+		# Only install libraries.
+		mkdir -pv %{BUILDROOT}%{libdir}
+		install -m 644 .libs/libmpfr.so.1.2.2 %{BUILDROOT}%{libdir}
+		ln -svf libmpfr.so.1.2.2 %{BUILDROOT}%{libdir}/libmpfr.so.1
 	end
 end
 
 packages
 	package %{name}
+		provides
+			mpfr = %{thisver}
+		end
 
-	package %{name}-devel
-		template DEVEL
+		obsoletes
+			mpfr-compat
+		end
+
+		conflicts
+			mpfr <= %{thisver}
+		end
 	end
 
 	package %{name}-debuginfo
