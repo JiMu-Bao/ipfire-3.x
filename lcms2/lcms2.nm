@@ -1,0 +1,59 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = lcms2
+version    = 2.6
+release    = 1
+
+groups     = System/Tools
+url        = http://www.littlecms.com/
+license    = MIT
+summary    = Color Management Engine.
+
+description
+	LittleCMS intends to be a small-footprint, speed optimized color management
+	engine in open source form. LCMS2 is the current version of LCMS, and can be
+	parallel installed with the original (deprecated) lcms.
+end
+
+source_dl  = http://www.littlecms.com/
+
+build
+	requires
+		libjpeg-devel
+		libtiff-devel
+		zlib-devel
+	end
+
+	configure_options +=\
+		--disable-static \
+		--program-suffix=2
+
+	test
+		make check
+	end
+
+	install_cms
+		# Install missing header files.
+		install -D -m 644 include/lcms2.h %{BUILDROOT}/usr/include/lcms2.h
+		install -D -m 644 include/lcms2_plugin.h %{BUILDROOT}/usr/include/lcms2_plugin.h
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-libs
+		template LIBS
+	end
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

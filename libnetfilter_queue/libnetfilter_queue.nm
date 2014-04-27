@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libnetfilter_queue
-version    = 1.0.1
+version    = 1.0.2
 release    = 1
 
 groups     = System/Libraries
@@ -24,6 +24,7 @@ sources    = %{thisapp}.tar.bz2
 
 build
 	requires
+		libmnl-devel >= 1.0.3
 		libnfnetlink-devel
 		pkg-config
 	end

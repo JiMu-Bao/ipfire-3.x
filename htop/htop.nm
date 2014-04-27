@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = htop
-version    = 1.0.2
+version    = 1.0.3
 release    = 1
 
 groups     = Applications/System
@@ -17,18 +17,16 @@ description
 	top(1).
 end
 
-source_dl  = http://sourceforge.net/projects/htop/files
+source_dl  = http://sourceforge.net/projects/%{name}/files/%{name}/%{version}/
+source_dl += http://hisham.hm/htop/releases/%{version}/
 
 build
 	requires
 		ncurses-devel
 	end
 
-	configure_options += \
-		--sysconfdir=/etc
-
 	install_cmds
-		rm -rf %{BUILDROOT}/usr/share/{applications,pixmaps}
+		rm -rf %{BUILDROOT}%{datadir}/{applications,pixmaps}
 	end
 end
 
