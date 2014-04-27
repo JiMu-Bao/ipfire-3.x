@@ -1,6 +1,43 @@
-diff -Naur ppp-2.4.5/README.eap-tls ppp-2.4.5-eaptls-mppe-0.99/README.eap-tls
---- ppp-2.4.5/README.eap-tls	1970-01-01 01:00:00.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/README.eap-tls	2010-10-01 15:17:54.205272328 +0200
+From 044a5b1e5d878c519143b71a44b3d5b0ca91de3b Mon Sep 17 00:00:00 2001
+From: Michal Sekletar <msekleta@redhat.com>
+Date: Mon, 7 Apr 2014 14:56:56 +0200
+Subject: [PATCH 17/25] pppd: rebase EAP-TLS patch v0.994
+
+---
+ README.eap-tls              |  169 +++++++
+ etc.ppp/eaptls-client       |   10 +
+ etc.ppp/eaptls-server       |   11 +
+ etc.ppp/openssl.cnf         |   14 +
+ linux/Makefile.top          |    6 +-
+ pppd/Makefile.linux         |   12 +
+ pppd/auth.c                 |  414 ++++++++++++++-
+ pppd/ccp.c                  |   20 +-
+ pppd/chap-md5.c             |    4 +
+ pppd/eap-tls.c              | 1174 +++++++++++++++++++++++++++++++++++++++++++
+ pppd/eap-tls.h              |  107 ++++
+ pppd/eap.c                  |  462 ++++++++++++++++-
+ pppd/eap.h                  |   32 +-
+ pppd/md5.c                  |    3 +
+ pppd/md5.h                  |    3 +
+ pppd/options.c              |   10 +
+ pppd/pathnames.h            |    7 +
+ pppd/plugins/Makefile.linux |    3 +
+ pppd/plugins/passprompt.c   |    3 +
+ pppd/plugins/passwordfd.c   |    4 +
+ pppd/pppd.h                 |    8 +
+ 21 files changed, 2461 insertions(+), 15 deletions(-)
+ create mode 100644 README.eap-tls
+ create mode 100644 etc.ppp/eaptls-client
+ create mode 100644 etc.ppp/eaptls-server
+ create mode 100644 etc.ppp/openssl.cnf
+ create mode 100644 pppd/eap-tls.c
+ create mode 100644 pppd/eap-tls.h
+
+diff --git a/README.eap-tls b/README.eap-tls
+new file mode 100644
+index 0000000..0a4fee9
+--- /dev/null
++++ b/README.eap-tls
 @@ -0,0 +1,169 @@
 +EAP-TLS authentication support for PPP
 +======================================
@@ -171,9 +208,11 @@ diff -Naur ppp-2.4.5/README.eap-tls ppp-2.4.5-eaptls-mppe-0.99/README.eap-tls
 +   This is experimental code.
 +   Send suggestions and comments to Jan Just Keijser <janjust@nikhef.nl>
 +
-diff -Naur ppp-2.4.5/etc.ppp/eaptls-client ppp-2.4.5-eaptls-mppe-0.99/etc.ppp/eaptls-client
---- ppp-2.4.5/etc.ppp/eaptls-client	1970-01-01 01:00:00.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/etc.ppp/eaptls-client	2010-10-01 15:17:54.205272328 +0200
+diff --git a/etc.ppp/eaptls-client b/etc.ppp/eaptls-client
+new file mode 100644
+index 0000000..7782f0e
+--- /dev/null
++++ b/etc.ppp/eaptls-client
 @@ -0,0 +1,10 @@
 +# Parameters for authentication using EAP-TLS (client)
 +
@@ -185,9 +224,11 @@ diff -Naur ppp-2.4.5/etc.ppp/eaptls-client ppp-2.4.5-eaptls-mppe-0.99/etc.ppp/ea
 +# client private key file (required)
 +
 +#client	server	/root/cert/client.crt	-	/root/cert/ca.crt	/root/cert/client.key
-diff -Naur ppp-2.4.5/etc.ppp/eaptls-server ppp-2.4.5-eaptls-mppe-0.99/etc.ppp/eaptls-server
---- ppp-2.4.5/etc.ppp/eaptls-server	1970-01-01 01:00:00.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/etc.ppp/eaptls-server	2010-10-01 15:17:54.205272328 +0200
+diff --git a/etc.ppp/eaptls-server b/etc.ppp/eaptls-server
+new file mode 100644
+index 0000000..fa53cbd
+--- /dev/null
++++ b/etc.ppp/eaptls-server
 @@ -0,0 +1,11 @@
 +# Parameters for authentication using EAP-TLS (server)
 +
@@ -200,9 +241,11 @@ diff -Naur ppp-2.4.5/etc.ppp/eaptls-server ppp-2.4.5-eaptls-mppe-0.99/etc.ppp/ea
 +# allowed addresses (required, can be *)
 +
 +#client	server	-	/root/cert/server.crt	/root/cert/ca.crt	/root/cert/server.key	192.168.1.0/24
-diff -Naur ppp-2.4.5/etc.ppp/openssl.cnf ppp-2.4.5-eaptls-mppe-0.99/etc.ppp/openssl.cnf
---- ppp-2.4.5/etc.ppp/openssl.cnf	1970-01-01 01:00:00.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/etc.ppp/openssl.cnf	2010-10-01 15:17:54.206272162 +0200
+diff --git a/etc.ppp/openssl.cnf b/etc.ppp/openssl.cnf
+new file mode 100644
+index 0000000..dd32f30
+--- /dev/null
++++ b/etc.ppp/openssl.cnf
 @@ -0,0 +1,14 @@
 +openssl_conf = openssl_def
 +
@@ -218,10 +261,11 @@ diff -Naur ppp-2.4.5/etc.ppp/openssl.cnf ppp-2.4.5-eaptls-mppe-0.99/etc.ppp/open
 +MODULE_PATH = /usr/lib64/libeTPkcs11.so
 +init = 0
 +
-diff -Naur ppp-2.4.5/linux/Makefile.top ppp-2.4.5-eaptls-mppe-0.99/linux/Makefile.top
---- ppp-2.4.5/linux/Makefile.top	2009-11-16 23:26:07.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/linux/Makefile.top	2010-10-01 15:17:54.206272162 +0200
-@@ -26,7 +26,7 @@
+diff --git a/linux/Makefile.top b/linux/Makefile.top
+index f42efd5..9a8945a 100644
+--- a/linux/Makefile.top
++++ b/linux/Makefile.top
+@@ -28,7 +28,7 @@ install-progs:
  	cd pppdump; $(MAKE) $(MFLAGS) install
  
  install-etcppp: $(ETCDIR) $(ETCDIR)/options $(ETCDIR)/pap-secrets \
@@ -230,7 +274,7 @@ diff -Naur ppp-2.4.5/linux/Makefile.top ppp-2.4.5-eaptls-mppe-0.99/linux/Makefil
  
  install-devel:
  	cd pppd; $(MAKE) $(MFLAGS) install-devel
-@@ -37,6 +37,10 @@
+@@ -39,6 +39,10 @@ $(ETCDIR)/pap-secrets:
  	$(INSTALL) -c -m 600 etc.ppp/pap-secrets $@
  $(ETCDIR)/chap-secrets:
  	$(INSTALL) -c -m 600 etc.ppp/chap-secrets $@
@@ -241,20 +285,21 @@ diff -Naur ppp-2.4.5/linux/Makefile.top ppp-2.4.5-eaptls-mppe-0.99/linux/Makefil
  
  $(BINDIR):
  	$(INSTALL) -d -m 755 $@
-diff -Naur ppp-2.4.5/pppd/Makefile.linux ppp-2.4.5-eaptls-mppe-0.99/pppd/Makefile.linux
---- ppp-2.4.5/pppd/Makefile.linux	2009-11-16 23:26:07.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/Makefile.linux	2010-10-01 15:17:54.207272272 +0200
-@@ -73,6 +73,9 @@
- # Enable EAP SRP-SHA1 authentication (requires libsrp)
- #USE_SRP=y
+diff --git a/pppd/Makefile.linux b/pppd/Makefile.linux
+index 65700fa..53df4d2 100644
+--- a/pppd/Makefile.linux
++++ b/pppd/Makefile.linux
+@@ -76,6 +76,9 @@ CBCP=y
+ # Use libutil
+ USE_LIBUTIL=y
  
-+# Enable EAP-TLS authentication (requires libssl and libcurl)
++# Enable EAP-TLS authentication (requires libssl and libcrypto)
 +USE_EAPTLS=y
 +
  MAXOCTETS=y
  
  INCLUDE_DIRS= -I../include
-@@ -112,6 +115,15 @@
+@@ -115,6 +118,15 @@ HEADERS += sha1.h
  PPPDOBJS += sha1.o
  endif
  
@@ -270,9 +315,10 @@ diff -Naur ppp-2.4.5/pppd/Makefile.linux ppp-2.4.5-eaptls-mppe-0.99/pppd/Makefil
  ifdef HAS_SHADOW
  CFLAGS   += -DHAS_SHADOW
  #LIBS     += -lshadow $(LIBS)
-diff -Naur ppp-2.4.5/pppd/auth.c ppp-2.4.5-eaptls-mppe-0.99/pppd/auth.c
---- ppp-2.4.5/pppd/auth.c	2009-11-16 23:26:07.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/auth.c	2010-10-01 15:17:54.210272021 +0200
+diff --git a/pppd/auth.c b/pppd/auth.c
+index 9e957fa..88cbdb6 100644
+--- a/pppd/auth.c
++++ b/pppd/auth.c
 @@ -109,6 +109,9 @@
  #include "upap.h"
  #include "chap-new.h"
@@ -283,7 +329,7 @@ diff -Naur ppp-2.4.5/pppd/auth.c ppp-2.4.5-eaptls-mppe-0.99/pppd/auth.c
  #ifdef CBCP_SUPPORT
  #include "cbcp.h"
  #endif
-@@ -183,6 +186,11 @@
+@@ -183,6 +186,11 @@ int (*chap_check_hook) __P((void)) = NULL;
  /* Hook for a plugin to get the CHAP password for authenticating us */
  int (*chap_passwd_hook) __P((char *user, char *passwd)) = NULL;
  
@@ -295,7 +341,7 @@ diff -Naur ppp-2.4.5/pppd/auth.c ppp-2.4.5-eaptls-mppe-0.99/pppd/auth.c
  /* Hook for a plugin to say whether it is OK if the peer
     refuses to authenticate. */
  int (*null_auth_hook) __P((struct wordlist **paddrs,
-@@ -238,6 +246,13 @@
+@@ -238,6 +246,13 @@ bool explicit_remote = 0;	/* User specified explicit remote name */
  bool explicit_user = 0;		/* Set if "user" option supplied */
  bool explicit_passwd = 0;	/* Set if "password" option supplied */
  char remote_name[MAXNAMELEN];	/* Peer's name for authentication */
@@ -309,7 +355,7 @@ diff -Naur ppp-2.4.5/pppd/auth.c ppp-2.4.5-eaptls-mppe-0.99/pppd/auth.c
  
  static char *uafname;		/* name of most recent +ua file */
  
-@@ -254,6 +269,19 @@
+@@ -254,6 +269,19 @@ static int  have_pap_secret __P((int *));
  static int  have_chap_secret __P((char *, char *, int, int *));
  static int  have_srp_secret __P((char *client, char *server, int need_ip,
      int *lacks_ipp));
@@ -329,7 +375,7 @@ diff -Naur ppp-2.4.5/pppd/auth.c ppp-2.4.5-eaptls-mppe-0.99/pppd/auth.c
  static int  ip_addr_check __P((u_int32_t, struct permitted_ip *));
  static int  scan_authfile __P((FILE *, char *, char *, char *,
  			       struct wordlist **, struct wordlist **,
-@@ -401,6 +429,14 @@
+@@ -401,6 +429,14 @@ option_t auth_options[] = {
        "Set telephone number(s) which are allowed to connect",
        OPT_PRIV | OPT_A2LIST },
  
@@ -344,7 +390,7 @@ diff -Naur ppp-2.4.5/pppd/auth.c ppp-2.4.5-eaptls-mppe-0.99/pppd/auth.c
      { NULL }
  };
  
-@@ -731,6 +767,9 @@
+@@ -730,6 +766,9 @@ link_established(unit)
      lcp_options *wo = &lcp_wantoptions[unit];
      lcp_options *go = &lcp_gotoptions[unit];
      lcp_options *ho = &lcp_hisoptions[unit];
@@ -354,7 +400,7 @@ diff -Naur ppp-2.4.5/pppd/auth.c ppp-2.4.5-eaptls-mppe-0.99/pppd/auth.c
      int i;
      struct protent *protp;
  
-@@ -765,6 +804,22 @@
+@@ -764,6 +803,22 @@ link_established(unit)
  	}
      }
  
@@ -377,7 +423,25 @@ diff -Naur ppp-2.4.5/pppd/auth.c ppp-2.4.5-eaptls-mppe-0.99/pppd/auth.c
      new_phase(PHASE_AUTHENTICATE);
      auth = 0;
      if (go->neg_eap) {
-@@ -1278,6 +1333,15 @@
+@@ -1117,7 +1172,7 @@ np_down(unit, proto)
+ 	UNTIMEOUT(connect_time_expired, NULL);
+ #ifdef MAXOCTETS
+ 	UNTIMEOUT(check_maxoctets, NULL);
+-#endif	
++#endif
+ 	new_phase(PHASE_NETWORK);
+     }
+ }
+@@ -1144,7 +1199,7 @@ check_maxoctets(arg)
+ 
+     update_link_stats(ifunit);
+     link_stats_valid=0;
+-    
++
+     switch(maxoctets_dir) {
+ 	case PPP_OCTETS_DIRECTION_IN:
+ 	    used = link_stats.bytes_in;
+@@ -1277,6 +1332,15 @@ auth_check_options()
  				    our_name, 1, &lacks_ip);
      }
  
@@ -393,20 +457,20 @@ diff -Naur ppp-2.4.5/pppd/auth.c ppp-2.4.5-eaptls-mppe-0.99/pppd/auth.c
      if (auth_required && !can_auth && noauth_addrs == NULL) {
  	if (default_auth) {
  	    option_error(
-@@ -1332,7 +1396,11 @@
+@@ -1331,7 +1395,11 @@ auth_reset(unit)
  	passwd[0] != 0 ||
  	(hadchap == 1 || (hadchap == -1 && have_chap_secret(user,
  	    (explicit_remote? remote_name: NULL), 0, NULL))) ||
 -	have_srp_secret(user, (explicit_remote? remote_name: NULL), 0, NULL));
 +	have_srp_secret(user, (explicit_remote? remote_name: NULL), 0, NULL)
 +#ifdef USE_EAPTLS
-+		|| have_eaptls_secret_client(user, (explicit_remote? remote_name: NULL)))
++		|| have_eaptls_secret_client(user, (explicit_remote? remote_name: NULL))
 +#endif
-+	;
++	);
  
      hadchap = -1;
      if (go->neg_upap && !uselogin && !have_pap_secret(NULL))
-@@ -1347,8 +1415,14 @@
+@@ -1346,8 +1414,14 @@ auth_reset(unit)
  	    !have_chap_secret((explicit_remote? remote_name: NULL), our_name,
  		1, NULL))) &&
  	!have_srp_secret((explicit_remote? remote_name: NULL), our_name, 1,
@@ -422,7 +486,7 @@ diff -Naur ppp-2.4.5/pppd/auth.c ppp-2.4.5-eaptls-mppe-0.99/pppd/auth.c
  }
  
  
-@@ -1706,6 +1780,7 @@
+@@ -1707,6 +1781,7 @@ have_srp_secret(client, server, need_ip, lacks_ipp)
  }
  
  
@@ -430,7 +494,7 @@ diff -Naur ppp-2.4.5/pppd/auth.c ppp-2.4.5-eaptls-mppe-0.99/pppd/auth.c
  /*
   * get_secret - open the CHAP secret file and return the secret
   * for authenticating the given client on the given server.
-@@ -2358,3 +2433,335 @@
+@@ -2359,3 +2434,334 @@ auth_script(script)
  
      auth_script_pid = run_program(script, argv, 0, auth_script_done, NULL, 0);
  }
@@ -733,7 +797,7 @@ diff -Naur ppp-2.4.5/pppd/auth.c ppp-2.4.5-eaptls-mppe-0.99/pppd/auth.c
 +		{
 +			error("Can't open eap-tls secret file %s: %m", filename);
 +			return 0;
-+   	 	}
++                }
 +
 +		check_access(fp, filename);
 +
@@ -750,9 +814,9 @@ diff -Naur ppp-2.4.5/pppd/auth.c ppp-2.4.5-eaptls-mppe-0.99/pppd/auth.c
 +		dbglog( "Calling eaptls password hook" );
 +		if ( (*eaptls_passwd_hook)(pkfile, passwd) < 0)
 +		{
-+	   		 error("Unable to obtain EAP-TLS password for %s (%s) from plugin", 
-+				client, pkfile);
-+		    return 0;
++                        error("Unable to obtain EAP-TLS password for %s (%s) from plugin",
++                              client, pkfile);
++                        return 0;
 +		}
 +	}
 +    if (am_server)
@@ -765,11 +829,11 @@ diff -Naur ppp-2.4.5/pppd/auth.c ppp-2.4.5-eaptls-mppe-0.99/pppd/auth.c
 +    return 1;
 +}
 +#endif
-+
-diff -Naur ppp-2.4.5/pppd/ccp.c ppp-2.4.5-eaptls-mppe-0.99/pppd/ccp.c
---- ppp-2.4.5/pppd/ccp.c	2009-11-16 23:26:07.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/ccp.c	2010-10-01 15:17:54.211272258 +0200
-@@ -540,6 +540,9 @@
+diff --git a/pppd/ccp.c b/pppd/ccp.c
+index 5814f35..7dead23 100644
+--- a/pppd/ccp.c
++++ b/pppd/ccp.c
+@@ -540,6 +540,9 @@ ccp_resetci(f)
      if (go->mppe) {
  	ccp_options *ao = &ccp_allowoptions[f->unit];
  	int auth_mschap_bits = auth_done[f->unit];
@@ -779,7 +843,7 @@ diff -Naur ppp-2.4.5/pppd/ccp.c ppp-2.4.5-eaptls-mppe-0.99/pppd/ccp.c
  	int numbits;
  
  	/*
-@@ -567,8 +570,23 @@
+@@ -567,8 +570,23 @@ ccp_resetci(f)
  	    lcp_close(f->unit, "MPPE required but not available");
  	    return;
  	}
@@ -804,9 +868,10 @@ diff -Naur ppp-2.4.5/pppd/ccp.c ppp-2.4.5-eaptls-mppe-0.99/pppd/ccp.c
  	    lcp_close(f->unit, "MPPE required but not available");
  	    return;
  	}
-diff -Naur ppp-2.4.5/pppd/chap-md5.c ppp-2.4.5-eaptls-mppe-0.99/pppd/chap-md5.c
---- ppp-2.4.5/pppd/chap-md5.c	2009-11-16 23:26:07.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/chap-md5.c	2010-10-01 15:17:54.212272142 +0200
+diff --git a/pppd/chap-md5.c b/pppd/chap-md5.c
+index 77dd4ec..269b52c 100644
+--- a/pppd/chap-md5.c
++++ b/pppd/chap-md5.c
 @@ -36,7 +36,11 @@
  #include "chap-new.h"
  #include "chap-md5.h"
@@ -819,9 +884,11 @@ diff -Naur ppp-2.4.5/pppd/chap-md5.c ppp-2.4.5-eaptls-mppe-0.99/pppd/chap-md5.c
  
  #define MD5_HASH_SIZE		16
  #define MD5_MIN_CHALLENGE	16
-diff -Naur ppp-2.4.5/pppd/eap-tls.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap-tls.c
---- ppp-2.4.5/pppd/eap-tls.c	1970-01-01 01:00:00.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/eap-tls.c	2010-10-05 15:12:45.881615580 +0200
+diff --git a/pppd/eap-tls.c b/pppd/eap-tls.c
+new file mode 100644
+index 0000000..a3aea5a
+--- /dev/null
++++ b/pppd/eap-tls.c
 @@ -0,0 +1,1174 @@
 +/*
 + * eap-tls.c - EAP-TLS implementation for PPP
@@ -1997,9 +2064,11 @@ diff -Naur ppp-2.4.5/pppd/eap-tls.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap-tls.c
 +		dbglog("%s", string);
 +}
 +
-diff -Naur ppp-2.4.5/pppd/eap-tls.h ppp-2.4.5-eaptls-mppe-0.99/pppd/eap-tls.h
---- ppp-2.4.5/pppd/eap-tls.h	1970-01-01 01:00:00.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/eap-tls.h	2010-10-01 15:17:54.213271816 +0200
+diff --git a/pppd/eap-tls.h b/pppd/eap-tls.h
+new file mode 100644
+index 0000000..2d45a0b
+--- /dev/null
++++ b/pppd/eap-tls.h
 @@ -0,0 +1,107 @@
 +/*
 + * eap-tls.h
@@ -2108,9 +2177,10 @@ diff -Naur ppp-2.4.5/pppd/eap-tls.h ppp-2.4.5-eaptls-mppe-0.99/pppd/eap-tls.h
 +#endif
 +
 +#endif
-diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
---- ppp-2.4.5/pppd/eap.c	2009-11-16 23:26:07.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c	2010-01-29 16:31:29.000000000 +0100
+diff --git a/pppd/eap.c b/pppd/eap.c
+index faced53..e2270af 100644
+--- a/pppd/eap.c
++++ b/pppd/eap.c
 @@ -43,6 +43,11 @@
   * Based on draft-ietf-pppext-eap-srp-03.txt.
   */
@@ -2137,7 +2207,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
  
  #ifdef USE_SRP
  #include <t_pwd.h>
-@@ -209,6 +218,9 @@
+@@ -209,6 +218,9 @@ int unit;
  	esp->es_server.ea_id = (u_char)(drand48() * 0x100);
  	esp->es_client.ea_timeout = EAP_DEFREQTIME;
  	esp->es_client.ea_maxrequests = EAP_DEFALLOWREQ;
@@ -2147,7 +2217,25 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
  }
  
  /*
-@@ -436,8 +448,16 @@
+@@ -268,7 +280,7 @@ eap_state *esp;
+ 	u_char *outp;
+ 
+ 	outp = outpacket_buf;
+-    
++
+ 	MAKEHEADER(outp, PPP_EAP);
+ 
+ 	PUTCHAR(EAP_FAILURE, outp);
+@@ -293,7 +305,7 @@ eap_state *esp;
+ 	u_char *outp;
+ 
+ 	outp = outpacket_buf;
+-    
++
+ 	MAKEHEADER(outp, PPP_EAP);
+ 
+ 	PUTCHAR(EAP_SUCCESS, outp);
+@@ -436,8 +448,16 @@ int status;
  	u_char vals[2];
  	struct b64state bs;
  #endif /* USE_SRP */
@@ -2164,7 +2252,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
  	switch (esp->es_server.ea_state) {
  	case eapBadAuth:
  		return;
-@@ -562,9 +582,81 @@
+@@ -562,9 +582,81 @@ int status;
  			break;
  		}
  #endif /* USE_SRP */
@@ -2193,7 +2281,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
 +
 +	case eapTlsRecv:
 +		ets = (struct eaptls_session *) esp->es_server.ea_session;
-+		
++
 +		if(ets->alert_sent) {
 +			esp->es_server.ea_state = eapTlsSendAlert;
 +			break;
@@ -2201,7 +2289,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
 +
 +		if (status) {
 +			esp->es_server.ea_state = eapBadAuth;
-+			break;	
++			break;
 +		}
 +		ets = (struct eaptls_session *) esp->es_server.ea_session;
 +
@@ -2215,14 +2303,14 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
 +		ets = (struct eaptls_session *) esp->es_server.ea_session;
 +
 +		if(SSL_is_init_finished(ets->ssl)) {
-+			esp->es_server.ea_state = eapTlsRecvClient; 
++			esp->es_server.ea_state = eapTlsRecvClient;
 +			break;
 +		}
 +
 +		if(ets->frag)
 +			esp->es_server.ea_state = eapTlsRecvAck;
 +		else
-+			esp->es_server.ea_state = eapTlsRecv;			
++			esp->es_server.ea_state = eapTlsRecv;
 +		break;
 +
 +	case eapTlsSendAck:
@@ -2246,7 +2334,16 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
  	case eapSRP1:
  #ifdef USE_SRP
  		ts = (struct t_server *)esp->es_server.ea_session;
-@@ -718,6 +810,30 @@
+@@ -681,7 +773,7 @@ eap_state *esp;
+ 	}
+ 
+ 	outp = outpacket_buf;
+-    
++
+ 	MAKEHEADER(outp, PPP_EAP);
+ 
+ 	PUTCHAR(EAP_REQUEST, outp);
+@@ -718,6 +810,30 @@ eap_state *esp;
  		INCPTR(esp->es_server.ea_namelen, outp);
  		break;
  
@@ -2277,7 +2374,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
  #ifdef USE_SRP
  	case eapSRP1:
  		PUTCHAR(EAPT_SRP, outp);
-@@ -904,11 +1020,57 @@
+@@ -904,11 +1020,57 @@ static void
  eap_server_timeout(arg)
  void *arg;
  {
@@ -2295,10 +2392,10 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
 +#ifdef USE_EAPTLS
 +	switch(esp->es_server.ea_prev_state) {
 +
-+	/* 
++	/*
 +	 *  In eap-tls the state changes after a request, so we return to
 +	 *  previous state ...
-+	 */	
++	 */
 +	case(eapTlsStart):
 +	case(eapTlsSendAck):
 +		esp->es_server.ea_state = esp->es_server.ea_prev_state;
@@ -2335,7 +2432,34 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
  	/* EAP ID number must not change on timeout. */
  	eap_send_request(esp);
  }
-@@ -1166,6 +1328,81 @@
+@@ -1081,7 +1243,7 @@ int namelen;
+ 	int msglen;
+ 
+ 	outp = outpacket_buf;
+-    
++
+ 	MAKEHEADER(outp, PPP_EAP);
+ 
+ 	PUTCHAR(EAP_RESPONSE, outp);
+@@ -1117,7 +1279,7 @@ int lenstr;
+ 	int msglen;
+ 
+ 	outp = outpacket_buf;
+-    
++
+ 	MAKEHEADER(outp, PPP_EAP);
+ 
+ 	PUTCHAR(EAP_RESPONSE, outp);
+@@ -1148,7 +1310,7 @@ u_char *str;
+ 	int msglen;
+ 
+ 	outp = outpacket_buf;
+-    
++
+ 	MAKEHEADER(outp, PPP_EAP);
+ 
+ 	PUTCHAR(EAP_RESPONSE, outp);
+@@ -1166,6 +1328,81 @@ u_char *str;
  }
  #endif /* USE_SRP */
  
@@ -2351,7 +2475,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
 +        u_char *outp;
 +        int outlen;
 +	u_char *lenloc;
-+	
++
 +        outp = outpacket_buf;
 +
 +        MAKEHEADER(outp, PPP_EAP);
@@ -2360,7 +2484,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
 +        PUTCHAR(id, outp);
 +
 +	lenloc = outp;
-+	INCPTR(2, outp);        
++	INCPTR(2, outp);
 +
 +	/*
 +	   If the id in the request is unchanged, we must retransmit
@@ -2417,7 +2541,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
  static void
  eap_send_nak(esp, id, type)
  eap_state *esp;
-@@ -1320,6 +1557,11 @@
+@@ -1320,6 +1557,11 @@ int len;
  	char rhostname[256];
  	MD5_CTX mdContext;
  	u_char hash[MD5_SIGNATURE_SIZE];
@@ -2429,7 +2553,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
  #ifdef USE_SRP
  	struct t_client *tc;
  	struct t_num sval, gval, Nval, *Ap, Bval;
-@@ -1456,6 +1698,90 @@
+@@ -1456,6 +1698,90 @@ int len;
  		    esp->es_client.ea_namelen);
  		break;
  
@@ -2437,20 +2561,20 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
 +	case EAPT_TLS:
 +
 +		switch(esp->es_client.ea_state) {
-+		
++
 +		case eapListen:
 +
 +			GETCHAR(flags, inp);
 +			if(flags & EAP_TLS_FLAGS_START){
 +
-+				esp->es_client.ea_using_eaptls = 1;		
++				esp->es_client.ea_using_eaptls = 1;
 +
 +                                if (explicit_remote){
 +                                        esp->es_client.ea_peer = strdup(remote_name);
 +                                        esp->es_client.ea_peerlen = strlen(remote_name);
 +                                } else
 +                                        esp->es_client.ea_peer = NULL;
-+	
++
 +				/* Init ssl session */
 +				if(!eaptls_init_ssl_client(esp)) {
 +					dbglog("cannot init ssl");
@@ -2472,18 +2596,18 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
 +
 +		case eapTlsRecvAck:
 +			eap_tls_response(esp, id);
-+			esp->es_client.ea_state = (ets->frag ? eapTlsRecvAck : 
++			esp->es_client.ea_state = (ets->frag ? eapTlsRecvAck :
 +							eapTlsRecv);
 +			break;
 +
 +		case eapTlsRecv:
-+			eaptls_receive(ets, inp, len);	
-+		
++			eaptls_receive(ets, inp, len);
++
 +			if(ets->frag) {
 +				eap_tls_sendack(esp, id);
 +				esp->es_client.ea_state = eapTlsRecv;
 +				break;
-+			}	
++			}
 +
 +			if(ets->alert_recv) {
 +				eap_tls_sendack(esp, id);
@@ -2494,7 +2618,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
 +			/* Check if TLS handshake is finished */
 +			if(SSL_is_init_finished(ets->ssl)){
 +#ifdef MPPE
-+ 				eaptls_gen_mppe_keys( ets, "client EAP encryption", 1 );
++                                eaptls_gen_mppe_keys( ets, "client EAP encryption", 1 );
 +#endif
 +				eaptls_free_session(ets);
 +				eap_tls_sendack(esp, id);
@@ -2520,7 +2644,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
  #ifdef USE_SRP
  	case EAPT_SRP:
  		if (len < 1) {
-@@ -1737,6 +2063,11 @@
+@@ -1737,6 +2063,11 @@ int len;
  	u_char dig[SHA_DIGESTSIZE];
  #endif /* USE_SRP */
  
@@ -2532,7 +2656,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
  	if (esp->es_server.ea_id != id) {
  		dbglog("EAP: discarding Response %d; expected ID %d", id,
  		    esp->es_server.ea_id);
-@@ -1776,6 +2107,60 @@
+@@ -1776,6 +2107,60 @@ int len;
  		eap_figure_next_state(esp, 0);
  		break;
  
@@ -2542,9 +2666,9 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
 +
 +		case eapTlsRecv:
 +			ets = (struct eaptls_session *) esp->es_server.ea_session;
-+			eap_figure_next_state(esp, 
++			eap_figure_next_state(esp,
 +				eaptls_receive(esp->es_server.ea_session, inp, len));
-+		
++
 +			if(ets->alert_recv) {
 +				eap_send_failure(esp);
 +				break;
@@ -2553,14 +2677,14 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
 +
 +		case eapTlsRecvAck:
 +			if(len > 1) {
-+				dbglog("EAP-TLS ACK with extra data");	
++				dbglog("EAP-TLS ACK with extra data");
 +			}
 +			eap_figure_next_state(esp, 0);
 +			break;
 +
 +		case eapTlsRecvClient:
 +			/* Receive authentication response from client */
-+	
++
 +			GETCHAR(flags, inp);
 +
 +			if(len == 1 && !flags) {	/* Ack = ok */
@@ -2593,7 +2717,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
  	case EAPT_NOTIFICATION:
  		dbglog("EAP unexpected Notification; response discarded");
  		break;
-@@ -1807,6 +2192,13 @@
+@@ -1807,6 +2192,13 @@ int len;
  			esp->es_server.ea_state = eapMD5Chall;
  			break;
  
@@ -2603,11 +2727,11 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
 +			esp->es_server.ea_state = eapTlsStart;
 +			break;
 +#endif /* USE_EAPTLS */
-+			
++
  		default:
  			dbglog("EAP: peer requesting unknown Type %d", vallen);
  			switch (esp->es_server.ea_state) {
-@@ -2018,13 +2410,27 @@
+@@ -2018,13 +2410,27 @@ u_char *inp;
  int id;
  int len;
  {
@@ -2624,7 +2748,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
  	}
  
 +#ifdef USE_EAPTLS
-+	if(esp->es_client.ea_using_eaptls && esp->es_client.ea_state != 
++	if(esp->es_client.ea_using_eaptls && esp->es_client.ea_state !=
 +		eapTlsRecvSuccess) {
 +		dbglog("EAP-TLS unexpected success message in state %s (%d)",
 +                    eap_state_name(esp->es_client.ea_state),
@@ -2636,7 +2760,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
  	if (esp->es_client.ea_timeout > 0) {
  		UNTIMEOUT(eap_client_timeout, (void *)esp);
  	}
-@@ -2150,6 +2556,9 @@
+@@ -2150,6 +2556,9 @@ void *arg;
  	int code, id, len, rtype, vallen;
  	u_char *pstart;
  	u_int32_t uval;
@@ -2646,7 +2770,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
  
  	if (inlen < EAP_HEADERLEN)
  		return (0);
-@@ -2214,6 +2623,24 @@
+@@ -2214,6 +2623,24 @@ void *arg;
  			}
  			break;
  
@@ -2671,7 +2795,7 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
  		case EAPT_SRP:
  			if (len < 3)
  				goto truncated;
-@@ -2325,6 +2752,25 @@
+@@ -2325,6 +2752,25 @@ void *arg;
  			}
  			break;
  
@@ -2690,22 +2814,18 @@ diff -Naur ppp-2.4.5/pppd/eap.c ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.c
 +			printer(arg, flags & EAP_TLS_FLAGS_LI ? " L":" -");
 +			printer(arg, flags & EAP_TLS_FLAGS_MF ? "M":"-");
 +			printer(arg, flags & EAP_TLS_FLAGS_START ? "S":"- ");
-+			
-+			break;												
++
++			break;
 +#endif /* USE_EAPTLS */
 +
  		case EAPT_NAK:
  			if (len <= 0) {
  				printer(arg, " <missing hint>");
-@@ -2426,3 +2872,4 @@
- 
- 	return (inp - pstart);
- }
-+
-diff -Naur ppp-2.4.5/pppd/eap.h ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.h
---- ppp-2.4.5/pppd/eap.h	2009-11-16 23:26:07.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.h	2010-10-01 15:17:54.214270927 +0200
-@@ -84,6 +84,16 @@
+diff --git a/pppd/eap.h b/pppd/eap.h
+index 199d184..3fa5391 100644
+--- a/pppd/eap.h
++++ b/pppd/eap.h
+@@ -84,6 +84,16 @@ enum eap_state_code {
  	eapClosed,	/* Authentication not in use */
  	eapListen,	/* Client ready (and timer running) */
  	eapIdentify,	/* EAP Identify sent */
@@ -2722,7 +2842,7 @@ diff -Naur ppp-2.4.5/pppd/eap.h ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.h
  	eapSRP1,	/* Sent EAP SRP-SHA1 Subtype 1 */
  	eapSRP2,	/* Sent EAP SRP-SHA1 Subtype 2 */
  	eapSRP3,	/* Sent EAP SRP-SHA1 Subtype 3 */
-@@ -95,9 +105,18 @@
+@@ -95,9 +105,18 @@ enum eap_state_code {
  
  #define	EAP_STATES	\
  	"Initial", "Pending", "Closed", "Listen", "Identify", \
@@ -2742,7 +2862,7 @@ diff -Naur ppp-2.4.5/pppd/eap.h ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.h
  #define	eap_server_active(esp)	\
  	((esp)->es_server.ea_state >= eapIdentify && \
  	 (esp)->es_server.ea_state <= eapMD5Chall)
-@@ -112,11 +131,17 @@
+@@ -112,11 +131,17 @@ struct eap_auth {
  	u_short ea_namelen;	/* Length of our name */
  	u_short ea_peerlen;	/* Length of peer's name */
  	enum eap_state_code ea_state;
@@ -2760,7 +2880,7 @@ diff -Naur ppp-2.4.5/pppd/eap.h ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.h
  };
  
  /*
-@@ -139,7 +164,12 @@
+@@ -139,7 +164,12 @@ typedef struct eap_state {
   * Timeouts.
   */
  #define	EAP_DEFTIMEOUT		3	/* Timeout (seconds) for rexmit */
@@ -2773,9 +2893,10 @@ diff -Naur ppp-2.4.5/pppd/eap.h ppp-2.4.5-eaptls-mppe-0.99/pppd/eap.h
  #define	EAP_DEFREQTIME		20	/* Time to wait for peer request */
  #define	EAP_DEFALLOWREQ		20	/* max # times to accept requests */
  
-diff -Naur ppp-2.4.5/pppd/md5.c ppp-2.4.5-eaptls-mppe-0.99/pppd/md5.c
---- ppp-2.4.5/pppd/md5.c	2009-11-16 23:26:07.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/md5.c	2010-10-01 15:17:54.214270927 +0200
+diff --git a/pppd/md5.c b/pppd/md5.c
+index f1291ce..2ee0c80 100644
+--- a/pppd/md5.c
++++ b/pppd/md5.c
 @@ -33,6 +33,8 @@
   ***********************************************************************
   */
@@ -2785,15 +2906,15 @@ diff -Naur ppp-2.4.5/pppd/md5.c ppp-2.4.5-eaptls-mppe-0.99/pppd/md5.c
  #include <string.h>
  #include "md5.h"
  
-@@ -305,3 +307,5 @@
+@@ -305,3 +307,4 @@ UINT4 *in;
   ** End of md5.c                                                      **
   ******************************** (cut) ********************************
   */
 +#endif /* USE_EAPTLS */
-+
-diff -Naur ppp-2.4.5/pppd/md5.h ppp-2.4.5-eaptls-mppe-0.99/pppd/md5.h
---- ppp-2.4.5/pppd/md5.h	2009-11-16 23:26:07.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/md5.h	2010-10-01 15:17:54.215271014 +0200
+diff --git a/pppd/md5.h b/pppd/md5.h
+index 71e8b00..14d7121 100644
+--- a/pppd/md5.h
++++ b/pppd/md5.h
 @@ -36,6 +36,7 @@
   ** documentation and/or software.                                    **
   ***********************************************************************
@@ -2802,16 +2923,17 @@ diff -Naur ppp-2.4.5/pppd/md5.h ppp-2.4.5-eaptls-mppe-0.99/pppd/md5.h
  
  #ifndef __MD5_INCLUDE__
  
-@@ -63,3 +64,5 @@
+@@ -63,3 +64,5 @@ void MD5_Final (unsigned char hash[], MD5_CTX *mdContext);
  
  #define __MD5_INCLUDE__
  #endif /* __MD5_INCLUDE__ */
 +
 +#endif /* USE_EAPTLS */
-diff -Naur ppp-2.4.5/pppd/options.c ppp-2.4.5-eaptls-mppe-0.99/pppd/options.c
---- ppp-2.4.5/pppd/options.c	2009-11-16 23:26:07.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/options.c	2010-10-01 15:17:54.215271014 +0200
-@@ -119,6 +119,10 @@
+diff --git a/pppd/options.c b/pppd/options.c
+index 8e62635..6915b2d 100644
+--- a/pppd/options.c
++++ b/pppd/options.c
+@@ -120,6 +120,10 @@ bool	dump_options;		/* print out option values */
  bool	dryrun;			/* print out option values and exit */
  char	*domain;		/* domain name set by domain option */
  int	child_wait = 5;		/* # seconds to wait for children at exit */
@@ -2819,10 +2941,10 @@ diff -Naur ppp-2.4.5/pppd/options.c ppp-2.4.5-eaptls-mppe-0.99/pppd/options.c
 +bool	only_update_crl_server = 0;	/* update server crl and exit */
 +bool	only_update_crl_client = 0;	/* update client crl and exit */
 +#endif /* USE_EAPTLS */
+ struct userenv *userenv_list;	/* user environment variables */
  
  #ifdef MAXOCTETS
- unsigned int  maxoctets = 0;    /* default - no limit */
-@@ -320,6 +324,12 @@
+@@ -338,6 +342,12 @@ option_t general_options[] = {
      { "mo-timeout", o_int, &maxoctets_timeout,
        "Check for traffic limit every N seconds", OPT_PRIO | OPT_LLIMIT | 1 },
  #endif
@@ -2835,10 +2957,11 @@ diff -Naur ppp-2.4.5/pppd/options.c ppp-2.4.5-eaptls-mppe-0.99/pppd/options.c
  
      { NULL }
  };
-diff -Naur ppp-2.4.5/pppd/pathnames.h ppp-2.4.5-eaptls-mppe-0.99/pppd/pathnames.h
---- ppp-2.4.5/pppd/pathnames.h	2009-11-16 23:26:07.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/pathnames.h	2010-10-01 15:17:54.215271014 +0200
-@@ -21,6 +21,13 @@
+diff --git a/pppd/pathnames.h b/pppd/pathnames.h
+index 24e010c..6275df6 100644
+--- a/pppd/pathnames.h
++++ b/pppd/pathnames.h
+@@ -22,6 +22,13 @@
  #define _PATH_UPAPFILE 	 _ROOT_PATH "/etc/ppp/pap-secrets"
  #define _PATH_CHAPFILE 	 _ROOT_PATH "/etc/ppp/chap-secrets"
  #define _PATH_SRPFILE 	 _ROOT_PATH "/etc/ppp/srp-secrets"
@@ -2852,10 +2975,11 @@ diff -Naur ppp-2.4.5/pppd/pathnames.h ppp-2.4.5-eaptls-mppe-0.99/pppd/pathnames.
  #define _PATH_SYSOPTIONS _ROOT_PATH "/etc/ppp/options"
  #define _PATH_IPUP	 _ROOT_PATH "/etc/ppp/ip-up"
  #define _PATH_IPDOWN	 _ROOT_PATH "/etc/ppp/ip-down"
-diff -Naur ppp-2.4.5/pppd/plugins/Makefile.linux ppp-2.4.5-eaptls-mppe-0.99/pppd/plugins/Makefile.linux
---- ppp-2.4.5/pppd/plugins/Makefile.linux	2009-11-16 23:26:07.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/plugins/Makefile.linux	2010-10-01 15:17:54.215271014 +0200
-@@ -4,6 +4,9 @@
+diff --git a/pppd/plugins/Makefile.linux b/pppd/plugins/Makefile.linux
+index b474a19..760cad4 100644
+--- a/pppd/plugins/Makefile.linux
++++ b/pppd/plugins/Makefile.linux
+@@ -4,6 +4,9 @@ CFLAGS	= $(COPTS) -I.. -I../../include -fPIC
  LDFLAGS	= -shared
  INSTALL	= install
  
@@ -2865,10 +2989,11 @@ diff -Naur ppp-2.4.5/pppd/plugins/Makefile.linux ppp-2.4.5-eaptls-mppe-0.99/pppd
  DESTDIR = $(INSTROOT)@DESTDIR@
  BINDIR = $(DESTDIR)/sbin
  MANDIR = $(DESTDIR)/share/man/man8
-diff -Naur ppp-2.4.5/pppd/plugins/passprompt.c ppp-2.4.5-eaptls-mppe-0.99/pppd/plugins/passprompt.c
---- ppp-2.4.5/pppd/plugins/passprompt.c	2009-11-16 23:26:07.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/plugins/passprompt.c	2010-10-01 15:17:54.215271014 +0200
-@@ -107,4 +107,7 @@
+diff --git a/pppd/plugins/passprompt.c b/pppd/plugins/passprompt.c
+index babb6dc..6ba73ca 100644
+--- a/pppd/plugins/passprompt.c
++++ b/pppd/plugins/passprompt.c
+@@ -107,4 +107,7 @@ void plugin_init(void)
  {
      add_options(options);
      pap_passwd_hook = promptpass;
@@ -2876,23 +3001,24 @@ diff -Naur ppp-2.4.5/pppd/plugins/passprompt.c ppp-2.4.5-eaptls-mppe-0.99/pppd/p
 +    eaptls_passwd_hook = promptpass;
 +#endif
  }
-diff -Naur ppp-2.4.5/pppd/plugins/passwordfd.c ppp-2.4.5-eaptls-mppe-0.99/pppd/plugins/passwordfd.c
---- ppp-2.4.5/pppd/plugins/passwordfd.c	2009-11-16 23:26:07.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/plugins/passwordfd.c	2010-10-01 15:17:54.216270820 +0200
-@@ -79,4 +79,9 @@
+diff --git a/pppd/plugins/passwordfd.c b/pppd/plugins/passwordfd.c
+index d718f3b..c3f9793 100644
+--- a/pppd/plugins/passwordfd.c
++++ b/pppd/plugins/passwordfd.c
+@@ -79,4 +79,8 @@ void plugin_init (void)
  
      chap_check_hook = pwfd_check;
      chap_passwd_hook = pwfd_passwd;
 +
 +#ifdef USE_EAPTLS
-+    eaptls_check_hook = pwfd_check;
 +    eaptls_passwd_hook = pwfd_passwd;
 +#endif
  }
-diff -Naur ppp-2.4.5/pppd/pppd.h ppp-2.4.5-eaptls-mppe-0.99/pppd/pppd.h
---- ppp-2.4.5/pppd/pppd.h	2009-11-16 23:26:07.000000000 +0100
-+++ ppp-2.4.5-eaptls-mppe-0.99/pppd/pppd.h	2010-10-01 15:17:54.216270820 +0200
-@@ -320,6 +320,10 @@
+diff --git a/pppd/pppd.h b/pppd/pppd.h
+index 47e4d9a..de271c1 100644
+--- a/pppd/pppd.h
++++ b/pppd/pppd.h
+@@ -324,6 +324,10 @@ extern bool	dump_options;	/* print out option values */
  extern bool	dryrun;		/* check everything, print options, exit */
  extern int	child_wait;	/* # seconds to wait for children at end */
  
@@ -2903,15 +3029,17 @@ diff -Naur ppp-2.4.5/pppd/pppd.h ppp-2.4.5-eaptls-mppe-0.99/pppd/pppd.h
  #ifdef MAXOCTETS
  extern unsigned int maxoctets;	     /* Maximum octetes per session (in bytes) */
  extern int       maxoctets_dir;      /* Direction :
-@@ -717,6 +721,11 @@
+@@ -738,6 +742,10 @@ extern int (*chap_check_hook) __P((void));
  extern int (*chap_passwd_hook) __P((char *user, char *passwd));
  extern void (*multilink_join_hook) __P((void));
  
 +#ifdef USE_EAPTLS
-+extern int (*eaptls_check_hook) __P((void));
 +extern int (*eaptls_passwd_hook) __P((char *user, char *passwd));
 +#endif
 +
  /* Let a plugin snoop sent and received packets.  Useful for L2TP */
  extern void (*snoop_recv_hook) __P((unsigned char *p, int len));
  extern void (*snoop_send_hook) __P((unsigned char *p, int len));
+-- 
+1.8.3.1
+

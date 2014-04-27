@@ -1,6 +1,18 @@
---- ppp-2.4.3/pppd/ipv6cp.c~	2005-11-04 09:40:10.000000000 +0000
-+++ ppp-2.4.3/pppd/ipv6cp.c	2005-11-04 10:20:14.000000000 +0000
-@@ -235,6 +235,8 @@ static option_t ipv6cp_option_list[] = {
+From abef895f9d144f05a83045136b77277352dc450f Mon Sep 17 00:00:00 2001
+From: David Woodhouse <dwmw2@fedoraproject.org>
+Date: Fri, 4 Apr 2014 18:53:33 +0200
+Subject: [PATCH 09/25] pppd: introduce ipv6-accept-remote
+
+---
+ pppd/ipv6cp.c | 5 ++++-
+ pppd/ipv6cp.h | 3 ++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/pppd/ipv6cp.c b/pppd/ipv6cp.c
+index caa2b26..5a56c95 100644
+--- a/pppd/ipv6cp.c
++++ b/pppd/ipv6cp.c
+@@ -245,6 +245,8 @@ static option_t ipv6cp_option_list[] = {
  
      { "ipv6cp-accept-local", o_bool, &ipv6cp_allowoptions[0].accept_local,
        "Accept peer's interface identifier for us", 1 },
@@ -9,7 +21,7 @@
  
      { "ipv6cp-use-ipaddr", o_bool, &ipv6cp_allowoptions[0].use_ip,
        "Use (default) IPv4 address as interface identifier", 1 },
-@@ -427,6 +429,7 @@ ipv6cp_init(unit)
+@@ -437,6 +439,7 @@ ipv6cp_init(unit)
      memset(ao, 0, sizeof(*ao));
  
      wo->accept_local = 1;
@@ -17,7 +29,7 @@
      wo->neg_ifaceid = 1;
      ao->neg_ifaceid = 1;
  
-@@ -952,7 +955,7 @@ ipv6cp_reqci(f, inp, len, reject_if_disa
+@@ -962,7 +965,7 @@ ipv6cp_reqci(f, inp, len, reject_if_disagree)
  		orc = CONFREJ;		/* Reject CI */
  		break;
  	    }
@@ -26,8 +38,10 @@
  		!eui64_equals(ifaceid, wo->hisid) && 
  		eui64_iszero(go->hisid)) {
  		    
---- ppp-2.4.3/pppd/ipv6cp.h~	2002-12-04 23:03:32.000000000 +0000
-+++ ppp-2.4.3/pppd/ipv6cp.h	2005-11-04 10:20:55.000000000 +0000
+diff --git a/pppd/ipv6cp.h b/pppd/ipv6cp.h
+index cc4568d..8c7552e 100644
+--- a/pppd/ipv6cp.h
++++ b/pppd/ipv6cp.h
 @@ -150,7 +150,8 @@
  typedef struct ipv6cp_options {
      int neg_ifaceid;		/* Negotiate interface identifier? */
@@ -38,3 +52,6 @@
      int opt_local;		/* ourtoken set by option */
      int opt_remote;		/* histoken set by option */
      int use_ip;			/* use IP as interface identifier */
+-- 
+1.8.3.1
+

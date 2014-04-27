@@ -1,8 +1,22 @@
-diff -up ppp-2.4.4/configure.local ppp-2.4.4/configure
---- ppp-2.4.4/configure.local	2005-07-08 20:23:05.000000000 -0400
-+++ ppp-2.4.4/configure	2008-08-28 17:38:04.000000000 -0400
+From 343728d5de6e44bd67923503e62eefaad50760a4 Mon Sep 17 00:00:00 2001
+From: Michal Sekletar <msekleta@redhat.com>
+Date: Fri, 4 Apr 2014 18:47:01 +0200
+Subject: [PATCH 08/25] build-sys: use prefix /usr instead of /usr/local
+
+---
+ configure           | 2 +-
+ pppd/Makefile.linux | 4 ++--
+ scripts/ppp-on-rsh  | 2 +-
+ scripts/ppp-on-ssh  | 4 ++--
+ scripts/secure-card | 2 +-
+ 5 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/configure b/configure
+index 6a55e0f..db54d77 100755
+--- a/configure
++++ b/configure
 @@ -2,7 +2,7 @@
- # $Id: configure,v 1.37 2005/06/26 23:53:17 carlsonj Exp $
+ # $Id: configure,v 1.38 2008/06/15 07:08:49 paulus Exp $
  
  # Where to install stuff by default
 -DESTDIR=/usr/local
@@ -10,10 +24,11 @@ diff -up ppp-2.4.4/configure.local ppp-2.4.4/configure
  SYSCONF=/etc
  
  #  if [ -d /NextApps ]; then
-diff -up ppp-2.4.4/pppd/Makefile.linux.local ppp-2.4.4/pppd/Makefile.linux
---- ppp-2.4.4/pppd/Makefile.linux.local	2008-08-28 17:37:33.000000000 -0400
-+++ ppp-2.4.4/pppd/Makefile.linux	2008-08-28 17:37:33.000000000 -0400
-@@ -97,8 +97,8 @@ endif
+diff --git a/pppd/Makefile.linux b/pppd/Makefile.linux
+index 4f27100..95c2598 100644
+--- a/pppd/Makefile.linux
++++ b/pppd/Makefile.linux
+@@ -99,8 +99,8 @@ endif
  
  # EAP SRP-SHA1
  ifdef USE_SRP
@@ -24,9 +39,10 @@ diff -up ppp-2.4.4/pppd/Makefile.linux.local ppp-2.4.4/pppd/Makefile.linux
  TARGETS	+= srp-entry
  EXTRAINSTALL = $(INSTALL) -c -m 555 srp-entry $(BINDIR)/srp-entry
  MANPAGES += srp-entry.8
-diff -up ppp-2.4.4/scripts/ppp-on-rsh.local ppp-2.4.4/scripts/ppp-on-rsh
---- ppp-2.4.4/scripts/ppp-on-rsh.local	2000-04-15 05:49:28.000000000 -0400
-+++ ppp-2.4.4/scripts/ppp-on-rsh	2008-08-28 17:37:33.000000000 -0400
+diff --git a/scripts/ppp-on-rsh b/scripts/ppp-on-rsh
+index 30a50db..a80616a 100755
+--- a/scripts/ppp-on-rsh
++++ b/scripts/ppp-on-rsh
 @@ -26,7 +26,7 @@ PPPD_RHOST=myremotehost
  # For this example, we assume that pppd on both local and remote
  # machines reside in the same place, /usr/local/bin/pppd
@@ -36,9 +52,10 @@ diff -up ppp-2.4.4/scripts/ppp-on-rsh.local ppp-2.4.4/scripts/ppp-on-rsh
  
  #
  # The location of local options file (where rsh client is running).
-diff -up ppp-2.4.4/scripts/ppp-on-ssh.local ppp-2.4.4/scripts/ppp-on-ssh
---- ppp-2.4.4/scripts/ppp-on-ssh.local	2000-04-15 05:49:42.000000000 -0400
-+++ ppp-2.4.4/scripts/ppp-on-ssh	2008-08-28 17:37:33.000000000 -0400
+diff --git a/scripts/ppp-on-ssh b/scripts/ppp-on-ssh
+index 0e41aca..c27e80a 100755
+--- a/scripts/ppp-on-ssh
++++ b/scripts/ppp-on-ssh
 @@ -26,7 +26,7 @@ PPPD_RHOST=myremotehost
  # For this example, we assume that pppd on both local and remote
  # machines reside in the same place, /usr/local/bin/pppd
@@ -57,12 +74,16 @@ diff -up ppp-2.4.4/scripts/ppp-on-ssh.local ppp-2.4.4/scripts/ppp-on-ssh
  
  export PPPD_LOC PPPD_LOC_OPT PPPD_REM_OPT PPPD_RHOST SSH_LOC
  
-diff -up ppp-2.4.4/scripts/secure-card.local ppp-2.4.4/scripts/secure-card
---- ppp-2.4.4/scripts/secure-card.local	2004-02-01 22:36:46.000000000 -0500
-+++ ppp-2.4.4/scripts/secure-card	2008-08-28 17:37:33.000000000 -0400
+diff --git a/scripts/secure-card b/scripts/secure-card
+index 0002365..ae3ae50 100755
+--- a/scripts/secure-card
++++ b/scripts/secure-card
 @@ -1,4 +1,4 @@
 -#!/usr/local/bin/expect -f
 +#!/usr/bin/expect -f
  #
  # This  script was  written  by  Jim Isaacson  <jcisaac@crl.com>.  It is
  # designed to work  as a script to use the  SecureCARD(tm) device.  This
+-- 
+1.8.3.1
+

@@ -1,7 +1,24 @@
-diff -urNp --exclude-from=/mdomsch2/excludes --minimal ppp-2.4.3.orig/pppd/pppd.8 ppp-2.4.3/pppd/pppd.8
---- ppp-2.4.3.orig/pppd/pppd.8	2004-11-13 06:22:49.000000000 -0600
-+++ ppp-2.4.3/pppd/pppd.8	2005-08-03 22:10:34.000000000 -0500
-@@ -1035,7 +1035,7 @@ Ask the peer for up to 2 DNS server addr
+From 01419dfb684d501b57f1c24dcfdbcf9da93ccca2 Mon Sep 17 00:00:00 2001
+From: Michal Sekletar <msekleta@redhat.com>
+Date: Fri, 4 Apr 2014 18:12:47 +0200
+Subject: [PATCH 06/25] scritps: use change_resolv_conf function
+
+Don't handle /etc/resolv.conf manually, but use a helper function from
+initscripts. Also change path where we save DNS servers supplied by peer while
+we are at it.
+
+Resolves: #132482
+---
+ pppd/pppd.8               |  2 +-
+ scripts/ip-down.local.add |  9 +++++----
+ scripts/ip-up.local.add   | 17 ++++++++++-------
+ 3 files changed, 16 insertions(+), 12 deletions(-)
+
+diff --git a/pppd/pppd.8 b/pppd/pppd.8
+index e2768b1..2dd6e1a 100644
+--- a/pppd/pppd.8
++++ b/pppd/pppd.8
+@@ -1099,7 +1099,7 @@ Ask the peer for up to 2 DNS server addresses.  The addresses supplied
  by the peer (if any) are passed to the /etc/ppp/ip\-up script in the
  environment variables DNS1 and DNS2, and the environment variable
  USEPEERDNS will be set to 1.  In addition, pppd will create an
@@ -10,8 +27,10 @@ diff -urNp --exclude-from=/mdomsch2/excludes --minimal ppp-2.4.3.orig/pppd/pppd.
  the address(es) supplied by the peer.
  .TP
  .B user \fIname
---- ppp-2.4.2/scripts/ip-down.local.add.change_resolv_conf	1999-02-27 05:32:42.000000000 +0100
-+++ ppp-2.4.2/scripts/ip-down.local.add	2004-09-14 14:36:20.058008752 +0200
+diff --git a/scripts/ip-down.local.add b/scripts/ip-down.local.add
+index b93590e..163f71e 100644
+--- a/scripts/ip-down.local.add
++++ b/scripts/ip-down.local.add
 @@ -9,12 +9,13 @@
  #
  # Nick Walker (nickwalker@email.com)
@@ -30,8 +49,10 @@ diff -urNp --exclude-from=/mdomsch2/excludes --minimal ppp-2.4.3.orig/pppd/pppd.
  	fi
  fi
  
---- ppp-2.4.2/scripts/ip-up.local.add.change_resolv_conf	1999-11-15 04:28:10.000000000 +0100
-+++ ppp-2.4.2/scripts/ip-up.local.add	2004-09-14 14:37:39.129061828 +0200
+diff --git a/scripts/ip-up.local.add b/scripts/ip-up.local.add
+index 8017209..26cf5f8 100644
+--- a/scripts/ip-up.local.add
++++ b/scripts/ip-up.local.add
 @@ -9,16 +9,19 @@
  #
  # Nick Walker (nickwalker@email.com)
@@ -59,3 +80,6 @@ diff -urNp --exclude-from=/mdomsch2/excludes --minimal ppp-2.4.3.orig/pppd/pppd.
  	fi
  fi
  
+-- 
+1.8.3.1
+
