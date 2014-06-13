@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = pdns
-version    = 3.1
-release    = 5
+version    = 3.3.1
+release    = 1
 
 groups     = Networking/DNS
 url        = http://powerdns.com/
@@ -23,12 +23,9 @@ source_dl  = http://downloads.powerdns.com/releases/
 
 build
 	requires
-		autoconf
-		automake
 		boost-devel
 		chrpath
 		gcc-c++
-		libtool
 		lua-devel
 		polarssl-devel
 		shadow-utils
@@ -42,15 +39,14 @@ build
 	configure_options += \
 		--sysconfdir=%{sysconfdir}/pdns \
 		--libdir=%{libdir}/powerdns \
+		--with-system-polarssl \
 		--with-modules="" \
 		--with-dynmodules="pipe geo gsqlite3" \
 		--with-lua \
+		--enable-tools \
 		--disable-static
 
 	prepare_cmds
-		# Regenerate build system.
-		autoreconf -vfi
-
 		%{create_user}
 	end
 
