@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openssl
-version    = 1.0.1e
-release    = 2
+version    = 1.0.1h
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -82,8 +82,7 @@ build
 			no-ec no-ec2m no-ecdh no-ecdsa \
 			no-srp \
 			-DSSL_FORBID_ENULL \
-			 %{ssl_arch} \
-			fips
+			 %{ssl_arch}
 
 		# Build.
 		make depend
@@ -134,11 +133,15 @@ end
 
 packages
 	package %{name}
+		requires += %{name}-libs = %{thisver}
+	end
 
 	package %{name}-libs
 		template LIBS
 
 		requires += ca-certificates
+
+		conflicts += %{name} < %{thisver}
 
 		files += %{libdir}/openssl
 	end
