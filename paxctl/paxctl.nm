@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = paxctl
-version    = 0.5
+version    = 0.8
 release    = 1
 
 groups     = Applications/System
@@ -17,7 +17,7 @@ description
 	is a set of kernel security patches to enhance a system's security.
 end
 
-source_dl  =
+source_dl  = https://pax.grsecurity.net/
 
 build
 	requires
