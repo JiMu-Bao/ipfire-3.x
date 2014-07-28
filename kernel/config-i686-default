@@ -51,10 +51,7 @@ CONFIG_X86_BIGSMP=y
 # CONFIG_X86_INTEL_MID is not set
 # CONFIG_X86_RDC321X is not set
 CONFIG_X86_32_NON_STANDARD=y
-# CONFIG_X86_NUMAQ is not set
 # CONFIG_STA2X11 is not set
-# CONFIG_X86_SUMMIT is not set
-# CONFIG_X86_ES7000 is not set
 CONFIG_X86_32_IRIS=m
 CONFIG_XEN_MAX_DOMAIN_MEMORY=64
 # CONFIG_LGUEST_GUEST is not set
@@ -191,7 +188,11 @@ CONFIG_CS5535_CLOCK_EVENT_SRC=m
 #
 # PATA SFF controllers with BMDMA
 #
+CONFIG_PATA_CS5520=m
+CONFIG_PATA_CS5530=m
 # CONFIG_PATA_CS5535 is not set
+CONFIG_PATA_CS5536=m
+# CONFIG_PATA_SC1200 is not set
 
 #
 # Input Device Drivers
@@ -201,6 +202,7 @@ CONFIG_CS5535_CLOCK_EVENT_SRC=m
 #
 # Non-8250 serial port support
 #
+# CONFIG_SERIAL_TIMBERDALE is not set
 CONFIG_HW_RANDOM_GEODE=m
 CONFIG_SONYPI=m
 CONFIG_PC8736x_GPIO=m
@@ -255,7 +257,15 @@ CONFIG_VIDEO_OV7670=m
 #
 # Console display driver support
 #
+CONFIG_SND_SB16_DSP=m
+CONFIG_SND_CS5530=m
+CONFIG_SND_CS5535AUDIO=m
 # CONFIG_SND_SIS7019 is not set
+
+#
+# LED drivers
+#
+CONFIG_LEDS_OT200=m
 
 #
 # iptables trigger is under Netfilter config (LED target)

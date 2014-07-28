@@ -1,0 +1,13 @@
+diff --git a/arch/arm/kvm/arm.c b/arch/arm/kvm/arm.c
+index 3c82b37..ee73109 100644
+--- a/arch/arm/kvm/arm.c
++++ b/arch/arm/kvm/arm.c
+@@ -1034,7 +1034,7 @@ static void check_kvm_target_cpu(void *ret)
+ /**
+  * Initialize Hyp-mode and memory mappings on all CPUs.
+  */
+-int kvm_arch_init(void *opaque)
++int kvm_arch_init(const void *opaque)
+ {
+ 	int err;
+ 	int ret, cpu;
