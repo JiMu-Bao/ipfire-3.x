@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 204
-release    = 4
+release    = 5
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -125,6 +125,10 @@ build
 
 		# Install legacy tmpfile to autocreate /run/lock on startup.
 		install -v -m 644 %{DIR_APP}/tmpfiles.d/legacy.conf %{BUILDROOT}%{prefix}/lib/tmpfiles.d/
+
+		# Remove udev rules for "predictable" network device renaming.
+		# http://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/
+		rm -vf %{BUILDROOT}/usr/lib/udev/rules.d/80-net-name-slot.rules
 	end
 end
 
