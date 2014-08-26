@@ -1,0 +1,70 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libnl3
+version    = 3.2.25
+release    = 1
+thisapp    = libnl-%{version}
+
+groups     = Development/Libraries
+url        = http://www.infradead.org/~tgr/libnl/
+license    = LGPLv2
+summary    = Convenience library for kernel netlink sockets.
+
+description
+	This package contains a convenience library to simplify using the \
+	Linux kernel's netlink sockets interface for network manipulation.
+end
+
+source_dl  = http://www.infradead.org/~tgr/libnl/files/
+
+build
+	requires
+		autoconf
+		automake
+		bison
+		flex
+		libtool
+	end
+
+	prepare_cmds
+		autoreconf -vif
+	end
+
+	configure_options += \
+		--disable-static
+end
+
+packages
+	package %{name}
+
+	package %{name}-cli
+		summary = Command line interface utils for libnl3
+		description
+			This package contains various libnl3 utils and additional
+			libraries on which they depend.
+		end
+
+		requires += %{name} = %{thisver}
+
+		files
+			%{libdir}/libnl-cli*.so.*
+			%{libdir}/libnl/
+			%{sbindir}/*
+			%{mandir}/man8/*
+		end
+	end
+
+	package %{name}-devel
+		template DEVEL
+
+		requires += %{name} = %{thisver}
+		requires += %{name}-cli = %{thisver}
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
