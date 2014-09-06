@@ -5,6 +5,11 @@
 CONFIG_PREEMPT_NOTIFIERS=y
 
 #
+# CPU Core family selection
+#
+CONFIG_ARCH_AXXIA=y
+
+#
 # Processor Features
 #
 CONFIG_ARM_LPAE=y
@@ -18,8 +23,14 @@ CONFIG_PHYS_ADDR_T_64BIT=y
 # CONFIG_TRANSPARENT_HUGEPAGE is not set
 
 #
+# 1-wire Slaves
+#
+CONFIG_POWER_RESET_AXXIA=y
+
+#
 # Hardware Spinlock drivers
 #
+# CONFIG_IPMMU_VMSA is not set
 # CONFIG_ARM_SMMU is not set
 
 #
