@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = systemd
-version    = 204
-release    = 5
+version    = 215
+release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -38,7 +38,7 @@ build
 		gperf
 		hwdata
 		intltool
-		kmod-devel >= 5
+		kmod-devel >= 15
 		libacl-devel
 		libblkid-devel
 		libcap-devel
@@ -57,6 +57,10 @@ build
 		--with-sysvinit-path= \
 		--with-sysvrcnd-path= \
 		--enable-introspection=yes \
+		--disable-networkd \
+		--disable-resolvd \
+		--disable-sysusers \
+		--disable-timesyncd \
 		--disable-static
 
 	prepare_cmds
