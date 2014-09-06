@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kmod
-version    = 9
-release    = 2
+version    = 18
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Kernel
