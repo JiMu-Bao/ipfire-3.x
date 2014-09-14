@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = glibc
-version    = 2.19
+version    = 2.20
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -79,7 +79,7 @@ build
 			-e "s/-Wl,--hash-style=both/-Wl,--hash-style=gnu -Wl,-O1/"
 
 		# http://sourceware.org/ml/libc-ports/2011-09/msg00018.html
-		sed -e "s/PIC/SHARED/g" -i ports/sysdeps/arm/{set,__long}jmp.S
+		sed -e "s/PIC/SHARED/g" -i sysdeps/arm/{set,__long}jmp.S
 	end
 
 	configure_options = \
