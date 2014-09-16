@@ -3,21 +3,23 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = cloog-ppl
+name       = compat-cloog-ppl
 version    = 0.15.11
 release    = 2
+thisapp    = cloog-ppl-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
 url        = http://www.cloog.org
 license    = GPLv2+
-summary    = The Chunky Loop Generator.
+summary    = The Chunky Loop Generator
 
 description
-	CLooG is a software which generates loops for scanning Z-polyhedra. That is, \
-	CLooG finds the code or pseudo-code where each integral point of one or more \
-	parametrized polyhedron or parametrized polyhedra union is reached. CLooG is \
-	designed to avoid control overhead and to produce a very efficient code.
+	CLooG is a software which generates loops for scanning Z-polyhedra.
+	That is, CLooG finds the code or pseudo-code where each integral point
+	of one or more parametrized polyhedron or parametrized polyhedra union
+	is reached. CLooG is designed to avoid control overhead and to produce
+	a very efficient code.
 end
 
 source_dl += ftp://gcc.gnu.org/pub/gcc/infrastructure/
@@ -42,13 +44,23 @@ build
 	test
 		make check
 	end
+
+	install
+		mkdir -pv %{BUILDROOT}%{libdir}
+		install -v -m 755 .libs/libcloog.so.0.0.0 %{BUILDROOT}%{libdir}
+		ln -svf libcloog.so.0.0.0 %{BUILDROOT}%{libdir}/libcloog.so.0
+	end
 end
 
 packages
 	package %{name}
+		provides
+			cloog-ppl = %{thisver}
+		end
 
-	package %{name}-devel
-		template DEVEL
+		obsoletes
+			cloog-ppl <= %{thisver}
+		end
 	end
 
 	package %{name}-debuginfo
