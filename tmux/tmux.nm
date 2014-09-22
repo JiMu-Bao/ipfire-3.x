@@ -1,0 +1,37 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = tmux
+version    = 1.9a
+release    = 1
+
+groups     = Application/System
+url        = http://sourceforge.net/projects/tmux
+license    = ISC and BSD
+summary    = A terminal multiplexer
+
+description
+	tmux is a "terminal multiplexer."  It enables a number of terminals
+	(or windows) to be accessed and controlled from a single terminal.
+	tmux is intended to be a simple, modern, BSD-licensed alternative to
+	programs such as GNU Screen.
+end
+
+source_dl  = http://downloads.sourceforge.net/%{name}/
+
+build
+	requires
+		ncurses-devel
+		libevent-devel
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

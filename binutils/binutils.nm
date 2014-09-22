@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = binutils
-version    = 2.23.52.0.1
+version    = 2.24
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -30,6 +30,7 @@ build
 		flex
 		gcc-c++
 		pakfire-builder >= 0.9.23-5
+		perl
 		texinfo
 		zlib-devel
 	end
@@ -37,12 +38,24 @@ build
 	prepare_cmds
 		mkdir -pv %{DIR_SRC}/binutils-build
 
+		# On aarch64 we might use 64KiB pages
+		sed -i -e '/#define.*ELF_COMMONPAGESIZE/s/0x1000$/0x10000/' bfd/elf*aarch64.c
+
 		# Suppress the installation of an outdated standards.info file as a newer
 		# one is installed later on in the Autoconf instructions:
 		rm -fv etc/standards.info
 		sed -e '/^INFO/s/standards.info //' -i etc/Makefile.in
 
+		perl -pi -e 's/i\[3-7\]86/i[34567]86/g' */conf*
 		sed -i -e 's/%''{release}/%{release}/g' bfd/Makefile{.am,.in}
+		sed -i -e '/^libopcodes_la_\(DEPENDENCIES\|LIBADD\)/s,$, ../bfd/libbfd.la,' opcodes/Makefile.{am,in}
+
+		# Build libbfd.so and libopcodes.so with -Bsymbolic-functions if possible.
+		if gcc %{CFLAGS} -v --help 2>&1 | grep -q -- -Bsymbolic-functions; then
+			sed -i -e 's/^libbfd_la_LDFLAGS = /&-Wl,-Bsymbolic-functions /' bfd/Makefile.{am,in}
+			sed -i -e 's/^libopcodes_la_LDFLAGS = /&-Wl,-Bsymbolic-functions /' opcodes/Makefile.{am,in}
+		fi
+		touch */configure
 	end
 
 	configure_options += \

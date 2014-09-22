@@ -5,8 +5,8 @@
 
 name       = gnutls
 version    = %{ver_maj}.%{ver_min}
-ver_maj    = 3.2
-ver_min    = 12
+ver_maj    = 3.3
+ver_min    = 4
 release    = 1
 
 groups     = System/Libraries
@@ -36,6 +36,7 @@ build
 		perl
 		p11-kit-devel >= 0.14
 		readline-devel
+		texinfo
 		zlib-devel
 	end
 

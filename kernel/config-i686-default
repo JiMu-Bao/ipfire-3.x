@@ -47,14 +47,10 @@ CONFIG_LBDAF=y
 # Processor type and features
 #
 CONFIG_X86_BIGSMP=y
-# CONFIG_X86_GOLDFISH is not set
 # CONFIG_X86_INTEL_MID is not set
 # CONFIG_X86_RDC321X is not set
 CONFIG_X86_32_NON_STANDARD=y
-# CONFIG_X86_NUMAQ is not set
 # CONFIG_STA2X11 is not set
-# CONFIG_X86_SUMMIT is not set
-# CONFIG_X86_ES7000 is not set
 CONFIG_X86_32_IRIS=m
 CONFIG_XEN_MAX_DOMAIN_MEMORY=64
 # CONFIG_LGUEST_GUEST is not set
@@ -181,6 +177,7 @@ CONFIG_IBM_ASM=m
 CONFIG_CS5535_MFGPT=m
 CONFIG_CS5535_MFGPT_DEFAULT_IRQ=7
 CONFIG_CS5535_CLOCK_EVENT_SRC=m
+CONFIG_PCH_PHUB=m
 
 #
 # SCSI Transports
@@ -191,7 +188,16 @@ CONFIG_CS5535_CLOCK_EVENT_SRC=m
 #
 # PATA SFF controllers with BMDMA
 #
+CONFIG_PATA_CS5520=m
+CONFIG_PATA_CS5530=m
 # CONFIG_PATA_CS5535 is not set
+CONFIG_PATA_CS5536=m
+# CONFIG_PATA_SC1200 is not set
+
+#
+# Distributed Switch Architecture drivers
+#
+CONFIG_PCH_GBE=m
 
 #
 # Input Device Drivers
@@ -201,6 +207,8 @@ CONFIG_CS5535_CLOCK_EVENT_SRC=m
 #
 # Non-8250 serial port support
 #
+# CONFIG_SERIAL_TIMBERDALE is not set
+# CONFIG_SERIAL_PCH_UART is not set
 CONFIG_HW_RANDOM_GEODE=m
 CONFIG_SONYPI=m
 CONFIG_PC8736x_GPIO=m
@@ -216,14 +224,30 @@ CONFIG_I2C_SIS5595=m
 CONFIG_I2C_SIS630=m
 
 #
+# I2C system bus drivers (mostly embedded / system-on-chip)
+#
+# CONFIG_I2C_EG20T is not set
+
+#
 # Other I2C/SMBus bus drivers
 #
 CONFIG_SCx200_ACB=m
 
 #
+# Enable PHYLIB and NETWORK_PHY_TIMESTAMPING to see the additional clocks.
+#
+CONFIG_PTP_1588_CLOCK_PCH=m
+
+#
+# PCI GPIO expanders:
+#
+# CONFIG_GPIO_PCH is not set
+
+#
 # Watchdog Device Drivers
 #
 CONFIG_GEODE_WDT=m
+# CONFIG_SBC8360_WDT is not set
 # CONFIG_SBC7240_WDT is not set
 
 #
@@ -255,7 +279,15 @@ CONFIG_VIDEO_OV7670=m
 #
 # Console display driver support
 #
+CONFIG_SND_SB16_DSP=m
+CONFIG_SND_CS5530=m
+CONFIG_SND_CS5535AUDIO=m
 # CONFIG_SND_SIS7019 is not set
+
+#
+# LED drivers
+#
+CONFIG_LEDS_OT200=m
 
 #
 # iptables trigger is under Netfilter config (LED target)
@@ -265,6 +297,11 @@ CONFIG_VIDEO_OV7670=m
 # CONFIG_EDAC_I82875P is not set
 # CONFIG_EDAC_I82860 is not set
 # CONFIG_EDAC_R82600 is not set
+
+#
+# DMA Devices
+#
+CONFIG_PCH_DMA=m
 
 #
 # Android

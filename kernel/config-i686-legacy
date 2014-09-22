@@ -7,12 +7,16 @@
 #
 # Processor type and features
 #
-# CONFIG_XEN_PRIVILEGED_GUEST is not set
 CONFIG_HIGHMEM4G=y
 # CONFIG_HIGHMEM64G is not set
 # CONFIG_VMSPLIT_3G_OPT is not set
 # CONFIG_VMSPLIT_2G_OPT is not set
 # CONFIG_PHYS_ADDR_T_64BIT is not set
+
+#
+# CPU Frequency scaling
+#
+# CONFIG_GENERIC_CPUFREQ_CPU0 is not set
 
 #
 # Bus options (PCI etc.)
@@ -33,7 +37,6 @@ CONFIG_OLPC_XO15_SCI=y
 # Generic Driver Options
 #
 # CONFIG_SYS_HYPERVISOR is not set
-CONFIG_REGMAP_MMIO=m
 CONFIG_DMA_CMA=y
 
 #
@@ -55,10 +58,10 @@ CONFIG_OF=y
 #
 # Device Tree and Open Firmware support
 #
-CONFIG_PROC_DEVICETREE=y
 # CONFIG_OF_SELFTEST is not set
 CONFIG_OF_PROMTREE=y
 CONFIG_OF_ADDRESS=y
+CONFIG_OF_ADDRESS_PCI=y
 CONFIG_OF_IRQ=y
 CONFIG_OF_NET=y
 CONFIG_OF_MDIO=y
@@ -68,11 +71,15 @@ CONFIG_OF_PCI_IRQ=y
 #
 # Distributed Switch Architecture drivers
 #
+CONFIG_AMD_XGBE=m
 # CONFIG_ARC_EMAC is not set
+CONFIG_BCMGENET=m
+CONFIG_SYSTEMPORT=m
 
 #
 # MII PHY device drivers
 #
+CONFIG_AMD_XGBE_PHY=m
 CONFIG_MDIO_BUS_MUX=m
 CONFIG_MDIO_BUS_MUX_GPIO=m
 CONFIG_MDIO_BUS_MUX_MMIOREG=m
@@ -80,8 +87,12 @@ CONFIG_MDIO_BUS_MUX_MMIOREG=m
 #
 # Input Device Drivers
 #
+CONFIG_KEYBOARD_STMPE=m
+CONFIG_KEYBOARD_OMAP4=m
 CONFIG_MOUSE_PS2_OLPC=y
+CONFIG_INPUT_MAX8997_HAPTIC=m
 # CONFIG_INPUT_GPIO_BEEPER is not set
+CONFIG_INPUT_PWM_BEEPER=m
 
 #
 # Hardware I/O ports
@@ -110,6 +121,7 @@ CONFIG_SERIAL_OF_PLATFORM=y
 #
 CONFIG_I2C_PXA=m
 CONFIG_I2C_PXA_PCI=y
+CONFIG_I2C_RK3X=m
 
 #
 # Pin controllers
@@ -118,21 +130,26 @@ CONFIG_PINMUX=y
 CONFIG_PINCONF=y
 CONFIG_GENERIC_PINCONF=y
 CONFIG_PINCTRL_AS3722=y
-# CONFIG_PINCTRL_CAPRI is not set
+CONFIG_PINCTRL_BCM281XX=y
 CONFIG_PINCTRL_MSM=y
-CONFIG_PINCTRL_MSM8X74=m
+CONFIG_PINCTRL_APQ8064=y
+CONFIG_PINCTRL_IPQ8064=y
 # CONFIG_PINCTRL_SINGLE is not set
 CONFIG_PINCTRL_PALMAS=y
 CONFIG_OF_GPIO=y
+CONFIG_GPIOLIB_IRQCHIP=y
 
 #
 # Memory mapped GPIO drivers:
 #
+# CONFIG_GPIO_DWAPB is not set
+# CONFIG_GPIO_SYSCON is not set
 # CONFIG_GPIO_GRGPIO is not set
 
 #
 # I2C GPIO expanders:
 #
+# CONFIG_GPIO_STMPE is not set
 CONFIG_GPIO_ADNP=m
 
 #
@@ -172,17 +189,22 @@ CONFIG_POWER_RESET_GPIO=y
 # Multifunction device drivers
 #
 CONFIG_MFD_AS3722=y
+CONFIG_MFD_STMPE=y
+
+#
+# STMicroelectronics STMPE Interface Drivers
+#
+CONFIG_STMPE_I2C=y
 
 #
 # Frame buffer hardware drivers
 #
-CONFIG_BACKLIGHT_PWM=m
-# CONFIG_BACKLIGHT_OT200 is not set
-
-#
-# Console display driver support
-#
 # CONFIG_FB_SSD1307 is not set
+CONFIG_BACKLIGHT_PWM=m
+# CONFIG_BACKLIGHT_LM3630A is not set
+# CONFIG_BACKLIGHT_LP855X is not set
+# CONFIG_BACKLIGHT_LP8788 is not set
+# CONFIG_BACKLIGHT_OT200 is not set
 
 #
 # USB Imaging devices
@@ -214,6 +236,8 @@ CONFIG_RTC_DRV_SNVS=m
 #
 # DMA Devices
 #
+CONFIG_FSL_EDMA=m
+CONFIG_DMA_VIRTUAL_CHANNELS=m
 CONFIG_DMA_OF=y
 
 #
@@ -225,6 +249,7 @@ CONFIG_DMA_OF=y
 # Android
 #
 CONFIG_XO1_RFKILL=m
+# CONFIG_XO15_EBOOK is not set
 
 #
 # Common Clock Framework
@@ -246,23 +271,20 @@ CONFIG_OF_IOMMU=y
 #
 # Analog to digital converters
 #
-# CONFIG_EXYNOS_ADC is not set
+CONFIG_VF610_ADC=m
 
 #
 # Temperature sensors
 #
 CONFIG_PWM=y
 CONFIG_PWM_SYSFS=y
+CONFIG_PWM_FSL_FTM=m
 CONFIG_PWM_LP3943=m
+CONFIG_PWM_LPSS=m
 CONFIG_PWM_PCA9685=m
 CONFIG_PWM_TWL=m
 CONFIG_PWM_TWL_LED=m
 CONFIG_IRQCHIP=y
-
-#
-# PHY Subsystem
-#
-CONFIG_PHY_EXYNOS_DP_VIDEO=m
 
 #
 # Non-executable pages

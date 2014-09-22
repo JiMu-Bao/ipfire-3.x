@@ -5,8 +5,8 @@
 
 name       = crda
 version    = %{ver_crda}-%{ver_regdb}
-ver_crda   = 1.1.3
-ver_regdb  = 2013.02.13
+ver_crda   = 3.13
+ver_regdb  = 2014.06.13
 release    = 1
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -23,14 +23,14 @@ description
 end
 
 source_dl  = \
-	http://wireless.kernel.org/download/crda/ \
+	https://www.kernel.org/pub/software/network/crda/ \
 	https://www.kernel.org/pub/software/network/wireless-regdb/
-sources    = crda-%{ver_crda}.tar.bz2 wireless-regdb-%{ver_regdb}.tar.xz
+sources    = crda-%{ver_crda}.tar.xz wireless-regdb-%{ver_regdb}.tar.xz
 
 build
 	requires
 		libgcrypt-devel
-		libnl-devel
+		libnl3-devel
 		openssl
 		python-m2crypto
 	end
@@ -54,7 +54,8 @@ build
 		popd
 
 		pushd %{DIR_SRC}/crda-%{ver_crda}
-		make install DESTDIR=%{BUILDROOT} PREFIX=%{prefix} MANDIR=%{mandir}
+		make install DESTDIR=%{BUILDROOT} PREFIX=%{prefix} MANDIR=%{mandir} \
+			SBINDIR=%{sbindir}/ LIBDIR=%{libdir}/
 		popd
 	end
 end
@@ -63,6 +64,12 @@ packages
 	package %{name}
 		provides = wireless-regdb = %{ver_regdb}
 		obsoletes = wireless-regdb < %{ver_regdb}
+	end
+
+	package %{name}-devel
+		template DEVEL
+
+		files += !%{libdir}/libreg.so
 	end
 
 	package %{name}-debuginfo
