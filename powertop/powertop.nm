@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = powertop
-version    = 2.0
+version    = 2.6.1
 release    = 1
 
 groups     = Applications/System
@@ -20,8 +20,7 @@ description
 	enabled these settings.
 end
 
-source_dl  = https://01.org/powertop/sites/default/files/downloads/
-sources    = %{thisapp}.tar.bz2
+source_dl  = https://01.org/sites/default/files/downloads/powertop/
 
 build
 	requires
