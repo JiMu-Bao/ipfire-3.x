@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = bash
-version    = 4.2
+version    = 4.3
 release    = 11
 
 groups     = System/Tools
@@ -28,7 +28,6 @@ build
 		bison
 		filesystem >= 002
 		ncurses-devel
-		readline-devel
 		texinfo
 	end
 
@@ -43,13 +42,18 @@ build
 	end
 
 	configure_options += \
-		--without-bash-malloc \
-		--with-installed-readline
+		--with-afs \
+		--with-bash-malloc=no
+
+	# Recycles pids is neccessary. When bash's last fork's pid was X
+	# and new fork's pid is also X, bash has to wait for this same pid.
+	# Without Recycles pids bash will not wait.
+	make_build_targets += "CPPFLAGS=-D_GNU_SOURCE -DRECYCLES_PIDS -DDEFAULT_PATH_VALUE='\"/usr/local/bin:/usr/bin\"' $(getconf LFS_CFLAGS)"
 
 	# Test hangs forever
-	#def test
-	#	make tests
-	#end
+	test
+		make tests
+	end
 
 	install_cmds
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/{profile.d,skel}
@@ -68,6 +72,16 @@ build
 		cp -vf %{DIR_SOURCE}/profile.d/* %{BUILDROOT}/etc/profile.d
 
 		ln -svf bash %{BUILDROOT}%{bindir}/sh
+
+		# https://bugzilla.redhat.com/show_bug.cgi?id=820192
+		# bug #820192, need to add execable alternatives for regular built-ins
+		for f in alias bg cd command fc fg getopts jobs read umask unalias wait; do
+			(
+				echo "#!/bin/sh"
+				echo "builtin \"${f}\" \"\$@\""
+			) > "%{BUILDROOT}/%{bindir}/${f}"
+			chmod +x "%{BUILDROOT}%{bindir}/${f}"
+		done
 	end
 end
 
