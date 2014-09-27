@@ -3,11 +3,11 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-# Configure build to compile with cloog and ppl.
-build_cloog_ppl = 1
+# Configure build to compile with cloog.
+build_cloog = 1
 
 name       = gcc
-version    = 4.8.1
+version    = 4.9.1
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -22,15 +22,17 @@ description
 end
 
 # This is the at least required version of binutils.
-required_binutils_version = 2.21.51.0.8-1
+binutils_version = 2.24
+cloog_version    = 0.18.1
 
 source_dl  = http://ftp.gnu.org/gnu/gcc/%{thisapp}/
+source_dl += ftp://gcc.gnu.org/pub/gcc/infrastructure/
 sources    = %{thisapp}.tar.gz
 
 build
 	requires
 		autogen
-		binutils >= %{required_binutils_version}
+		binutils >= %{binutils_version}
 		dejagnu
 		elfutils-devel
 		expect
@@ -47,16 +49,22 @@ build
 	end
 
 	# If cloog support is enabled, we require the devel packages for build.
-	if "%{build_cloog_ppl}" == "1"
-		requires += cloog-ppl-devel >= 0.15.11-2
-		requires += ppl-devel >= 1.0
+	if "%{build_cloog}" == "1"
+		requires += cloog-devel >= %{cloog_version}
+		requires += isl-devel
 	end
 
 	# Build libquadmath (only on x86).
 	build_libquadmath = 0
 
+	# Build liblsan (only on x86_64).
+	build_liblsan = 0
+
 	# Build libtasn (only on x86_64).
 	build_libtsan = 0
+
+	# Build libcilkrts (only x86)
+	build_libcilkrts = 0
 
 	# A couple of configure arguments depending on the architecture and
 	# configuration.
@@ -68,13 +76,16 @@ build
 		configure_options = --disable-multilib
 
 		build_libquadmath = 1
+		build_liblsan = 1
 		build_libtsan = 1
+		build_libcilkrts = 1
 	end
 
 	if "%{DISTRO_ARCH}" == "i686"
 		configure_options = --with-arch=%{DISTRO_ARCH} --with-tune=generic
 
 		build_libquadmath = 1
+		build_libcilkrts = 1
 	end
 
 	if "%{DISTRO_ARCH}" == "armv5tel"
@@ -98,9 +109,11 @@ build
 			--with-abi=aapcs-linux
 	end
 
-	if "%{build_cloog_ppl}" == "1"
-		configure_options += --with-cloog --with-ppl \
-			--disable-ppl-version-check
+	if "%{build_cloog}" == "1"
+		configure_options += \
+			--with-cloog=%{prefix} \
+			--with-isl=%{prefix} \
+			--enable-cloog-backend=isl
 	end
 
 	# CFLAGS for hardening.
@@ -163,10 +176,20 @@ build
 		CFLAGS="%{CFLAGS}"
 		CFLAGS=$(echo ${CFLAGS} | sed -e 's/\(-Wp,\)\?-D_FORTIFY_SOURCE=[12]//g')
 		CFLAGS=$(echo ${CFLAGS} | sed -e 's/-m64//g;s/-m32//g;s/-m31//g')
+		CFLAGS=$(echo ${CFLAGS} | sed -e 's/-mfpmath=sse/-mfpmath=sse -msse2/g')
 		CFLAGS=$(echo ${CFLAGS} | sed -e 's/-march=i.86//g')
 		CFLAGS=$(echo ${CFLAGS} | sed -e 's/ -pipe / /g')
 		CFLAGS=$(echo "${CFLAGS}" | sed -e 's/[[:blank:]]\+/ /g')
 		CXXFLAGS=$(echo  ${CFLAGS} | sed -e 's/ -Wall//g')
+		CXXFLAGS=$(echo  ${CXXFLAGS} | sed -e 's/ -fexceptions / /g')
+		CXXFLAGS=$(echo  ${CXXFLAGS} | sed -e 's/ -Werror=format-security / -Wformat -Werror=format-security /g')
+
+		case "${CFLAGS}" in
+			*-fasynchronous-unwind-tables*)
+				sed -i -e "s/-fno-exceptions /-fno-exceptions -fno-asynchronous-unwind-tables/" \
+					../%{thisapp}/Makefile.in
+				;;
+		esac
 
 		CFLAGS="${CFLAGS}" \
 		CXXFLAGS="${CXXFLAGS}" \
@@ -188,7 +211,6 @@ build
 			--enable-checking=release \
 			--disable-werror \
 			--disable-libssp \
-			--disable-static \
 			--with-system-zlib \
 			--with-bugurl=http://bugtracker.ipfire.org \
 			--disable-libunwind-exceptions \
@@ -197,7 +219,11 @@ build
 			--with-linker-hash-style=gnu \
 			--enable-plugin \
 			--enable-initfini-array \
+			--disable-libgcj \
 			%{configure_options}
+
+		# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=58012
+		# XXX disabled flags: --disable-static
 
 		# GCC does not support a parallel build.
 		make %{make_bootstrap} BOOT_CFLAGS="${CFLAGS}"
@@ -212,7 +238,7 @@ build
 	end
 
 	#test
-	#	cd %{DIR_SRC}/gcc-build && make check
+	#	cd %{DIR_SRC}/gcc-build && make -k check || true
 	#	cd %{DIR_APP} && ./contrib/test_summary
 	#end
 
@@ -265,12 +291,7 @@ build
 		chmod 755 %{BUILDROOT}%{libdir}/libgomp.so.1.*
 
 		# libstdc++
-		ln -svf ../../../libstdc++.so.6.0.18 ${FULLPATH}/libstdc++.so
-
-		# libmudflap
-		ln -svf ../../../libmudflap.so.0.0.0 ${FULLPATH}/libmudflap.so
-		ln -svf ../../../libmudflapth.so.0.0.0 ${FULLPATH}/libmudflapth.so
-		chmod 755 %{BUILDROOT}%{libdir}/libmudflap{,th}.so.0.*
+		ln -svf ../../../libstdc++.so.6.0.20 ${FULLPATH}/libstdc++.so
 
 		# libquadmath
 		if [ "%{build_libquadmath}" = "1" ]; then
@@ -282,6 +303,28 @@ build
 		mv -vf %{BUILDROOT}%{libdir}/libitm.spec ${FULLPATH}/
 		ln -svf ../../../libitm.so.1.0.0 ${FULLPATH}/libitm.so
 		chmod 755 %{BUILDROOT}%{libdir}/libitm.so.1.*
+
+		# liblsan
+		if [ "%{build_liblsan}" = "1" ]; then
+			ln -svf ../../../liblsan.so.0.0.0 ${FULLPATH}/liblsan.so
+			chmod 755 %{BUILDROOT}%{libdir}/liblsan.so.*
+		fi
+
+		# libtsan
+		if [ "%{build_libtsan}" = "1" ]; then
+			ln -svf ../../../libtsan.so.0.0.0 ${FULLPATH}/libtsan.so
+			chmod 755 %{BUILDROOT}%{libdir}/libtsan.so.*
+		fi
+
+		# libubsan
+		ln -svf ../../../libubsan.so.0.0.0 ${FULLPATH}/libubsan.so
+		chmod 755 %{BUILDROOT}%{libdir}/libubsan.so.*
+
+		# libcilkrts
+		if [ "%{build_libcilkrts}" = "1" ]; then
+			ln -svf ../../../libcilkrts.so.5.0.0 ${FULLPATH}/libcilkrts.so
+			chmod 755 %{BUILDROOT}%{libdir}/libcilkrts.so.5.*
+		fi
 	end
 
 	keep_libraries
@@ -295,7 +338,7 @@ packages
 		groups += Build
 
 		requires
-			binutils >= %{required_binutils_version}
+			binutils >= %{binutils_version}
 			filesystem >= 002
 			glibc >= 2.16
 			glibc-devel
@@ -309,8 +352,8 @@ packages
 		provides += libgcc-devel = %{thisver}
 		obsoletes += libgcc-devel < %{thisver}
 
-		if "%{build_cloog_ppl}" == "1"
-			requires += cloog-ppl >= 0.15
+		if "%{build_cloog}" == "1"
+			requires += cloog >= %{cloog_version}
 		end
 	end
 
@@ -382,6 +425,11 @@ packages
 		files
 			%{libdir}/libgcc*.so.*
 		end
+
+		obsoletes
+			libmudflap
+			libmudflap-devel
+		end
 	end
 
 	package libstdc++
@@ -423,41 +471,6 @@ packages
 
 		files
 			%{libdir}/libgomp*.so.*
-		end
-	end
-
-	package libmudflap
-		summary = GCC mudflap shared support library.
-		description
-			This package contains GCC shared support library which is needed
-			for mudflap support.
-		end
-
-		files
-			%{libdir}/libmudflap*.so.*
-		end
-	end
-
-	package libmudflap-devel
-		summary = Development files for GCC mudflap support.
-		description
-			This package contains headers for building mudflap-instrumented programs.
-
-			To instrument a non-threaded program, add -fmudflap
-			option to GCC and when linking add -lmudflap, for threaded programs
-			also add -fmudflapth and -lmudflapth.
-		end
-
-		requires
-			libmudflap = %{thisver}
-		end
-
-		files
-			%{libdir}/libmudflap.so
-			%{libdir}/libmudflapth.so
-			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/include/mf-runtime.h
-			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/libmudflap.so
-			%{libdir}/gcc/%{DISTRO_BUILDTARGET}/%{version}/libmudflapth.so
 		end
 	end
 
@@ -548,7 +561,7 @@ packages
 		end
 
 		files
-			%{libdir}/libasan.so.0*
+			%{libdir}/libasan.so.1*
 		end
 	end
 
@@ -562,6 +575,45 @@ packages
 
 			files
 				%{libdir}/libtsan.so.0*
+			end
+		end
+	end
+
+	package libubsan
+		summary = The Undefined Behavior Sanitizer runtime library
+		description
+			This package contains the Undefined Behavior Sanitizer library
+			which is used for -fsanitize=undefined instrumented programs.
+		end
+
+		files
+			%{libdir}/libubsan.so.0*
+		end
+	end
+
+	if "%{build_liblsan}" == "1"
+		package liblsan
+			summary = The Leak Sanitizer runtime library
+			description
+				This package contains the Leak Sanitizer library
+				which is used for -fsanitize=leak instrumented programs.
+			end
+
+			files
+				%{libdir}/liblsan.so.0*
+			end
+		end
+	end
+
+	if "%{build_libcilkrts}" == "1"
+		package libcilkrts
+			summary = The Cilk+ runtime library
+			description
+				This package contains the Cilk+ runtime library.
+			end
+
+			files
+				%{libdir}/libcilkrts.so.5*
 			end
 		end
 	end

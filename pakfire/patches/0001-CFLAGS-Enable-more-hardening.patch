@@ -1,0 +1,26 @@
+commit 664591620ddc73ac6838c6ed152c2b3c4233d609
+Author: Michael Tremer <michael.tremer@ipfire.org>
+Date:   Tue Sep 16 15:49:25 2014 +0200
+
+    CFLAGS: Enable more hardening
+    
+    -fstack-protector-strong is available since GCC 4.9
+    
+    -D_FORTIFY_SOURCE=2 is automatically enabled in IPFire since
+    GCC 4.9 and when optimization is enabled (e.g. -O2).
+
+diff --git a/macros/cflags.macro b/macros/cflags.macro
+index a2c583c..52a069a 100644
+--- a/macros/cflags.macro
++++ b/macros/cflags.macro
+@@ -1,7 +1,8 @@
+ 
+ # Export CFLAGS + CXXFLAGS
+-GLOBAL_CFLAGS   = -O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions -fPIC
+-GLOBAL_CFLAGS  += -fstack-protector-all --param=ssp-buffer-size=4
++GLOBAL_CFLAGS   = -O2 -g -pipe -Wall -Werror=format-security
++GLOBAL_CFLAGS  += -fexceptions -fPIC -fstack-protector-strong --param=ssp-buffer-size=4
++GLOBAL_CFLAGS  += -grecord-gcc-switches
+ 
+ CFLAGS_i686     = -m32 -march=i686 -mtune=atom -fasynchronous-unwind-tables
+ CFLAGS_x86_64   = -m64 -mtune=generic

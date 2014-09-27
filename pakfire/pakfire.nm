@@ -5,7 +5,7 @@
 
 name       = pakfire
 version    = 0.9.26
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Packaging
@@ -103,6 +103,9 @@ packages
 			build-essentials
 			systemd-devel < 38
 		end
+
+		# Requires GCC 4.9 or later for -fstack-protector-strong
+		conflicts += gcc < 4.9
 
 		configfiles
 			%{sysconfdir}/pakfire/builder.conf
