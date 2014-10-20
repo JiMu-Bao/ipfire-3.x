@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = gettext
-version    = 0.18.2
+version    = 0.19.3
 release    = 1
 
 groups     = System/Base
@@ -31,8 +31,12 @@ build
 	requires
 		bison
 		chrpath
+		expat-devel
+		glib2-devel
 		libcroco-devel
+		libunistring-devel
 		libxml2-devel
+		ncurses-devel
 	end
 
 	configure_options += \
@@ -59,6 +63,8 @@ end
 
 packages
 	package %{name}
+		provides += bundled(gnulib)
+	end
 
 	package %{name}-common-devel
 		summary = Common development files for gettext.
