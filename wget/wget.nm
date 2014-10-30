@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = wget
-version    = 1.12
+version    = 1.16
 release    = 1
 
 groups     = Applications/Internet
@@ -20,24 +20,30 @@ description
 	support, etc.
 end
 
-PKG_BUILD_DEPS+= libidn-devel openssl-devel
-
 source_dl  = http://ftp.gnu.org/gnu/wget/
-sources    = %{thisapp}.tar.lzma
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
 		libidn-devel
+		libuuid-devel
 		openssl-devel
 	end
 
-	configure_options+= \
-		--sysconfdir=/etc
+	export CPPFLAGS = %(pkg-config --cflags openssl)
+	export LDFLAGS = %(pkg-config --libs openssl)
+
+	configure_options += \
+		--with-ssl=openssl \
+		--enable-largefile \
+		--enable-opie \
+		--enable-digest \
+		--enable-ntlm \
+		--enable-ipv6
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
