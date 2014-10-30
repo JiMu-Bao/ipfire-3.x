@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = libtool
-version    = 2.4.2
-release    = 2
+version    = 2.4.3
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.gnu.org/software/libtool/
