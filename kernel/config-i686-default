@@ -8,11 +8,6 @@ CONFIG_X86_32_SMP=y
 CONFIG_ARCH_HWEIGHT_CFLAGS="-fcall-saved-ecx -fcall-saved-edx"
 
 #
-# IRQ subsystem
-#
-CONFIG_KTIME_SCALAR=y
-
-#
 # Timers subsystem
 #
 CONFIG_NO_HZ_IDLE=y
@@ -27,8 +22,6 @@ CONFIG_IRQ_TIME_ACCOUNTING=y
 # RCU Subsystem
 #
 CONFIG_RCU_FANOUT=32
-# CONFIG_RCU_NOCB_CPU_NONE is not set
-# CONFIG_RCU_NOCB_CPU_ZERO is not set
 
 #
 # Kernel Performance Events And Counters
@@ -241,6 +234,7 @@ CONFIG_PTP_1588_CLOCK_PCH=m
 #
 # PCI GPIO expanders:
 #
+# CONFIG_GPIO_CS5535 is not set
 # CONFIG_GPIO_PCH is not set
 
 #
@@ -249,6 +243,12 @@ CONFIG_PTP_1588_CLOCK_PCH=m
 CONFIG_GEODE_WDT=m
 # CONFIG_SBC8360_WDT is not set
 # CONFIG_SBC7240_WDT is not set
+
+#
+# Multifunction device drivers
+#
+CONFIG_MFD_CS5535=m
+# CONFIG_MFD_TIMBERDALE is not set
 
 #
 # Media digital TV PCI Adapters
@@ -309,7 +309,7 @@ CONFIG_PCH_DMA=m
 CONFIG_TC1100_WMI=m
 
 #
-# Hardware Spinlock drivers
+# Clock Source drivers
 #
 CONFIG_CLKSRC_I8253=y
 

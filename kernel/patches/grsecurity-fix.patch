@@ -1,0 +1,12 @@
+diff --git a/arch/arm/include/asm/pgtable-3level.h b/arch/arm/include/asm/pgtable-3level.h
+index a31ecdad4b59..71bea3118348 100644
+--- a/arch/arm/include/asm/pgtable-3level.h
++++ b/arch/arm/include/asm/pgtable-3level.h
+@@ -92,6 +92,7 @@
+ #define L_PMD_SECT_SPLITTING	(_AT(pmdval_t, 1) << 56)
+ #define L_PMD_SECT_NONE		(_AT(pmdval_t, 1) << 57)
+ #define L_PMD_SECT_RDONLY	(_AT(pteval_t, 1) << 58)
++#define PMD_SECT_RDONLY                L_PMD_SECT_RDONLY
+ 
+ /*
+  * To be used in assembly code with the upper page attributes.

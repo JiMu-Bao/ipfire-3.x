@@ -10,6 +10,11 @@ CONFIG_PREEMPT_NOTIFIERS=y
 CONFIG_ARCH_AXXIA=y
 
 #
+# Power management
+#
+# CONFIG_ARCH_R8A7779 is not set
+
+#
 # Processor Features
 #
 CONFIG_ARM_LPAE=y
@@ -28,8 +33,14 @@ CONFIG_PHYS_ADDR_T_64BIT=y
 CONFIG_POWER_RESET_AXXIA=y
 
 #
-# Hardware Spinlock drivers
+# Media drivers
 #
+# CONFIG_IR_SUNXI is not set
+
+#
+# Clock Source drivers
+#
+# CONFIG_SH_TIMER_TMU is not set
 # CONFIG_IPMMU_VMSA is not set
 # CONFIG_ARM_SMMU is not set
 
