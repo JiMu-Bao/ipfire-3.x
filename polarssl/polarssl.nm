@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = polarssl
-version    = 1.2.5
-release    = 2
+version    = 1.3.9
+release    = 1
 
 groups     = System/Libraries
 url        = http://polarssl.org/
@@ -25,56 +25,25 @@ source_dl  = http://polarssl.org/code/releases/
 
 build
 	requires
-		perl
-	end
-
-	if "%{DISTRO_ARCH}" == "armv7hl"
-		prepare_cmds
-			sed -e "s/define POLARSSL_HAVE_ASM/undef POLARSSL_HAVE_ASM/" \
-				-i include/polarssl/config.h
-		end
+		cmake
 	end
 
 	build
-		# Compile library
-		make SHARED=1 -C library %{PARALLELISMFLAGS}
-		ln -svf libpolarssl.so library/libpolarssl.so.0
+		%{cmake} \
+			-D CMAKE_BUILD_TYPE:String="Release" \
+			-D USE_SHARED_POLARSSL_LIBRARY:BOOL=1 \
+			.
 
-		# Compile programs
-		make -C programs %{PARALLELISMFLAGS}
+		make %{PARALLELISMFLAGS}
 	end
 
 	test
-		pushd programs
-		make test/selftest
-		LD_LIBRARY_PATH="../library" ./test/selftest
-		popd
-
-		# Don't run the regular test suite because it cannot
-		# be built on ARM.
-		#LD_LIBRARY_PATH="../library" make check
+		LD_LIBRARY_PATH=$(pwd)/library ctest --output-on-failure -V
 	end
 
-	install
-		# Install headers
-		mkdir -pv %{BUILDROOT}%{includedir}/polarssl
-		install -v -m 644 include/polarssl/*.h \
-			%{BUILDROOT}%{includedir}/polarssl
-
-		# Install library
-		mkdir -pv %{BUILDROOT}%{libdir}
-		install -v -m 755 library/libpolarssl.so \
-			%{BUILDROOT}%{libdir}/libpolarssl.so.0
-		ln -svf libpolarssl.so.0 %{BUILDROOT}%{libdir}/libpolarssl.so
-
-		# Install programs
-		mkdir -pv %{BUILDROOT}%{bindir}
-		for p in programs/*/*; do
-			if [ -x "${p}" -a ! -d "${p}" ]; then
-				f="polarssl_$(basename ${p})"
-				install -m 755 ${p} %{BUILDROOT}%{bindir}/${f} || exit 1
-			fi
-		done
+	install_cmds
+		mkdir -pv %{BUILDROOT}%{libexecdir}
+		mv -v %{BUILDROOT}%{bindir} %{BUILDROOT}%{libexecdir}/%{name}
 	end
 end
 
@@ -86,7 +55,7 @@ packages
 		description = %{summary}
 
 		files
-			%{bindir}
+			%{libexecdir}/%{name}
 		end
 	end
 
