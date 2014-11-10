@@ -1,0 +1,63 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-File-HomeDir
+version    = 1.00
+release    = 1
+arch       = noarch
+thisapp    = File-HomeDir-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/File-HomeDir/
+license    = GPL+
+summary    = Find your home and other directories on any platform
+
+description
+	File::HomeDir is a module for locating the directories that are "owned"
+	by a user (typically your user) and to solve the various issues that
+	arise trying to find them consistently across a wide variety of
+	platforms.
+end
+
+source_dl  = http://www.cpan.org/authors/id/A/AD/ADAMK/
+
+build
+	requires
+		perl
+		perl(Config)
+		perl(Cwd) >= 3.12
+		perl(ExtUtils::MakeMaker) >= 6.42
+		perl(ExtUtils::MM_Unix)
+		perl(File::Path) >= 2.01
+		perl(File::Spec) >= 3.12
+		perl(strict)
+		perl(vars)
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor
+		make %{PARALLELISMFLAGS}
+	end
+
+	make_install_targets = pure_install
+end
+
+packages
+	package %{name}
+		filter_requires
+			Cwd
+			File::Path
+			File::Spec
+			File::Temp
+			File::Which
+			Mac::perl
+			Win32
+		end
+
+		requires
+			perl
+		end
+	end
+end
