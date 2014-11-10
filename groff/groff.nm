@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = groff
-version    = 1.18.1.4
+version    = 1.22.3
 release    = 1
 
 groups     = Applications/Text
@@ -13,64 +13,45 @@ license    = GPLv2 and GFDL
 summary    = A document formatting system.
 
 description
-	Groff is a document formatting system. Groff takes standard text and \
-	formatting commands as input and produces formatted output. The \
-	created documents can be shown on a display or printed on a printer. \
-	Groff's formatting commands allow you to specify font type and size, \
-	bold type, italic type, the number and size of columns on a page, and \
+	Groff is a document formatting system. Groff takes standard text and
+	formatting commands as input and produces formatted output. The
+	created documents can be shown on a display or printed on a printer.
+	Groff's formatting commands allow you to specify font type and size,
+	bold type, italic type, the number and size of columns on a page, and
 	more.
 end
 
-source_dl  =
+source_dl  = http://ftp.gnu.org/gnu/%{name}/
 
 build
 	requires
 		bison
 		gcc-c++
+		ghostscript
+		netpbm-progs
 		perl
+		texinfo
 	end
 
-	export PAGE = A4
+	# Cannot run in parallel
 	PARALLELISMFLAGS =
 
-	configure_options += \
-		--enable-multibyte
-
-	prepare_cmds
-		sed -i \
-			-e 's/2010/002D/' \
-			-e 's/2212/002D/' \
-			-e 's/2018/0060/' \
-			-e 's/2019/0027/' font/devutf8/R.proto
-	end
-
-	install
-		mkdir -pv %{BUILDROOT}/usr/{bin,include,sbin,share/man}
-		make install \
-			manroot=%{BUILDROOT}/usr/share/man \
-			bindir=%{BUILDROOT}/usr/bin \
-			mandir=%{BUILDROOT}/usr/share/man \
-			prefix=%{BUILDROOT}/usr \
-			exec_prefix=%{BUILDROOT}/usr \
-			sbindir=%{BUILDROOT}/usr/sbin \
-			sysconfdir=%{BUILDROOT}/etc \
-			datadir=%{BUILDROOT}/usr/share \
-			infodir=%{BUILDROOT}/usr/share/info \
-			sysconfdir=%{BUILDROOT}/etc \
-			includedir=%{BUILDROOT}/usr/include \
-			libdir=%{BUILDROOT}/usr/lib \
-			libexecdir=%{BUILDROOT}/usr/libexec \
-			localstatedir=%{BUILDROOT}/var \
-			sharedstatedir=%{BUILDROOT}/usr/com \
-			infodir=%{BUILDROOT}/usr/share/info
-
-		ln -svf eqn %{BUILDROOT}/usr/bin/geqn
-		ln -svf tbl %{BUILDROOT}/usr/bin/gtbl
+	install_cmds
+		for file in g{nroff,troff,tbl,pic,eqn,neqn,refer,lookbib,indxbib,soelim} zsoelim; do
+			ln -svf ${file#?} %{BUILDROOT}%{bindir}/${file}
+			ln -svf ${file#?}.1 %{BUILDROOT}%{mandir}/man1/${file}.1
+		done
 	end
 end
 
 packages
 	package %{name}
+		filter_requires
+			main_subs.pl
+			man.pl
+			oop_fh.pl
+			subs.pl
+		end
 	end
 
 	package %{name}-debuginfo
