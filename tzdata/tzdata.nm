@@ -3,8 +3,8 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-tzdata_version = 2013b
-tzcode_version = 2013b
+tzdata_version = 2014j
+tzcode_version = 2014j
 
 name       = tzdata
 version    = %{tzdata_version}
@@ -33,15 +33,40 @@ build
 	DIR_APP = %{DIR_SRC}/tzdata%{tzdata_version}
 
 	prepare
-		mkdir tzdata%{tzdata_version}
-		%{MACRO_EXTRACT} %{DIR_DL}/tzcode%{tzcode_version}.tar.gz -C tzdata%{tzdata_version}
-		%{MACRO_EXTRACT} %{DIR_DL}/tzdata%{tzdata_version}.tar.gz -C tzdata%{tzdata_version}
+		mkdir -pv %{DIR_APP}
+		%{MACRO_EXTRACT} %{DIR_DL}/tzcode%{tzcode_version}.tar.gz -C %{DIR_APP}
+		%{MACRO_EXTRACT} %{DIR_DL}/tzdata%{tzdata_version}.tar.gz -C %{DIR_APP}
 	end
+
+	files = \
+		africa \
+		antarctica \
+		asia \
+		australasia \
+		europe \
+		northamerica \
+		southamerica \
+		pacificnew \
+		etcetera \
+		backward
+
+	build
+		mkdir -pv zoneinfo/{,posix,right}
+
+		zic -y ./yearistype -d zoneinfo \
+			-L /dev/null -p GMT %{files}
+		zic -y ./yearistype -d zoneinfo/posix \
+			-L /dev/null %{files}
+		zic -y ./yearistype -d zoneinfo/right \
+			-L leapseconds %{files}
+	end
+
 	install
-		make TOPDIR=%{BUILDROOT}/usr ETCDIR=/tmp LIBDIR=/tmp MANDIR=/tmp \
-			TZDIR=%{BUILDROOT}/usr/share/zoneinfo install
-		mv %{BUILDROOT}/usr/share/zoneinfo-posix/ %{BUILDROOT}/usr/share/posix
-		mv %{BUILDROOT}/usr/share/zoneinfo-leaps/ %{BUILDROOT}/usr/share/right
+		mkdir -pv %{BUILDROOT}%{datadir}/zoneinfo
+		cp -prd zoneinfo %{BUILDROOT}%{datadir}/zoneinfo
+
+		install -p -m 644 zone.tab iso3166.tab \
+			%{BUILDROOT}%{datadir}/zoneinfo
 		rm -f %{BUILDROOT}/usr/share/zoneinfo/localtime
 	end
 end
