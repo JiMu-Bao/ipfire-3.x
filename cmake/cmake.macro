@@ -3,7 +3,7 @@
 #
 
 __cmake = /usr/bin/cmake
-if "${lib}" == "lib64"
+if "%{lib}" == "lib64"
 	__cmake_lib_suffix = -DLIB_SUFFIX=64
 end
 
