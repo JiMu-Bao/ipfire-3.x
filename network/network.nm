@@ -6,7 +6,7 @@
 name       = network
 epoch      = 1
 version    = 006
-release    = 1
+release    = 2
 arch       = noarch
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -52,7 +52,6 @@ packages
 			iproute2
 			iw
 			man
-			miredo-client
 			ppp >= 2.4.5-4
 			radvd
 			rp-pppoe
