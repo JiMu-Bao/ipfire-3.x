@@ -1,0 +1,62 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = json-c
+version    = 0.12
+reldate    = 20140410
+release    = 1
+thisapp    = %{name}-%{version}-%{reldate}
+
+groups     = System/Libraries
+url        = https://github.com/json-c/json-c/wiki
+license    = MIT
+summary    = A JSON implementation in C
+
+description
+	JSON-C implements a reference counting object model that allows you to
+	easily construct JSON objects in C, output them as JSON formatted strings
+	and parse JSON formatted strings back into the C representation of JSON
+	objects.
+end
+
+source_dl  = https://github.com/json-c/json-c/archive/
+
+build
+	requires
+		autoconf
+		automake
+		libtool
+	end
+
+	DIR_APP = %{DIR_SRC}/%{name}-%{thisapp}
+
+	prepare_cmds
+		sed -i 's|-Werror ||g' Makefile.am.inc
+
+		# Bump the soname manually.
+		sed -i 's#2:1:0#3:0:0#' Makefile.am
+
+		autoreconf -vif
+	end
+
+	configure_options += \
+		--enable-rdrand
+
+	test
+		make check
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
