@@ -5,7 +5,7 @@
 
 name       = grub
 version    = 2.00
-release    = 4
+release    = 5
 sup_arches = x86_64 i686
 
 groups     = System/Boot
@@ -97,6 +97,9 @@ build
 		paxctl -mpes \
 			%{BUILDROOT}%{sbindir}/grub-bios-setup \
 			%{BUILDROOT}%{sbindir}/grub-probe
+
+		paxctl -mpex \
+			%{BUILDROOT}%{bindir}/grub-script-check
 	end
 
 	debuginfo_strict_build_id = false
