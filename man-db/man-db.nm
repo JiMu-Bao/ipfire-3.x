@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = man-db
-version    = 2.6.3
+version    = 2.7.1
 release    = 1
 
 groups     = Documentation
@@ -28,7 +28,9 @@ build
 		gdbm-devel
 		groff
 		less
-		libpipeline-devel
+		libpipeline-devel >= 1.4.0
+		systemd-devel
+		zlib-devel
 	end
 
 	configure_options += \
@@ -42,9 +44,8 @@ build
 		mv -v %{BUILDROOT}%{libdir}/man-db/libman{,db}-%{version}.so %{BUILDROOT}%{libdir}
 		rm -rf %{BUILDROOT}%{libdir}/man-db/
 
-		# Create cron job to regularly update the man page database.
-		mkdir -pv %{BUILDROOT}%{sysconfdir}/cron.daily
-		install -v -m 755 %{DIR_SOURCE}/man-db.cron %{BUILDROOT}%{sysconfdir}/cron.daily
+		# Remove zsoelim man page which is not part of groff
+		rm -vf %{BUILDROOT}%{datadir}/man/man*/zsoelim.*
 
 		# Create cache directory.
 		mkdir -pv %{BUILDROOT}/var/cache/man
@@ -68,12 +69,23 @@ packages
 
 		script posttransin
 			# Update the database right now.
-			%{sysconfdir}/cron.daily/man-db.cron
+			rm -rf /var/cache/man/*
+
+			systemctl -q enable man-db.timer
+			systemctl start man-db.timer
 		end
 
 		script posttransup
 			# Update the database right now.
-			%{sysconfdir}/cron.daily/man-db.cron
+			rm -rf /var/cache/man/*
+
+			systemctl -q enable man-db.timer
+			systemctl start man-db.timer
+		end
+
+		script preun
+			systemctl stop man-db.timer
+			systemctl -q disable man-db.timer
 		end
 	end
 
