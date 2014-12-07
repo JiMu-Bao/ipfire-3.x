@@ -1,9 +1,0 @@
-diff -Nur a/pppdcapiplugin/Makefile.template b/pppdcapiplugin/Makefile.template
---- a/pppdcapiplugin/Makefile.template	2001-05-01 14:43:49.000000000 +0200
-+++ b/pppdcapiplugin/Makefile.template	2012-03-17 18:36:00.035594144 +0100
-@@ -8,7 +8,7 @@
- #  as published by the Free Software Foundation; either version
- #  2 of the License, or (at your option) any later version.
- 
--PLUGINDIR=${DESTDIR}/usr/lib/pppd/$(PPPVERSION)
-+PLUGINDIR=${DESTDIR}${LIBDIR}/pppd/$(PPPVERSION)
