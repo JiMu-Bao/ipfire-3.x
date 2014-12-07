@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = iw
-version    = 3.10
+version    = 3.17
 release    = 1
 
 groups     = System/Base
@@ -19,7 +19,7 @@ description
 end
 
 source_dl  = https://www.kernel.org/pub/software/network/iw/
-sources    = %{thisapp}.tar.bz2
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
