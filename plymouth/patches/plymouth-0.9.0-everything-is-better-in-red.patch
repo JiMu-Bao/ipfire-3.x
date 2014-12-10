@@ -1,15 +1,15 @@
-diff -up plymouth-0.8.0/src/plugins/splash/text/plugin.c.red plymouth-0.8.0/src/plugins/splash/text/plugin.c
---- plymouth-0.8.0/src/plugins/splash/text/plugin.c.red	2009-11-19 14:40:24.000000000 -0500
-+++ plymouth-0.8.0/src/plugins/splash/text/plugin.c	2009-11-19 14:41:40.000000000 -0500
-@@ -184,10 +184,10 @@ view_start_animation (view_t *view)
+diff -Nur plymouth-0.9.0_orig/src/plugins/splash/text/plugin.c plymouth-0.9.0/src/plugins/splash/text/plugin.c
+--- plymouth-0.9.0_orig/src/plugins/splash/text/plugin.c	2014-04-21 17:18:19.000000000 +0200
++++ plymouth-0.9.0/src/plugins/splash/text/plugin.c	2014-12-07 14:57:09.344789424 +0100
+@@ -177,10 +177,10 @@
                                      0xffffff);
    ply_terminal_set_color_hex_value (terminal,
                                      PLY_TERMINAL_COLOR_BLUE,
--                                    0x0073B3);
+-                                    0x3465a4);
 +                                    0xCC0A00);
    ply_terminal_set_color_hex_value (terminal,
                                      PLY_TERMINAL_COLOR_BROWN,
--                                    0x00457E);
+-                                    0x979a9b);
 +                                    0x880400);
  
    ply_text_display_set_background_color (view->display,
