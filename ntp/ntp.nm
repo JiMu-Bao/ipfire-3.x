@@ -4,9 +4,9 @@
 ###############################################################################
 
 name       = ntp
-version    = %{ver_major}.6p5
+version    = %{ver_major}.8
 ver_major  = 4.2
-release    = 2
+release    = 1
 
 groups     = System/Daemons
 url        = http://www.ntp.org/
@@ -60,9 +60,6 @@ build
 		echo "#define NTP_VAR \"%{localstatedir}/log/ntpstats/\"" >> config.h
 
 		make ${PARALLELISMFLAGS}
-
-		sed -i 's|$ntpq = "ntpq"|$ntpq = "%{sbindir}/ntpq"|' scripts/ntptrace
-		sed -i 's|ntpq -c |%{sbindir}/ntpq -c |' scripts/ntp-wait
 
 		# Build ntpstat.
 		make -C ntpstat-0.2
@@ -187,39 +184,6 @@ packages
 		end
 
 		script postun
-			systemctl daemon-reload >/dev/null 2>&1 || :
-		end
-	end
-
-	package %{name}-perl
-		summary = NTP utilities written in Perl.
-		description
-			This package contains Perl scripts ntp-wait and ntptrace.
-		end
-		groups = Applications/System
-
-		requires
-			%{name} = %{thisver}
-		end
-
-		files
-			%{sbindir}/ntp-wait
-			%{sbindir}/ntptrace
-			%{mandir}/man8/ntp-wait.8*
-			%{mandir}/man8/ntptrace.8*
-			%{unitdir}/ntp-wait.service
-		end
-
-		script preun
-			systemctl --no-reload disable ntp-wait.service >/dev/null 2>&1 || :
-			systemctl stop ntp-wait.service >/dev/null 2>&1 || :
-		end
-
-		script postun
-			systemctl daemon-reload >/dev/null 2>&1 || :
-		end
-
-		script postup
 			systemctl daemon-reload >/dev/null 2>&1 || :
 		end
 	end
