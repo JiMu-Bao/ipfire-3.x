@@ -5,8 +5,8 @@
 
 name       = nftables
 version    = 0.100
-snapshot   = 20140412
-release    = 2.%{snapshot}
+snapshot   = 20141226
+release    = 3.%{snapshot}
 thisapp    = %{name}-%{snapshot}
 
 groups     = Networking/Tools
@@ -33,7 +33,7 @@ build
 		gmp-devel
 		libtool
 		libmnl-devel
-		libnftnl-devel
+		libnftnl-devel >= 1.0.3
 		readline-devel
 	end
 
