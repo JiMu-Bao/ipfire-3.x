@@ -4,10 +4,8 @@
 ###############################################################################
 
 name       = libnftnl
-version    = 1.0.0
-snapshot   = 20140412
-release    = 1.%{snapshot}
-thisapp    = %{name}-%{snapshot}
+version    = 1.0.3
+release    = 1
 
 groups     = Networking/Tools
 url        = http://netfilter.org/projects/libnftnl
@@ -19,20 +17,12 @@ description
 	libmnl.
 end
 
-source_dl  = http://ftp.netfilter.org/pub/libnftnl/snapshot/
+source_dl  = http://ftp.netfilter.org/pub/libnftnl/
 sources    = %{thisapp}.tar.bz2
 
 build
 	requires
-		autoconf
-		autogen
-		automake
 		libmnl-devel
-		libtool
-	end
-
-	prepare_cmds
-		./autogen.sh
 	end
 end
 
