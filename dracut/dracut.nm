@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = dracut
-version    = 024
-release    = 4
+version    = 040
+release    = 1
 
 groups     = System/Boot
 url        = http://sourceforge.net/apps/trac/dracut/wiki
