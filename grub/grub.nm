@@ -5,7 +5,7 @@
 
 name       = grub
 version    = 2.00
-release    = 5
+release    = 5.1
 sup_arches = x86_64 i686
 
 groups     = System/Boot
@@ -60,6 +60,7 @@ build
 		--disable-werror \
 		CFLAGS="$(echo %{CFLAGS} | sed \
 			-e 's/-Wp,-D_FORTIFY_SOURCE=2//g' \
+			-e 's/-fstack-protector-strong//g' \
 			-e 's/-fstack-protector-all//g' \
 			-e 's/-fstack-protector//g' \
 			-e 's/-fPIC//g' \
