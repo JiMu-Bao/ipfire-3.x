@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = ccache
-version    = 3.1.9
-release    = 3
+version    = 3.2.1
+release    = 1
 
 groups     = Development/Compilers
 url        = http://ccache.samba.org/
@@ -39,10 +39,13 @@ build
 	prepare_cmds
 		# Disable pch test that fails
 		sed -e "s/^pch_suite.*/& return 0/" -i test.sh
+
+		# Remove shipped zlib
+		rm -rf zlib
 	end
 
 	test
-		make check
+		SHELL=/bin/bash make check
 	end
 
 	install_cmds
