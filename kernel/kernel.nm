@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kernel
-version    = 3.17.4
-release    = 2
+version    = 3.18.2
+release    = 1
 thisapp    = linux-%{version}
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -57,6 +57,7 @@ build
 		python-devel
 		slang-devel
 		xmlto
+		xz
 
 		/sbin/depmod
 		%{kernel_logo}
@@ -289,7 +290,7 @@ build
 				%{BUILDROOT}/usr/lib/modules/${fullversion}/build/include/config/auto.conf
 
 			find %{BUILDROOT}/usr/lib/modules/${fullversion} -name "*.ko" -type f | \
-				xargs chmod u+x
+				xargs --no-run-if-empty chmod u+x
 
 			# Move all development files to /usr/src.
 			mkdir -p %{BUILDROOT}/usr/src/kernels

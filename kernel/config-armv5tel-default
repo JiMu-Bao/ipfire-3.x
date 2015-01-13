@@ -46,12 +46,9 @@ CONFIG_MACH_NETXBIG=y
 # MX27 platforms:
 #
 # CONFIG_MACH_MX27ADS is not set
-# CONFIG_MACH_PCM038 is not set
-# CONFIG_MACH_CPUIMX27 is not set
 # CONFIG_MACH_MX27_3DS is not set
 # CONFIG_MACH_IMX27_VISSTRIM_M10 is not set
 # CONFIG_MACH_PCA100 is not set
-# CONFIG_MACH_MXT_TD60 is not set
 # CONFIG_MACH_IMX27_DT is not set
 # CONFIG_ARCH_MXS is not set
 # CONFIG_ARCH_NOMADIK is not set
@@ -100,6 +97,7 @@ CONFIG_HZ_300=y
 # CONFIG_HZ_500 is not set
 # CONFIG_HZ_1000 is not set
 CONFIG_HZ=300
+# CONFIG_OABI_COMPAT is not set
 CONFIG_SPLIT_PTLOCK_CPUS=999999
 CONFIG_NEED_PER_CPU_KM=y
 CONFIG_FORCE_MAX_ZONEORDER=11
@@ -174,16 +172,6 @@ CONFIG_INPUT_MATRIXKMAP=m
 CONFIG_KEYBOARD_SAMSUNG=m
 
 #
-# Hardware I/O ports
-#
-CONFIG_SERIO_AMBAKMI=m
-
-#
-# I2C system bus drivers (mostly embedded / system-on-chip)
-#
-CONFIG_I2C_NOMADIK=m
-
-#
 # PPS support
 #
 CONFIG_PPS=m
@@ -204,7 +192,6 @@ CONFIG_PINCTRL_KIRKWOOD=y
 # Memory mapped GPIO drivers:
 #
 CONFIG_GPIO_MVEBU=y
-# CONFIG_GPIO_PL061 is not set
 
 #
 # 1-wire Bus Masters
@@ -286,8 +273,6 @@ CONFIG_FB_MODE_HELPERS=y
 #
 # Frame buffer hardware drivers
 #
-CONFIG_FB_ARMCLCD=m
-# CONFIG_PLAT_VERSATILE_CLCD is not set
 CONFIG_FB_IMX=m
 CONFIG_FB_MX3=m
 CONFIG_LCD_PLATFORM=m
@@ -351,13 +336,10 @@ CONFIG_RTC_DRV_MV=m
 # DMA Devices
 #
 CONFIG_ASYNC_TX_ENABLE_CHANNEL_SWITCH=y
-CONFIG_AMBA_PL08X=y
 CONFIG_DW_DMAC_PCI=m
 CONFIG_MV_XOR=y
-CONFIG_PL330_DMA=m
 CONFIG_IMX_SDMA=m
 CONFIG_IMX_DMA=m
-CONFIG_DMA_VIRTUAL_CHANNELS=y
 
 #
 # DMA Clients
@@ -398,10 +380,9 @@ CONFIG_KIRKWOOD_CLK=y
 #
 CONFIG_ORION_TIMER=y
 # CONFIG_SH_TIMER_TMU is not set
-# CONFIG_PL320_MBOX is not set
 
 #
-# Rpmsg drivers
+# DEVFREQ Drivers
 #
 CONFIG_MVEBU_DEVBUS=y
 
@@ -429,6 +410,23 @@ CONFIG_PHY_MVEBU_SATA=y
 # CONFIG_PHY_EXYNOS4210_USB2 is not set
 # CONFIG_PHY_EXYNOS4X12_USB2 is not set
 # CONFIG_PHY_EXYNOS5250_USB2 is not set
+
+#
+# Compile-time checks and compiler options
+#
+CONFIG_FRAME_POINTER=y
+
+#
+# RCU Debugging
+#
+CONFIG_FUNCTION_GRAPH_TRACER=y
+
+#
+# Runtime Testing
+#
+CONFIG_OLD_MCOUNT=y
+CONFIG_DEBUG_LL_INCLUDE="mach/debug-macro.S"
+# CONFIG_DEBUG_UART_BCM63XX is not set
 
 #
 # Random Number Generation
