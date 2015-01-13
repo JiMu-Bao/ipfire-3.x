@@ -4,12 +4,12 @@
 ###############################################################################
 
 name       = kmod
-version    = 9
-release    = 2
+version    = 19
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Kernel
-url        = http://modules.wiki.kernel.org/
+url        = http://git.kernel.org/cgit/utils/kernel/kmod/kmod.git
 license    = GPLv2+
 summary    = Linux kernel module management utilities.
 
