@@ -5,7 +5,7 @@
 
 name       = openssl
 version    = 1.0.1h
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -79,7 +79,7 @@ build
 			no-idea \
 			no-mdc2 \
 			no-rc5 \
-			no-ec no-ec2m no-ecdh no-ecdsa \
+			no-ec2m \
 			no-srp \
 			-DSSL_FORBID_ENULL \
 			 %{ssl_arch}

@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = bind
-version    = 9.8.1
-release    = 3
+version    = 9.9.6-P1
+release    = 1
 
 groups     = Networking/Tools
 url        = http://www.isc.org/products/BIND/
@@ -19,37 +19,8 @@ end
 
 source_dl  = ftp://ftp.isc.org/isc/bind/%{version}/
 
-sources = \
-	bind-9.8.1.tar.gz \
-	bind-config-8.tar.bz2
-
-# Apply patches in a special order.
-patches = \
-	bind-nonexec.patch \
-	bind-9.5-PIE.patch \
-	bind-9.3.2-redhat_doc.patch \
-	bind-96-dyndb.patch \
-	bind98-rh725741.patch \
-	bind-9.5-overflow.patch \
-	bind-9.5-dlz-64bit.patch \
-	bind-9.5-libidn.patch \
-	bind-9.5-libidn2.patch \
-	bind-9.5-libidn3.patch \
-	bind-9.5-parallel-build.patch \
-	bind95-rh461409.patch\
-	bind-96-libtool2.patch \
-	bind-95-rh452060.patch \
-	bind97-dist-pkcs11.patch \
-	bind97-rh478718.patch \
-	bind97-rh570851.patch \
-	bind97-exportlib.patch \
-	bind97-rh645544.patch \
-	bind97-rh699951.patch \
-	bind97-rh693982.patch \
-	bind97-rh700097.patch \
-	bind97-rh714049.patch \
-	bind98-dlz_buildfix.patch \
-	bind98-rh735103.patch
+sources += \
+	%{name}-config-12.tar.bz2
 
 build
 	requires
@@ -61,7 +32,7 @@ build
 		libcap-devel
 		libidn-devel
 		pkg-config
-		openssl-devel
+		openssl-devel >= 1.0.1h-2
 		shadow-utils
 	end
 
@@ -77,7 +48,8 @@ build
 		--with-export-includedir=/usr/include/ \
 		--includedir=/usr/include/bind9/ \
 		--with-pkcs11=%{libdir}/pkcs11/PKCS11_API.so \
-		--with-gssapi=yes \
+		--with-gssapi \
+		--enable-rrl \
 		--disable-isc-spnego
 
 	prepare
@@ -102,9 +74,6 @@ build
 	end
 
 	install
-		# Compress doc files.
-		gzip -9 doc/rfc/*
-
 		# Create directory layout.
 		mkdir -pv %{BUILDROOT}%{libdir}/bind
 		mkdir -pv %{BUILDROOT}/var/named/{slaves,data,dynamic}
@@ -137,7 +106,7 @@ build
 		touch %{BUILDROOT}/var/log/named.log
 
 		# Configuration files
-		tar -C %{BUILDROOT} -xaf %{DIR_DL}/bind-config-8.tar.bz2
+		tar -C %{BUILDROOT} -xaf %{DIR_DL}/bind-config-12.tar.bz2
 		touch %{BUILDROOT}/etc/rndc.key
 		touch %{BUILDROOT}/etc/rndc.conf
 
@@ -148,10 +117,10 @@ build
 		# Recreate symlinks for export libraries
 		rm -rf %{BUILDROOT}/%{lib}/lib*-export.so
 
-		ln -svf ../../%{lib}/libdns-export.so.81 %{BUILDROOT}%{libdir}/libdns-export.so
-		ln -svf ../../%{lib}/libirs-export.so.80 %{BUILDROOT}%{libdir}/libirs-export.so
-		ln -svf ../../%{lib}/libisccfg-export.so.82 %{BUILDROOT}%{libdir}/libisccfg-export.so
-		ln -svf ../../%{lib}/libisc-export.so.83 %{BUILDROOT}%{libdir}/libisc-export.so
+		ln -svf ../../%{lib}/libdns-export.so.104 %{BUILDROOT}%{libdir}/libdns-export.so
+		ln -svf ../../%{lib}/libirs-export.so.91 %{BUILDROOT}%{libdir}/libirs-export.so
+		ln -svf ../../%{lib}/libisccfg-export.so.90 %{BUILDROOT}%{libdir}/libisccfg-export.so
+		ln -svf ../../%{lib}/libisc-export.so.95 %{BUILDROOT}%{libdir}/libisc-export.so
 
 		# Create /run/named.
 		mkdir -pv %{BUILDROOT}/run/named
