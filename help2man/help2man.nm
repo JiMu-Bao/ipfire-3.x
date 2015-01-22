@@ -4,8 +4,9 @@
 ###############################################################################
 
 name       = help2man
-version    = 1.40.4
-release    = 2
+version    = 1.46.4
+release    = 1
+arch       = noarch
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/help2man
@@ -21,25 +22,22 @@ description
 	still providing some useful information.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.gnu.org/gnu/%{name}/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
-		perl
+		%{bindir}/perl
 	end
 
 	configure_options += \
 		--disable-nls \
-		--libdir=/usr/lib/help2man
+		--libdir=%{prefix}/lib/help2man
 
-	make_install_targets += install_l10n
+	make_install_targets += \
+		install_l10n
 end
 
 packages
 	package %{name}
-	end
-
-	package %{name}-debuginfo
-		template DEBUGINFO
-	end
 end
