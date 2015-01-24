@@ -5,7 +5,7 @@
 
 name       = sysvinit
 version    = 2.86
-release    = 5
+release    = 6
 
 groups     = System/Base
 url        = https://alioth.debian.org/projects/pkg-sysvinit/
@@ -22,29 +22,34 @@ sources    = %{thisapp}.tar.gz
 CFLAGS    += -D_GNU_SOURCE
 
 build
-	requires
-		libselinux-devel
-	end
-
 	make_build_targets += \
 		-C src CFLAGS="%{CFLAGS}" \
-		LDFLAGS="" \
-		LCRYPT="-lcrypt"
+		LDFLAGS=""
 
 	install
-		mkdir -pv %{BUILDROOT}/{bin,sbin,usr/{bin,include}}
-		mkdir -pv %{BUILDROOT}/usr/share/man/man{1,5,8}
-		make -C src install ROOT=%{BUILDROOT}
+		# Create directories.
+		mkdir -pv %{BUILDROOT}%{bindir}
+		mkdir -pv %{BUILDROOT}%{sbindir}
+		mkdir -pv %{BUILDROOT}%{mandir}/man8
 
-		# /bin/mountpoint is part of util-linux >= 2.20
-		rm -vf %{BUILDROOT}/bin/mountpoint \
-			%{BUILDROOT}/usr/share/man/man1/mountpoint.1
+		# Install binaries.
+		install -m 0755 src/killall5 %{BUILDROOT}%{sbindir}
+		ln -sf ../sbin/killall5 %{BUILDROOT}%{bindir}/pidof
+
+		# Install man-pages.
+		install -m 0664 man/killall5.8 %{BUILDROOT}%{mandir}/man8
+		install -m 0664 man/pidof.8 %{BUILDROOT}%{mandir}/man8
 	end
 end
 
 packages
 	package %{name}
 		groups += Base
+
+		provides
+			/bin/pidof
+			/sbin/killall5
+		end
 	end
 
 	package %{name}-debuginfo
