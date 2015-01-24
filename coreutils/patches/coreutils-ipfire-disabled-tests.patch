@@ -1,53 +1,7 @@
-diff -Nur b/gnulib-tests/gnulib.mk a/gnulib-tests/gnulib.mk
---- b/gnulib-tests/gnulib.mk	2013-02-07 17:58:44.000000000 +0100
-+++ a/gnulib-tests/gnulib.mk	2013-04-01 20:59:40.550543124 +0200
-@@ -524,10 +524,10 @@
- 
- ## begin gnulib module fdutimensat-tests
- 
--TESTS += test-fdutimensat
--check_PROGRAMS += test-fdutimensat
--test_fdutimensat_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME) @LIBINTL@
--EXTRA_DIST += nap.h test-futimens.h test-lutimens.h test-utimens.h test-utimens-common.h test-fdutimensat.c macros.h
-+#TESTS += test-fdutimensat
-+#check_PROGRAMS += test-fdutimensat
-+#test_fdutimensat_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME) @LIBINTL@
-+#EXTRA_DIST += nap.h test-futimens.h test-lutimens.h test-utimens.h test-utimens-common.h test-fdutimensat.c macros.h
- 
- ## end   gnulib module fdutimensat-tests
- 
-@@ -2438,19 +2438,19 @@
- 
- ## begin gnulib module utimens-tests
- 
--TESTS += test-utimens
--check_PROGRAMS += test-utimens
--test_utimens_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME) @LIBINTL@
--EXTRA_DIST += nap.h test-futimens.h test-lutimens.h test-utimens.h test-utimens-common.h test-utimens.c macros.h
-+#TESTS += test-utimens
-+#check_PROGRAMS += test-utimens
-+#test_utimens_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME) @LIBINTL@
-+#EXTRA_DIST += nap.h test-futimens.h test-lutimens.h test-utimens.h test-utimens-common.h test-utimens.c macros.h
- 
- ## end   gnulib module utimens-tests
- 
- ## begin gnulib module utimensat-tests
- 
--TESTS += test-utimensat
--check_PROGRAMS += test-utimensat
--test_utimensat_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME) @LIBINTL@
--EXTRA_DIST += nap.h test-lutimens.h test-utimens.h test-utimens-common.h test-utimensat.c signature.h macros.h
-+#TESTS += test-utimensat
-+#check_PROGRAMS += test-utimensat
-+#test_utimensat_LDADD = $(LDADD) $(LIB_CLOCK_GETTIME) @LIBINTL@
-+#EXTRA_DIST += nap.h test-lutimens.h test-utimens.h test-utimens-common.h test-utimensat.c signature.h macros.h
- 
- ## end   gnulib module utimensat-tests
- 
-diff -Nur b/tests/local.mk a/tests/local.mk
---- b/tests/local.mk	2013-02-11 11:30:12.000000000 +0100
-+++ a/tests/local.mk	2013-04-01 19:42:42.212419701 +0200
-@@ -108,7 +108,6 @@
+diff -Nur coreutils-8.23-orig/tests/local.mk coreutils-8.23/tests/local.mk
+--- coreutils-8.23-orig/tests/local.mk	2014-07-14 00:09:52.000000000 +0200
++++ coreutils-8.23/tests/local.mk	2015-01-23 21:44:03.355661943 +0100
+@@ -107,7 +107,6 @@
  
  all_root_tests =				\
    tests/chown/basic.sh				\
@@ -55,28 +9,25 @@ diff -Nur b/tests/local.mk a/tests/local.mk
    tests/cp/preserve-gid.sh			\
    tests/cp/special-bits.sh			\
    tests/cp/cp-mv-enotsup-xattr.sh		\
-@@ -274,7 +273,6 @@
-   tests/misc/groups-version.sh			\
-   tests/misc/head-c.sh				\
-   tests/misc/head-pos.sh			\
--  tests/misc/id-context.sh			\
-   tests/misc/id-groups.sh			\
-   tests/misc/id-setgid.sh			\
-   tests/misc/md5sum.pl				\
-@@ -328,7 +326,6 @@
-   tests/misc/sort-merge.pl			\
-   tests/misc/sort-merge-fdlimit.sh		\
-   tests/misc/sort-month.sh			\
--  tests/misc/sort-exit-early.sh			\
-   tests/misc/sort-rand.sh			\
-   tests/misc/sort-spinlock-abuse.sh		\
-   tests/misc/sort-stale-thread-mem.sh		\
-@@ -503,12 +500,10 @@
+@@ -121,8 +120,6 @@
+   tests/install/install-C-root.sh		\
+   tests/ls/capability.sh			\
+   tests/ls/nameless-uid.sh			\
+-  tests/misc/chcon.sh				\
+-  tests/misc/chroot-credentials.sh		\
+   tests/misc/selinux.sh				\
+   tests/misc/truncate-owned-by-other.sh		\
+   tests/mkdir/writable-under-readonly.sh	\
+@@ -517,8 +514,6 @@
    tests/du/trailing-slash.sh			\
    tests/du/two-args.sh				\
    tests/id/gnu-zero-uids.sh			\
 -  tests/id/no-context.sh			\
-   tests/install/basic-1.sh			\
+-  tests/id/context.sh				\
+   tests/id/uid.sh				\
+   tests/id/setgid.sh				\
+   tests/id/zero.sh				\
+@@ -527,7 +522,6 @@
    tests/install/create-leading.sh		\
    tests/install/d-slashdot.sh			\
    tests/install/install-C.sh			\
@@ -84,3 +35,11 @@ diff -Nur b/tests/local.mk a/tests/local.mk
    tests/install/strip-program.sh		\
    tests/install/trap.sh				\
    tests/ln/backup-1.sh				\
+@@ -579,7 +573,6 @@
+   tests/mkdir/parents.sh			\
+   tests/mkdir/perm.sh				\
+   tests/mkdir/selinux.sh			\
+-  tests/mkdir/restorecon.sh			\
+   tests/mkdir/special-1.sh			\
+   tests/mkdir/t-slash.sh			\
+   tests/mkdir/smack-no-root.sh			\
