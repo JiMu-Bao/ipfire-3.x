@@ -1,5 +1,6 @@
---- sysvinit-2.86/src/Makefile.old	2004-06-09 14:47:45.000000000 +0200
-+++ sysvinit-2.86/src/Makefile	2011-12-17 18:20:12.067186698 +0100
+diff -Nur sysvinit-2.86-orig/src/Makefile sysvinit-2.86/src/Makefile
+--- sysvinit-2.86-orig/src/Makefile	2004-06-09 14:47:45.000000000 +0200
++++ sysvinit-2.86/src/Makefile	2015-01-24 20:17:45.980202112 +0100
 @@ -10,32 +10,30 @@
  
  CC	= gcc
@@ -11,33 +12,38 @@
  # For some known distributions we do not build all programs, otherwise we do.
  BIN	=
 -SBIN	= init halt shutdown runlevel killall5
+-USRBIN	= last mesg
 +SBIN	= killall5
- USRBIN	= last mesg
++USRBIN	=
  
- MAN1	= last.1 lastb.1 mesg.1
+-MAN1	= last.1 lastb.1 mesg.1
 -MAN5	= initscript.5 inittab.5
 -MAN8	= halt.8 init.8 killall5.8 pidof.8 poweroff.8 reboot.8 runlevel.8
 -MAN8	+= shutdown.8 telinit.8
++MAN1	=
 +MAN8	= killall5.8 pidof.8
  
  ifeq ($(DISTRO),)
- BIN	+= mountpoint
+-BIN	+= mountpoint
 -SBIN	+= sulogin bootlogd
 -USRBIN	+= utmpdump wall
 -MAN1	+= mountpoint.1 wall.1
 -MAN8	+= sulogin.8 bootlogd.8
++BIN	+=
 +SBIN	+=
 +USRBIN	+=
-+MAN1	+= mountpoint.1
++MAN1	+=
 +MAN8	+=
  endif
  
  ifeq ($(DISTRO),Debian)
- BIN	+= mountpoint
+-BIN	+= mountpoint
 -SBIN	+= sulogin bootlogd
-+SBIN	+=
- MAN1	+= mountpoint.1
+-MAN1	+= mountpoint.1
 -MAN8	+= sulogin.8 bootlogd.8
++BIN	+=
++SBIN	+=
++MAN1	+=
 +MAN8	+=
  endif
  
@@ -51,7 +57,7 @@
  LCRYPT		= -lcrypt
  endif
  
-@@ -120,14 +118,10 @@
+@@ -120,14 +118,7 @@
  			$(INSTALL) -m 755 $$i $(ROOT)/usr/bin/; \
  		done
  		# $(INSTALL) -m 755 etc/initscript.sample $(ROOT)/etc/
@@ -59,14 +65,14 @@
 -		ln -sf halt $(ROOT)/sbin/poweroff
 -		ln -sf init $(ROOT)/sbin/telinit
  		ln -sf ../sbin/killall5 $(ROOT)/bin/pidof
- 		if [ ! -f $(ROOT)/usr/bin/lastb ]; then \
- 			ln -sf last $(ROOT)/usr/bin/lastb; \
- 		fi
+-		if [ ! -f $(ROOT)/usr/bin/lastb ]; then \
+-			ln -sf last $(ROOT)/usr/bin/lastb; \
+-		fi
 -		$(INSTALL) -m 644 initreq.h $(ROOT)/usr/include/
  		for i in $(MAN1); do \
  			$(INSTALL) -m 644 ../man/$$i $(ROOT)$(MANDIR)/man1/; \
  		done
-@@ -137,12 +131,3 @@
+@@ -137,12 +128,3 @@
  		for i in $(MAN8); do \
  			$(INSTALL) -m 644 ../man/$$i $(ROOT)$(MANDIR)/man8/; \
  		done
