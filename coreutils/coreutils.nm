@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = coreutils
-version    = 8.21
+version    = 8.23
 release    = 1
 
 groups     = System/Base
@@ -37,18 +37,18 @@ build
 
 	CFLAGS += \
 		-D_GNU_SOURCE=1 \
-		-fno-strict-aliasing
+		-fno-strict-aliasing \
+		-fpic
 
 	configure_options += \
+		FORCE_UNSAFE_CONFIGURE=1 \
+		--enable-dependency-tracking \
 		--libexecdir=%{libdir} \
-		--enable-selinux \
 		--enable-largefile \
 		--disable-rpath \
 		--enable-install-program=arch \
 		--enable-no-install-program=hostname,kill,uptime \
 		--with-tty-group \
-		\
-		gl_cv_func_mknod_works=yes
 
 	prepare_cmds
 		autoreconf -vfi
