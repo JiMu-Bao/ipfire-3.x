@@ -4,14 +4,14 @@
 ###############################################################################
 
 name       = util-linux
-major_ver  = 2.22
-minor_ver  = 1
+major_ver  = 2.25
+minor_ver  = 2
 version    = %{major_ver}.%{minor_ver}
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
-url        = http://kernel.org/~kzak/util-linux/
+url        = https://github.com/karelzak/util-linux
 license    = GPLv2 and GPLv2+ and BSD with advertising and Public Domain
 summary    = A collection of basic system utilities.
 
@@ -27,14 +27,18 @@ source_dl  = ftp://ftp.kernel.org/pub/linux/utils/util-linux/v%{major_ver}/
 build
 	requires
 		audit-devel
+		automake >= 1.13
 		coreutils >= 8.19
 		gettext
 		libcap-devel
+		libcap-ng-devel
 		libselinux-devel
 		libsepol-devel
+		libudev-devel
 		ncurses-devel
 		pam-devel
-		libudev-devel
+		python3-devel
+		systemd-devel >= 215
 		zlib-devel
 	end
 
@@ -50,14 +54,16 @@ build
 		--enable-kill \
 		--enable-partx \
 		--enable-write \
+		--enable-runuser \
 		--enable-su \
-		--enable-socket-activation \
-		--enable-libmount-mount \
+		--with-systemd \
 		--with-selinux \
 		--with-audit \
 		--with-udev \
 		--disable-makeinstall-chown \
-		--disable-static
+		--disable-static \
+		--disable-rpath \
+		--with-python=3
 
 	prepare_cmds
 		sed -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' \
@@ -124,6 +130,7 @@ packages
 			/sbin/findfs
 			/sbin/fsck
 			/sbin/nologin
+			/sbin/runuser
 		end
 
 		obsoletes
@@ -133,6 +140,7 @@ packages
 
 		conflicts
 			filesystem < 002
+			bash-completion <= 2.1-2
 			coreutils < 8.19
 			setup < 3.0-2
 			util-linux-ng
@@ -242,6 +250,31 @@ packages
 		end
 	end
 
+	# Package information for libsmartcols.
+	package libsmartcols
+		summary = Formatting library for ls-like programs.
+		description
+			This is a library for ls-like terminal
+			programs, part of util-linux.
+		end
+
+		files
+			%{libdir}/libsmartcols.*
+		end
+	end
+
+	# Package information for libsmartcols-devel.
+	package libsmartcols-devel
+		summary = Development library and header of libsmartcols.
+		description = %{summary}
+
+		files
+			%{includedir}/libsmartcols/*
+			%{libdir}/libsmartcols.so
+			%{libdir}/pkgconfig/smartcols.pc
+		end
+	end
+
 	package uuidd
 		summary = Helper daemon to guarantee uniqueness of time-based UUIDs.
 		description
@@ -261,6 +294,10 @@ packages
 		end
 
 		prerequires += shadow-utils
+
+		requires
+			systemd-libs >= 215
+		end
 
 		script prein
 			getent group uuidd >/dev/null || groupadd -r uuidd
@@ -287,6 +324,10 @@ packages
 			systemctl daemon-reload >/dev/null 2>&1 || :
 			systemctl try-restart uuidd.service >/dev/null 2>&1 || :
 		end
+	end
+
+	package python3-libmount
+		template PYTHON3
 	end
 	
 	package %{name}-debuginfo
