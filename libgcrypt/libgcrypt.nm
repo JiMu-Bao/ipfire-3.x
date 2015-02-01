@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = libgcrypt
-version    = 1.5.0
-release    = 3
+version    = 1.6.2
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.gnupg.org/
@@ -18,7 +18,7 @@ description
 	in GNU Privacy Guard.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.gnupg.org/gcrypt/libgcrypt/
 sources    = %{thisapp}.tar.bz2
 
 build
