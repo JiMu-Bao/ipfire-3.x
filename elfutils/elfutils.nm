@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = elfutils
-version    = 0.152
-release    = 5
+version    = 0.161
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Libraries
@@ -21,27 +21,24 @@ description
 	(to check for well-formed ELF files).
 end
 
-source_dl  =
+source_dl  = https://fedorahosted.org/releases/e/l/elfutils/%{version}/
 sources    = %{thisapp}.tar.bz2
 
 build
 	requires
+		autoconf
+		automake
 		bzip2-devel
 		m4
 		xz-devel
 		zlib-devel
 	end
 
-	CFLAGS += -Wno-error
+	CFLAGS += -Wno-error -Wformat
 
 	configure_options += \
-		--program-prefix=eu-
-
-	prepare_cmds
-		# Fix a compiler warning.
-		sed -i.scanf-m -e 's/%m/%a/g' \
-			src/addr2line.c tests/line2addr.c
-	end
+		--program-prefix=eu- \
+		--disable-werror
 
 	# fails
 	#test
