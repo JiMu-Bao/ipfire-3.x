@@ -4,9 +4,10 @@
 ###############################################################################
 
 name       = libedit
-version    = 3.0-%{version_date}
-version_date = 20110802
+version    = 3.1-%{version_date}
+version_date = 20141030
 release    = 1
+thisapp    = %{name}-%{version_date}-3.1
 
 groups     = System/Libraries
 url        = http://www.thrysoee.dk/editline/
@@ -19,14 +20,15 @@ description
 	functions, similar to those found in GNU Readline.
 end
 
-thisapp    = %{name}-%{version_date}-3.0
-
-source_dl  =
+source_dl  = %{url}
 
 build
 	requires
 		ncurses-devel
 	end
+
+	# The timestamp in the tarball differs from the name
+	DIR_APP = %{DIR_SRC}/%{name}-20141029-3.1
 
 	configure_options += \
 		--disable-static \
@@ -39,7 +41,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
