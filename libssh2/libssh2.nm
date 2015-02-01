@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libssh2
-version    = 1.4.2
+version    = 1.4.3
 release    = 1
 
 groups     = System/Libraries
@@ -23,8 +23,14 @@ source_dl  = http://www.libssh2.org/download/
 
 build
 	requires
+		autoconf
+		automake
 		openssl-devel
 		zlib-devel
+	end
+
+	prepare_cmds
+		autoreconf -vfi # for aarch64
 	end
 
 	configure_options += \
