@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libcroco
-version    = 0.6.2
+version    = 0.6.8
 major_ver  = 0.6
 release    = 1
 
@@ -18,11 +18,17 @@ description
 end
 
 source_dl  = http://download.gnome.org/sources/%{name}/%{major_ver}/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
+		automake
 		glib2-devel
 		libxml2-devel
+	end
+
+	prepare_cmds
+		cp -vf /usr/share/automake-*/config.{guess,sub} .
 	end
 
 	configure_options += \
