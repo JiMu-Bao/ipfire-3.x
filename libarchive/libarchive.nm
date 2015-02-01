@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = libarchive
-version    = 2.8.4
+version    = 3.1.2
 release    = 1
 
 groups     = System/Libraries
-url        = http://code.google.com/p/libarchive/
+url        = http://www.libarchive.org/
 license    = BSD
 summary    = A library for handling streaming archive formats.
 
@@ -19,7 +19,7 @@ description
 	read ISO9660 CDROM images and ZIP archives.
 end
 
-source_dl  =
+source_dl  = http://www.libarchive.org/downloads/
 
 build
 	requires
@@ -46,7 +46,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
