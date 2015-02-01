@@ -5,10 +5,10 @@
 
 name       = libdb
 version_major = 5
-version_minor = 2
-version_patch = 36
+version_minor = 3
+version_patch = 28
 version    = %{version_major}.%{version_minor}.%{version_patch}
-release    = 3
+release    = 1
 thisapp    = db-%{version}
 
 soversion  = %{version_major}.%{version_minor}
@@ -28,10 +28,12 @@ source_dl  = http://download.oracle.com/berkeley-db/
 
 build
 	requires
+		automake
 		chrpath
 		gcc-c++
 		libtool
 		perl
+		zlib-devel
 	end
 
 	CFLAGS += -fno-strict-aliasing
@@ -39,8 +41,12 @@ build
 	DIR_APP = %{DIR_SRC}/%{thisapp}/dist/dist-tls
 
 	prepare_cmds
-		mkdir %{DIR_APP} && cd %{DIR_APP}
-		ln -s ../configure .
+		for i in $(find %{DIR_SRC}/%{thisapp} -name config.guess -or -name config.sub); do
+			cp -vf %{datadir}/automake-*/config.{guess,sub} $(dirname ${i})
+		done
+
+		mkdir -pv %{DIR_APP} && cd %{DIR_APP}
+		ln -svf ../configure .
 	end
 
 	MACRO_FIX_LIBTOOL
