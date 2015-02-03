@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = psmisc
-version    = 22.19
+version    = 22.21
 release    = 1
 
 groups     = Applications/System
