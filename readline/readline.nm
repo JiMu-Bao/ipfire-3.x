@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = readline
-version    = 6.2
-release    = 6
+version    = 6.3
+release    = 1
 
 groups     = System/Libraries
 url        = ftp://ftp.gnu.org/gnu/readline/
