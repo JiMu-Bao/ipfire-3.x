@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = popt
-version    = 1.15
-release    = 3
+version    = 1.16
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.rpm5.org/
@@ -18,7 +18,19 @@ description
 	it improves on them by allowing more powerful argument expansion.
 end
 
-source_dl  =
+source_dl  = http://rpm5.org/files/popt/
+
+build
+	requires
+		automake
+	end
+
+	prepare_cmds
+		for i in $(find . -name config.guess -or -name config.sub); do
+			cp -vf %{datadir}/automake-*/config.{guess,sub} $(dirname ${i})
+		done
+	end
+end
 
 packages
 	package %{name}
