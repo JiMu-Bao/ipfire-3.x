@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openldap
-version    = 2.4.32
-release    = 5
+version    = 2.4.40
+release    = 1
 
 groups     = System/Daemons
 url        = http://www.openldap.org/
@@ -26,6 +26,7 @@ sources    = %{thisapp}.tgz
 
 build
 	requires
+		automake
 		db4-devel
 		cyrus-sasl-devel
 		groff
@@ -56,6 +57,11 @@ build
 
 	prepare_cmds
 		%{create_user}
+
+		# for aarch64
+		for i in $(find . -name config.guess -or -name config.sub); do
+			cp -vf %{datadir}/automake-*/config.{guess,sub} $(dirname ${i})
+		done
 	end
 
 	install_cmds
