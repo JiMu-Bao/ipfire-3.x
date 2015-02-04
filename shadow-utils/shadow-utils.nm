@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = shadow-utils
-version    = 4.1.4.3
-release    = 7
+version    = 4.2.1
+release    = 1
 thisapp    = shadow-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -21,23 +21,30 @@ description
 end
 
 source_dl  = http://pkg-shadow.alioth.debian.org/releases/
-sources    = %{thisapp}.tar.bz2
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
 		audit-devel
+		bison
+		flex
+		libacl-devel
+		libattr-devel
 		libcap-devel
 		libselinux-devel
 	end
 
 	configure_options += \
-		--sysconfdir=/etc \
 		--enable-shadowgrp \
 		--with-sha-crypt \
 		--with-selinux \
 		--without-libcrack \
 		--without-libpam \
-		--disable-static
+		--disable-static \
+		--with-group-name-max-length=32
+
+	# Generating man pages requires gnome-doc-utils
+	configure_options += --disable-man
 
 	prepare_cmds
 		# Do not build these files:
