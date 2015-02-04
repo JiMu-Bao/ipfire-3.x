@@ -5,10 +5,15 @@
 CONFIG_BROKEN_ON_SMP=y
 
 #
+# Timers subsystem
+#
+CONFIG_NO_HZ_IDLE=y
+
+#
 # CPU/Task time and stats accounting
 #
-CONFIG_TICK_CPU_ACCOUNTING=y
-# CONFIG_VIRT_CPU_ACCOUNTING_GEN is not set
+# CONFIG_TICK_CPU_ACCOUNTING is not set
+# CONFIG_IRQ_TIME_ACCOUNTING is not set
 
 #
 # RCU Subsystem
@@ -83,7 +88,6 @@ CONFIG_ARM_L1_CACHE_SHIFT=5
 # PCI host controller drivers
 #
 # CONFIG_PCI_MVEBU is not set
-# CONFIG_PCIEPORTBUS is not set
 
 #
 # Kernel Features
@@ -135,11 +139,6 @@ CONFIG_IMX_WEIM=y
 CONFIG_MVEBU_MBUS=y
 
 #
-# Device Tree and Open Firmware support
-#
-CONFIG_VIRTIO_BLK=y
-
-#
 # Controllers with non-SFF native interface
 #
 CONFIG_AHCI_MVEBU=m
@@ -150,11 +149,6 @@ CONFIG_AHCI_MVEBU=m
 # CONFIG_VORTEX is not set
 CONFIG_MV643XX_ETH=m
 CONFIG_MVNETA=m
-
-#
-# MII PHY device drivers
-#
-CONFIG_B43_SDIO=y
 
 #
 # ISDN feature submodules
@@ -215,11 +209,6 @@ CONFIG_ARMADA_THERMAL=m
 # Watchdog Device Drivers
 #
 CONFIG_ORION_WATCHDOG=m
-
-#
-# Sonics Silicon Backplane
-#
-CONFIG_SSB_SDIOHOST=y
 
 #
 # Multifunction device drivers
@@ -307,12 +296,6 @@ CONFIG_USB_IMX21_HCD=m
 # USB Physical Layer drivers
 #
 CONFIG_NOP_USB_XCEIV=m
-CONFIG_MMC=m
-
-#
-# MMC/SD/SDIO Card Drivers
-#
-CONFIG_MMC_BLOCK=m
 
 #
 # MMC/SD/SDIO Host Controller Drivers
@@ -323,7 +306,6 @@ CONFIG_MMC_MVSDIO=m
 #
 # LED drivers
 #
-CONFIG_LEDS_PWM=m
 CONFIG_LEDS_NS2=m
 CONFIG_LEDS_NETXBIG=m
 
@@ -349,12 +331,6 @@ CONFIG_UIO_AEC=m
 CONFIG_UIO_SERCOS3=m
 CONFIG_UIO_PCI_GENERIC=m
 CONFIG_UIO_MF624=m
-CONFIG_VIRTIO=y
-
-#
-# Virtio drivers
-#
-CONFIG_VIRTIO_PCI=y
 
 #
 # Android
@@ -440,4 +416,3 @@ CONFIG_CRYPTO_DEV_HIFN_795X_RNG=y
 #
 CONFIG_HAS_IOPORT_MAP=y
 CONFIG_GENERIC_ATOMIC64=y
-# CONFIG_DDR is not set

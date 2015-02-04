@@ -13,11 +13,68 @@ CONFIGS="x86_64:default"
 # i686
 CONFIGS="${CONFIGS} i686:legacy i686:default"
 
+# aarch64
+CONFIGS="${CONFIGS} aarch64:default"
+
 # armv7hl
 CONFIGS="${CONFIGS} armv7hl:lpae armv7hl:default"
 
 # armv5tel
 CONFIGS="${CONFIGS} armv5tel:default"
+
+PLATFORMS="x86 arm"
+declare -A SUBPLATFORMS
+SUBPLATFORMS=(
+	[arm]="arm64 arm32"
+)
+
+function get_platform() {
+	local arch="${1}"
+
+	case "${arch}" in
+		aarch64|arm*)
+			echo "arm"
+			;;
+		x86_64|i?86)
+			echo "x86"
+			;;
+		*)
+			return 1
+			;;
+	esac
+}
+
+function get_subplatform() {
+	local arch="${1}"
+
+	case "${arch}" in
+		aarch64)
+			echo "arm64"
+			;;
+		arm*)
+			echo "arm32"
+			;;
+		*)
+			return 1
+			;;
+	esac
+}
+
+function get_kernel_arch() {
+	local arch="${1}"
+
+	case "${arch}" in
+		aarch64)
+			echo "arm64"
+			;;
+		arm*)
+			echo "arm"
+			;;
+		x86_64|i?86)
+			echo "x86"
+			;;
+	esac
+}
 
 function merge_config() {
 	local arch=${1}
@@ -66,31 +123,27 @@ function merge_config() {
 			configs="${configs} config-i686-legacy"
 			;;
 
+		# ARM64
+		aarch64:default)
+			configs="${configs} config-arm-generic config-arm64-generic"
+			;;
+
 		# ARM
 		armv5tel:default)
-			configs="${configs} config-arm-generic config-armv5tel-default"
+			configs="${configs} config-arm-generic config-arm32-generic"
+			configs="${configs} config-armv5tel-default"
 			;;
 		armv7hl:default)
-			configs="${configs} config-arm-generic config-armv7hl-default"
+			configs="${configs} config-arm-generic config-arm32-generic"
+			configs="${configs} config-armv7hl-default"
 			;;
 		armv7hl:lpae)
-			configs="${configs} config-arm-generic config-armv7hl-default"
-			configs="${configs} config-armv7hl-lpae"
+			configs="${configs} config-arm-generic config-arm32-generic"
+			configs="${configs} config-armv7hl-default config-armv7hl-lpae"
 			;;
 		*)
 			echo >&2 "ERROR: Invalid parameters given: $@"
 			return 1
-			;;
-	esac
-
-	# Determine the kernel arch.
-	local kernel_arch=
-	case "${arch}" in
-		arm*)
-			kernel_arch="arm"
-			;;
-		i?86|x86*)
-			kernel_arch="x86"
 			;;
 	esac
 
@@ -108,6 +161,7 @@ function merge_config() {
 
 	if [ "${config_mode}" != "none" ]; then
 		echo "Running 'make oldnoconfig' for ${arch} (${flavour})..."
+		local kernel_arch="$(get_kernel_arch "${arch}")"
 		(
 			cd ${KERNEL_DIR}
 			cat ${tmp_out} > .config
@@ -175,8 +229,12 @@ function make_oldconfig() {
 function diff_configs() {
 	local extra_configs="$@"
 
-	declare -A arch_configs
-	declare -A subarch_configs
+	local filename
+	local platform
+	local subplatform
+
+	declare -A platform_configs
+	declare -A subplatform_configs
 
 	tmpdir=$(mktemp -d)
 
@@ -198,25 +256,28 @@ function diff_configs() {
 				;;
 		esac
 
-		case "${arch}" in
-			x86*|i?86)
-				arch_configs[x86]="${arch_configs[x86]} ${filename}"
-				;;
-			arm*)
-				arch_configs[arm]="${arch_configs[arm]} ${filename}"
-				;;
-			*)
-				echo >&2 "ERROR: Invalid architecture: ${arch}"
-				;;
-		esac
+		platform="$(get_platform "${arch}")"
+		subplatform="$(get_subplatform "${arch}")"
 
-		subarch_configs[${arch}]="${subarch_configs[${arch}]} ${filename}"
+		if [ -n "${subplatform}" ]; then
+			subplatform_configs[${subplatform}]="${subplatform_configs[${subplatform}]} ${filename}"
+		else
+			platform_configs[${platform}]="${platform_configs[${platform}]} ${filename}"
+		fi
 	done
 
-	common_configs=""
-	for arch in x86 arm; do
-		filename="${tmpdir}/config-${arch}-common"
-		${SCRIPTS_DIR}/configcommon.py ${arch_configs[${arch}]} \
+	local common_configs
+	for platform in ${PLATFORMS}; do
+		for subplatform in ${SUBPLATFORMS[${platform}]}; do
+			filename="${tmpdir}/config-${subplatform}-common"
+			${SCRIPTS_DIR}/configcommon.py ${subplatform_configs[${subplatform}]} \
+				> ${filename}
+
+			platform_configs[${platform}]="${platform_configs[${platform}]} ${filename}"
+		done
+
+		filename="${tmpdir}/config-${platform}-common"
+		${SCRIPTS_DIR}/configcommon.py ${platform_configs[${platform}]} \
 			> ${filename}
 
 		common_configs="${common_configs} ${filename}"
@@ -224,33 +285,40 @@ function diff_configs() {
 
 	${SCRIPTS_DIR}/configcommon.py ${common_configs} > ${tmpdir}/config-generic
 
-	for arch in x86 arm; do
-		${SCRIPTS_DIR}/configdiff.py ${tmpdir}/config-generic \
-			${tmpdir}/config-${arch}-common > ${tmpdir}/config-${arch}-generic
+	for platform in ${PLATFORMS}; do
+		for subplatform in ${SUBPLATFORMS[${platform}]}; do
+			${SCRIPTS_DIR}/configdiff.py \
+				${tmpdir}/config-${platform}-common \
+				${tmpdir}/config-${subplatform}-common \
+				> ${tmpdir}/config-${subplatform}-generic
+		done
+
+		${SCRIPTS_DIR}/configdiff.py \
+			${tmpdir}/config-generic \
+			${tmpdir}/config-${platform}-common \
+			> ${tmpdir}/config-${platform}-generic
 	done
 
 	for config in ${CONFIGS}; do
 		arch=${config%:*}
 		flavour=${config#*:}
 
-		case "${config}" in
-			arm*:*)
-				suparch="arm"
-				;;
-			i?86:*|x86*:*)
-				suparch="x86"
-				;;
-		esac
 		filename=${tmpdir}/config-${arch}-${flavour}
 
 		case "${config}" in
+			aarch64:default)
+				# Virtual configuration
+				rm -f ${filename}
+				continue
+				;;
 			armv7hl:lpae|i686:legacy)
 				# Legacy depends directly on the default configuration.
 				${SCRIPTS_DIR}/configdiff.py ${tmpdir}/config-${arch}-default \
 					${filename} > ${filename}.tmp
 				;;
 			*)
-				${SCRIPTS_DIR}/configdiff.py ${tmpdir}/config-${suparch}-common \
+				platform="$(get_subplatform "${arch}" || get_platform "${arch}")"
+				${SCRIPTS_DIR}/configdiff.py ${tmpdir}/config-${platform}-common \
 					${filename} > ${filename}.tmp
 				;;
 		esac

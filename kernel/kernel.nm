@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 3.18.2
-release    = 1
+release    = 2
 thisapp    = linux-%{version}
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -90,6 +90,14 @@ build
 		build_kernel_default = 1
 
 		kernel_arch = x86
+	end
+
+	if "%{DISTRO_ARCH}" == "aarch64"
+		# Disable for now because it won't compile
+		build_kernel_default = 0
+
+		kernel_arch = arm64
+		kernel_target = Image.gz
 	end
 
 	if "%{DISTRO_ARCH}" == "armv5tel"
@@ -217,7 +225,7 @@ build
 
 			# Compile Flattened Device Tree database
 			case "${DISTRO_ARCH}" in
-				arm*)
+				aarch64|arm*)
 					make ARCH=%{kernel_arch} dtbs
 
 					mkdir -pv %{BUILDROOT}/boot/dtb-${fullversion}
