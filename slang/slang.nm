@@ -4,8 +4,7 @@
 ###############################################################################
 
 name       = slang
-version    = 2.1.4
-major_ver  = 2.1
+version    = 2.3.0
 release    = 1
 
 groups     = System/Libraries
@@ -20,17 +19,13 @@ description
 	language.
 end
 
-source_dl  = ftp://ftp.fu-berlin.de/pub/unix/misc/slang/v{major_ver}/
-sources    = %{thisapp}.tar.bz2
+source_dl  = http://www.jedsoft.org/releases/slang/
 
 build
 	requires
 		ncurses-devel
 		pcre-devel
 	end
-
-	configure_options += \
-		--sysconfdir=/etc
 
 	PARALLELISMFLAGS = # off
 
@@ -41,7 +36,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
