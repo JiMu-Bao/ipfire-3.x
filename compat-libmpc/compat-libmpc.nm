@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = libmpc
-version    = 1.0
-release    = 2
+name       = compat-libmpc
+version    = 0.9
+release    = 1
+
 thisapp    = mpc-%{version}
 
 groups     = System/Libraries
@@ -27,21 +28,37 @@ build
 		mpfr-devel >= 2.4.2
 	end
 
+	export EGREP = egrep
+
 	configure_options += \
-		--enable-shared \
-		--disable-static
+		--disable-static \
+		--enable-shared
 
 	test
-		#export LD_LIBRARY_PATH=$(pwd)/src/.libs
 		make check
+	end
+
+	install
+		# Only install libraries.
+		mkdir -pv %{BUILDROOT}%{libdir}
+		install -m 644 src/.libs/libmpc.so.2.0.0 %{BUILDROOT}%{libdir}
+		ln -svf libmpc.so.2.0.0 %{BUILDROOT}%{libdir}/libmpc.so.2
 	end
 end
 
 packages
 	package %{name}
+		provides
+			mpc = %{thisver}
+		end
 
-	package %{name}-devel
-		template DEVEL
+		obsoletes
+			mpc-compat
+		end
+
+		conflicts
+			mpc <= %{thisver}
+		end
 	end
 
 	package %{name}-debuginfo
