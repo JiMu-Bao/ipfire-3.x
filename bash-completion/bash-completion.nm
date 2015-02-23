@@ -5,7 +5,7 @@
 
 name       = bash-completion
 version    = 2.1
-release    = 1
+release    = 2
 arch       = noarch
 
 groups     = Development/Languages
@@ -24,6 +24,13 @@ sources    = %{thisapp}.tar.bz2
 build
 	install_cmds
 		rm -rvf %{BUILDROOT}%{datadir}/bash-completion/completions/{cawsay,cowthink}
+
+		# Remove files which are provided by util-linux >= 2.22.
+		rm -rvf %{BUILDROOT}%{datadir}/bash-completion/completions/{cal,ncal,chsh}
+		rm -rvf %{BUILDROOT}%{datadir}/bash-completion/completions/{eject,hexdump}
+		rm -rvf %{BUILDROOT}%{datadir}/bash-completion/completions/{hwclock,ionice}
+		rm -rvf %{BUILDROOT}%{datadir}/bash-completion/completions/{look,renice,hd}
+		rm -rvf %{BUILDROOT}%{datadir}/bash-completion/completions/{rtcwake,su,dmesg}
 
 		install -Dpm 644 %{DIR_SOURCE}/bash-completion-1.99-redefine_filedir.bash \
 			%{BUILDROOT}%{sysconfdir}/bash_completion.d/redefine_filedir
