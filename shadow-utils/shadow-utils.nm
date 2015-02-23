@@ -5,7 +5,7 @@
 
 name       = shadow-utils
 version    = 4.2.1
-release    = 1
+release    = 2
 thisapp    = shadow-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -32,6 +32,7 @@ build
 		libattr-devel
 		libcap-devel
 		libselinux-devel
+		libsemanage-devel
 	end
 
 	configure_options += \
