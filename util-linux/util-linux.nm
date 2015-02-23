@@ -7,7 +7,7 @@ name       = util-linux
 major_ver  = 2.25
 minor_ver  = 2
 version    = %{major_ver}.%{minor_ver}
-release    = 1
+release    = 2
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -144,7 +144,7 @@ packages
 			coreutils < 8.19
 			setup < 3.0-2
 			util-linux-ng
-			sysvinit <= 2.86-2
+			sysvinit <= 2.86-6
 		end
 
 		preprequires += coreutils
