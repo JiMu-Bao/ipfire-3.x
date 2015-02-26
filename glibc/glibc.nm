@@ -4,12 +4,12 @@
 ###############################################################################
 
 name       = glibc
-version    = 2.20
+version    = 2.21
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
-url        = http://sources.redhat.com/glibc/
+url        = http://www.gnu.org/software/libc/libc.html
 license    = GPLv2+ LGPLv2+
 summary    = The GNU libc libraries.
 
