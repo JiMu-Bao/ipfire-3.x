@@ -4,9 +4,9 @@
 ###############################################################################
 
 name       = perl
-version    = 5.14.2
+version    = 5.20.2
 # Never reset release in this package, just increase.
-release    = 11
+release    = 12
 
 perl_epoch = 2
 thisver = %{perl_epoch}:%{version}-%{_release}
@@ -114,9 +114,9 @@ build
 		make %{PARALLELISMFLAGS}
 	end
 
-	#test
-	#	make test
-	#end
+	test
+		make test
+	end
 
 	install_cmds
 		# Remove precreated directories
@@ -147,9 +147,9 @@ packages
 
 		provides
 			# Compat provides
-			perl(:MODULE_COMPAT_5.14.2)
-			perl(:MODULE_COMPAT_5.14.1)
-			perl(:MODULE_COMPAT_5.14.0)
+			perl(:MODULE_COMPAT_5.20.2)
+			perl(:MODULE_COMPAT_5.20.1)
+			perl(:MODULE_COMPAT_5.20.0)
 
 			# Threading provides
 			perl(:WITH_ITHREADS)
@@ -211,7 +211,20 @@ packages
 			Mac::
 			NDBM_File
 			Tk
+			unicore::Name
 			VMS::
+		end
+
+		obsoletes
+			perl-Archive-Extract
+			perl-Class-ISA
+			perl-CPANPLUS
+			perl-Log-Message
+			perl-Log-Message-Simple
+			perl-Module-Plugable
+			perl-Object-Accessor
+			perl-Term-UI
+			perl-Version-Requirements
 		end
 	end
 
@@ -260,14 +273,14 @@ packages
 	#	end
 	#end
 
-	package perl-Archive-Extract
+	package perl-App-a2p
 		epoch = 0
-		version = 0.48
-		arch = noarch
+		version = 1.000
 
-		summary = Generic archive extracting mechanism.
+		summary = Awk to Perl translator.
 		description
-			Archive::Extract is a generic archive extraction mechanism.
+			This package delivers a2p tool which takes an awk script specified on the
+			command line and produces a comparable Perl script.
 		end
 
 		requires
@@ -275,14 +288,59 @@ packages
 		end
 
 		files
-			/usr/share/perl5/Archive/Extract.pm
-			/usr/share/man/man3/Archive::Extract.3*
+			%{bindir}/a2p
+			%{datadir}/perl5/pod/a2p.pod
+			%{mandir}/man1/a2p.1*
+		end
+	end
+
+	package perl-App-find2perl
+		epoch = 0
+		version = 0.001
+		arch = noarch
+
+		summary = Translate find command lines to Perl code.
+		description
+			This package delivers find2perl tool which is a little translator to convert
+			find command lines to equivalent Perl code.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{bindir}/find2perl
+			%{mandir}/man1/find2perl.1*
+		end
+	end
+
+	package perl-App-s2p
+		epoch = 0
+		version = 1.000
+		arch = noarch
+
+		summary = Convert sed scripts to Perl programm.
+		description
+			This package delivers the s2p tool, which converts sed scripts to
+			Perl programms.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{bindir}/psed
+			%{bindir}/s2p
+			%{mandir}/man1/psed.1*
+			%{mandir}/man1/s2p.1*
 		end
 	end
 
 	package perl-Archive-Tar
 		epoch = 0
-		version = 1.76
+		version = 1.96
 		arch = noarch
 
 		summary = A module for Perl manipulation of .tar files.
@@ -296,32 +354,66 @@ packages
 
 		requires
 			%{perl_requires}
+			perl(IO::Zlib) >= 1.01
+			perl(IO::Compress::Bzip2) >= 2.015
+			perl(IO::Uncompress::Bunzip2) >= 2.015
 		end
 
 		files
-			/usr/bin/ptar
-			/usr/bin/ptardiff
-			/usr/bin/ptargrep
-			/usr/share/perl5/Archive/Tar.pm
-			/usr/share/man/man1/ptar.1*
-			/usr/share/man/man1/ptardiff.1*
-			/usr/share/man/man1/ptargrep.1*
-			/usr/share/man/man3/Archive::Tar*
+			%{bindir}/ptar
+			%{bindir}/ptardiff
+			%{bindir}/ptargrep
+			%{datadir}/perl5/Archive/Tar 
+			%{datadir}/perl5/Archive/Tar.pm
+			%{mandir}/man1/ptar.1*
+			%{mandir}/man1/ptardiff.1*
+			%{mandir}/man1/ptargrep.1*
+			%{mandir}/man3/Archive::Tar* 
 		end
 	end
 
-	package perl-Class-ISA
+	package perl-autodie
 		epoch = 0
-		version = 0.36
+		version = 2.23
 		arch = noarch
 
-		summary = Report the search path for a class's ISA tree
+		summary = Replace functions with ones that succeed or die.
+		descripton
+			The "autodie" and "Fatal" pragma provides a convenient way to replace
+			functions that normally return false on failure with equivalents that throw an
+			exception on failure.
+
+			However "Fatal" has been obsoleted by the new autodie pragma. Please use
+			autodie in preference to "Fatal".
+		end
+
+		requires
+			%{perl_requires}
+			perl(B)
+			perl(Fcntl)
+			perl(overload)
+			perl(POSIX)
+		end
+
+		files
+			%{datadir}/perl5/autodie/
+			%{datadir}/perl5/autodie.pm
+			%{datadir}/perl5/Fatal.pm
+			%{mandir}/man3/autodie.3*
+			%{mandir}/man3/autodie::*
+			%{mandir}/man3/Fatal.3*
+		end
+	end
+
+	package perl-B-Debug
+		epoch = 0
+		version = 1.19
+		arch = noarch
+
+		summary = Walk Perl syntax tree, print debug information about op-codes.
 		description
-			Suppose you have a class (like Food::Fish::Fishstick) that is derived, via
-			its @ISA, from one or more superclasses (as Food::Fish::Fishstick is from
-			Food::Fish, Life::Fungus, and Chemicals), and some of those superclasses
-			may themselves each be derived, via its @ISA, from one or more superclasses
-			(as above).
+			Walk Perl syntax tree and print debug information about op-codes. See
+			B::Concise and B::Terse for other details.
 		end
 
 		requires
@@ -329,14 +421,37 @@ packages
 		end
 
 		files
-			/usr/share/perl5/Class/ISA.pm
-			/usr/share/man/man3/Class::ISA.3*
+			%{datadir}/perl5/B/Debug.pm
+			%{mandir}/man3/B::Debug.3*
+		end
+	end
+
+	package perl-Compress-Raw-Bzip2
+		epoch = 0
+		version = 2.064
+
+		summary = Low-Level Interface to bzip2 compression library.
+		description
+			This module provides a Perl interface to the bzip2 compression library.
+			It is used by IO::Compress::Bzip2.
+		end
+
+		requires
+			%{perl_requires}
+			perl(Exporter)
+			perl(File::Temp)
+		end
+
+		files
+			%{libdir}/perl5/Compress/Raw/Bzip2.pm
+			%{libdir}/perl5/auto/Compress/Raw/Bzip2
+			%{mandir}/man3/Compress::Raw::Bzip2*
 		end
 	end
 
 	package perl-Compress-Raw-Zlib
 		epoch = 0
-		version = 2.033
+		version = 2.065
 
 		summary = Low-Level Interface to the zlib compression library.
 		description
@@ -349,14 +464,15 @@ packages
 		end
 
 		files
-			/usr/share/perl5/Compress/Raw/Zlib/
-			/usr/share/man/man3/Compress::Raw::Zlib*
+			%{libdir}/perl5/Compress/Raw/Zlib.pm
+			%{libdir}/perl5/auto/Compress/Raw/Zlib
+			%{mandir}/man3/Compress::Raw::Zlib*
 		end
 	end
 
 	package perl-CGI
 		epoch = 0
-		version = 3.49
+		version = 3.63
 		arch = noarch
 
 		summary = Handle Common Gateway Interface requests and responses
@@ -380,7 +496,7 @@ packages
 		end
 
 		filter_requires
-			perl\(FCGI\)
+			FCGI
 		end
 
 		files
@@ -393,7 +509,7 @@ packages
 
 	package perl-CPAN
 		epoch = 0
-		version = 1.9600.01
+		version = 2.05
 		arch = noarch
 
 		summary = Query, download and build perl modules from CPAN sites.
@@ -425,7 +541,7 @@ packages
 
 	package perl-CPAN-Meta
 		epoch = 0
-		version = 2.110440
+		version = 2.140640
 		arch = noarch
 
 		summary = Distribution metadata for a CPAN dist.
@@ -454,9 +570,32 @@ packages
 		end
 	end
 
+	package perl-CPAN-Meta-Requirements
+		epoch = 0
+		version = 2.122
+		arch = noarch
+
+		summary = Set of version requirements for a CPAN dist.
+		description
+			A CPAN::Meta::Requirements object models a set of version constraints like
+			those specified in the META.yml or META.json files in CPAN distributions.
+			It can be built up by adding more and more constraints, and it will reduce
+			them to the simplest representation.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{datadir}/perl5/CPAN/Meta/Requirements.pm
+			%{mandir}/man3/CPAN::Meta::Requirements.3*
+		end
+	end
+
 	package perl-CPAN-Meta-YAML
 		epoch = 0
-		version = 0.0003
+		version = 0.012
 		arch = noarch
 
 		summary = Read and write a subset of YAML for CPAN Meta files.
@@ -476,48 +615,9 @@ packages
 		end
 	end
 
-	package perl-CPANPLUS
-		epoch = 0
-		version = 0.9103
-		arch = noarch
-
-		summary = API & CLI access to the CPAN mirrors.
-		description
-			The CPANPLUS library is an API to the CPAN mirrors and a collection of
-			interactive shells, commandline programs, etc, that use this API.
-		end
-
-		requires
-			%{perl_requires}
-			perl(Digest::SHA)
-			perl(Module::Pluggable)>=2.4
-			perl(Module::CoreList)
-		end
-
-		provides
-			perl-CPANPLUS-Dist-Build=0.06
-		end
-
-		filter_requires
-			DBIx
-			Your::Module::Here
-			DBD::SQLite
-		end
-
-		files
-			/usr/bin/cpan2dist
-			/usr/bin/cpanp
-			/usr/bin/cpanp-run-perl
-			/usr/share/perl5/CPANPLUS*
-			/usr/share/man/man1/cpan2dist.1*
-			/usr/share/man/man1/cpanp.1*
-			/usr/share/man/man3/CPANPLUS*
-		end
-	end
-
 	package perl-Carp
 		epoch = 0
-		version = 1.20
+		version = 1.33.01
 		arch = noarch
 
 		summary = Alternative warn and die for modules.
@@ -549,9 +649,104 @@ packages
 		end
 	end
 
+	package perl-constant
+		epoch = 0
+		version = 1.31
+		arch = noarch
+
+		summary = Perl pragma to declare constants.
+		description
+			This pragma allows you to declare constants at compile-time.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{datadir}/perl5/constant.pm
+			%{mandir}/man3/constant.3*
+		end
+	end
+
+	package perl-Data-Dumper
+		epoch = 0
+		version = 2.151
+
+		summary = Stringify perl data structures, suitable for printing and eval.
+		description
+			Given a list of scalars or reference variables, writes out their contents
+			in perl syntax. The references can also be objects. The content of each
+			variable is output in a single Perl statement. Handles self-referential
+			structures correctly.
+		end
+
+		requires
+			%{perl_requires}
+			perl(Scalar::Util)
+			perl(XSLoader)
+		end
+
+		files
+			%{libdir}/perl5/auto/Data/Dumper/Dumper.so
+			%{libdir}/perl5/Data/Dumper.pm
+			%{mandir}/man3/Data::Dumper.3*
+		end
+	end
+
+	package perl-DB_File
+		epoch = 0
+		version = 1.831
+
+		summary = Perl5 access to Berkeley DB version 1.x.
+		description
+			DB_File is a module which allows Perl programs to make use of the facilities
+			provided by Berkeley DB version 1.x (if you have a newer version of DB, you
+			will be limited to functionality provided by interface of version 1.x). The
+			interface defined here mirrors the Berkeley DB interface closely.
+		end
+
+		requires
+			%{perl_requires}
+			perl(Fcntl)
+			perl(XSLoader)
+		end
+
+		files
+			%{libdir}/perl5/DB_File.pm
+			%{libdir}/perl5/auto/DB_File/DB_File.so
+			%{mandir}/man3/DB_File*
+		end
+	end
+
+	package perl-Devel-PPPort
+		epoch = 0
+		version = 3.21
+
+		summary = Perl Pollution Portability header generator.
+		description
+			Perl's API has changed over time, gaining new features, new functions,
+			increasing its flexibility, and reducing the impact on the C name space
+			environment (reduced pollution). The header file written by this module,
+			typically ppport.h, attempts to bring some of the newer Perl API features
+			to older versions of Perl, so that you can worry less about keeping track
+			of old releases, but users can still reap the benefit.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{libdir}/perl5/Devel/PPPort.pm
+			%{libdir}/perl5/auto/Devel/PPPort/PPPort.so
+			%{mandir}/man3/Devel::PPPort.3*
+		end
+	end
+
 	package perl-Digest
 		epoch = 0
-		version = 1.16
+		version = 1.17
 		arch = noarch
 
 		summary = Modules that calculate message digests.
@@ -582,7 +777,7 @@ packages
 
 	package perl-Digest-MD5
 		epoch = 0
-		version = 2.51
+		version = 2.53
 
 		summary = Perl Interface to the MD5 Algorithm.
 		description
@@ -606,7 +801,7 @@ packages
 
 	package perl-Digest-SHA
 		epoch = 0
-		version = 5.61
+		version = 5.88
 
 		summary = Perl extension for SHA-1/224/256/384/512.
 		description
@@ -632,9 +827,103 @@ packages
 		end
 	end
 
+	package perl-Encode
+		epoch = 0
+		version = 2.60
+
+		summary = Character encodings in Perl.
+		description
+			The Encode module provides the interface between Perl strings and the rest
+			of the system. Perl strings are sequences of characters.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{bindir}/piconv
+			%{libdir}/perl5/Encode*
+			%{libdir}/perl5/auto/Encode*
+			%{datadir}/perl5/Encode
+			!%{datadir}/perl5/Encode/*.e2x
+			!%{datadir}/perl5/Encode/encode.h
+			%{mandir}/man1/piconv.1*
+			%{mandir}/man3/Encode*.3*
+		end
+	end
+
+	package perl-Env
+		epoch = 0
+		version = 1.04
+		arch = noarch
+
+		summary = Perl module that imports environment variables as scalars or arrays.
+		description
+			Perl maintains environment variables in a special hash named %%ENV. For when
+			this access method is inconvenient, the Perl module Env allows environment
+			variables to be treated as scalar or array variables.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{datadir}/perl5/Env.pm
+			%{mandir}/man3/Env.3*
+		end
+	end
+
+	package perl-experimental
+		epoch = 0
+		version = 0.007
+		arch = noarch
+
+		summary = Experimental features made easy.
+		description
+			This pragma provides an easy and convenient way to enable or disable
+			experimental features.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{datadir}/perl5/experimental*
+			%{mandir}/man3/experimental*
+		end
+	end
+
+	package perl-Exporter
+		epoch = 0
+		version = 5.71
+		arch = noarch
+
+		summary = Implements default import method for modules.
+		description
+			The Exporter module implements an import method which allows a module to
+			export functions and variables to its users' name spaces. Many modules use
+			Exporter rather than implementing their own import method because Exporter
+			provides a highly flexible interface, with an implementation optimized for
+			the common case.
+		end
+
+		requires
+			%{perl_requires}
+			perl(Carp) >= 1.05
+		end
+
+		files
+			%{datadir}/perl5/Exporter*
+			%{mandir}/man3/Exporter*
+		end
+	end
+
 	package perl-ExtUtils-CBuilder
 		epoch = 0
-		version = 0.280203
+		version = 0.280217
 		arch = noarch
 
 		summary = Compile and link C code for Perl modules.
@@ -656,9 +945,32 @@ packages
 		end
 	end
 
+	package perl-ExtUtils-Command
+		epoch = 0
+		version = 1.18
+		arch = noarch
+
+		summary = Perl routines to replace common UNIX commands in Makefiles.
+		description
+			This Perl module is used to replace common UNIX commands. In all cases the
+			functions work with @ARGV rather than taking arguments. This makes them
+			easier to deal with in Makefiles.
+		end
+
+		requires
+			%{perl_requires}
+			perl(File::Find)
+		end
+
+		files
+			%{datadir}/perl5/ExtUtils/Command.pm
+			%{mandir}/man3/ExtUtils::Command.*
+		end
+	end
+
 	package perl-ExtUtils-Embed
 		epoch = 0
-		version = 1.30
+		version = 1.32
 		arch = noarch
 
 		summary = Utilities for embedding Perl in C/C++ applications.
@@ -677,9 +989,40 @@ packages
 		end
 	end
 
+	package perl-ExtUtils-Install
+		epoch = 0
+		version = 1.67
+		arch = noarch
+
+		summary = Install files from here to there.
+		description
+			Handles the installing and uninstalling of perl modules, scripts, man
+			pages, etc.
+		end
+
+		requires
+			%{perl_requires}
+			perl-devel
+			perl(Data::Dumper)
+		end
+
+		filter_requires
+			VMS::Filespec
+		end
+
+		files
+			%{datadir}/perl5/ExtUtils/Install.pm
+			%{datadir}/perl5/ExtUtils/Installed.pm
+			%{datadir}/perl5/ExtUtils/Packlist.pm
+			%{mandir}/man3/ExtUtils::Install.3*
+			%{mandir}/man3/ExtUtils::Installed.3*
+			%{mandir}/man3/ExtUtils::Packlist.3*
+		end
+	end
+
 	package perl-ExtUtils-MakeMaker
 		epoch = 0
-		version = 6.57_05
+		version = 6.98
 		arch = noarch
 
 		summary = Create a module Makefile.
@@ -690,6 +1033,12 @@ packages
 		requires
 			%{perl_requires}
 			perl-devel
+			perl(Data::Dumper)
+			perl(ExtUtils::Command)
+			perl(ExtUtils::Install)
+			perl(ExtUtils::Manifest)
+			perl(File::Find)
+			perl(Getopt::Long)
 			perl(Test::Harness)
 		end
 
@@ -700,8 +1049,6 @@ packages
 		files
 			/usr/bin/instmodsh
 			/usr/share/perl5/ExtUtils/Command/
-			/usr/share/perl5/ExtUtils/Install.pm
-			/usr/share/perl5/ExtUtils/Installed.pm
 			/usr/share/perl5/ExtUtils/Liblist/
 			/usr/share/perl5/ExtUtils/Liblist.pm
 			/usr/share/perl5/ExtUtils/MakeMaker/
@@ -711,13 +1058,10 @@ packages
 			/usr/share/perl5/ExtUtils/MY.pm
 			/usr/share/perl5/ExtUtils/Manifest.pm
 			/usr/share/perl5/ExtUtils/Mkbootstrap.pm
-			/usr/share/perl5/ExtUtils/Mksymlists.pm
 			/usr/share/perl5/ExtUtils/Packlist.pm
 			/usr/share/perl5/ExtUtils/testlib.pm
 			/usr/share/man/man1/instmodsh.1*
 			/usr/share/man/man3/ExtUtils::Command::MM*
-			/usr/share/man/man3/ExtUtils::Install.3*
-			/usr/share/man/man3/ExtUtils::Installed.3*
 			/usr/share/man/man3/ExtUtils::Liblist.3*
 			/usr/share/man/man3/ExtUtils::MM*
 			/usr/share/man/man3/ExtUtils::MY.3*
@@ -725,14 +1069,61 @@ packages
 			/usr/share/man/man3/ExtUtils::Manifest.3*
 			/usr/share/man/man3/ExtUtils::Mkbootstrap.3*
 			/usr/share/man/man3/ExtUtils::Mksymlists.3*
-			/usr/share/man/man3/ExtUtils::Packlist.3*
 			/usr/share/man/man3/ExtUtils::testlib.3*
+		end
+	end
+
+	package perl-ExtUtils-Manifest
+		epoch = 0
+		version = 1.63
+		arch = noarch
+
+		summary = Utilities to write and check a MANIFEST file.
+		description
+			%{summary}
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{datadir}/perl5/ExtUtils/Manifest.pm
+			%{datadir}/perl5/ExtUtils/MANIFEST.SKIP
+			%{mandir}/man3/ExtUtils::Manifest.3*
+		end
+	end
+
+	package perl-ExtUtils-Miniperl
+		epoch = 0
+		version = 1.01
+		arch = noarch
+
+		summary = Write the C code for perlmain.c.
+		description
+			writemain() takes an argument list of directories containing archive libraries
+			that relate to perl modules and should be linked into a new perl binary. It
+			writes a corresponding perlmain.c file that is a plain C file containing all
+			the bootstrap code to make the If the first argument to writemain() is a
+			reference to a scalar it is used as the filename to open for ouput. Any other
+			reference is used as the filehandle to write to. Otherwise output defaults to
+			STDOUT.
+		end
+
+		requires
+			%{perl_requires}
+			perl-devel
+		end
+
+		files
+			%{datadir}/perl5/ExtUtils/Miniperl.pm
+			%{mandir}/man3/ExtUtils::Miniperl.3*
 		end
 	end
 
 	package perl-ExtUtils-ParseXS
 		epoch = 0
-		version = 2.2210
+		version = 3.24
 		arch = noarch
 
 		summary = Module and a script for converting Perl XS code into C code.
@@ -748,15 +1139,35 @@ packages
 		end
 
 		files
-			/usr/share/perl5/ExtUtils/ParseXS.pm
-			/usr/share/perl5/ExtUtils/xsubpp
-			/usr/share/man/man3/ExtUtils::ParseXS.3*
+			%{bindir}/xsubpp
+			%{datadir}/perl5/ExtUtils/ParseXS.pm
+			%{datadir}/perl5/ExtUtils/ParseXS.pod
+			%{datadir}/perl5/ExtUtils/ParseXS/Constants.pm
+			%{datadir}/perl5/ExtUtils/ParseXS/CountLines.pm
+			%{datadir}/perl5/ExtUtils/ParseXS/Eval.pm
+			%{datadir}/perl5/ExtUtils/ParseXS/Utilities.pm
+			%{datadir}/perl5/ExtUtils/Typemaps.pm
+			%{datadir}/perl5/ExtUtils/Typemaps/Cmd.pm
+			%{datadir}/perl5/ExtUtils/Typemaps/InputMap.pm
+			%{datadir}/perl5/ExtUtils/Typemaps/OutputMap.pm
+			%{datadir}/perl5/ExtUtils/Typemaps/Type.pm
+			%{datadir}/perl5/ExtUtils/xsubpp
+			%{mandir}/man1/xsubpp*
+			%{mandir}/man3/ExtUtils::ParseXS.3*
+			%{mandir}/man3/ExtUtils::ParseXS::Constants.3*
+			%{mandir}/man3/ExtUtils::ParseXS::Eval.3*
+			%{mandir}/man3/ExtUtils::ParseXS::Utilities.3*
+			%{mandir}/man3/ExtUtils::Typemaps.3*
+			%{mandir}/man3/ExtUtils::Typemaps::Cmd.3*
+			%{mandir}/man3/ExtUtils::Typemaps::InputMap.3*
+			%{mandir}/man3/ExtUtils::Typemaps::OutputMap.3*
+			%{mandir}/man3/ExtUtils::Typemaps::Type.3*
 		end
 	end
 
 	package perl-File-Fetch
 		epoch = 1
-		version = 0.32
+		version = 0.48
 		arch = noarch
 
 		summary = Generic file fetching mechanism.
@@ -777,9 +1188,131 @@ packages
 		end
 	end
 
+	package perl-File-Path
+		epoch = 0
+		version = 2.09
+		arch = noarch
+
+		summary = Create or remove directory trees.
+		description
+			This module provides a convenient way to create directories of arbitrary
+			depth and to delete an entire directory subtree from the file system.
+		end
+
+		requires
+			%{perl_requires}
+			perl(Carp)
+		end
+
+		files
+			%{datadir}/perl5/File/Path.pm
+			%{mandir}/man3/File::Path.3*
+		end
+	end
+
+	package perl-File-Temp
+		epoch = 0
+		version = 0.23.04
+		arch = noarch
+
+		summary = Return name and handle of a temporary file safely.
+		description
+			File::Temp can be used to create and open temporary files in a safe way.
+			There is both a function interface and an object-oriented interface. The
+			File::Temp constructor or the tempfile() function can be used to return the
+			name and the open file handle of a temporary file. The tempdir() function
+			can be used to create a temporary directory.
+		end
+
+		requires
+			%{perl_requires}
+			perl(File::Path) >= 2.06
+			perl(POSIX)
+		end
+
+		filter_requires
+			VMS::Stdio
+		end
+
+		files
+			%{datadir}/perl5/File/Temp.pm
+			%{mandir}/man3/File::Temp.3*
+		end
+	end
+
+	package perl-Filter
+		epoch = 0
+		version = 1.49
+
+		summary = Perl source filters.
+		description
+			Source filters alter the program text of a module before Perl sees it, much as
+			a C preprocessor alters the source text of a C program before the compiler
+			sees it.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{libdir}/perl5/auto/Filter/Util
+			%{libdir}/perl5/Filter/Util
+			%{datadir}/perl5/pod/perlfilter.pod
+			%{mandir}/man1/perlfilter.*
+			%{mandir}/man3/Filter::Util::*
+		end
+	end
+
+	package perl-Filter-Simple
+		epoch = 0
+		version = 0.91
+		arch = noarch
+
+		summary = Simplified Perl source filtering.
+		description
+			The Filter::Simple Perl module provides a simplified interface to
+			Filter::Util::Call; one that is sufficient for most common cases.
+		end
+
+		requires
+			%{perl_requires}
+			perl(Text::Balanced) >= 1.97
+		end
+
+		files
+			%{datadir}/perl5/Filter/Simple.pm
+			%{mandir}/man3/Filter::Simple.3*
+		end
+	end
+
+	package perl-Getopt-Long
+		epoch = 0
+		version = 2.42
+		arch = noarch
+
+		summary = Extended processing of command line options.
+		description
+			The Getopt::Long module implements an extended getopt function called
+			GetOptions(). It parses the command line from @ARGV, recognizing and removing
+			specified options and their possible values.
+		end
+
+		requires
+			%{perl_requires}
+			perl(Text::ParseWords)
+			perl(Pod::Usage) >= 1.14
+		end
+
+		files
+			%{datadir}/perl5/Getopt/Long.pm
+			%{mandir}/man3/Getopt::Long.3*
+		end
+	end
+
 	package perl-HTTP-Tiny
 		epoch = 0
-		version = 0.012
+		version = 0.043
 		arch = noarch
 
 		summary = A small, simple, correct HTTP/1.1 client.
@@ -805,7 +1338,8 @@ packages
 
 	package perl-IO-Compress
 		epoch = 0
-		version = 2.033
+		version = 2.064
+		arch = noarch
 
 		summary = IO::Compress wrapper for modules.
 		description
@@ -838,6 +1372,28 @@ packages
 		end
 	end
 
+	package perl-IO-Socket-IP
+		epoch = 0
+		version = 0.29
+		arch = noarch
+
+		summary = Drop-in replacement for IO::Socket::INET supporting both IPv4 and IPv6.
+		description
+			This module provides a protocol-independent way to use IPv4 and IPv6
+			sockets, as a drop-in replacement for IO::Socket::INET. Most constructor
+			arguments and methods are provided in a backward-compatible way.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{datadir}/perl5/IO/Socket/IP.pm
+			%{mandir}/man3/IO::Socket::IP.*
+		end
+	end
+
 	package perl-IO-Zlib
 		epoch = 0
 		version = 1.10
@@ -864,7 +1420,7 @@ packages
 
 	package perl-IPC-Cmd
 		epoch = 0
-		version = 0.70
+		version = 0.92
 		arch = noarch
 
 		summary = Finding and running system commands made easy.
@@ -886,7 +1442,7 @@ packages
 
 	package perl-JSON-PP
 		epoch = 0
-		version = 2.27150
+		version = 2.27203
 		arch = noarch
 
 		summary = JSON::XS compatible pure-Perl module.
@@ -910,6 +1466,93 @@ packages
 		end
 	end
 
+	package perl-Locale-Codes
+		epoch = 0
+		version = 3.25
+		arch = noarch
+
+		summary = Distribution of modules to handle locale codes.
+		description
+			Locale-Codes is a distribution containing a set of modules. The modules
+			each deal with different types of codes which identify parts of the locale
+			including languages, countries, currency, etc.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		filter_requires
+			Locale::Codes::Country_Retired
+			Locale::Codes::LangFam_Retired
+			Locale::Codes::Script_Retired
+			Locale::Codes::LangExt_Codes
+			Locale::Codes::LangFam_Codes
+			Locale::Codes::Script_Codes
+			Locale::Codes::Language_Codes
+			Locale::Codes::LangExt_Retired
+			Locale::Codes::Currency_Codes
+			Locale::Codes::LangVar_Retired
+			Locale::Codes::Language_Retired
+			Locale::Codes::Country_Codes
+			Locale::Codes::LangVar_Codes
+			Locale::Codes::Currency_Retired
+		end
+
+		provides
+			perl(Locale::Codes) = %{version}
+		end
+
+		files
+			%{datadir}/perl5/Locale/Codes
+			%{datadir}/perl5/Locale/Codes.*
+			%{datadir}/perl5/Locale/Country.*
+			%{datadir}/perl5/Locale/Currency.*
+			%{datadir}/perl5/Locale/Language.*
+			%{datadir}/perl5/Locale/Script.*
+			%{mandir}/man3/Locale::Codes::*
+			%{mandir}/man3/Locale::Codes.*
+			%{mandir}/man3/Locale::Country.*
+			%{mandir}/man3/Locale::Currency.*
+			%{mandir}/man3/Locale::Language.*
+			%{mandir}/man3/Locale::Script.*
+		end
+	end
+
+	package perl-Locale-Maketext
+		epoch = 0
+		version = 1.25
+		arch = noarch
+
+		summary = Framework for localization.
+		description
+			It is a common feature of applications (whether run directly, or via the Web)
+			for them to be "localized" -- i.e., for them to present an English interface
+			to an English-speaker, a German interface to a German-speaker, and so on for
+			all languages it's programmed with. Locale::Maketext is a framework for
+			software localization; it provides you with the tools for organizing and
+			accessing the bits of text and text-processing code that you need for
+			producing localized applications.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{datadir}/perl5//Locale/Maketext.*
+			%{datadir}/perl5/Locale/Maketext/Cookbook.*
+			%{datadir}/perl5/Locale/Maketext/Guts.*
+			%{datadir}/perl5/Locale/Maketext/GutsLoader.*
+			%{datadir}/perl5/Locale/Maketext/TPJ13.*
+			%{mandir}/man3/Locale::Maketext.*
+			%{mandir}/man3/Locale::Maketext::Cookbook.*
+			%{mandir}/man3/Locale::Maketext::Guts.*
+			%{mandir}/man3/Locale::Maketext::GutsLoader.*
+			%{mandir}/man3/Locale::Maketext::TPJ13.*
+		end
+	end
+
 	package perl-Locale-Maketext-Simple
 		epoch = 0
 		version = 0.21
@@ -927,70 +1570,14 @@ packages
 		end
 
 		files
-			/usr/share/perl5/Locale/Maketext/Simple.pm
-			/usr/share/man/man3/Locale::Maketext::Simple.*
-		end
-	end
-
-	package perl-Log-Message
-		epoch = 0
-		version = 0.04
-		arch = noarch
-
-		summary = Generic message storage mechanism.
-		description
-			Log::Message is a generic message storage mechanism. It allows you to store
-			messages on a stack -- either shared or private -- and assign meta-data to it.
-			Some meta-data will automatically be added for you, like a timestamp and a
-			stack trace, but some can be filled in by the user, like a tag by which to
-			identify it or group it, and a level at which to handle the message (for
-			example, log it, or die with it).
-		end
-
-		requires
-			%{perl_requires}
-		end
-
-		provides
-			perl(Log::Message::Handlers)=%{version}
-		end
-
-		files
-			/usr/share/perl5/Log/Message.pm
-			/usr/share/perl5/Log/Message/Config.pm
-			/usr/share/perl5/Log/Message/Handlers.pm
-			/usr/share/perl5/Log/Message/Item.pm
-			/usr/share/man/man3/Log::Message.3*
-			/usr/share/man/man3/Log::Message::Config.3*
-			/usr/share/man/man3/Log::Message::Handlers.3*
-			/usr/share/man/man3/Log::Message::Item.3*
-		end
-	end
-
-	package perl-Log-Message-Simple
-		epoch = 0
-		version = 0.08
-		arch = noarch
-
-		summary = Simplified frontend to Log::Message.
-		description
-			This module provides standardized logging facilities using the
-			Log::Message module.
-		end
-
-		requires
-			%{perl_requires}
-		end
-
-		files
-			/usr/share/perl5/Log/Message/Simple.pm
-			/usr/share/man/man3/Log::Message::Simple.3*
+			%{datadir}/perl5/Locale/Maketext/Simple.pm
+			%{mandir}/man3/Locale::Maketext::Simple.*
 		end
 	end
 
 	package perl-Module-Build
 		epoch = 0
-		version = 0.3800
+		version = 0.42.05
 		arch = noarch
 
 		summary = Perl module for building and installing Perl modules.
@@ -1015,18 +1602,18 @@ packages
 		end
 
 		files
-			/usr/bin/config_data
-			/usr/share/perl5/inc/
-			/usr/share/perl5/Module/Build*
-			/usr/share/man/man1/config_data.1*
-			/usr/share/man/man3/Module::Build*
-			/usr/share/man/man3/inc::latest.3*
+			%{bindir}/config_data
+			%{datadir}/perl5/inc/
+			%{datadir}/perl5/Module/Build*
+			%{mandir}/man1/config_data.1*
+			%{mandir}/man3/Module::Build*
+			%{mandir}/man3/inc::latest.3*
 		end
 	end
 
 	package perl-Module-CoreList
 		epoch = 0
-		version = 2.49_01
+		version = 5.20150214
 		arch = noarch
 
 		summary = Perl core modules indexed by perl versions.
@@ -1041,16 +1628,38 @@ packages
 		end
 
 		files
-			/usr/bin/corelist
-			/usr/share/perl5/Module/CoreList.pm
-			/usr/share/man/man1/corelist*
-			/usr/share/man/man3/Module::CoreList*
+			%{datadir}/perl5/Module/CoreList
+			%{datadir}/perl5/Module/CoreList.pm
+			%{datadir}/perl5/Module/CoreList.pod
+			%{mandir}/man3/Module::CoreList*
+		end
+	end
+
+	package perl-Module-CoreList-tools
+		epoch = 0
+		version = 5.020001
+		arch = noarch
+
+		summary = Tool for listing modules shipped with perl.
+		description
+			This package provides a corelist(1) tool which can be used to query what
+			modules were shipped with given perl version.
+		end
+
+		requires
+			%{perl_requires}
+			perl-Module-CoreList
+		end
+
+		files
+			%{bindir}/corelist
+			%{mandir}/man1/corelist*
 		end
 	end
 
 	package perl-Module-Load
 		epoch = 0
-		version = 0.18
+		version = 0.32
 		arch = noarch
 
 		summary = Runtime require of both modules and files.
@@ -1064,14 +1673,14 @@ packages
 		end
 
 		files
-			/usr/share/perl5/Module/Load.pm
-			/usr/share/man/man3/Module::Load.*
+			%{datadir}/perl5/Module/Load.pm
+			%{mandir}/man3/Module::Load.*
 		end
 	end
 
 	package perl-Module-Load-Conditional
 		epoch = 0
-		version = 0.44
+		version = 0.62
 		arch = noarch
 
 		summary = Looking up module information / loading at runtime.
@@ -1085,14 +1694,14 @@ packages
 		end
 
 		files
-			/usr/share/perl5/Module/Load/
-			/usr/share/man/man3/Module::Load::Conditional*
+			%{datadir}/perl5/Module/Load/
+			%{mandir}/man3/Module::Load::Conditional*
 		end
 	end
 
 	package perl-Module-Loaded
 		epoch = 0
-		version = 0.06
+		version = 0.08
 		arch = noarch
 
 		summary = Mark modules as loaded or unloaded.
@@ -1109,14 +1718,14 @@ packages
 		end
 
 		files
-			/usr/share/perl5/Module/Loaded.pm
-			/usr/share/man/man3/Module::Loaded*
+			%{datadir}/perl5/Module/Loaded.pm
+			%{mandir}/man3/Module::Loaded*
 		end
 	end
 
 	package perl-Module-Metadata
 		epoch = 0
-		version = 1.000004
+		version = 1.000019
 		arch = noarch
 
 		summary = Gather package and POD information from perl module files.
@@ -1134,54 +1743,9 @@ packages
 		end
 	end
 
-	package perl-Module-Plugable
-		epoch = 0
-		version = 3.90
-		arch = noarch
-
-		summary = Automatically give your module the ability to have plugins.
-		description
-			Provides a simple but, hopefully, extensible way of having 'plugins' for
-			your module.
-		end
-
-		requires
-			%{perl_requires}
-		end
-
-		files
-			/usr/share/perl5/Devel/InnerPackage.pm
-			/usr/share/perl5/Module/Pluggable/
-			/usr/share/perl5/Module/Pluggable.pm
-			/usr/share/man/man3/Devel::InnerPackage*
-			/usr/share/man/man3/Module::Pluggable*
-		end
-	end
-
-	package perl-Object-Accessor
-		epoch = 0
-		version = 0.38
-		arch = noarch
-
-		summary = Perl module that allows per object accessors.
-		description
-			Object::Accessor provides an interface to create per object accessors (as
-			opposed to per Class accessors, as, for example, Class::Accessor provides).
-		end
-
-		requires
-			%{perl_requires}
-		end
-
-		files
-			/usr/share/perl5/Object/
-			/usr/share/man/man3/Object::Accessor*
-		end
-	end
-
 	package perl-Package-Constants
 		epoch = 0
-		version = 0.02
+		version = 0.04
 		arch = noarch
 
 		summary = List all constants declared in a package.
@@ -1203,7 +1767,7 @@ packages
 
 	package perl-Params-Check
 		epoch = 0
-		version = 0.28
+		version = 0.38
 		arch = noarch
 
 		summary = Generic input parsing/checking mechanism.
@@ -1227,7 +1791,7 @@ packages
 
 	package perl-Parse-CPAN-Meta
 		epoch = 0
-		version = 1.4401
+		version = 1.4414
 		arch = noarch
 
 		summary = Parse META.yml and other similar CPAN metadata files.
@@ -1248,7 +1812,7 @@ packages
 
 	package perl-Path-Tools
 		epoch = 0
-		version = 3.33
+		version = 3.48
 		license = (GPL+ or Artistic) and BSD
 
 		summary = PathTools Perl module (Cwd, File::Spec).
@@ -1274,7 +1838,7 @@ packages
 
 	package perl-Perl-OSType
 		epoch = 0
-		version = 1.002
+		version = 1.007
 		arch = noarch
 
 		summary = Map perl operating system names to generic types.
@@ -1298,9 +1862,32 @@ packages
 		end
 	end
 
+	package perl-Pod-Checker
+		epoch = 0
+		version = 1.60
+		arch = noarch
+
+		summary = Check POD documents for syntax errors.
+		description
+			Module and tools to verify POD documentation contents for compliance with the
+			Plain Old Documentation format specifications.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{bindir}/podchecker
+			%{datadir}/perl5/Pod/Checker.pm
+			%{mandir}/man1/podchecker.*
+			%{mandir}/man3/Pod::Checker.*
+		end
+	end
+
 	package perl-Pod-Escapes
-		epoch= 0
-		version = 1.04
+		epoch = 0
+		version = 1.06
 		arch = noarch
 
 		summary = Perl module for resolving POD escape sequences.
@@ -1319,9 +1906,70 @@ packages
 		end
 	end
 
+	package perl-Pod-Parser
+		epoch = 0
+		version = 1.62
+		arch = noarch
+
+		summary = Basic perl modules for handling Plain Old Documentation (POD).
+		description
+			This software distribution contains the packages for using Perl5 POD (Plain
+			Old Documentation). See the "perlpod" and "perlsyn" manual pages from your
+			Perl5 distribution for more information about POD.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{bindir}/podselect
+			%{datadir}/perl5/Pod/Find.pm
+			%{datadir}/perl5/Pod/InputObjects.pm
+			%{datadir}/perl5/Pod/ParseUtils.pm
+			%{datadir}/perl5/Pod/Parser.pm
+			%{datadir}/perl5/Pod/PlainText.pm
+			%{datadir}/perl5/Pod/Select.pm
+			%{mandir}/man1/podselect.1*
+			%{mandir}/man3/Pod::Find.*
+			%{mandir}/man3/Pod::InputObjects.*
+			%{mandir}/man3/Pod::ParseUtils.*
+			%{mandir}/man3/Pod::Parser.*
+			%{mandir}/man3/Pod::PlainText.*
+			%{mandir}/man3/Pod::Select.*
+		end
+	end
+
+	package perl-Pod-Perldoc
+		epoch = 0
+		version = 3.23
+		arch = noarch
+
+		summary = Look up Perl documentation in Pod format.
+		description
+			perldoc looks up a piece of documentation in .pod format that is embedded
+			in the perl installation tree or in a perl script, and displays it via
+			"groff -man | $PAGER". This is primarily used for the documentation for
+			the perl library modules.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{bindir}/perldoc
+			%{datadir}/perl5/pod/perldoc.pod
+			%{datadir}/perl5/Pod/Perldoc
+			%{datadir}/perl5/Pod/Perldoc.pm
+			%{mandir}/man1/perldoc.1*
+			%{mandir}/man3/Pod::Perldoc*
+		end
+	end
+
 	package perl-Pod-Simple
 		epoch = 0
-		version = 3.16
+		version = 3.28
 		arch = noarch
 
 		summary = Framework for parsing POD documentation.
@@ -1343,9 +1991,95 @@ packages
 		end
 	end
 
+	package perl-Pod-Usage
+		epoch = 0
+		version = 1.63
+		arch = noarch
+
+		summary = Print a usage message from embedded pod documentation.
+		description
+			pod2usage will print a usage message for the invoking script (using its
+			embedded POD documentation) and then exit the script with the desired exit
+			status. The usage message printed may have any one of three levels of
+			"verboseness": If the verbose level is 0, then only a synopsis is printed.
+			If the verbose level is 1, then the synopsis is printed along with a
+			description (if present) of the command line options and arguments. If the
+			verbose level is 2, then the entire manual page is printed.
+		end
+
+		requires
+			%{perl_requires}
+			perl(Pod::Text)
+		end
+
+		files
+			%{bindir}/pod2usage
+			%{datadir}/perl5/Pod/Usage.pm
+			%{mandir}/man1/pod2usage.*
+			%{mandir}/man3/Pod::Usage.*
+		end
+	end
+
+	package perl-parent
+		epoch = 0
+		version = 0.228
+		arch = noarch
+
+		summary = Establish an ISA relationship with base classes at compile time.
+		description
+			parent allows you to both load one or more modules, while setting up
+			inheritance from those modules at the same time.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{datadir}/perl5/parent.pm
+			%{mandir}/man3/parent.3*
+		end
+	end
+
+	package perl-podlators
+		epoch = 0
+		version = 2.5.1
+		arch = noarch
+
+		summary = Format POD source into various output formats.
+		description
+			This package contains Pod::Man and Pod::Text modules which convert POD input
+			to *roff source output, suitable for man pages, or plain text.  It also
+			includes several sub-classes of Pod::Text for formatted output to terminals
+			with various capabilities.
+		end
+
+		requires
+			%{perl_requires}
+			perl(File::Spec) >= 0.8
+			perl(Pod::Simple) >= 3.06
+		end
+
+		files
+			%{bindir}/pod2man
+			%{bindir}/pod2text
+			%{datadir}/perl5/pod/perlpodstyle.pod
+			%{datadir}/perl5/Pod/Man.pm
+			%{datadir}/perl5/Pod/ParseLink.pm
+			%{datadir}/perl5/Pod/Text
+			%{datadir}/perl5/Pod/Text.pm
+			%{mandir}/man1/pod2man.1*
+			%{mandir}/man1/pod2text.1*
+			%{mandir}/man1/perlpodstyle.1*
+			%{mandir}/man3/Pod::Man*
+			%{mandir}/man3/Pod::ParseLink*
+			%{mandir}/man3/Pod::Text*
+		end
+	end
+
 	package perl-Scalar-List-Utils
 		epoch = 0
-		version = 1.22
+		version = 1.28
 
 		summary = A selection of general-utility scalar and list subroutines.
 		description
@@ -1368,33 +2102,102 @@ packages
 		end
 	end
 
-	package perl-Term-UI
+	package perl-Socket
 		epoch = 0
-		version = 0.26
-		arch = noarch
+		version = 2.013
 
-		summary = Term::ReadLine UI made easy.
+		summary = C socket.h defines and structure manipulators.
 		description
-			Term::UI is a transparent way of eliminating the overhead of having to format
-			a question and then validate the reply, informing the user if the answer was not
-			proper and re-issuing the question.
+			This module is just a translation of the C socket.h file.  Unlike the old
+			mechanism of requiring a translated socket.ph file, this uses the h2xs program
+			(see the Perl source distribution) and your native C compiler.  This means
+			that it has a far more likely chance of getting the numbers right.  This
+			includes all of the commonly used pound-defines like AF_INET, SOCK_STREAM, etc.
 		end
 
 		requires
 			%{perl_requires}
-			perl(Log::Message::Simple)
 		end
 
 		files
-			/usr/share/perl5/Term/UI/
-			/usr/share/perl5/Term/UI.pm
-			/usr/share/man/man3/Term::UI*
+			%{libdir}/perl5/auto/Socket/Socket.*
+			%{libdir}/perl5/Socket.pm
+			%{mandir}/man3/Socket.3*
+		end
+	end
+
+	package perl-Storable
+		epoch = 0
+		version = 2.49
+
+		summary = Persistence for Perl data structures.
+		description
+			The Storable package brings persistence to your Perl data structures
+			containing scalar, array, hash or reference objects, i.e. anything that
+			can be conveniently stored to disk and retrieved at a later time.
+		end
+
+		requires
+			%{perl_requires}
+			perl(Carp)
+			perl(Fcntl)
+			perl(IO::File)
+		end
+
+		files
+			%{libdir}/perl5/Storable.pm
+			%{libdir}/perl5/auto/Storable
+			%{mandir}/man3/Storable.*
+		end
+	end
+
+	package perl-Sys-Syslog
+		epoch = 0
+		version = 0.33
+
+		summary = Perl interface to the UNIX syslog(3) calls.
+		description
+			Sys::Syslog is an interface to the UNIX syslog(3) function. Call syslog() with
+			a string priority and a list of printf() arguments just like at syslog(3).
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{libdir}/perl5/Sys/Syslog.pm
+			%{libdir}/perl5/auto/Sys/Syslog
+			%{mandir}/man3/Sys::Syslog.*
+		end
+	end
+
+	package perl-Term-ANSIColor
+		epoch = 0
+		version = 4.02
+		arch = noarch
+
+		summary = Color screen output using ANSI escape sequences.
+		description
+			This module has two interfaces, one through color() and colored() and the
+			other through constants. It also offers the utility functions uncolor(),
+			colorstrip(), colorvalid(), and coloralias(), which have to be explicitly
+			imported to be used.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{datadir}/perl5/Term/ANSIColor.pm
+			%{mandir}/man3/Term::ANSIColor*
 		end
 	end
 
 	package perl-Test-Harness
 		epoch = 0
-		version = 3.23
+		version = 3.30
 		arch = noarch
 
 		summary = Run Perl standard test scripts with statistics.
@@ -1421,7 +2224,7 @@ packages
 
 	package perl-Test-Simple
 		epoch = 0
-		version = 0.98
+		version = 1.001002
 		arch = noarch
 
 		summary = Basic utilities for writing tests.
@@ -1431,6 +2234,7 @@ packages
 
 		requires
 			%{perl_requires}
+			perl(Data::Dumper)
 		end
 
 		files
@@ -1445,9 +2249,100 @@ packages
 		end
 	end
 
+	package perl-Text-ParseWords
+		epoch = 0
+		version = 3.29
+		arch = noarch
+
+		summary = Parse text into an array of tokens or array of arrays.
+		description
+			Parse text into an array of tokens or array of arrays.
+		end
+
+		requires
+			%{perl_requires}
+			perl(Carp)
+		end
+
+		files
+			%{datadir}/perl5/Text/ParseWords.pm
+			%{mandir}/man3/Text::ParseWords.*
+		end
+	end
+
+	package perl-Thread-Queue
+		epoch = 0
+		version = 3.05
+		arch = noarch
+
+		summary = Thread-safe queues.
+		description
+			This module provides thread-safe FIFO queues that can be accessed safely by
+			any number of threads.
+		end
+
+		requires
+			%{perl_requires}
+			perl(Carp)
+		end
+
+		files
+			%{datadir}/perl5/Thread/Queue.pm
+			%{mandir}/man3/Thread::Queue.*
+		end
+	end
+
+	package perl-Time-HiRes
+		epoch = 0
+		version = 1.9726
+
+		summary = High resolution alarm, sleep, gettimeofday, interval timers.
+		description
+			The Time::HiRes module implements a Perl interface to the usleep, nanosleep,
+			ualarm, gettimeofday, and setitimer/getitimer system calls, in other words,
+			high resolution time and timers.
+		end
+
+		requires
+			%{perl_requires}
+			perl(Carp)
+		end
+
+		files
+			%{libdir}/perl5/Time/HiRes.pm
+			%{libdir}/perl5/auto/Time/HiRes
+			%{mandir}/man3/Time::HiRes.*
+		end
+	end
+
+	package perl-Time-Local
+		epoch = 0
+		version = 1.2300
+		arch = noarch
+
+		summary = Efficiently compute time from local and GMT time.
+		description
+			This module provides functions that are the inverse of built-in perl functions
+			localtime() and gmtime(). They accept a date as a six-element array, and
+			return the corresponding time(2) value in seconds since the system epoch
+			(Midnight, January 1, 1970 GMT on Unix, for example). This value can be
+			positive or negative, though POSIX only requires support for positive values,
+			so dates before the system's epoch may not work on all operating systems.
+		end
+
+		requires
+			%{perl_requires}
+		end
+
+		files
+			%{datadir}/perl5/Time/Local.pm
+			%{mandir}/man3/Time::Local.*
+		end
+	end
+
 	package perl-Time-Piece
 		epoch = 0
-		version = 1.20_01
+		version = 1.27
 
 		summary = Time objects from localtime and gmtime.
 		description
@@ -1470,52 +2365,9 @@ packages
 		end
 	end
 
-	package perl-Version-Requirements
-		epoch = 0
-		version = 0.101020
-		arch = noarch
-
-		summary = Set of version requirements for a CPAN dist.
-		description
-			A Version::Requirements object models a set of version constraints like
-			those specified in the META.yml or META.json files in CPAN distributions.
-			It can be built up by adding more and more constraints, and it will reduce
-			them to the simplest representation.
-		end
-
-		requires
-			%{perl_requires}
-		end
-
-		# No files.
-		files
-		end
-	end
-
-	package perl-parent
-		epoch = 0
-		version = 0.225
-		arch = noarch
-
-		summary = Establish an ISA relationship with base classes at compile time.
-		description
-			parent allows you to both load one or more modules, while setting up
-			inheritance from those modules at the same time.
-		end
-
-		requires
-			%{perl_requires}
-		end
-
-		files
-			/usr/share/perl5/parent.pm
-			/usr/share/man/man3/parent.3*
-		end
-	end
-
 	package perl-threads
 		epoch = 0
-		version = 1.83
+		version = 1.93
 
 		summary = Perl interpreter-based threads.
 		description
@@ -1541,7 +2393,7 @@ packages
 
 	package perl-threads-shared
 		epoch = 0
-		version = 1.37
+		version = 1.46
 
 		summary = Perl extension for sharing data structures between threads.
 		description
@@ -1566,7 +2418,7 @@ packages
 
 	package perl-version
 		epoch = 0
-		version = 0.88
+		version = 0.99.09
 		arch = noarch
 
 		summary = Perl extension for Version Objects.
@@ -1600,52 +2452,84 @@ packages
 			%{perl_requires}
 			perl-libs
 			perl-devel
-			perl-Archive-Extract
+			perl-App-a2p
+			perl-App-find2perl
+			perl-App-s2p
 			perl-Archive-Tar
-			perl-Class-ISA
+			perl-autodie
+			perl-Compress-Raw-Bzip2
 			perl-Compress-Raw-Zlib
 			perl-CGI
 			perl-CPAN
 			perl-CPAN-Meta
 			perl-CPAN-Meta-YAML
-			perl-CPANPLUS
+			perl-CPAN-Meta-Requirements
 			perl-Carp
+			perl-constant
+			perl-Data-Dumper
+			perl-DB_File
+			perl-Devel-PPPort
 			perl-Digest
 			perl-Digest-MD5
 			perl-Digest-SHA
+			perl-Encode
+			perl-Env
+			perl-Exporter
 			perl-ExtUtils-CBuilder
+			perl-ExtUtils-Command
 			perl-ExtUtils-Embed
+			perl-ExtUtils-Install
 			perl-ExtUtils-MakeMaker
+			perl-ExtUtils-Manifest
+			perl-ExtUtils-Miniperl
 			perl-ExtUtils-ParseXS
+			perl-experimental
 			perl-File-Fetch
+			perl-File-Path
+			perl-File-Temp
+			perl-Filter
+			perl-Filter-Simple
+			perl-Getopt-Long
 			perl-HTTP-Tiny
 			perl-IO-Compress
+			perl-IO-Socket-IP
 			perl-IO-Zlib
 			perl-IPC-Cmd
 			perl-JSON-PP
+			perl-Locale-Codes
+			perl-Locale-Maketext
 			perl-Locale-Maketext-Simple
-			perl-Log-Message
-			perl-Log-Message-Simple
 			perl-Module-Build
 			perl-Module-CoreList
+			perl-Module-CoreList-tools
 			perl-Module-Load
 			perl-Module-Load-Conditional
 			perl-Module-Loaded
 			perl-Module-Metadata
-			perl-Module-Plugable
-			perl-Object-Accessor
 			perl-Package-Constants
 			perl-Params-Check
 			perl-Parse-CPAN-Meta
 			perl-Perl-OSType
 			perl-Path-Tools
+			perl-Pod-Checker
+			perl-Pod-Parser
+			perl-Pod-Perldoc
 			perl-Pod-Simple
+			perl-Pod-Usage
+			perl-parent
+			perl-podlators
 			perl-Scalar-List-Utils
-			perl-Term-UI
+			perl-Socket
+			perl-Storable
+			perl-Sys-Syslog
+			perl-Term-ANSIColor
 			perl-Test-Harness
 			perl-Test-Simple
+			perl-Text-ParseWords
+			perl-Thread-Queue
+			perl-Time-HiRes
+			perl-Time-Local
 			perl-Time-Piece
-			perl-parent
 			perl-threads
 			perl-threads-shared
 			perl-version
