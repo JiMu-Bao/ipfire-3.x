@@ -5,7 +5,7 @@
 
 name       = man-db
 version    = 2.7.1
-release    = 1
+release    = 2
 
 groups     = Documentation
 url        = http://savannah.nongnu.org/projects/man-db
@@ -60,6 +60,10 @@ packages
 			groff
 			less
 			xz
+		end
+
+		conflicts
+			systemd <= 204
 		end
 
 		# This package also should be known as man.
