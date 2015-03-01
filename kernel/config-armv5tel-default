@@ -128,11 +128,6 @@ CONFIG_ARM_KIRKWOOD_CPUFREQ=y
 # CONFIG_ARCH_NEEDS_CPU_IDLE_COUPLED is not set
 
 #
-# Generic Driver Options
-#
-# CONFIG_SYS_HYPERVISOR is not set
-
-#
 # Bus devices
 #
 CONFIG_IMX_WEIM=y
@@ -256,7 +251,6 @@ CONFIG_DRM_PANEL_S6E8AA0=m
 #
 # Frame buffer Devices
 #
-CONFIG_FB_SYS_FOPS=m
 CONFIG_FB_MODE_HELPERS=y
 
 #
@@ -393,6 +387,14 @@ CONFIG_PHY_MVEBU_SATA=y
 CONFIG_FRAME_POINTER=y
 
 #
+# Lock Debugging (spinlocks, mutexes, etc...)
+#
+# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
+# CONFIG_DEBUG_LOCK_ALLOC is not set
+# CONFIG_PROVE_LOCKING is not set
+# CONFIG_LOCK_STAT is not set
+
+#
 # RCU Debugging
 #
 CONFIG_FUNCTION_GRAPH_TRACER=y
@@ -408,8 +410,6 @@ CONFIG_DEBUG_LL_INCLUDE="mach/debug-macro.S"
 # Random Number Generation
 #
 CONFIG_CRYPTO_DEV_MV_CESA=m
-CONFIG_CRYPTO_DEV_HIFN_795X=m
-CONFIG_CRYPTO_DEV_HIFN_795X_RNG=y
 
 #
 # Library routines

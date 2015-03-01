@@ -153,7 +153,6 @@ CONFIG_NET_FLOW_LIMIT=y
 #
 # Generic Driver Options
 #
-# CONFIG_SYS_HYPERVISOR is not set
 CONFIG_GENERIC_CPU_AUTOPROBE=y
 
 #
@@ -273,7 +272,6 @@ CONFIG_ARM_SP805_WATCHDOG=m
 CONFIG_FB_SYS_FILLRECT=m
 CONFIG_FB_SYS_COPYAREA=m
 CONFIG_FB_SYS_IMAGEBLIT=m
-CONFIG_FB_SYS_FOPS=m
 # CONFIG_FB_MODE_HELPERS is not set
 
 #
@@ -415,6 +413,14 @@ CONFIG_FRAME_POINTER=y
 # Memory Debugging
 #
 # CONFIG_DEBUG_PER_CPU_MAPS is not set
+
+#
+# Lock Debugging (spinlocks, mutexes, etc...)
+#
+# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
+# CONFIG_DEBUG_LOCK_ALLOC is not set
+# CONFIG_PROVE_LOCKING is not set
+# CONFIG_LOCK_STAT is not set
 
 #
 # RCU Debugging

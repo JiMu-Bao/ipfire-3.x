@@ -1,10 +1,5 @@
 
 #
-# Kernel Performance Events And Counters
-#
-# CONFIG_CC_STACKPROTECTOR is not set
-
-#
 # Processor type and features
 #
 CONFIG_HIGHMEM4G=y
@@ -41,7 +36,6 @@ CONFIG_OLPC_XO15_SCI=y
 #
 # Generic Driver Options
 #
-# CONFIG_SYS_HYPERVISOR is not set
 CONFIG_DMA_CMA=y
 
 #
@@ -318,14 +312,7 @@ CONFIG_IRQCHIP=y
 #
 # Non-executable pages
 #
-CONFIG_PAX_KERNEXEC=y
 CONFIG_PAX_KERNEXEC_MODULE_TEXT=4
-
-#
-# Miscellaneous hardening features
-#
-CONFIG_PAX_MEMORY_UDEREF=y
-CONFIG_PAX_CONSTIFY_PLUGIN=y
 
 #
 # Random Number Generation
