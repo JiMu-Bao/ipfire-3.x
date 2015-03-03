@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = curl
-version    = 7.29.0
+version    = 7.41.0
 release    = 1
 
 groups     = Application/Internet
