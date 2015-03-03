@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = cyrus-sasl
-version    = 2.1.25
-release    = 2
+version    = 2.1.26
+release    = 1
 
 groups     = System/Libraries
 url        = http://asg.web.cmu.edu/sasl/sasl-library.html
@@ -22,9 +22,17 @@ source_dl  = ftp://ftp.cyrusimap.org/cyrus-sasl/
 
 build
 	requires
+		automake
 		db4-devel
 		openssl-devel
 		pam-devel
+	end
+
+	prepare_cmds
+		# for aarch64
+		for i in $(find . -name config.guess -or -name config.sub); do
+			cp -vf %{datadir}/automake-*/config.{guess,sub} $(dirname ${i})
+		done
 	end
 
 	configure_options += \
