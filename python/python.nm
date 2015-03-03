@@ -6,7 +6,7 @@
 name       = python
 major_ver  = 2.7
 version    = %{major_ver}.5
-release    = 1
+release    = 2
 thisapp    = Python-%{version}
 
 groups     = Development/Languages
@@ -47,6 +47,13 @@ build
 	end
 
 	export CFLAGS  += -D_GNU_SOURCE -fwrapv
+	export CPPFLAGS = %(pkg-config --cflags-only-I libffi)
+	export OPT      = %{CFLAGS}
+
+	if "%{lib}" == "lib64"
+		patches += %{DIR_SOURCE}/python-2.7.3-lib64.patch
+		patches += %{DIR_SOURCE}/python-2.7-lib64-sysconfig.patch
+	end
 
 	prepare_cmds
 		# Remove embedded copies of expat, zlib and libffi
@@ -63,16 +70,6 @@ build
 		--with-system-expat \
 		--with-system-ffi \
 		--enable-shared
-
-	build
-		export CPPFLAGS=$(pkg-config --cflags-only-I libffi)
-
-		OPT="%{CFLAGS}" \
-			./configure \
-				%{configure_options}
-
-		make %{PARALLELISMFLAGS}
-	end
 
 	test
 		WITHIN_PYTHON_RPM_BUILD= EXTRATESTOPTS="--verbose" make test || :
