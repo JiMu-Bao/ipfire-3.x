@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = libksba
-version    = 1.0.8
+version    = 1.3.2
 release    = 1
 
 groups     = System/Libraries
-url        = http://www.gnugp.org
+url        = http://www.gnupg.org
 license    = GPLv3
 summary    = X.509 Library.
 
@@ -17,7 +17,7 @@ description
 	CMS protocols.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.gnupg.org/gcrypt/libksba/
 sources    = %{thisapp}.tar.bz2
 
 build
@@ -28,7 +28,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
