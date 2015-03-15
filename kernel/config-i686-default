@@ -115,7 +115,7 @@ CONFIG_APM_CPU_IDLE=y
 # CONFIG_APM_ALLOW_INTS is not set
 
 #
-# x86 CPU frequency scaling drivers
+# CPU frequency scaling drivers
 #
 # CONFIG_X86_POWERNOW_K6 is not set
 CONFIG_X86_POWERNOW_K7=y
