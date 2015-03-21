@@ -6,7 +6,7 @@
 name       = perl
 version    = 5.20.2
 # Never reset release in this package, just increase.
-release    = 12
+release    = 13
 
 perl_epoch = 2
 thisver = %{perl_epoch}:%{version}-%{_release}
@@ -198,9 +198,7 @@ packages
 			perl(timelocal.pl)
 			perl(utf8_heavy.pl)
 			perl(validate.pl)
-			perl(Exporter)
 			perl(File::Basename)
-			perl(constant)
 			perl(strict)
 			perl(vars)
 		end
