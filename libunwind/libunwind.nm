@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libunwind
-version    = 1.0.1
+version    = 1.1
 release    = 1
 
 groups     = Development/Debuggers
@@ -31,6 +31,11 @@ build
 		autoheader
 		automake --add-missing
 		autoconf
+
+		# for aarch64
+		for i in $(find . -name config.guess -or -name config.sub); do
+			cp -vf %{datadir}/automake-*/config.{guess,sub} $(dirname ${i})
+		done
 	end
 
 	configure_options += \
