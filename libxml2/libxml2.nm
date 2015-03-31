@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libxml2
-version    = 2.7.8
+version    = 2.9.2
 release    = 2
 
 groups     = System/Libraries
