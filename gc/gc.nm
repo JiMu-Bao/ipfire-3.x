@@ -4,12 +4,11 @@
 ###############################################################################
 
 name       = gc
-version    = %{major_ver}d
-major_ver  = 7.2
-release    = 2
+version    = 7.4.2
+release    = 1
 
 groups     = System/Libraries
-url        = http://www.hpl.hp.com/personal/Hans_Boehm/gc/
+url        = http://www.hboehm.info/gc/
 license    = BSD
 summary    = A garbage collector for C and C++.
 
@@ -18,16 +17,15 @@ description
 	used as a garbage collecting replacement for C malloc or C++ new.
 end
 
-source_dl  = http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/
+source_dl  = http://www.hboehm.info/gc/gc_source/
 
 build
 	requires
 		autoconf
 		automake
+		libatomic_ops-devel
 		libtool
 	end
-
-	DIR_APP = %{DIR_SRC}/%{name}-%{major_ver}
 
 	# bugzilla.redhat.com/689877
 	export CPPFLAGS = -DUSE_GET_STACKBASE_FOR_MAIN
@@ -41,8 +39,7 @@ build
 		--disable-static \
 		--enable-cplusplus \
 		--enable-large-config \
-		--enable-threads=posix \
-		--with-libatomic-ops=no
+		--enable-threads=posix
 
 	if "%{DISTRO_PLATFORM}" == "x86"
 		configure_options += --enable-parallel-mark
@@ -50,7 +47,7 @@ build
 
 	test
 		# Disabled because gctest hangs forever.
-		#make check
+		make check
 	end
 
 	install_cmds
