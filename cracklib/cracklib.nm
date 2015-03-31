@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = cracklib
-version    = 2.8.18
-release    = 2
+version    = 2.9.2
+release    = 1
 
 groups     = Security/Password
 url        = http://sourceforge.net/projects/cracklib/
@@ -27,9 +27,6 @@ sources   += cracklib-words-20080507.gz
 
 build
 	requires
-		autoconf
-		automake
-		gettext-devel
 		python-devel
 	end
 
@@ -48,11 +45,6 @@ build
 
 		cp lib/packer.h lib/packer.h.in
 		chmod +x util/cracklib-format
-
-		# Apply all patches.
-		%{MACRO_PATCHES}
-
-		#autoreconf -fi
 
 		mkdir cracklib-dicts
 		cp -vf %{DIR_DL}/cracklib-words-20080507.gz cracklib-dicts
