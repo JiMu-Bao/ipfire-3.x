@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = pixman
-version    = 0.30.0
+version    = 0.32.6
 release    = 1
 
 groups     = System/Libraries
-url        = http://www.X.org/
+url        = http://www.pixman.org/
 license    = MIT
 summary    = Pixel manipulation library.
 
