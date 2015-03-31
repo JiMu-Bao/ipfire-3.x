@@ -5,7 +5,7 @@
 
 name       = tar
 version    = 1.26
-release    = 5
+release    = 6
 
 groups     = System/Packaging
 url        = http://www.gnu.org/software/tar/
@@ -36,6 +36,7 @@ build
 		libacl-devel
 		libattr-devel
 		libselinux-devel
+		texinfo
 	end
 
 	configure_options += \
