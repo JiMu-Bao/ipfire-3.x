@@ -6,7 +6,7 @@
 name       = perl
 version    = 5.20.2
 # Never reset release in this package, just increase.
-release    = 13
+release    = 13.1
 
 perl_epoch = 2
 thisver = %{perl_epoch}:%{version}-%{_release}
@@ -1030,6 +1030,7 @@ packages
 
 		requires
 			%{perl_requires}
+			/usr/bin/xsubpp
 			perl-devel
 			perl(Data::Dumper)
 			perl(ExtUtils::Command)
