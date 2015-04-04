@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = perl-Coro
-version    = 6.08
+version    = 6.42
 release    = 1
 thisapp    = Coro-%{version}
 
@@ -40,7 +40,8 @@ build
 		make %{PARALLELISMFLAGS}
 	end
 
-	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+	make_install_targets = \
+		pure_install DESTDIR=%{BUILDROOT}
 end
 
 packages
@@ -55,7 +56,7 @@ packages
 		end
 
 		requires
-			perl
+			perl(:MODULE_COMPAT_%{perl_version})
 		end
 	end
 
