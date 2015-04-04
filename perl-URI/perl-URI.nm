@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = perl-URI
-version    = 1.56
+version    = 1.67
 release    = 1
 arch       = noarch
 thisapp    = URI-%{version}
@@ -20,7 +20,7 @@ description
 	updated by RFC 2732).
 end
 
-source_dl  =
+source_dl  = http://search.cpan.org/CPAN/authors/id/E/ET/ETHER/
 
 build
 	requires
