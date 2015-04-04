@@ -1,0 +1,75 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = procps-ng
+version    = 3.3.10
+release    = 1
+
+groups     = Applications/System
+url        = http://procps-ng.sourceforge.net/
+license    = GPL+ and GPLv2 and GPLv2+ and GPLv3+ and LGPLv2+
+summary    = System and process monitoring utilities.
+
+description
+	The procps package contains a set of system utilities that provide
+	system information. Procps includes ps, free, skill, pkill, pgrep,
+	snice, tload, top, uptime, vmstat, w, watch and pdwx.
+end
+
+source_dl  = http://downloads.sourceforge.net/%{name}/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		gettext-devel
+		libselinux-devel
+		ncurses-devel >= 5.9-11
+	end
+
+	configure_options += \
+		--disable-static \
+		--disable-kill \
+		--disable-w-from \
+		--disable-modern-top \
+		--enable-watch8bit \
+		--enable-skill \
+		--enable-sigwinch \
+		--enable-libselinux
+
+	# Fix install path of some binaries.
+	make_install_targets += \
+		usrbin_execdir=%{bindir}
+
+	install_cmds
+		ln -s %{bindir}/pidof %{buildroot}%{sbindir}/pidof
+	end
+end
+
+packages
+	package %{name}
+		groups += Base
+
+		provides
+			procps=%{thisver}
+		end
+
+		obsoletes
+			procps < %{thisver}
+			/bin/pidof
+		end
+
+		conflicts
+			sysvinit <= 2.86-6
+		end
+	end
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
