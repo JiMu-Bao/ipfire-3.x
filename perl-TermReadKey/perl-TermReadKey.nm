@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = perl-TermReadKey
-version    = 2.30
+version    = 2.32
 release    = 1
 thisapp    = TermReadKey-%{version}
 
@@ -38,13 +38,14 @@ build
 		make %{PARALLELISMFLAGS}
 	end
 
-	make_install_targets = pure_install
+	make_install_targets = \
+		pure_install
 end
 
 packages
 	package %{name}
 		requires
-			perl
+			perl(:MODULE_COMPAT_%{perl_version})
 		end
 	end
 
