@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = pigz
-version    = 2.2.5
+version    = 2.3.3
 release    = 1
 
 groups     = Applications/Compression
@@ -27,6 +27,10 @@ build
 	end
 
 	make_build_targets += CFLAGS="%{CFLAGS}"
+
+	test
+		make test
+	end
 
 	install
 		install -p -D pigz %{BUILDROOT}%{bindir}/pigz
