@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = perl-common-sense
-version    = 3.5
+version    = 3.73
 release    = 1
 arch       = noarch
 thisapp    = common-sense-%{version}
@@ -41,13 +41,14 @@ build
 		make test
 	end
 
-	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+	make_install_targets = \
+		pure_install DESTDIR=%{BUILDROOT}
 end
 
 packages
 	package %{name}
 		requires
-			perl
+			perl(:MODULE_COMPAT_%{perl_version})
 		end
 	end
 end
