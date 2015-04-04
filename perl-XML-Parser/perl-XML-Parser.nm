@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = perl-XML-Parser
-version    = 2.36
+version    = 2.44
 release    = 1
 thisapp    = XML-Parser-%{version}
 
@@ -14,12 +14,12 @@ license    = GPL+ or Artistic
 summary    = Perl module for parsing XML files.
 
 description
-	This module provides ways to parse XML documents. It is built on \
-	top of XML::Parser::Expat, which is a lower level interface to \
+	This module provides ways to parse XML documents. It is built on
+	top of XML::Parser::Expat, which is a lower level interface to
 	James Clark's expat library.
 end
 
-source_dl  =
+source_dl  = http://search.cpan.org/CPAN/authors/id/T/TO/TODDR/
 
 build
 	requires
@@ -43,7 +43,7 @@ end
 packages
 	package %{name}
 		requires
-			perl
+			perl(:MODULE_COMPAT_%{perl_version})
 		end
 	end
 
