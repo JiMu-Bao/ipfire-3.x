@@ -5,7 +5,7 @@
 
 name       = perl-libintl-perl
 version    = 1.23
-release    = 1
+release    = 2
 thisapp    = libintl-perl-%{version}
 
 groups     = Development/Libraries
@@ -23,6 +23,7 @@ source_dl  = http://search.cpan.org/CPAN/authors/id/G/GU/GUIDO/
 
 build
 	requires
+		/usr/bin/xsubpp
 		# required for perl macros
 		pakfire-builder >= 0.9.23-6
 		perl(ExtUtils::MakeMaker)
@@ -37,11 +38,16 @@ build
 		make test
 	end
 
-	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+	make_install_targets = \
+		pure_install DESTDIR=%{BUILDROOT}
 end
 
 packages
 	package %{name}
+		requires
+			perl(:MODULE_COMPAT_%{perl_version})
+		end
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
