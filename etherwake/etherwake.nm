@@ -5,16 +5,16 @@
 
 name       = etherwake
 version    = 1.09
-release    = 2
+release    = 3
 
 groups     = Networking/Tools
-url        =
-license    =
+url        = http://www.scyld.com
+license    = GPL
 summary    = Can wake up sleeping PCs by WOL.
 
 description
-	A little tool to send magic Wake-on-LAN packets You can wake up WOL \
-	compliant Computers which have been powered down to sleep mode or start \
+	A little tool to send magic Wake-on-LAN packets You can wake up WOL
+	compliant Computers which have been powered down to sleep mode or start
 	WOL compliant Computers with a BIOS feature.
 end
 
@@ -28,12 +28,16 @@ build
 	install
 		mkdir -pv %{BUILDROOT}/usr/sbin
 		make install DESTDIR=%{BUILDROOT}
+
+		# Install man-page.
+		mkdir -pv %{BUILDROOT}%{mandir}/man8
+		install -m 644 %{DIR_SOURCE}/etherwake.8 \
+			%{BUILDROOT}%{mandir}/man8
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
