@@ -4,13 +4,12 @@
 ###############################################################################
 
 name       = cryptsetup-luks
-version    = 1.4.2
+version    = %{ver_maj}.7
+ver_maj    = 1.6
 release    = 1
 
-compat_version = 1.1.0
-
 groups     = System/Filesystems
-url        = http://cryptsetup.googlecode.com/
+url        = https://gitlab.com/cryptsetup/cryptsetup
 license    = GPLv2+
 summary    = A utility for setting up encrypted filesystems.
 
@@ -19,11 +18,9 @@ description
 	encrypted filesystems using Device Mapper and the dm-crypt target.
 end
 
-source_dl  = http://cryptsetup.googlecode.com/files/
-
-sources    = \
-	cryptsetup-%{version}.tar.bz2 \
-	cryptsetup-%{compat_version}.tar.bz2
+source_dl  = \
+	https://www.kernel.org/pub/linux/utils/cryptsetup/v%{ver_maj}/
+sources = cryptsetup-%{version}.tar.xz
 
 build
 	requires
@@ -38,34 +35,10 @@ build
 
 	configure_options += \
 		--disable-static
-
-	# Build compat version of libcryptsetup.
-	build_cmds
-		cd %{DIR_SRC}/cryptsetup-%{compat_version}
-		./configure \
-			%{configure_options}
-
-		make %{PARALLELISMFLAGS}
-	end
-
-	install_cmds
-		# Install compat version of libcyptsetup.
-		cd %{DIR_SRC}/cryptsetup-%{compat_version}
-		install -m 644 lib/.libs/libcryptsetup.so.1.0.0 %{BUILDROOT}%{libdir}
-		ln -svf libcryptsetup.so.1.0.0 %{BUILDROOT}%{libdir}/libcryptsetup.so.1	
-	end
 end
 
 packages
 	package %{name}
-
-	package %{name}-compat
-		summary = Compat libraries of %{thisapp}.
-
-		files
-			%{libdir}/libcryptsetup.so.1*
-		end
-	end
 
 	package %{name}-devel
 		template DEVEL
