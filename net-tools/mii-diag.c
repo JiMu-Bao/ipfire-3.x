@@ -35,9 +35,9 @@ static char version[] =
 " http://www.scyld.com/diag/index.html\n";
 
 static const char usage_msg[] =
-"Usage: %s [--help] [-aDfrRvVw] [-AF <speed+duplex>] [--watch] <interface>.\n";
+"Usage: %s [--help] [-aDfrRvVw] [-AF <speed+duplex>] [--watch] <interface>\n";
 static const char long_usage_msg[] =
-"Usage: %s [-aDfrRvVw] [-AF <speed+duplex>] [--watch] <interface>.\n\
+"Usage: %s [-aDfrRvVw] [-AF <speed+duplex>] [--watch] <interface>\n\
 \n\
   This program configures and monitors the transceiver management registers\n\
   for network interfaces.  It uses the Media Independent Interface (MII)\n\
@@ -50,7 +50,6 @@ static const char long_usage_msg[] =
    The common usage is\n\
       mii-diag eth0\n\
 \n\
-   The default interface is \"eth0\".\n\
  Frequently used options are\n\
    -A  --advertise <speed|setting>\n\
    -F  --fixed-speed <speed>\n\
@@ -210,7 +209,7 @@ main(int argc, char **argv)
 	}
 
 	if (verbose || opt_version)
-		printf(version);
+		printf("%s", version);
 
 	/* Open a basic socket. */
 	if ((skfd = socket(AF_INET, SOCK_DGRAM,0)) < 0) {
@@ -222,10 +221,12 @@ main(int argc, char **argv)
 		fprintf(stderr, "DEBUG: argc=%d, optind=%d and argv[optind] is %s.\n",
 				argc, optind, argv[optind]);
 
-	/* No remaining args means show all interfaces. */
+	/* No remaining args means interface wasn't specified. */
 	if (optind == argc) {
-		ifname = "eth0";
-		fprintf(stderr, "Using the default interface 'eth0'.\n");
+		fprintf(stderr, "No interface specified.\n");
+		fprintf(stderr, usage_msg, progname);
+		(void) close(skfd);
+		return 2;
 	} else {
 		/* Copy the interface name. */
 		spp = argv + optind;
@@ -233,8 +234,9 @@ main(int argc, char **argv)
 	}
 
 	if (ifname == NULL) {
-		ifname = "eth0";
-		fprintf(stderr, "Using the default interface 'eth0'.\n");
+		fprintf(stderr, "No ifname.\n");
+		(void) close(skfd);
+		return -1;
 	}
 
 	/* Verify that the interface supports the ioctl(), and if
@@ -244,6 +246,7 @@ main(int argc, char **argv)
 		u16 *data = (u16 *)(&ifr.ifr_data);
 
 		strncpy(ifr.ifr_name, ifname, IFNAMSIZ);
+		ifr.ifr_name[IFNAMSIZ-1] = '\0';
 		data[0] = 0;
 
 		if (ioctl(skfd, 0x8947, &ifr) >= 0) {
@@ -538,7 +541,7 @@ int show_basic_mii(long ioaddr, int phy_id)
 			   bmcr & 0x0100 ? "full":"half");
 	for (i = 0; i < 9; i++)
 		if (bmcr & (0x0080<<i))
-			printf(bmcr_bits[i]);
+			printf("%s", bmcr_bits[i]);
 
 	new_bmsr = mdio_read(ioaddr, phy_id, 1);
 	if ((bmsr & 0x0016) == 0x0004)

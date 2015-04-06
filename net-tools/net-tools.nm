@@ -4,8 +4,9 @@
 ###############################################################################
 
 name       = net-tools
-version    = 1.60
-release    = 3
+version    = 2.0
+git_rev    = e5f1be13
+release    = 1.%{git_rev}
 
 groups     = System/Base
 url        = http://net-tools.berlios.de/
@@ -18,89 +19,7 @@ description
 end
 
 source_dl  =
-sources    = %{thisapp}.tar.bz2
-
-# Manual list patches because they need to be applied in speical order
-patches    = net-tools-1.57-bug22040.patch
-patches   += %{thisapp}-miiioctl.patch
-patches   += %{thisapp}-virtualname.patch
-patches   += %{thisapp}-cycle.patch
-patches   += %{thisapp}-nameif.patch
-patches   += %{thisapp}-ipx.patch
-patches   += %{thisapp}-inet6-lookup.patch
-patches   += %{thisapp}-man.patch
-patches   += %{thisapp}-gcc33.patch
-patches   += %{thisapp}-trailingblank.patch
-patches   += %{thisapp}-interface.patch
-patches   += %{thisapp}-gcc34.patch
-patches   += %{thisapp}-overflow.patch
-patches   += %{thisapp}-siunits.patch
-patches   += %{thisapp}-trunc.patch
-patches   += %{thisapp}-return.patch
-patches   += %{thisapp}-parse.patch
-patches   += %{thisapp}-netmask.patch
-patches   += %{thisapp}-ulong.patch
-patches   += %{thisapp}-bcast.patch
-patches   += %{thisapp}-mii-tool-obsolete.patch
-patches   += %{thisapp}-netstat_ulong.patch
-patches   += %{thisapp}-note.patch
-patches   += %{thisapp}-num-ports.patch
-patches   += %{thisapp}-duplicate-tcp.patch
-patches   += %{thisapp}-statalias.patch
-patches   += %{thisapp}-isofix.patch
-patches   += %{thisapp}-ifconfig_ib.patch
-patches   += %{thisapp}-de.patch
-patches   += %{thisapp}-pie.patch
-patches   += %{thisapp}-ifaceopt.patch
-patches   += %{thisapp}-trim_iface.patch
-patches   += %{thisapp}-stdo.patch
-patches   += %{thisapp}-statistics.patch
-patches   += %{thisapp}-ifconfig.patch
-patches   += %{thisapp}-arp_overflow.patch
-patches   += %{thisapp}-hostname_man.patch
-patches   += %{thisapp}-interface_stack.patch
-patches   += %{thisapp}-selinux.patch
-patches   += %{thisapp}-netstat_stop_trim.patch
-patches   += %{thisapp}-netstat_inode.patch
-patches   += %{thisapp}-fgets.patch
-patches   += %{thisapp}-ifconfig_man.patch
-patches   += %{thisapp}-x25-proc.patch
-patches   += %{thisapp}-sctp.patch
-patches   += %{thisapp}-arp_man.patch
-patches   += %{thisapp}-ifconfig-long-iface-crasher.patch
-patches   += %{thisapp}-netdevice.patch
-patches   += %{thisapp}-skip.patch
-patches   += %{thisapp}-netstat-I-fix.patch
-patches   += %{thisapp}-nameif_strncpy.patch
-patches   += %{thisapp}-arp-unaligned-access.patch
-patches   += %{thisapp}-sctp-quiet.patch
-patches   += %{thisapp}-remove_node.patch
-patches   += %{thisapp}-netstat-interfaces-crash.patch
-patches   += %{thisapp}-ec_hw_null.patch
-patches   += %{thisapp}-statistics_buffer.patch
-patches   += %{thisapp}-sctp-addrs.patch
-patches   += %{thisapp}-i-option.patch
-patches   += %{thisapp}-a-option.patch
-patches   += %{thisapp}-clear-flag.patch
-patches   += %{thisapp}-metric-tunnel-man.patch
-patches   += %{thisapp}-netstat-probe.patch
-patches   += %{thisapp}-scanf-format.patch
-patches   += %{thisapp}-avoid-name-resolution.patch
-patches   += %{thisapp}-continous-flush-stdout.patch
-patches   += %{thisapp}-debug-fix.patch
-patches   += %{thisapp}-ib-warning.patch
-patches   += %{thisapp}-man-obsolete.patch
-patches   += %{thisapp}-man-RHEL-bugs.patch
-patches   += %{thisapp}-masqinfo-raw-ip.patch
-patches   += %{thisapp}-makefile-berlios.patch
-patches   += %{thisapp}-slattach-fchown.patch
-patches   += %{thisapp}-hostname-short.patch
-patches   += %{thisapp}-mii-refactor.patch
-patches   += %{thisapp}-IA64.patch
-patches   += %{thisapp}-large-indexes.patch
-patches   += %{thisapp}-statistics-doubleword.patch
-patches   += %{thisapp}-mii-gigabit.patch
-patches   += %{thisapp}-netstat-leak.patch
+sources    = %{thisapp}-%{git_rev}.tar.xz
 
 build
 	requires
@@ -114,10 +33,10 @@ build
 		cp  %{DIR_SOURCE}/config.make %{DIR_APP}
 
 		# Copy additional man pages
+		mkdir -pv %{DIR_APP}/man/en_US
 		cp %{DIR_SOURCE}/*.8 %{DIR_APP}/man/en_US
 
-		# Copy source for ether-wake and mii-diag
-		cp %{DIR_SOURCE}/ether-wake.c %{DIR_APP}
+		# Copy source for mii-diag
 		cp %{DIR_SOURCE}/mii-diag.c %{DIR_APP}
 	end
 
@@ -128,11 +47,8 @@ build
 	PARALLELISMFLAGS =
 
 	build_cmds
-		# Compile ether-wake
-		gcc %{CFLAGS} -o ether-wake ether-wake.c
-
 		# Compile mii-diag
-		gcc %{CFLAGS} -o mii-diag mii-diag.c
+		make mii-diag
 	end
 
 	install
@@ -140,16 +56,21 @@ build
 		mv man/fr_FR man/fr
 		mv man/pt_BR man/pt
 
-		make BASEDIR=%{BUILDROOT} mandir=/usr/share/man install
+		make BASEDIR=%{BUILDROOT} BINDIR=%{bindir} \
+			SBINDIR=%{sbindir} mandir=%{mandir} install
 
-		# Install ether-wake and mii-diag
-		install -m 755 %{DIR_APP}/ether-wake %{BUILDROOT}/sbin
-		install -m 755 %{DIR_APP}/mii-diag %{BUILDROOT}/sbin
+		# Install mii-diag
+		install -m 755 %{DIR_APP}/mii-diag %{BUILDROOT}%{sbindir}
 
 		# Remove tools we do not want
 		rm -rvf \
-			%{BUILDROOT}/sbin/{arp,ifconfig,ip,nameif,plipconfig,rarp,route,slattach}* \
-			%{BUILDROOT}/usr/share/man/{,*}/man*/{arp,ifconfig,ip,nameif,plipconfig,rarp,route,slattach}*
+			%{BUILDROOT}%{prefix}/{,*}/{arp,ifconfig,ip,nameif,plipconfig,rarp,route,slattach}* \
+			%{BUILDROOT}%{mandir}/{,*}/man*/{arp,ifconfig,ip,nameif,plipconfig,rarp,route,slattach}*
+
+		# Remove hostname (has its own package)
+		rm -rvf \
+			%{BUILDROOT}%{bindir}/{dnsdomainname,domainname,hostname,nisdomainname,ypdomainname}* \
+			%{BUILDROOT}%{mandir}/{,*}/man*/{dnsdomainname,domainname,hostname,nisdomainname,ypdomainname}*
 	end
 end
 

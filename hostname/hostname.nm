@@ -1,0 +1,46 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = hostname
+version    = 3.15
+release    = 1
+
+groups     = System Environment/Base
+url        = http://packages.qa.debian.org/h/hostname.html
+license    = GPLv2+
+summary    = Utility to set/show the host name or domain name.
+
+description
+	This package provides commands which can be used to display the system's
+	DNS name, and to display or set its hostname or NIS domain name.
+end
+
+source_dl  = http://ftp.de.debian.org/debian/pool/main/h/hostname/
+sources    = %{name}_%{version}.tar.gz
+
+build
+	DIR_APP = %{DIR_SRC}/%{name}
+
+	make_build_targets += \
+		CFLAGS="%{CFLAGS}"
+
+	make_install_targets += \
+		BASEDIR=%{BUILDROOT} \
+		BINDIR=%{bindir}
+end
+
+packages
+	package %{name}
+		groups += Base
+	end
+
+	conflicts
+		net-tools < 2.0
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
