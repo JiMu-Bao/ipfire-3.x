@@ -5,7 +5,7 @@
 
 name       = shadow-utils
 version    = 4.2.1
-release    = 2
+release    = 2.1
 thisapp    = shadow-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -28,6 +28,7 @@ build
 		audit-devel
 		bison
 		flex
+		gnome-doc-utils
 		libacl-devel
 		libattr-devel
 		libcap-devel
@@ -43,9 +44,6 @@ build
 		--without-libpam \
 		--disable-static \
 		--with-group-name-max-length=32
-
-	# Generating man pages requires gnome-doc-utils
-	configure_options += --disable-man
 
 	prepare_cmds
 		# Do not build these files:
