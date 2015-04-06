@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openvpn
-version    = 2.3.0
-release    = 2
+version    = 2.3.6
+release    = 1
 
 groups     = Networking/VPN
 url        = http://openvpn.net/
@@ -31,6 +31,7 @@ build
 		lzo-devel
 		openssl-devel
 		pam-devel
+		systemd-devel
 	end
 
 	configure_options += \
