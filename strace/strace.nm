@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = strace
-version    = 4.7
+version    = 4.10
 release    = 1
 
 groups     = Development/Debuggers
@@ -13,24 +13,18 @@ license    = BSD
 summary    = Tracks and displays system calls associated with a running process.
 
 description
-	The strace program intercepts and records the system calls called and \
-	received by a running process.  Strace can print a record of each \
-	system call, its arguments and its return value. Strace is useful \
-	for diagnosing problems and debugging, as well as for instructional \
+	The strace program intercepts and records the system calls called and
+	received by a running process.  Strace can print a record of each
+	system call, its arguments and its return value. Strace is useful
+	for diagnosing problems and debugging, as well as for instructional
 	purposes.
 end
 
 source_dl  = http://downloads.sourceforge.net/project/%{name}/%{name}/%{version}/
 sources    = %{thisapp}.tar.xz
 
-build
-	configure_options += \
-		--mandir=/usr/share/man
-end
-
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
