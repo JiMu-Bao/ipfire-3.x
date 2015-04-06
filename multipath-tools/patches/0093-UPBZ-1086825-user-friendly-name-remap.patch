@@ -1,0 +1,199 @@
+---
+ libmultipath/alias.c       |   64 ++++++++++++++++++++++++++++++++++++++++++---
+ libmultipath/alias.h       |    2 +
+ libmultipath/propsel.c     |   32 +++++++++++++++-------
+ libmultipath/structs_vec.c |   15 ++++++++++
+ 4 files changed, 100 insertions(+), 13 deletions(-)
+
+Index: multipath-tools-130222/libmultipath/alias.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/alias.c
++++ multipath-tools-130222/libmultipath/alias.c
+@@ -145,7 +145,7 @@ lookup_binding(FILE *f, char *map_wwid,
+ }
+ 
+ static int
+-rlookup_binding(FILE *f, char *buff, char *map_alias)
++rlookup_binding(FILE *f, char *buff, char *map_alias, char *prefix)
+ {
+ 	char line[LINE_MAX];
+ 	unsigned int line_nr = 0;
+@@ -164,7 +164,7 @@ rlookup_binding(FILE *f, char *buff, cha
+ 		alias = strtok(line, " \t");
+ 		if (!alias) /* blank line */
+ 			continue;
+-		curr_id = scan_devname(alias, NULL); /* TBD: Why this call? */
++		curr_id = scan_devname(alias, prefix);
+ 		if (curr_id >= id)
+ 			id = curr_id + 1;
+ 		wwid = strtok(NULL, " \t");
+@@ -188,6 +188,11 @@ rlookup_binding(FILE *f, char *buff, cha
+ 		}
+ 	}
+ 	condlog(3, "No matching alias [%s] in bindings file.", map_alias);
++
++	/* Get the theoretical id for this map alias.
++	 * Used by use_existing_alias
++	 */
++	id = scan_devname(map_alias, prefix);
+ 	return id;
+ }
+ 
+@@ -237,6 +242,59 @@ allocate_binding(int fd, char *wwid, int
+ }
+ 
+ char *
++use_existing_alias (char *wwid, char *file, char *alias_old,
++		char *prefix, int bindings_read_only)
++{
++	char *alias = NULL;
++	int id = 0;
++	int fd, can_write;
++	char buff[WWID_SIZE];
++	FILE *f;
++
++	fd = open_file(file, &can_write, BINDINGS_FILE_HEADER);
++	if (fd < 0)
++		return NULL;
++
++	f = fdopen(fd, "r");
++	if (!f) {
++		condlog(0, "cannot fdopen on bindings file descriptor");
++		close(fd);
++		return NULL;
++	}
++	/* lookup the binding. if it exsists, the wwid will be in buff
++	 * either way, id contains the id for the alias
++	 */
++	id = rlookup_binding(f , buff,  alias_old, prefix);
++	if (id < 0)
++		goto out;
++
++	if (strlen(buff) > 0) {
++		/* if buff is our wwid, it's already
++		 * allocated correctly
++		 */
++		if (strcmp(buff, wwid) == 0)
++			alias = STRDUP(alias_old);
++		else {
++			alias = NULL;
++			condlog(0, "alias %s already bound to wwid %s, cannot reuse",
++				alias_old, buff);
++		}
++		goto out;	
++	}
++
++	/* allocate the existing alias in the bindings file */
++	if (can_write && id && !bindings_read_only) {
++		alias = allocate_binding(fd, wwid, id, prefix);
++		condlog(0, "Allocated existing binding [%s] for WWID [%s]",
++			alias, wwid);
++	}
++
++out:
++	fclose(f);
++	return alias;
++}
++
++char *
+ get_user_friendly_alias(char *wwid, char *file, char *prefix,
+ 			int bindings_read_only)
+ {
+@@ -305,7 +363,7 @@ get_user_friendly_wwid(char *alias, char
+ 		return -1;
+ 	}
+ 
+-	rlookup_binding(f, buff, alias);
++	rlookup_binding(f, buff, alias, NULL);
+ 	if (!strlen(buff)) {
+ 		fclose(f);
+ 		return -1;
+Index: multipath-tools-130222/libmultipath/alias.h
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/alias.h
++++ multipath-tools-130222/libmultipath/alias.h
+@@ -10,3 +10,5 @@
+ char *get_user_friendly_alias(char *wwid, char *file, char *prefix,
+ 			      int bindings_readonly);
+ int get_user_friendly_wwid(char *alias, char *buff, char *file);
++char *use_existing_alias (char *wwid, char *file, char *alias_old,
++		char *prefix, int bindings_read_only);
+Index: multipath-tools-130222/libmultipath/propsel.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/propsel.c
++++ multipath-tools-130222/libmultipath/propsel.c
+@@ -253,19 +253,31 @@ want_user_friendly_names(struct multipat
+ extern int
+ select_alias (struct multipath * mp)
+ {
+-	if (mp->mpe && mp->mpe->alias)
++	if (mp->mpe && mp->mpe->alias) {
+ 		mp->alias = STRDUP(mp->mpe->alias);
+-	else {
+-		mp->alias = NULL;
+-		if (want_user_friendly_names(mp)) {
+-			select_alias_prefix(mp);
+-			mp->alias = get_user_friendly_alias(mp->wwid,
+-					conf->bindings_file, mp->alias_prefix, conf->bindings_read_only);
+-		}
+-		if (mp->alias == NULL)
+-			mp->alias = STRDUP(mp->wwid);
++		goto out;
+ 	}
+ 
++	mp->alias = NULL;
++	if (!want_user_friendly_names(mp))
++		goto out;
++
++	select_alias_prefix(mp);
++	
++	if (strlen(mp->alias_old) > 0) {
++		mp->alias = use_existing_alias(mp->wwid, conf->bindings_file,
++				mp->alias_old, mp->alias_prefix,
++				conf->bindings_read_only);
++		memset (mp->alias_old, 0, WWID_SIZE);
++	} 
++
++	if (mp->alias == NULL)
++		mp->alias = get_user_friendly_alias(mp->wwid,
++				conf->bindings_file, mp->alias_prefix, conf->bindings_read_only);
++out:
++	if (mp->alias == NULL)
++		mp->alias = STRDUP(mp->wwid);
++
+ 	return mp->alias ? 0 : 1;
+ }
+ 
+Index: multipath-tools-130222/libmultipath/structs_vec.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/structs_vec.c
++++ multipath-tools-130222/libmultipath/structs_vec.c
+@@ -430,6 +430,20 @@ out:
+ 	return NULL;
+ }
+ 
++static void
++find_existing_alias (struct multipath * mpp,
++		     struct vectors *vecs)
++{
++	struct multipath * mp;
++	int i;
++
++	vector_foreach_slot (vecs->mpvec, mp, i)
++		if (strcmp(mp->wwid, mpp->wwid) == 0) {
++			strncpy(mpp->alias_old, mp->alias, WWID_SIZE);
++			return;
++		}
++}
++
+ extern struct multipath *
+ add_map_with_path (struct vectors * vecs,
+ 		   struct path * pp, int add_vec)
+@@ -443,6 +457,7 @@ add_map_with_path (struct vectors * vecs
+ 	mpp->hwe = pp->hwe;
+ 
+ 	strcpy(mpp->wwid, pp->wwid);
++	find_existing_alias(mpp, vecs);
+ 	if (select_alias(mpp))
+ 		goto out;
+ 	mpp->size = pp->size;

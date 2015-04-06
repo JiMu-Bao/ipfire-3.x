@@ -1,0 +1,10 @@
+diff -purN multipath-tools-130222.orig/multipath/multipath.rules multipath-tools-130222/multipath/multipath.rules
+--- multipath-tools-130222.orig/multipath/multipath.rules	2014-11-03 14:37:41.269413134 +0100
++++ multipath-tools-130222/multipath/multipath.rules	2014-11-03 14:38:43.694281901 +0100
+@@ -45,5 +45,5 @@ ACTION!="change", GOTO="end_mpath"
+ ENV{DM_UUID}!="mpath-?*", GOTO="end_mpath"
+ ENV{DM_SUSPENDED}=="1", GOTO="end_mpath"
+ ENV{DM_ACTION}=="PATH_FAILED", GOTO="end_mpath"
+-RUN+="$env{MPATH_SBIN_PATH}/kpartx -a $tempnode"
++ENV{DM_ACTIVATION}=="1", RUN+="$env{MPATH_SBIN_PATH}/kpartx -a $tempnode"
+ LABEL="end_mpath"

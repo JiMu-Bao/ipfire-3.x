@@ -1,0 +1,158 @@
+---
+ kpartx/devmapper.c                       |    3 ++-
+ libmultipath/alias.c                     |    1 +
+ libmultipath/blacklist.c                 |    7 +++++++
+ libmultipath/prioritizers/iet.c          |    2 ++
+ libmultipath/prioritizers/weightedpath.c |    5 ++++-
+ libmultipath/regex.c                     |    5 ++++-
+ libmultipath/sysfs.c                     |    3 ++-
+ libmultipath/util.c                      |    2 +-
+ 8 files changed, 23 insertions(+), 5 deletions(-)
+
+Index: multipath-tools-130222/kpartx/devmapper.c
+===================================================================
+--- multipath-tools-130222.orig/kpartx/devmapper.c
++++ multipath-tools-130222/kpartx/devmapper.c
+@@ -132,8 +132,9 @@ dm_addmap (int task, const char *name, c
+ 		goto addout;
+ 	r = dm_task_run (dmt);
+ 
+-	addout:
++addout:
+ 	dm_task_destroy (dmt);
++	free(prefixed_uuid);
+ 
+ 	return r;
+ }
+Index: multipath-tools-130222/libmultipath/alias.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/alias.c
++++ multipath-tools-130222/libmultipath/alias.c
+@@ -328,6 +328,7 @@ get_user_friendly_alias(char *wwid, char
+ 	if (fflush(f) != 0) {
+ 		condlog(0, "cannot fflush bindings file stream : %s",
+ 			strerror(errno));
++		free(alias);
+ 		fclose(f);
+ 		return NULL;
+ 	}
+Index: multipath-tools-130222/libmultipath/blacklist.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/blacklist.c
++++ multipath-tools-130222/libmultipath/blacklist.c
+@@ -79,6 +79,8 @@ set_ble_device (vector blist, char * ven
+ 		if (regcomp(&ble->vendor_reg, vendor,
+ 			    REG_EXTENDED|REG_NOSUB)) {
+ 			FREE(vendor);
++			if (product)
++				FREE(product);
+ 			return 1;
+ 		}
+ 		ble->vendor = vendor;
+@@ -87,6 +89,10 @@ set_ble_device (vector blist, char * ven
+ 		if (regcomp(&ble->product_reg, product,
+ 			    REG_EXTENDED|REG_NOSUB)) {
+ 			FREE(product);
++			if (vendor) {
++				ble->vendor = NULL;
++				FREE(vendor);
++			}
+ 			return 1;
+ 		}
+ 		ble->product = product;
+@@ -189,6 +195,7 @@ setup_default_blist (struct config * con
+ 					   STRDUP(hwe->bl_product),
+ 					   ORIGIN_DEFAULT)) {
+ 				FREE(ble);
++				vector_del_slot(conf->blist_device, VECTOR_SIZE(conf->blist_device) - 1);
+ 				return 1;
+ 			}
+ 		}
+Index: multipath-tools-130222/libmultipath/prioritizers/iet.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/prioritizers/iet.c
++++ multipath-tools-130222/libmultipath/prioritizers/iet.c
+@@ -109,6 +109,7 @@ int iet_prio(const char *dev, char * arg
+ 			ssize_t nchars = readlink(path, buffer, sizeof(buffer)-1);
+ 			if (nchars != -1) {
+ 				char *device;
++				buffer[nchars] = '\0';
+ 				device = find_regex(buffer,"(sd[a-z]+)");
+ 				// if device parsed is the right one
+ 				if (device!=NULL && strncmp(device, dev, strlen(device)) == 0) {
+@@ -118,6 +119,7 @@ int iet_prio(const char *dev, char * arg
+ 					if (ip!=NULL && strncmp(ip, preferredip, strlen(ip)) == 0) {
+ 						// high prio
+ 						free(ip);
++						free(device);
+ 						closedir(dir_p);
+ 						return 20;
+ 					}
+Index: multipath-tools-130222/libmultipath/prioritizers/weightedpath.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/prioritizers/weightedpath.c
++++ multipath-tools-130222/libmultipath/prioritizers/weightedpath.c
+@@ -61,8 +61,10 @@ int prio_path_weight(struct path *pp, ch
+ 	regex = get_next_string(&temp, split_char);
+ 
+ 	/* Return default priority if the argument is not parseable */
+-	if (!regex)
++	if (!regex) {
++		FREE(arg);
+ 		return priority;
++	}
+ 
+ 	if (!strcmp(regex, HBTL)) {
+ 		sprintf(path, "%d:%d:%d:%d", pp->sg_id.host_no,
+@@ -72,6 +74,7 @@ int prio_path_weight(struct path *pp, ch
+ 	} else {
+ 		condlog(0, "%s: %s - Invalid arguments", pp->dev,
+ 			pp->prio.name);
++		FREE(arg);
+ 		return priority;
+ 	}
+ 
+Index: multipath-tools-130222/libmultipath/regex.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/regex.c
++++ multipath-tools-130222/libmultipath/regex.c
+@@ -3936,8 +3936,11 @@ int eflags;
+ 		regs.num_regs = nmatch;
+ 		regs.start = TALLOC(nmatch, regoff_t);
+ 		regs.end = TALLOC(nmatch, regoff_t);
+-		if (regs.start == NULL || regs.end == NULL)
++		if (regs.start == NULL || regs.end == NULL) {
++			free(regs.start);
++			free(regs.end);
+ 			return (int) REG_NOMATCH;
++		}
+ 	}
+ 
+ 	/* Perform the searching operation.  */
+Index: multipath-tools-130222/libmultipath/sysfs.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/sysfs.c
++++ multipath-tools-130222/libmultipath/sysfs.c
+@@ -88,7 +88,8 @@ ssize_t sysfs_attr_get_value(struct udev
+ 	} else if (size == value_len) {
+ 		condlog(4, "overflow while reading from %s", devpath);
+ 		size = 0;
+-	}
++	} else
++		value[size] = '\0';
+ 
+ 	close(fd);
+ 	return size;
+Index: multipath-tools-130222/libmultipath/util.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/util.c
++++ multipath-tools-130222/libmultipath/util.c
+@@ -175,7 +175,7 @@ devt2devname (char *devname, int devname
+ 		sprintf(block_path,"/sys/dev/block/%u:%u", major, minor);
+ 		if (lstat(block_path, &statbuf) == 0) {
+ 			if (S_ISLNK(statbuf.st_mode) &&
+-			    readlink(block_path, dev, FILE_NAME_SIZE) > 0) {
++			    readlink(block_path, dev, FILE_NAME_SIZE-1) > 0) {
+ 				char *p = strrchr(dev, '/');
+ 
+ 				if (!p) {

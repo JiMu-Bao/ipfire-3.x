@@ -1,0 +1,231 @@
+---
+ libmultipath/config.c    |    4 ++++
+ libmultipath/config.h    |    1 +
+ libmultipath/configure.c |    5 ++---
+ libmultipath/dict.c      |   33 +++++++++++++++++++++++++++++++++
+ libmultipath/util.c      |   30 ++++++++++++++++++++++++++++++
+ libmultipath/util.h      |    1 +
+ libmultipath/wwids.c     |   21 ++++++++++++++-------
+ multipathd/main.c        |    3 +--
+ 8 files changed, 86 insertions(+), 12 deletions(-)
+
+Index: multipath-tools-130222/libmultipath/config.h
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/config.h
++++ multipath-tools-130222/libmultipath/config.h
+@@ -131,6 +131,7 @@ struct config {
+ 	int detect_prio;
+ 	int force_sync;
+ 	int deferred_remove;
++	int ignore_new_boot_devs;
+ 	unsigned int version[3];
+ 
+ 	char * dev;
+Index: multipath-tools-130222/libmultipath/configure.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/configure.c
++++ multipath-tools-130222/libmultipath/configure.c
+@@ -775,9 +775,8 @@ coalesce_paths (struct vectors * vecs, v
+ 		if (refwwid && strncmp(pp1->wwid, refwwid, WWID_SIZE))
+ 			continue;
+ 
+-		/* If find_multipaths was selected check if the path is valid */
+-		if (conf->find_multipaths && !refwwid &&
+-		    !should_multipath(pp1, pathvec)) {
++		/* check if the path is valid */
++		if (!refwwid && !should_multipath(pp1, pathvec)) {
+ 			orphan_path(pp1);
+ 			continue;
+ 		}
+Index: multipath-tools-130222/libmultipath/wwids.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/wwids.c
++++ multipath-tools-130222/libmultipath/wwids.c
+@@ -15,6 +15,7 @@
+ #include "wwids.h"
+ #include "defaults.h"
+ #include "config.h"
++#include "util.h"
+ 
+ /*
+  * Copyright (c) 2010 Benjamin Marzinski, Redhat
+@@ -268,15 +269,21 @@ should_multipath(struct path *pp1, vecto
+ {
+ 	int i;
+ 	struct path *pp2;
++	int ignore_new_devs = (conf->ignore_new_boot_devs && in_initrd());
++
++	if (!conf->find_multipaths && !ignore_new_devs)
++		return 1;
+ 
+ 	condlog(4, "checking if %s should be multipathed", pp1->dev);
+-	vector_foreach_slot(pathvec, pp2, i) {
+-		if (pp1->dev == pp2->dev)
+-			continue;
+-		if (strncmp(pp1->wwid, pp2->wwid, WWID_SIZE) == 0) {
+-			condlog(3, "found multiple paths with wwid %s, "
+-				"multipathing %s", pp1->wwid, pp1->dev);
+-			return 1;
++	if (!ignore_new_devs) {
++		vector_foreach_slot(pathvec, pp2, i) {
++			if (pp1->dev == pp2->dev)
++				continue;
++			if (strncmp(pp1->wwid, pp2->wwid, WWID_SIZE) == 0) {
++				condlog(3, "found multiple paths with wwid %s, "
++					"multipathing %s", pp1->wwid, pp1->dev);
++				return 1;
++			}
+ 		}
+ 	}
+ 	if (check_wwids_file(pp1->wwid, 0) < 0) {
+Index: multipath-tools-130222/multipathd/main.c
+===================================================================
+--- multipath-tools-130222.orig/multipathd/main.c
++++ multipath-tools-130222/multipathd/main.c
+@@ -503,8 +503,7 @@ rescan:
+ 			return 1;
+ 		}
+ 
+-		if (conf->find_multipaths &&
+-		    !should_multipath(pp, vecs->pathvec)) {
++		if (!should_multipath(pp, vecs->pathvec)) {
+ 			orphan_path(pp);
+ 			return 0;
+ 		}
+Index: multipath-tools-130222/libmultipath/config.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/config.c
++++ multipath-tools-130222/libmultipath/config.c
+@@ -622,6 +622,7 @@ load_config (char * file, struct udev *u
+ 	conf->deferred_remove = DEFAULT_DEFERRED_REMOVE;
+ 	conf->hw_strmatch = 0;
+ 	conf->force_sync = 0;
++	conf->ignore_new_boot_devs = 0;
+ 
+ 	/*
+ 	 * preload default hwtable
+@@ -732,6 +733,9 @@ load_config (char * file, struct udev *u
+ 	    !conf->wwids_file)
+ 		goto out;
+ 
++	if (conf->ignore_new_boot_devs)
++		in_initrd();
++
+ 	return 0;
+ out:
+ 	free_config(conf);
+Index: multipath-tools-130222/libmultipath/dict.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/dict.c
++++ multipath-tools-130222/libmultipath/dict.c
+@@ -761,6 +761,29 @@ def_deferred_remove_handler(vector strve
+ 	return 0;
+ }
+ 
++static int
++def_ignore_new_boot_devs_handler(vector strvec)
++{
++	char * buff;
++
++	buff = set_value(strvec);
++
++	if (!buff)
++		return 1;
++
++	if ((strlen(buff) == 2 && !strcmp(buff, "no")) ||
++	    (strlen(buff) == 1 && !strcmp(buff, "0")))
++		conf->ignore_new_boot_devs = 0;
++	else if ((strlen(buff) == 3 && !strcmp(buff, "yes")) ||
++		 (strlen(buff) == 1 && !strcmp(buff, "1")))
++		conf->ignore_new_boot_devs = 1;
++	else
++		conf->ignore_new_boot_devs = 0;
++
++	FREE(buff);
++	return 0;
++}
++
+ /*
+  * blacklist block handlers
+  */
+@@ -3011,6 +3034,15 @@ snprint_def_deferred_remove(char * buff,
+ }
+ 
+ static int
++snprint_def_ignore_new_boot_devs(char * buff, int len, void * data)
++{
++	if (conf->ignore_new_boot_devs == 1)
++		return snprintf(buff, len, "yes");
++	else
++		return snprintf(buff, len, "no");
++}
++
++static int
+ snprint_ble_simple (char * buff, int len, void * data)
+ {
+ 	struct blentry * ble = (struct blentry *)data;
+@@ -3080,6 +3112,7 @@ init_keywords(void)
+ 	install_keyword("hw_str_match", &def_hw_strmatch_handler, &snprint_def_hw_strmatch);
+ 	install_keyword("force_sync", &def_force_sync_handler, &snprint_def_force_sync);
+ 	install_keyword("deferred_remove", &def_deferred_remove_handler, &snprint_def_deferred_remove);
++	install_keyword("ignore_new_boot_devs", &def_ignore_new_boot_devs_handler, &snprint_def_ignore_new_boot_devs);
+ 	__deprecated install_keyword("default_selector", &def_selector_handler, NULL);
+ 	__deprecated install_keyword("default_path_grouping_policy", &def_pgpolicy_handler, NULL);
+ 	__deprecated install_keyword("default_uid_attribute", &def_uid_attribute_handler, NULL);
+Index: multipath-tools-130222/libmultipath/util.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/util.c
++++ multipath-tools-130222/libmultipath/util.c
+@@ -3,6 +3,8 @@
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <unistd.h>
++#include <sys/vfs.h>
++#include <linux/magic.h>
+ 
+ #include "debug.h"
+ #include "memory.h"
+@@ -267,3 +269,31 @@ dev_t parse_devt(const char *dev_t)
+ 
+ 	return makedev(maj, min);
+ }
++
++/* This define was taken from systemd. src/shared/macro.h */
++#define F_TYPE_EQUAL(a, b) (a == (typeof(a)) b)
++
++/* This function was taken from systemd. src/shared/util.c */
++int in_initrd(void) {
++	static int saved = -1;
++	struct statfs s;
++
++	if (saved >= 0)
++		return saved;
++
++	/* We make two checks here:
++	 *
++	 * 1. the flag file /etc/initrd-release must exist
++	 * 2. the root file system must be a memory file system
++	 * The second check is extra paranoia, since misdetecting an
++	 * initrd can have bad bad consequences due the initrd
++	 * emptying when transititioning to the main systemd.
++	 */
++
++	saved = access("/etc/initrd-release", F_OK) >= 0 &&
++		statfs("/", &s) >= 0 &&
++		(F_TYPE_EQUAL(s.f_type, TMPFS_MAGIC) ||
++		 F_TYPE_EQUAL(s.f_type, RAMFS_MAGIC));
++
++	return saved;
++}
+Index: multipath-tools-130222/libmultipath/util.h
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/util.h
++++ multipath-tools-130222/libmultipath/util.h
+@@ -11,6 +11,7 @@ void remove_trailing_chars(char *path, c
+ int devt2devname (char *, int, char *);
+ dev_t parse_devt(const char *dev_t);
+ char *convert_dev(char *dev, int is_path_device);
++int in_initrd(void);
+ 
+ #define safe_sprintf(var, format, args...)	\
+ 	snprintf(var, sizeof(var), format, ##args) >= sizeof(var)

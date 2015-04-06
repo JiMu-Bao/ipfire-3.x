@@ -1,0 +1,15 @@
+---
+ multipath/multipath.rules |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: multipath-tools-130222/multipath/multipath.rules
+===================================================================
+--- multipath-tools-130222.orig/multipath/multipath.rules
++++ multipath-tools-130222/multipath/multipath.rules
+@@ -45,5 +45,5 @@ ACTION!="change", GOTO="end_mpath"
+ ENV{DM_UUID}!="mpath-?*", GOTO="end_mpath"
+ ENV{DM_SUSPENDED}=="1", GOTO="end_mpath"
+ ENV{DM_ACTION}=="PATH_FAILED", GOTO="end_mpath"
+-ENV{DM_ACTIVATION}=="1", RUN+="$env{MPATH_SBIN_PATH}/kpartx -a $tempnode"
++ENV{DM_ACTIVATION}=="1", RUN+="$env{MPATH_SBIN_PATH}/kpartx -u $tempnode"
+ LABEL="end_mpath"

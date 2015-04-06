@@ -1,0 +1,28 @@
+---
+ multipathd/main.c |   13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
+
+Index: multipath-tools-130222/multipathd/main.c
+===================================================================
+--- multipath-tools-130222.orig/multipathd/main.c
++++ multipath-tools-130222/multipathd/main.c
+@@ -310,10 +310,15 @@ ev_add_map (char * dev, char * alias, st
+ 	/*
+ 	 * now we can register the map
+ 	 */
+-	if (map_present && (mpp = add_map_without_path(vecs, alias))) {
+-		sync_map_state(mpp);
+-		condlog(2, "%s: devmap %s registered", alias, dev);
+-		return 0;
++	if (map_present) {
++		if ((mpp = add_map_without_path(vecs, alias))) {
++			sync_map_state(mpp);
++			condlog(2, "%s: devmap %s registered", alias, dev);
++			return 0;
++		} else {
++			condlog(2, "%s: uev_add_map failed", dev);
++			return 1;
++		}
+ 	}
+ 	r = get_refwwid(dev, DEV_DEVMAP, vecs->pathvec, &refwwid);
+ 

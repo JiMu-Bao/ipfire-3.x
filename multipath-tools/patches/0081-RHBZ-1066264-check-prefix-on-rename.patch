@@ -1,0 +1,41 @@
+---
+ libmultipath/devmapper.c |   12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+Index: multipath-tools-130222/libmultipath/devmapper.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/devmapper.c
++++ multipath-tools-130222/libmultipath/devmapper.c
+@@ -1151,6 +1151,8 @@ dm_rename_partmaps (char * old, char * n
+ 	unsigned long long size;
+ 	char dev_t[32];
+ 	int r = 1;
++	int offset;
++	char *delim;
+ 
+ 	if (!(dmt = dm_task_create(DM_DEVICE_LIST)))
+ 		return 1;
+@@ -1171,6 +1173,11 @@ dm_rename_partmaps (char * old, char * n
+ 	if (dm_dev_t(old, &dev_t[0], 32))
+ 		goto out;
+ 
++	if (isdigit(new[strlen(new)-1]))
++		delim = "p";
++	else
++		delim = "";
++
+ 	do {
+ 		if (
+ 		    /*
+@@ -1198,8 +1205,9 @@ dm_rename_partmaps (char * old, char * n
+ 				 * then it's a kpartx generated partition.
+ 				 * Rename it.
+ 				 */
+-				snprintf(buff, PARAMS_SIZE, "%s%s",
+-					 new, names->name + strlen(old));
++				for (offset = strlen(old); names->name[offset] && !(isdigit(names->name[offset])); offset++); /* do nothing */
++				snprintf(buff, PARAMS_SIZE, "%s%s%s",
++					 new, delim, names->name + offset);
+ 				dm_rename(names->name, buff);
+ 				condlog(4, "partition map %s renamed",
+ 					names->name);

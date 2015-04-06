@@ -1,0 +1,185 @@
+---
+ libmultipath/parser.c |  103 +++-----------------------------------------------
+ libmultipath/parser.h |    6 --
+ 2 files changed, 8 insertions(+), 101 deletions(-)
+
+Index: multipath-tools-130222/libmultipath/parser.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/parser.c
++++ multipath-tools-130222/libmultipath/parser.c
+@@ -280,8 +280,8 @@ out:
+ 	return NULL;
+ }
+ 
+-int
+-read_line(char *buf, int size)
++static int
++read_line(FILE *stream, char *buf, int size)
+ {
+ 	int ch;
+ 	int count = 0;
+@@ -297,95 +297,6 @@ read_line(char *buf, int size)
+ 	return (ch == EOF) ? 0 : 1;
+ }
+ 
+-vector
+-read_value_block(void)
+-{
+-	char *buf;
+-	int i;
+-	char *str = NULL;
+-	char *dup;
+-	vector vec = NULL;
+-	vector elements = vector_alloc();
+-
+-	if (!elements)
+-		return NULL;
+-
+-	buf = (char *) MALLOC(MAXBUF);
+-
+-	if (!buf) {
+-		vector_free(elements);
+-		return NULL;
+-	}
+-
+-	while (read_line(buf, MAXBUF)) {
+-		vec = alloc_strvec(buf);
+-		if (vec) {
+-			str = VECTOR_SLOT(vec, 0);
+-			if (!strcmp(str, EOB)) {
+-				free_strvec(vec);
+-				break;
+-			}
+-
+-			for (i = 0; i < VECTOR_SIZE(vec); i++) {
+-				str = VECTOR_SLOT(vec, i);
+-				dup = (char *) MALLOC(strlen(str) + 1);
+-				if (!dup)
+-					goto out;
+-				memcpy(dup, str, strlen(str));
+-
+-				if (!vector_alloc_slot(elements)) {
+-					free_strvec(vec);
+-					goto out1;
+-				}
+-
+-				vector_set_slot(elements, dup);
+-			}
+-			free_strvec(vec);
+-		}
+-		memset(buf, 0, MAXBUF);
+-	}
+-	FREE(buf);
+-	return elements;
+-out1:
+-	FREE(dup);
+-out:
+-	FREE(buf);
+-	vector_free(elements);
+-	return NULL;
+-}
+-
+-int
+-alloc_value_block(vector strvec, void (*alloc_func) (vector))
+-{
+-	char *buf;
+-	char *str = NULL;
+-	vector vec = NULL;
+-
+-	buf = (char *) MALLOC(MAXBUF);
+-
+-	if (!buf)
+-		return 1;
+-
+-	while (read_line(buf, MAXBUF)) {
+-		vec = alloc_strvec(buf);
+-		if (vec) {
+-			str = VECTOR_SLOT(vec, 0);
+-			if (!strcmp(str, EOB)) {
+-				free_strvec(vec);
+-				break;
+-			}
+-
+-			if (VECTOR_SIZE(vec))
+-				(*alloc_func) (vec);
+-
+-			free_strvec(vec);
+-		}
+-		memset(buf, 0, MAXBUF);
+-	}
+-	FREE(buf);
+-	return 0;
+-}
+-
+ void *
+ set_value(vector strvec)
+ {
+@@ -561,7 +472,7 @@ validate_config_strvec(vector strvec, ch
+ }
+ 
+ static int
+-process_stream(vector keywords, char *file)
++process_stream(FILE *stream, vector keywords, char *file)
+ {
+ 	int i;
+ 	int r = 0;
+@@ -582,7 +493,7 @@ process_stream(vector keywords, char *fi
+ 		return 1;
+ 	}
+ 
+-	while (read_line(buf, MAXBUF)) {
++	while (read_line(stream, buf, MAXBUF)) {
+ 		line_nr++;
+ 		strvec = alloc_strvec(buf);
+ 		memset(buf,0, MAXBUF);
+@@ -621,7 +532,8 @@ process_stream(vector keywords, char *fi
+ 
+ 				if (keyword->sub) {
+ 					kw_level++;
+-					r += process_stream(keyword->sub, file);
++					r += process_stream(stream,
++							    keyword->sub, file);
+ 					kw_level--;
+ 				}
+ 				break;
+@@ -656,6 +568,7 @@ int
+ process_file(char *file)
+ {
+ 	int r;
++	FILE *stream;
+ 
+ 	if (!keywords) {
+ 		condlog(0, "No keywords alocated");
+@@ -670,7 +583,7 @@ process_file(char *file)
+ 
+ 	/* Stream handling */
+ 	line_nr = 0;
+-	r = process_stream(keywords, file);
++	r = process_stream(stream, keywords, file);
+ 	fclose(stream);
+ 	//free_keywords(keywords);
+ 
+Index: multipath-tools-130222/libmultipath/parser.h
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/parser.h
++++ multipath-tools-130222/libmultipath/parser.h
+@@ -47,9 +47,6 @@ struct keyword {
+ 	int unique;
+ };
+ 
+-/* global var exported */
+-FILE *stream;
+-
+ /* Reloading helpers */
+ #define SET_RELOAD      (reload = 1)
+ #define UNSET_RELOAD    (reload = 0)
+@@ -72,9 +69,6 @@ extern int _install_keyword(char *string
+ extern void dump_keywords(vector keydump, int level);
+ extern void free_keywords(vector keywords);
+ extern vector alloc_strvec(char *string);
+-extern int read_line(char *buf, int size);
+-extern vector read_value_block(void);
+-extern int alloc_value_block(vector strvec, void (*alloc_func) (vector));
+ extern void *set_value(vector strvec);
+ extern int alloc_keywords(void);
+ extern int process_file(char *conf_file);

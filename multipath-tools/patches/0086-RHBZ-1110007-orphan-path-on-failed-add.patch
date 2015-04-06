@@ -1,0 +1,17 @@
+---
+ multipathd/main.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: multipath-tools-130222/multipathd/main.c
+===================================================================
+--- multipath-tools-130222.orig/multipathd/main.c
++++ multipath-tools-130222/multipathd/main.c
+@@ -562,7 +562,7 @@ rescan:
+ 		return 0;
+ 	}
+ 	else
+-		return 1;
++		goto fail;
+ 
+ fail_map:
+ 	remove_map(mpp, vecs, 1);

@@ -1,0 +1,178 @@
+---
+ libmultipath/prio.c                   |    7 +++++++
+ libmultipath/prio.h                   |    1 +
+ libmultipath/prioritizers/alua_rtpg.c |    5 +++--
+ libmultipath/prioritizers/emc.c       |    2 +-
+ libmultipath/prioritizers/hds.c       |    2 +-
+ libmultipath/prioritizers/hp_sw.c     |    2 +-
+ libmultipath/prioritizers/ontap.c     |    4 ++--
+ libmultipath/prioritizers/rdac.c      |    2 +-
+ multipath.conf.annotated              |    5 +++--
+ multipath/multipath.conf.5            |    4 ++--
+ 10 files changed, 22 insertions(+), 12 deletions(-)
+
+Index: multipath-tools-130222/libmultipath/prio.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/prio.c
++++ multipath-tools-130222/libmultipath/prio.c
+@@ -10,6 +10,13 @@
+ 
+ static LIST_HEAD(prioritizers);
+ 
++unsigned int get_prio_timeout(unsigned int default_timeout)
++{
++	if (conf->checker_timeout)
++		return conf->checker_timeout * 1000;
++	return default_timeout;
++}
++
+ int init_prio (void)
+ {
+ 	if (!add_prio(DEFAULT_PRIO))
+Index: multipath-tools-130222/libmultipath/prio.h
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/prio.h
++++ multipath-tools-130222/libmultipath/prio.h
+@@ -51,6 +51,7 @@ struct prio {
+ 	int (*getprio)(struct path *, char *);
+ };
+ 
++unsigned int get_prio_timeout(unsigned int default_timeout);
+ int init_prio (void);
+ void cleanup_prio (void);
+ struct prio * add_prio (char *);
+Index: multipath-tools-130222/libmultipath/prioritizers/alua_rtpg.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/prioritizers/alua_rtpg.c
++++ multipath-tools-130222/libmultipath/prioritizers/alua_rtpg.c
+@@ -21,6 +21,7 @@
+ #define __user
+ #include <scsi/sg.h>
+ 
++#include "../prio.h"
+ #include "alua_rtpg.h"
+ 
+ #define SENSE_BUFF_LEN  32
+@@ -134,7 +135,7 @@ do_inquiry(int fd, int evpd, unsigned in
+ 	hdr.dxfer_len		= resplen;
+ 	hdr.sbp			= sense;
+ 	hdr.mx_sb_len		= sizeof(sense);
+-	hdr.timeout		= DEF_TIMEOUT;
++	hdr.timeout		= get_prio_timeout(DEF_TIMEOUT);
+ 
+ 	if (ioctl(fd, SG_IO, &hdr) < 0) {
+ 		PRINT_DEBUG("do_inquiry: IOCTL failed!\n");
+@@ -253,7 +254,7 @@ do_rtpg(int fd, void* resp, long resplen
+ 	hdr.dxfer_len		= resplen;
+ 	hdr.mx_sb_len		= sizeof(sense);
+ 	hdr.sbp			= sense;
+-	hdr.timeout		= DEF_TIMEOUT;
++	hdr.timeout		= get_prio_timeout(DEF_TIMEOUT);
+ 
+ 	if (ioctl(fd, SG_IO, &hdr) < 0)
+ 		return -RTPG_RTPG_FAILED;
+Index: multipath-tools-130222/libmultipath/prioritizers/emc.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/prioritizers/emc.c
++++ multipath-tools-130222/libmultipath/prioritizers/emc.c
+@@ -31,7 +31,7 @@ int emc_clariion_prio(const char *dev, i
+ 	io_hdr.dxferp = sense_buffer;
+ 	io_hdr.cmdp = inqCmdBlk;
+ 	io_hdr.sbp = sb;
+-	io_hdr.timeout = 60000;
++	io_hdr.timeout = get_prio_timeout(60000);
+ 	io_hdr.pack_id = 0;
+ 	if (ioctl(fd, SG_IO, &io_hdr) < 0) {
+ 		pp_emc_log(0, "sending query command failed");
+Index: multipath-tools-130222/libmultipath/prioritizers/hds.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/prioritizers/hds.c
++++ multipath-tools-130222/libmultipath/prioritizers/hds.c
+@@ -114,7 +114,7 @@ int hds_modular_prio (const char *dev, i
+ 	io_hdr.dxferp = inqBuff;
+ 	io_hdr.cmdp = inqCmdBlk;
+ 	io_hdr.sbp = sense_buffer;
+-	io_hdr.timeout = 2000;	/* TimeOut = 2 seconds */
++	io_hdr.timeout = get_prio_timeout(2000); /* TimeOut = 2 seconds */
+ 
+ 	if (ioctl (fd, SG_IO, &io_hdr) < 0) {
+ 		pp_hds_log(0, "SG_IO error");
+Index: multipath-tools-130222/libmultipath/prioritizers/hp_sw.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/prioritizers/hp_sw.c
++++ multipath-tools-130222/libmultipath/prioritizers/hp_sw.c
+@@ -46,7 +46,7 @@ int hp_sw_prio(const char *dev, int fd)
+ 	io_hdr.dxfer_direction = SG_DXFER_NONE;
+ 	io_hdr.cmdp = turCmdBlk;
+ 	io_hdr.sbp = sb;
+-	io_hdr.timeout = 60000;
++	io_hdr.timeout = get_prio_timeout(60000);
+ 	io_hdr.pack_id = 0;
+  retry:
+ 	if (ioctl(fd, SG_IO, &io_hdr) < 0) {
+Index: multipath-tools-130222/libmultipath/prioritizers/ontap.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/prioritizers/ontap.c
++++ multipath-tools-130222/libmultipath/prioritizers/ontap.c
+@@ -89,7 +89,7 @@ static int send_gva(const char *dev, int
+ 	io_hdr.dxferp = results;
+ 	io_hdr.cmdp = cdb;
+ 	io_hdr.sbp = sb;
+-	io_hdr.timeout = SG_TIMEOUT;
++	io_hdr.timeout = get_prio_timeout(SG_TIMEOUT);
+ 	io_hdr.pack_id = 0;
+ 	if (ioctl(fd, SG_IO, &io_hdr) < 0) {
+ 		pp_ontap_log(0, "SG_IO ioctl failed, errno=%d", errno);
+@@ -141,7 +141,7 @@ static int get_proxy(const char *dev, in
+ 	io_hdr.dxferp = results;
+ 	io_hdr.cmdp = cdb;
+ 	io_hdr.sbp = sb;
+-	io_hdr.timeout = SG_TIMEOUT;
++	io_hdr.timeout = get_prio_timeout(SG_TIMEOUT);
+ 	io_hdr.pack_id = 0;
+ 	if (ioctl(fd, SG_IO, &io_hdr) < 0) {
+ 		pp_ontap_log(0, "ioctl sending inquiry command failed, "
+Index: multipath-tools-130222/libmultipath/prioritizers/rdac.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/prioritizers/rdac.c
++++ multipath-tools-130222/libmultipath/prioritizers/rdac.c
+@@ -31,7 +31,7 @@ int rdac_prio(const char *dev, int fd)
+ 	io_hdr.dxferp = sense_buffer;
+ 	io_hdr.cmdp = inqCmdBlk;
+ 	io_hdr.sbp = sb;
+-	io_hdr.timeout = 60000;
++	io_hdr.timeout = get_prio_timeout(60000);
+ 	io_hdr.pack_id = 0;
+ 	if (ioctl(fd, SG_IO, &io_hdr) < 0) {
+ 		pp_rdac_log(0, "sending inquiry command failed");
+Index: multipath-tools-130222/multipath.conf.annotated
+===================================================================
+--- multipath-tools-130222.orig/multipath.conf.annotated
++++ multipath-tools-130222/multipath.conf.annotated
+@@ -188,8 +188,9 @@
+ #	#
+ #	# name    : checker_timeout
+ #	# scope   : multipath & multipathd
+-#	# desc    : The timeout to use for path checkers that issue scsi
+-#	#           commands with an explicit timeout, in seconds.
++#	# desc    : The timeout to use for path checkers and prioritizers
++#	#           that issue scsi commands with an explicit timeout, in
++#	#           seconds.
+ #	# values  : n > 0
+ #	# default : taken from /sys/block/sd<x>/device/timeout
+ #	checker_timeout 60
+Index: multipath-tools-130222/multipath/multipath.conf.5
+===================================================================
+--- multipath-tools-130222.orig/multipath/multipath.conf.5
++++ multipath-tools-130222/multipath/multipath.conf.5
+@@ -321,8 +321,8 @@ maximum number of open fds is taken from
+ if that number is greated than 1024.
+ .TP
+ .B checker_timeout
+-Specify the timeout to user for path checkers that issue scsi commands with an
+-explicit timeout, in seconds; default taken from
++Specify the timeout to use for path checkers and prioritizers that issue scsi
++commands with an explicit timeout, in seconds; default taken from
+ .I /sys/block/sd<x>/device/timeout
+ .TP
+ .B fast_io_fail_tmo

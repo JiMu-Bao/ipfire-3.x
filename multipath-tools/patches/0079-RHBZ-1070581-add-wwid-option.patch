@@ -1,0 +1,93 @@
+---
+ multipath/main.c      |   19 ++++++++++++++++---
+ multipath/multipath.8 |    5 ++++-
+ 2 files changed, 20 insertions(+), 4 deletions(-)
+
+Index: multipath-tools-130222/multipath/main.c
+===================================================================
+--- multipath-tools-130222.orig/multipath/main.c
++++ multipath-tools-130222/multipath/main.c
+@@ -85,7 +85,7 @@ usage (char * progname)
+ {
+ 	fprintf (stderr, VERSION_STRING);
+ 	fprintf (stderr, "Usage:\n");
+-	fprintf (stderr, "  %s [-c|-w|-W] [-d] [-T tm:val] [-r] [-v lvl] [-p pol] [-b fil] [-q] [dev]\n", progname);
++	fprintf (stderr, "  %s [-a|-c|-w|-W] [-d] [-T tm:val] [-r] [-v lvl] [-p pol] [-b fil] [-q] [dev]\n", progname);
+ 	fprintf (stderr, "  %s -l|-ll|-f [-v lvl] [-b fil] [dev]\n", progname);
+ 	fprintf (stderr, "  %s -F [-v lvl]\n", progname);
+ 	fprintf (stderr, "  %s -t\n", progname);
+@@ -98,6 +98,7 @@ usage (char * progname)
+ 		"  -ll     show multipath topology (maximum info)\n" \
+ 		"  -f      flush a multipath device map\n" \
+ 		"  -F      flush all multipath device maps\n" \
++		"  -a      add a device wwid to the wwids file\n" \
+ 		"  -c      check if a device should be a path in a multipath device\n" \
+ 		"  -T tm:val\n" \
+ 		"          check if tm matches the multipathd timestamp. If so val is\n" \
+@@ -292,6 +293,15 @@ configure (void)
+ 			}
+ 			goto out;
+ 		}
++		if (conf->dry_run == 5) {
++			r = remember_wwid(refwwid);
++			if (r == 0)
++				printf("wwid '%s' added\n", refwwid);
++			else
++				printf("failed adding '%s' to wwids file\n",
++					refwwid);
++			goto out;
++		}
+ 		condlog(3, "scope limited to %s", refwwid);
+ 		if (conf->dry_run == 2) {
+ 			if (check_wwids_file(refwwid, 0) == 0){
+@@ -428,7 +438,7 @@ main (int argc, char *argv[])
+ 	int r = 1;
+ 	long int timestamp = -1;
+ 	int valid = -1;
+-	while ((arg = getopt(argc, argv, ":dchl::FfM:v:p:b:BrtT:qwW")) != EOF ) {
++	while ((arg = getopt(argc, argv, ":adchl::FfM:v:p:b:BrtT:qwW")) != EOF ) {
+ 		switch(arg) {
+ 		case 'T':
+ 			if (optarg[0] == ':')
+@@ -464,7 +474,7 @@ main (int argc, char *argv[])
+ 	if (dm_prereq())
+ 		exit(1);
+ 
+-	while ((arg = getopt(argc, argv, ":dchl::FfM:v:p:b:BrtT:qwW")) != EOF ) {
++	while ((arg = getopt(argc, argv, ":adchl::FfM:v:p:b:BrtT:qwW")) != EOF ) {
+ 		switch(arg) {
+ 		case 1: printf("optarg : %s\n",optarg);
+ 			break;
+@@ -537,6 +547,9 @@ main (int argc, char *argv[])
+ 		case 'W':
+ 			conf->dry_run = 4;
+ 			break;
++		case 'a':
++			conf->dry_run = 5;
++			break;
+ 		case ':':
+ 			fprintf(stderr, "Missing option argument\n");
+ 			usage(argv[0]);
+Index: multipath-tools-130222/multipath/multipath.8
+===================================================================
+--- multipath-tools-130222.orig/multipath/multipath.8
++++ multipath-tools-130222/multipath/multipath.8
+@@ -8,7 +8,7 @@ multipath \- Device mapper target autoco
+ .RB [\| \-b\ \c
+ .IR bindings_file \|]
+ .RB [\| \-d \|]
+-.RB [\| \-h | \-l | \-ll | \-f | \-t | \-F | \-B | \-c | \-q | \|-r | \-w | \-W \|]
++.RB [\| \-h | \-l | \-ll | \-f | \-t | \-F | \-B | \-c | \-q | \|-r | \-a | \-w | \-W \|]
+ .RB [\| \-p\ \c
+ .BR failover | multibus | group_by_serial | group_by_prio | group_by_node_name \|]
+ .RB [\| device \|]
+@@ -68,6 +68,9 @@ check if a block device should be a path
+ .B \-q
+ allow device tables with queue_if_no_path when multipathd is not running
+ .TP
++.B \-a
++add the wwid for the specified device to the wwids file
++.TP
+ .B \-w
+ remove the wwid for the specified device from the wwids file
+ .TP

@@ -1,0 +1,20 @@
+---
+ multipathd/main.c |    5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+Index: multipath-tools-130222/multipathd/main.c
+===================================================================
+--- multipath-tools-130222.orig/multipathd/main.c
++++ multipath-tools-130222/multipathd/main.c
+@@ -669,9 +669,8 @@ ev_remove_path (struct path *pp, struct
+ 			/*
+ 			 * update our state from kernel
+ 			 */
+-			if (setup_multipath(vecs, mpp)) {
+-				goto fail;
+-			}
++			if (setup_multipath(vecs, mpp))
++				return 1;
+ 			sync_map_state(mpp);
+ 
+ 			condlog(2, "%s [%s]: path removed from map %s",

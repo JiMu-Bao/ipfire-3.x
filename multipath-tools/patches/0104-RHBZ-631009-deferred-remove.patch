@@ -1,0 +1,751 @@
+---
+ libmultipath/Makefile      |    6 ++
+ libmultipath/config.c      |    3 +
+ libmultipath/config.h      |    3 +
+ libmultipath/configure.c   |    1 
+ libmultipath/defaults.h    |    1 
+ libmultipath/devmapper.c   |  130 +++++++++++++++++++++++++++++++++++++++------
+ libmultipath/devmapper.h   |   12 ++--
+ libmultipath/dict.c        |  116 +++++++++++++++++++++++++++++++++++++++-
+ libmultipath/propsel.c     |   28 +++++++++
+ libmultipath/propsel.h     |    1 
+ libmultipath/structs.h     |    8 ++
+ libmultipath/structs_vec.c |    3 -
+ multipath/multipath.conf.5 |   14 ++++
+ multipathd/main.c          |   23 +++++--
+ 14 files changed, 322 insertions(+), 27 deletions(-)
+
+Index: multipath-tools-130222/libmultipath/config.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/config.c
++++ multipath-tools-130222/libmultipath/config.c
+@@ -337,6 +337,7 @@ merge_hwe (struct hwentry * dst, struct
+ 	merge_num(user_friendly_names);
+ 	merge_num(retain_hwhandler);
+ 	merge_num(detect_prio);
++	merge_num(deferred_remove);
+ 
+ 	/*
+ 	 * Make sure features is consistent with
+@@ -394,6 +395,7 @@ overwrite_hwe (struct hwentry * dst, str
+ 	overwrite_num(user_friendly_names);
+ 	overwrite_num(retain_hwhandler);
+ 	overwrite_num(detect_prio);
++	overwrite_num(deferred_remove);
+ 
+ 	/*
+ 	 * Make sure features is consistent with
+@@ -617,6 +619,7 @@ load_config (char * file, struct udev *u
+ 	conf->fast_io_fail = DEFAULT_FAST_IO_FAIL;
+ 	conf->retain_hwhandler = DEFAULT_RETAIN_HWHANDLER;
+ 	conf->detect_prio = DEFAULT_DETECT_PRIO;
++	conf->deferred_remove = DEFAULT_DEFERRED_REMOVE;
+ 	conf->hw_strmatch = 0;
+ 	conf->force_sync = 0;
+ 
+Index: multipath-tools-130222/libmultipath/config.h
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/config.h
++++ multipath-tools-130222/libmultipath/config.h
+@@ -61,6 +61,7 @@ struct hwentry {
+ 	int user_friendly_names;
+ 	int retain_hwhandler;
+ 	int detect_prio;
++	int deferred_remove;
+ 	char * bl_product;
+ };
+ 
+@@ -84,6 +85,7 @@ struct mpentry {
+ 	int flush_on_last_del;
+ 	int attribute_flags;
+ 	int user_friendly_names;
++	int deferred_remove;
+ 	uid_t uid;
+ 	gid_t gid;
+ 	mode_t mode;
+@@ -128,6 +130,7 @@ struct config {
+ 	int retain_hwhandler;
+ 	int detect_prio;
+ 	int force_sync;
++	int deferred_remove;
+ 	unsigned int version[3];
+ 
+ 	char * dev;
+Index: multipath-tools-130222/libmultipath/configure.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/configure.c
++++ multipath-tools-130222/libmultipath/configure.c
+@@ -290,6 +290,7 @@ setup_map (struct multipath * mpp, char
+ 	select_dev_loss(mpp);
+ 	select_reservation_key(mpp);
+ 	select_retain_hwhandler(mpp);
++	select_deferred_remove(mpp);
+ 
+ 	sysfs_set_scsi_tmo(mpp);
+ 	/*
+Index: multipath-tools-130222/libmultipath/defaults.h
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/defaults.h
++++ multipath-tools-130222/libmultipath/defaults.h
+@@ -19,6 +19,7 @@
+ #define DEFAULT_FAST_IO_FAIL	5
+ #define DEFAULT_RETAIN_HWHANDLER RETAIN_HWHANDLER_OFF
+ #define DEFAULT_DETECT_PRIO DETECT_PRIO_OFF
++#define DEFAULT_DEFERRED_REMOVE DEFERRED_REMOVE_OFF
+ 
+ #define DEFAULT_CHECKINT	5
+ #define MAX_CHECKINT(a)		(a << 2)
+Index: multipath-tools-130222/libmultipath/devmapper.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/devmapper.c
++++ multipath-tools-130222/libmultipath/devmapper.c
+@@ -103,7 +103,9 @@ dm_lib_prereq (void)
+ {
+ 	char version[64];
+ 	int v[3];
+-#if defined(DM_SUBSYSTEM_UDEV_FLAG0)
++#if defined(LIBDM_API_DEFERRED)
++	int minv[3] = {1, 2, 89};
++#elif defined(DM_SUBSYSTEM_UDEV_FLAG0)
+ 	int minv[3] = {1, 2, 82};
+ #elif defined(LIBDM_API_COOKIE)
+ 	int minv[3] = {1, 2, 38};
+@@ -202,7 +204,7 @@ dm_prereq (void)
+ }
+ 
+ static int
+-dm_simplecmd (int task, const char *name, int no_flush, int need_sync, uint16_t udev_flags) {
++dm_simplecmd (int task, const char *name, int no_flush, int need_sync, uint16_t udev_flags, int deferred_remove) {
+ 	int r = 0;
+ 	int udev_wait_flag = (need_sync && (task == DM_DEVICE_RESUME ||
+ 					    task == DM_DEVICE_REMOVE));
+@@ -220,7 +222,10 @@ dm_simplecmd (int task, const char *name
+ 	if (no_flush)
+ 		dm_task_no_flush(dmt);		/* for DM_DEVICE_SUSPEND/RESUME */
+ #endif
+-
++#ifdef LIBDM_API_DEFERRED
++	if (deferred_remove)
++		dm_task_deferred_remove(dmt);
++#endif
+ 	if (udev_wait_flag && !dm_task_set_cookie(dmt, &conf->cookie, ((conf->daemon)? DM_UDEV_DISABLE_LIBRARY_FALLBACK : 0) | udev_flags))
+ 		goto out;
+ 	r = dm_task_run (dmt);
+@@ -232,12 +237,18 @@ dm_simplecmd (int task, const char *name
+ 
+ extern int
+ dm_simplecmd_flush (int task, const char *name, int needsync, uint16_t udev_flags) {
+-	return dm_simplecmd(task, name, 0, needsync, udev_flags);
++	return dm_simplecmd(task, name, 0, needsync, udev_flags, 0);
+ }
+ 
+ extern int
+ dm_simplecmd_noflush (int task, const char *name, uint16_t udev_flags) {
+-	return dm_simplecmd(task, name, 1, 1, udev_flags);
++	return dm_simplecmd(task, name, 1, 1, udev_flags, 0);
++}
++
++extern int
++dm_device_remove (const char *name, int needsync, int deferred_remove) {
++	return dm_simplecmd(DM_DEVICE_REMOVE, name, 0, needsync, 0,
++			    deferred_remove);
+ }
+ 
+ extern int
+@@ -653,7 +664,7 @@ out:
+ }
+ 
+ extern int
+-_dm_flush_map (const char * mapname, int need_sync)
++_dm_flush_map (const char * mapname, int need_sync, int deferred_remove)
+ {
+ 	int r;
+ 
+@@ -663,23 +674,46 @@ _dm_flush_map (const char * mapname, int
+ 	if (dm_type(mapname, TGT_MPATH) <= 0)
+ 		return 0; /* nothing to do */
+ 
+-	if (dm_remove_partmaps(mapname, need_sync))
++	if (dm_remove_partmaps(mapname, need_sync, deferred_remove))
+ 		return 1;
+ 
+-	if (dm_get_opencount(mapname)) {
++	if (!deferred_remove && dm_get_opencount(mapname)) {
+ 		condlog(2, "%s: map in use", mapname);
+ 		return 1;
+ 	}
+ 
+-	r = dm_simplecmd_flush(DM_DEVICE_REMOVE, mapname, need_sync, 0);
++	r = dm_device_remove(mapname, need_sync, deferred_remove);
+ 
+ 	if (r) {
++		if (deferred_remove && dm_map_present(mapname)) {
++			condlog(4, "multipath map %s remove deferred",
++				mapname);
++			return 2;
++		}
+ 		condlog(4, "multipath map %s removed", mapname);
+ 		return 0;
+ 	}
+ 	return 1;
+ }
+ 
++#ifdef LIBDM_API_DEFERRED
++
++int
++dm_flush_map_nopaths(const char * mapname, int deferred_remove)
++{
++	return _dm_flush_map(mapname, 1, deferred_remove);
++}
++
++#else
++
++int
++dm_flush_map_nopaths(const char * mapname, int deferred_remove)
++{
++	return _dm_flush_map(mapname, 1, 0);
++}
++
++#endif
++
+ extern int
+ dm_suspend_and_flush_map (const char * mapname)
+ {
+@@ -1076,6 +1110,7 @@ out:
+ 
+ struct remove_data {
+ 	int need_sync;
++	int deferred_remove;
+ };
+ 
+ static int
+@@ -1084,25 +1119,90 @@ remove_partmap(char *name, void *data)
+ 	struct remove_data *rd = (struct remove_data *)data;
+ 
+ 	if (dm_get_opencount(name)) {
+-		dm_remove_partmaps(name, rd->need_sync);
+-		if (dm_get_opencount(name)) {
++		dm_remove_partmaps(name, rd->need_sync, rd->deferred_remove);
++		if (!rd->deferred_remove && dm_get_opencount(name)) {
+ 			condlog(2, "%s: map in use", name);
+ 			return 1;
+ 		}
+ 	}
+ 	condlog(4, "partition map %s removed", name);
+-	dm_simplecmd_flush(DM_DEVICE_REMOVE, name,
+-			   rd->need_sync, 0);
++	dm_device_remove(name, rd->need_sync, rd->deferred_remove);
+ 	return 0;
+ }
+ 
+ int
+-dm_remove_partmaps (const char * mapname, int need_sync)
++dm_remove_partmaps (const char * mapname, int need_sync, int deferred_remove)
+ {
+-	struct remove_data rd = { need_sync };
++	struct remove_data rd = { need_sync, deferred_remove };
+ 	return do_foreach_partmaps(mapname, remove_partmap, &rd);
+ }
+ 
++#ifdef LIBDM_API_DEFERRED
++
++static int
++cancel_remove_partmap (char *name, void *unused)
++{
++	if (dm_message(name, "@cancel_deferred_remove") != 0)
++		condlog(0, "%s: can't cancel deferred remove: %s", name,
++			strerror(errno));
++	return 0;
++}
++
++static int
++dm_get_deferred_remove (char * mapname)
++{
++	int r = -1;
++	struct dm_task *dmt;
++	struct dm_info info;
++
++	if (!(dmt = dm_task_create(DM_DEVICE_INFO)))
++		return -1;
++
++	if (!dm_task_set_name(dmt, mapname))
++		goto out;
++
++	if (!dm_task_run(dmt))
++		goto out;
++
++	if (!dm_task_get_info(dmt, &info))
++		goto out;
++
++	r = info.deferred_remove;
++out:
++	dm_task_destroy(dmt);
++	return r;
++}
++
++int
++dm_cancel_deferred_remove (struct multipath *mpp)
++{
++	int r = 0;
++
++	if (!dm_get_deferred_remove(mpp->alias))
++		return 0;
++	if (mpp->deferred_remove == DEFERRED_REMOVE_IN_PROGRESS)
++		mpp->deferred_remove = DEFERRED_REMOVE_ON;
++
++	do_foreach_partmaps(mpp->alias, cancel_remove_partmap, NULL);
++	r = dm_message(mpp->alias, "@cancel_deferred_remove");
++	if (r)
++		condlog(0, "%s: can't cancel deferred remove: %s", mpp->alias,
++			strerror(errno));
++	else
++		condlog(2, "%s: canceled deferred remove", mpp->alias);
++	return r;
++}
++
++#else
++
++int
++dm_cancel_deferred_remove (struct multipath *mpp)
++{
++	return 0;
++}
++
++#endif
++
+ static struct dm_info *
+ alloc_dminfo (void)
+ {
+Index: multipath-tools-130222/libmultipath/devmapper.h
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/devmapper.h
++++ multipath-tools-130222/libmultipath/devmapper.h
+@@ -17,15 +17,18 @@ int dm_prereq (void);
+ int dm_drv_version (unsigned int * version, char * str);
+ int dm_simplecmd_flush (int, const char *, int, uint16_t);
+ int dm_simplecmd_noflush (int, const char *, uint16_t);
++int dm_device_remove (const char *, int, int);
+ int dm_addmap_create (struct multipath *mpp, char *params);
+ int dm_addmap_reload (struct multipath *mpp, char *params);
+ int dm_map_present (const char *);
+ int dm_get_map(const char *, unsigned long long *, char *);
+ int dm_get_status(char *, char *);
+ int dm_type(const char *, char *);
+-int _dm_flush_map (const char *, int);
+-#define dm_flush_map(mapname) _dm_flush_map(mapname, 1)
+-#define dm_flush_map_nosync(mapname) _dm_flush_map(mapname, 0)
++int _dm_flush_map (const char *, int, int);
++int dm_flush_map_nopaths(const char * mapname, int deferred_remove);
++#define dm_flush_map(mapname) _dm_flush_map(mapname, 1, 0)
++#define dm_flush_map_nosync(mapname) _dm_flush_map(mapname, 0, 0)
++int dm_cancel_deferred_remove(struct multipath *mpp);
+ int dm_suspend_and_flush_map(const char * mapname);
+ int dm_flush_maps (void);
+ int dm_fail_path(char * mapname, char * path);
+@@ -40,7 +43,8 @@ int dm_geteventnr (char *name);
+ int dm_get_major (char *name);
+ int dm_get_minor (char *name);
+ char * dm_mapname(int major, int minor);
+-int dm_remove_partmaps (const char * mapname, int need_sync);
++int dm_remove_partmaps (const char * mapname, int need_sync,
++			int deferred_remove);
+ int dm_get_uuid(char *name, char *uuid);
+ int dm_get_info (char * mapname, struct dm_info ** dmi);
+ int dm_rename (char * old, char * new);
+Index: multipath-tools-130222/libmultipath/dict.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/dict.c
++++ multipath-tools-130222/libmultipath/dict.c
+@@ -738,6 +738,29 @@ def_force_sync_handler(vector strvec)
+ 	return 0;
+ }
+ 
++static int
++def_deferred_remove_handler(vector strvec)
++{
++	char * buff;
++
++	buff = set_value(strvec);
++
++	if (!buff)
++		return 1;
++
++	if ((strlen(buff) == 2 && !strcmp(buff, "no")) ||
++	    (strlen(buff) == 1 && !strcmp(buff, "0")))
++		conf->deferred_remove = DEFERRED_REMOVE_OFF;
++	else if ((strlen(buff) == 3 && !strcmp(buff, "yes")) ||
++		 (strlen(buff) == 1 && !strcmp(buff, "1")))
++		conf->deferred_remove = DEFERRED_REMOVE_ON;
++	else
++		conf->deferred_remove = DEFAULT_DEFERRED_REMOVE;
++
++	FREE(buff);
++	return 0;
++}
++
+ /*
+  * blacklist block handlers
+  */
+@@ -1445,6 +1468,33 @@ hw_detect_prio_handler(vector strvec)
+ 	return 0;
+ }
+ 
++static int
++hw_deferred_remove_handler(vector strvec)
++{
++	struct hwentry *hwe = VECTOR_LAST_SLOT(conf->hwtable);
++	char * buff;
++
++	if (!hwe)
++		return 1;
++
++	buff = set_value(strvec);
++
++	if (!buff)
++		return 1;
++
++	if ((strlen(buff) == 2 && !strcmp(buff, "no")) ||
++	    (strlen(buff) == 1 && !strcmp(buff, "0")))
++		hwe->deferred_remove = DEFERRED_REMOVE_OFF;
++	else if ((strlen(buff) == 3 && !strcmp(buff, "yes")) ||
++		 (strlen(buff) == 1 && !strcmp(buff, "1")))
++		hwe->deferred_remove = DEFERRED_REMOVE_ON;
++	else
++		hwe->deferred_remove = DEFERRED_REMOVE_UNDEF;
++
++	FREE(buff);
++	return 0;
++}
++
+ /*
+  * multipaths block handlers
+  */
+@@ -1920,6 +1970,32 @@ mp_names_handler(vector strvec)
+ 	return 0;
+ }
+ 
++static int
++mp_deferred_remove_handler(vector strvec)
++{
++	struct mpentry *mpe = VECTOR_LAST_SLOT(conf->mptable);
++	char * buff;
++
++	if (!mpe)
++		return 1;
++
++	buff = set_value(strvec);
++	if (!buff)
++		return 1;
++
++	if ((strlen(buff) == 2 && strcmp(buff, "no") == 0) ||
++	    (strlen(buff) == 1 && strcmp(buff, "0") == 0))
++		mpe->deferred_remove = DEFERRED_REMOVE_OFF;
++	else if ((strlen(buff) == 3 && strcmp(buff, "yes") == 0) ||
++		 (strlen(buff) == 1 && strcmp(buff, "1") == 0))
++		mpe->deferred_remove = DEFERRED_REMOVE_ON;
++	else
++		mpe->deferred_remove = DEFERRED_REMOVE_UNDEF;
++
++	FREE(buff);
++	return 0;
++}
++
+ /*
+  * config file keywords printing
+  */
+@@ -2165,7 +2241,7 @@ snprint_mp_reservation_key (char * buff,
+ 	return snprintf(buff, len, "0x%" PRIx64, prkey);
+ }
+ 
+-	static int
++static int
+ snprint_mp_user_friendly_names (char * buff, int len, void * data)
+ {
+ 	struct mpentry * mpe = (struct mpentry *)data;
+@@ -2179,6 +2255,19 @@ snprint_mp_user_friendly_names (char * b
+ }
+ 
+ static int
++snprint_mp_deferred_remove (char * buff, int len, void * data)
++{
++	struct mpentry * mpe = (struct mpentry *)data;
++
++	if (mpe->deferred_remove == DEFERRED_REMOVE_UNDEF)
++		return 0;
++	else if (mpe->deferred_remove == DEFERRED_REMOVE_OFF)
++		return snprintf(buff, len, "no");
++	else
++		return snprintf(buff, len, "yes");
++}
++
++static int
+ snprint_hw_fast_io_fail(char * buff, int len, void * data)
+ {
+ 	struct hwentry * hwe = (struct hwentry *)data;
+@@ -2507,6 +2596,19 @@ snprint_hw_retain_hwhandler_handler(char
+ }
+ 
+ static int
++snprint_hw_deferred_remove(char * buff, int len, void * data)
++{
++	struct hwentry * hwe = (struct hwentry *)data;
++
++	if (hwe->deferred_remove == DEFERRED_REMOVE_ON)
++		return snprintf(buff, len, "yes");
++	else if (hwe->deferred_remove == DEFERRED_REMOVE_OFF)
++		return snprintf(buff, len, "no");
++	else
++		return 0;
++}
++
++static int
+ snprint_detect_prio(char * buff, int len, void * data)
+ {
+ 	struct hwentry * hwe = (struct hwentry *)data;
+@@ -2900,6 +3002,15 @@ snprint_def_force_sync(char * buff, int
+ }
+ 
+ static int
++snprint_def_deferred_remove(char * buff, int len, void * data)
++{
++	if (conf->deferred_remove == DEFERRED_REMOVE_ON)
++		return snprintf(buff, len, "yes");
++	else
++		return snprintf(buff, len, "no");
++}
++
++static int
+ snprint_ble_simple (char * buff, int len, void * data)
+ {
+ 	struct blentry * ble = (struct blentry *)data;
+@@ -2968,6 +3079,7 @@ init_keywords(void)
+ 	install_keyword("detect_prio", &def_detect_prio_handler, &snprint_def_detect_prio);
+ 	install_keyword("hw_str_match", &def_hw_strmatch_handler, &snprint_def_hw_strmatch);
+ 	install_keyword("force_sync", &def_force_sync_handler, &snprint_def_force_sync);
++	install_keyword("deferred_remove", &def_deferred_remove_handler, &snprint_def_deferred_remove);
+ 	__deprecated install_keyword("default_selector", &def_selector_handler, NULL);
+ 	__deprecated install_keyword("default_path_grouping_policy", &def_pgpolicy_handler, NULL);
+ 	__deprecated install_keyword("default_uid_attribute", &def_uid_attribute_handler, NULL);
+@@ -3032,6 +3144,7 @@ init_keywords(void)
+ 	install_keyword("user_friendly_names", &hw_names_handler, &snprint_hw_user_friendly_names);
+ 	install_keyword("retain_attached_hw_handler", &hw_retain_hwhandler_handler, &snprint_hw_retain_hwhandler_handler);
+ 	install_keyword("detect_prio", &hw_detect_prio_handler, &snprint_detect_prio);
++	install_keyword("deferred_remove", &hw_deferred_remove_handler, &snprint_hw_deferred_remove);
+ 	install_sublevel_end();
+ 
+ 	install_keyword_root("multipaths", &multipaths_handler);
+@@ -3056,5 +3169,6 @@ init_keywords(void)
+ 	install_keyword("gid", &mp_gid_handler, &snprint_mp_gid);
+ 	install_keyword("reservation_key", &mp_reservation_key_handler, &snprint_mp_reservation_key);
+ 	install_keyword("user_friendly_names", &mp_names_handler, &snprint_mp_user_friendly_names);
++	install_keyword("deferred_remove", &mp_deferred_remove_handler, &snprint_mp_deferred_remove);
+ 	install_sublevel_end();
+ }
+Index: multipath-tools-130222/libmultipath/propsel.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/propsel.c
++++ multipath-tools-130222/libmultipath/propsel.c
+@@ -744,6 +744,34 @@ select_retain_hwhandler (struct multipat
+ }
+ 
+ extern int
++select_deferred_remove (struct multipath *mp)
++{
++	if (mp->deferred_remove == DEFERRED_REMOVE_IN_PROGRESS) {
++		condlog(3, "%s: deferred_remove in progress", mp->alias);
++		return 0;
++	}
++	if (mp->mpe && mp->mpe->deferred_remove) {
++		mp->deferred_remove = mp->mpe->deferred_remove;
++		condlog(3, "%s: deferred_remove = %i (multipath setting)",
++			mp->alias, mp->deferred_remove);
++		return 0;
++	}
++	if (mp->hwe && mp->hwe->deferred_remove) {
++		mp->deferred_remove = mp->hwe->deferred_remove;
++		condlog(3, "%s: deferred_remove = %d (controller default)", mp->alias, mp->deferred_remove);
++		return 0;
++	}
++	if (conf->deferred_remove) {
++		mp->deferred_remove = conf->deferred_remove;
++		condlog(3, "%s: deferred_remove = %d (config file default)", mp->alias, mp->deferred_remove);
++		return 0;
++	}
++	mp->deferred_remove = DEFAULT_DEFERRED_REMOVE;
++	condlog(3, "%s: deferred_remove = %d (compiled in default)", mp->alias, mp->deferred_remove);
++	return 0;
++}
++
++extern int
+ select_detect_prio (struct path * pp)
+ {
+ 	if (pp->hwe && pp->hwe->detect_prio) {
+Index: multipath-tools-130222/libmultipath/propsel.h
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/propsel.h
++++ multipath-tools-130222/libmultipath/propsel.h
+@@ -20,3 +20,4 @@ int select_dev_loss(struct multipath *mp
+ int select_reservation_key(struct multipath *mp);
+ int select_retain_hwhandler (struct multipath * mp);
+ int select_detect_prio(struct path * pp);
++int select_deferred_remove(struct multipath *mp);
+Index: multipath-tools-130222/libmultipath/structs.h
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/structs.h
++++ multipath-tools-130222/libmultipath/structs.h
+@@ -114,6 +114,13 @@ enum detect_prio_states {
+ 	DETECT_PRIO_ON,
+ };
+ 
++enum deferred_remove_states {
++	DEFERRED_REMOVE_UNDEF,
++	DEFERRED_REMOVE_OFF,
++	DEFERRED_REMOVE_ON,
++	DEFERRED_REMOVE_IN_PROGRESS,
++};
++
+ enum scsi_protocol {
+ 	SCSI_PROTOCOL_FCP = 0,	/* Fibre Channel */
+ 	SCSI_PROTOCOL_SPI = 1,	/* parallel SCSI */
+@@ -207,6 +214,7 @@ struct multipath {
+ 	int attribute_flags;
+ 	int fast_io_fail;
+ 	int retain_hwhandler;
++	int deferred_remove;
+ 	unsigned int dev_loss;
+ 	uid_t uid;
+ 	gid_t gid;
+Index: multipath-tools-130222/multipathd/main.c
+===================================================================
+--- multipath-tools-130222.orig/multipathd/main.c
++++ multipath-tools-130222/multipathd/main.c
+@@ -214,19 +214,30 @@ sync_maps_state(vector mpvec)
+ }
+ 
+ static int
+-flush_map(struct multipath * mpp, struct vectors * vecs)
++flush_map(struct multipath * mpp, struct vectors * vecs, int nopaths)
+ {
++	int r;
++
++	if (nopaths)
++		r = dm_flush_map_nopaths(mpp->alias, mpp->deferred_remove);
++	else
++		r = dm_flush_map(mpp->alias);
+ 	/*
+ 	 * clear references to this map before flushing so we can ignore
+ 	 * the spurious uevent we may generate with the dm_flush_map call below
+ 	 */
+-	if (dm_flush_map(mpp->alias)) {
++	if (r) {
+ 		/*
+ 		 * May not really be an error -- if the map was already flushed
+ 		 * from the device mapper by dmsetup(8) for instance.
+ 		 */
+-		condlog(0, "%s: can't flush", mpp->alias);
+-		return 1;
++		if (r == 1)
++			condlog(0, "%s: can't flush", mpp->alias);
++		else {
++			condlog(2, "%s: devmap deferred remove", mpp->alias);
++			mpp->deferred_remove = DEFERRED_REMOVE_IN_PROGRESS;
++		}
++		return r;
+ 	}
+ 	else {
+ 		dm_lib_release();
+@@ -372,7 +383,7 @@ ev_remove_map (char * devname, char * al
+ 			mpp->alias, mpp->dmi->minor, minor);
+ 		return 0;
+ 	}
+-	return flush_map(mpp, vecs);
++	return flush_map(mpp, vecs, 0);
+ }
+ 
+ static int
+@@ -628,7 +639,7 @@ ev_remove_path (struct path *pp, struct
+ 				mpp->flush_on_last_del = FLUSH_IN_PROGRESS;
+ 				dm_queue_if_no_path(mpp->alias, 0);
+ 			}
+-			if (!flush_map(mpp, vecs)) {
++			if (!flush_map(mpp, vecs, 1)) {
+ 				condlog(2, "%s: removed map after"
+ 					" removing all paths",
+ 					alias);
+Index: multipath-tools-130222/libmultipath/structs_vec.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/structs_vec.c
++++ multipath-tools-130222/libmultipath/structs_vec.c
+@@ -392,6 +392,8 @@ __setup_multipath (struct vectors * vecs
+ 		set_no_path_retry(mpp);
+ 		select_pg_timeout(mpp);
+ 		select_flush_on_last_del(mpp);
++		if (VECTOR_SIZE(mpp->paths) != 0)
++			dm_cancel_deferred_remove(mpp);
+ 	}
+ 
+ 	return 0;
+@@ -565,7 +567,6 @@ int update_multipath (struct vectors *ve
+ 			}
+ 		}
+ 	}
+-
+ 	return 0;
+ }
+ 
+Index: multipath-tools-130222/multipath/multipath.conf.5
+===================================================================
+--- multipath-tools-130222.orig/multipath/multipath.conf.5
++++ multipath-tools-130222/multipath/multipath.conf.5
+@@ -420,6 +420,16 @@ only one checker will run at a time.  Th
+ multipathd checkers running in parallel causes significant CPU pressure. The
+ Default is
+ .I no
++.TP
++.B deferred_remove
++If set to
++.I yes
++, multipathd will do a deferred remove instead of a regular remove when the
++last path device has been deleted.  This means that if the multipath device is
++still in use, it will be freed when the last user closes it.  If path is added
++to the multipath device before the last user closes it, the deferred remove
++will be canceled. Default is
++.I no
+ .
+ .SH "blacklist section"
+ The
+@@ -521,6 +531,8 @@ section:
+ .B features
+ .TP
+ .B reservation_key
++.TP
++.B deferred_remove
+ .RE
+ .PD
+ .LP
+@@ -611,6 +623,8 @@ section:
+ .B retain_attached_hw_handler
+ .TP
+ .B detect_prio
++.TP
++.B deferred_remove
+ .RE
+ .PD
+ .LP
+Index: multipath-tools-130222/libmultipath/Makefile
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/Makefile
++++ multipath-tools-130222/libmultipath/Makefile
+@@ -36,6 +36,12 @@ ifneq ($(strip $(LIBUDEV_API_RECVBUF)),0
+ 	CFLAGS += -DLIBUDEV_API_RECVBUF
+ endif
+ 
++LIBDM_API_DEFERRED = $(shell grep -Ecs '^[a-z]*[[:space:]]+dm_task_deferred_remove' /usr/include/libdevmapper.h)
++
++ifneq ($(strip $(LIBDM_API_DEFERRED)),0)
++	CFLAGS += -DLIBDM_API_DEFERRED
++endif
++
+ 
+ all: $(LIBS)
+ 

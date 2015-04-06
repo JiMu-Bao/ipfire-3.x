@@ -1,0 +1,332 @@
+---
+ libmultipath/config.h    |   15 ++++++++-
+ libmultipath/configure.c |    2 -
+ libmultipath/discovery.c |    5 +--
+ multipath/main.c         |   75 +++++++++++++++++++++++++----------------------
+ multipath/multipath.8    |    5 ++-
+ 5 files changed, 61 insertions(+), 41 deletions(-)
+
+Index: multipath-tools-130222/libmultipath/config.h
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/config.h
++++ multipath-tools-130222/libmultipath/config.h
+@@ -23,6 +23,17 @@ enum devtypes {
+ 	DEV_DEVMAP
+ };
+ 
++enum mpath_cmds {
++	CMD_CREATE,
++	CMD_DRY_RUN,
++	CMD_LIST_SHORT,
++	CMD_LIST_LONG,
++	CMD_VALID_PATH,
++	CMD_REMOVE_WWID,
++	CMD_RESET_WWIDS,
++	CMD_ADD_WWID,
++};
++
+ struct hwentry {
+ 	char * vendor;
+ 	char * product;
+@@ -79,8 +90,7 @@ struct mpentry {
+ 
+ struct config {
+ 	int verbosity;
+-	int dry_run;
+-	int list;
++	enum mpath_cmds cmd;
+ 	int pgpolicy_flag;
+ 	int pgpolicy;
+ 	enum devtypes dev_type;
+@@ -98,6 +108,7 @@ struct config {
+ 	int max_fds;
+ 	int force_reload;
+ 	int queue_without_daemon;
++	int ignore_wwids;
+ 	int checker_timeout;
+ 	int daemon;
+ 	int flush_on_last_del;
+Index: multipath-tools-130222/multipath/main.c
+===================================================================
+--- multipath-tools-130222.orig/multipath/main.c
++++ multipath-tools-130222/multipath/main.c
+@@ -85,7 +85,7 @@ usage (char * progname)
+ {
+ 	fprintf (stderr, VERSION_STRING);
+ 	fprintf (stderr, "Usage:\n");
+-	fprintf (stderr, "  %s [-a|-A|-c|-w|-W] [-d] [-T tm:val] [-r] [-v lvl] [-p pol] [-b fil] [-q] [dev]\n", progname);
++	fprintf (stderr, "  %s [-a|-A|-c|-w|-W] [-d] [-T tm:val] [-r] [-i] [-v lvl] [-p pol] [-b fil] [-q] [dev]\n", progname);
+ 	fprintf (stderr, "  %s -l|-ll|-f [-v lvl] [-b fil] [dev]\n", progname);
+ 	fprintf (stderr, "  %s -F [-v lvl]\n", progname);
+ 	fprintf (stderr, "  %s -t\n", progname);
+@@ -109,6 +109,7 @@ usage (char * progname)
+ 		"  -d      dry run, do not create or update devmaps\n" \
+ 		"  -t      dump internal hardware table\n" \
+ 		"  -r      force devmap reload\n" \
++		"  -i      ignore wwids file\n" \
+ 		"  -B      treat the bindings file as read only\n" \
+ 		"  -p      policy failover|multibus|group_by_serial|group_by_prio\n" \
+ 		"  -b fil  bindings file location\n" \
+@@ -209,18 +210,19 @@ get_dm_mpvec (vector curmp, vector pathv
+ 		 * If not in "fast list mode", we need to fetch information
+ 		 * about them
+ 		 */
+-		if (conf->list != 1)
++		if (conf->cmd != CMD_LIST_SHORT)
+ 			update_paths(mpp);
+ 
+-		if (conf->list > 1)
++		if (conf->cmd == CMD_LIST_LONG)
+ 			mpp->bestpg = select_path_group(mpp);
+ 
+ 		disassemble_status(status, mpp);
+ 
+-		if (conf->list)
++		if (conf->cmd == CMD_LIST_SHORT ||
++		    conf->cmd == CMD_LIST_LONG)
+ 			print_multipath_topology(mpp, conf->verbosity);
+ 
+-		if (!conf->dry_run)
++		if (conf->cmd == CMD_CREATE)
+ 			reinstate_paths(mpp);
+ 	}
+ 	return 0;
+@@ -262,10 +264,11 @@ configure (void)
+ 	/*
+ 	 * if we have a blacklisted device parameter, exit early
+ 	 */
+-	if (dev && conf->dev_type == DEV_DEVNODE && conf->dry_run != 3 &&
++	if (dev && conf->dev_type == DEV_DEVNODE &&
++	    conf->cmd != CMD_REMOVE_WWID &&
+ 	    (filter_devnode(conf->blist_devnode,
+ 			    conf->elist_devnode, dev) > 0)) {
+-		if (conf->dry_run == 2)
++		if (conf->cmd == CMD_VALID_PATH)
+ 			printf("%s is not a valid multipath device path\n",
+ 			       conf->dev);
+ 		goto out;
+@@ -278,13 +281,13 @@ configure (void)
+ 		int failed = get_refwwid(conf->dev, conf->dev_type, pathvec,
+ 					 &refwwid);
+ 		if (!refwwid) {
+-			if (failed == 2 && conf->dry_run == 2)
++			if (failed == 2 && conf->cmd == CMD_VALID_PATH)
+ 				printf("%s is not a valid multipath device path\n", conf->dev);
+ 			else
+ 				condlog(3, "scope is nul");
+ 			goto out;
+ 		}
+-		if (conf->dry_run == 3) {
++		if (conf->cmd == CMD_REMOVE_WWID) {
+ 			r = remove_wwid(refwwid);
+ 			if (r == 0)
+ 				printf("wwid '%s' removed\n", refwwid);
+@@ -295,7 +298,7 @@ configure (void)
+ 			}
+ 			goto out;
+ 		}
+-		if (conf->dry_run == 5) {
++		if (conf->cmd == CMD_ADD_WWID) {
+ 			r = remember_wwid(refwwid);
+ 			if (r == 0)
+ 				printf("wwid '%s' added\n", refwwid);
+@@ -305,13 +308,13 @@ configure (void)
+ 			goto out;
+ 		}
+ 		condlog(3, "scope limited to %s", refwwid);
+-		if (conf->dry_run == 2) {
+-			if (check_wwids_file(refwwid, 0) == 0){
+-				printf("%s is a valid multipath device path\n", conf->dev);
++		if (conf->cmd == CMD_VALID_PATH) {
++			if (conf->ignore_wwids ||
++			    check_wwids_file(refwwid, 0) == 0)
+ 				r = 0;
+-			}
+-			else
+-				printf("%s is not a valid multipath device path\n", conf->dev);
++
++			printf("%s %s a valid multipath device path\n",
++			       conf->dev, r == 0 ? "is" : "is not");
+ 			goto out;
+ 		}
+ 	}
+@@ -319,13 +322,13 @@ configure (void)
+ 	/*
+ 	 * get a path list
+ 	 */
+-	if (conf->dev && !conf->list)
++	if (conf->dev)
+ 		di_flag = DI_WWID;
+ 
+-	if (conf->list > 1)
++	if (conf->cmd == CMD_LIST_LONG)
+ 		/* extended path info '-ll' */
+ 		di_flag |= DI_SYSFS | DI_CHECKER;
+-	else if (conf->list)
++	else if (conf->cmd == CMD_LIST_SHORT)
+ 		/* minimum path info '-l' */
+ 		di_flag |= DI_SYSFS;
+ 	else
+@@ -345,7 +348,7 @@ configure (void)
+ 
+ 	filter_pathvec(pathvec, refwwid);
+ 
+-	if (conf->list) {
++	if (conf->cmd != CMD_CREATE && conf->cmd != CMD_DRY_RUN) {
+ 		r = 0;
+ 		goto out;
+ 	}
+@@ -440,7 +443,7 @@ main (int argc, char *argv[])
+ 	int r = 1;
+ 	long int timestamp = -1;
+ 	int valid = -1;
+-	while ((arg = getopt(argc, argv, ":aAdchl::FfM:v:p:b:BrtT:qwW")) != EOF ) {
++	while ((arg = getopt(argc, argv, ":aAdchl::FfM:v:p:b:BritT:qwW")) != EOF ) {
+ 		switch(arg) {
+ 		case 'T':
+ 			if (optarg[0] == ':')
+@@ -476,7 +479,7 @@ main (int argc, char *argv[])
+ 	if (dm_prereq())
+ 		exit(1);
+ 
+-	while ((arg = getopt(argc, argv, ":aAdchl::FfM:v:p:b:BrtT:qwW")) != EOF ) {
++	while ((arg = getopt(argc, argv, ":aAdchl::FfM:v:p:b:BritT:qwW")) != EOF ) {
+ 		switch(arg) {
+ 		case 1: printf("optarg : %s\n",optarg);
+ 			break;
+@@ -499,11 +502,11 @@ main (int argc, char *argv[])
+ 			conf->allow_queueing = 1;
+ 			break;
+ 		case 'c':
+-			conf->dry_run = 2;
++			conf->cmd = CMD_VALID_PATH;
+ 			break;
+ 		case 'd':
+-			if (!conf->dry_run)
+-				conf->dry_run = 1;
++			if (conf->cmd == CMD_CREATE)
++				conf->cmd = CMD_DRY_RUN;
+ 			break;
+ 		case 'f':
+ 			conf->remove = FLUSH_ONE;
+@@ -512,11 +515,10 @@ main (int argc, char *argv[])
+ 			conf->remove = FLUSH_ALL;
+ 			break;
+ 		case 'l':
+-			conf->list = 1;
+-			conf->dry_run = 1;
+-
+ 			if (optarg && !strncmp(optarg, "l", 1))
+-				conf->list++;
++				conf->cmd = CMD_LIST_LONG;
++			else
++				conf->cmd = CMD_LIST_SHORT;
+ 
+ 			break;
+ 		case 'M':
+@@ -535,6 +537,9 @@ main (int argc, char *argv[])
+ 		case 'r':
+ 			conf->force_reload = 1;
+ 			break;
++		case 'i':
++			conf->ignore_wwids = 1;
++			break;
+ 		case 't':
+ 			r = dump_config();
+ 			goto out;
+@@ -548,13 +553,13 @@ main (int argc, char *argv[])
+ 			usage(argv[0]);
+ 			exit(0);
+ 		case 'w':
+-			conf->dry_run = 3;
++			conf->cmd = CMD_REMOVE_WWID;
+ 			break;
+ 		case 'W':
+-			conf->dry_run = 4;
++			conf->cmd = CMD_RESET_WWIDS;
+ 			break;
+ 		case 'a':
+-			conf->dry_run = 5;
++			conf->cmd = CMD_ADD_WWID;
+ 			break;
+ 		case ':':
+ 			fprintf(stderr, "Missing option argument\n");
+@@ -600,16 +605,16 @@ main (int argc, char *argv[])
+ 	}
+ 	dm_init();
+ 
+-	if (conf->dry_run == 2 &&
++	if (conf->cmd == CMD_VALID_PATH &&
+ 	    (!conf->dev || conf->dev_type == DEV_DEVMAP)) {
+ 		condlog(0, "the -c option requires a path to check");
+ 		goto out;
+ 	}
+-	if (conf->dry_run == 3 && !conf->dev) {
++	if (conf->cmd == CMD_REMOVE_WWID && !conf->dev) {
+ 		condlog(0, "the -w option requires a device");
+ 		goto out;
+ 	}
+-	if (conf->dry_run == 4) {
++	if (conf->cmd == CMD_RESET_WWIDS) {
+ 		struct multipath * mpp;
+ 		int i;
+ 		vector curmp;
+Index: multipath-tools-130222/multipath/multipath.8
+===================================================================
+--- multipath-tools-130222.orig/multipath/multipath.8
++++ multipath-tools-130222/multipath/multipath.8
+@@ -8,7 +8,7 @@ multipath \- Device mapper target autoco
+ .RB [\| \-b\ \c
+ .IR bindings_file \|]
+ .RB [\| \-d \|]
+-.RB [\| \-h | \-l | \-ll | \-f | \-t | \-F | \-B | \-c | \-q | \|-r | \-a | \-A | \-w | \-W \|]
++.RB [\| \-h | \-l | \-ll | \-f | \-t | \-F | \-B | \-c | \-q | \|-r | \-r | \-a | \-A | \-w | \-W \|]
+ .RB [\| \-p\ \c
+ .BR failover | multibus | group_by_serial | group_by_prio | group_by_node_name \|]
+ .RB [\| device \|]
+@@ -55,6 +55,9 @@ print internal hardware table to stdout
+ .B \-r
+ force devmap reload
+ .TP
++.B \-i
++ignore wwids file when processing devices
++.TP
+ .B \-B
+ treat the bindings file as read only
+ .TP
+Index: multipath-tools-130222/libmultipath/configure.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/configure.c
++++ multipath-tools-130222/libmultipath/configure.c
+@@ -580,7 +580,7 @@ domap (struct multipath * mpp, char * pa
+ 	/*
+ 	 * last chance to quit before touching the devmaps
+ 	 */
+-	if (conf->dry_run && mpp->action != ACT_NOTHING) {
++	if (conf->cmd == CMD_DRY_RUN && mpp->action != ACT_NOTHING) {
+ 		print_multipath_topology(mpp, conf->verbosity);
+ 		return DOMAP_DRY;
+ 	}
+Index: multipath-tools-130222/libmultipath/discovery.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/discovery.c
++++ multipath-tools-130222/libmultipath/discovery.c
+@@ -54,7 +54,8 @@ store_pathinfo (vector pathvec, vector h
+ 	}
+ 	pp->udev = udev_device_ref(udevice);
+ 	err = pathinfo(pp, hwtable,
+-		       (conf->dry_run == 3)? flag : (flag | DI_BLACKLIST));
++		       (conf->cmd == CMD_REMOVE_WWID)? flag :
++						       (flag | DI_BLACKLIST));
+ 	if (err)
+ 		goto out;
+ 
+@@ -1101,7 +1102,7 @@ get_uid (struct path * pp)
+ 
+ 	memset(pp->wwid, 0, WWID_SIZE);
+ 	value = udev_device_get_property_value(pp->udev, pp->uid_attribute);
+-	if ((!value || strlen(value) == 0) && conf->dry_run == 2)
++	if ((!value || strlen(value) == 0) && conf->cmd == CMD_VALID_PATH)
+ 		value = getenv(pp->uid_attribute);
+ 	if (value && strlen(value)) {
+ 		size_t len = WWID_SIZE;

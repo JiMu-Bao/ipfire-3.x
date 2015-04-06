@@ -7,8 +7,9 @@ name       = multipath-tools
 version    = %{rel_ver}.%{rel_date}
 release    = 1
 
+thisapp    = %{name}-%{rel_date}
 rel_ver    = 0.4.9
-rel_date   = 120613
+rel_date   = 130222
 
 groups     = System/Base
 url        = http://christophe.varoqui.free.fr/
@@ -19,8 +20,6 @@ description
 	This package provides tools to manage multipath devices by
 	instructing the device-mapper multipath kernel module what to do.
 end
-
-thisapp    = %{name}-%{rel_date}
 
 sources    = %{thisapp}.tgz
 
@@ -34,13 +33,10 @@ build
 		readline-devel
 	end
 
-	prepare_cmds
-		# Fix hardcoded install location for udev rules.
-		sed -e "s@lib/udev@usr/lib/udev@g" -i multipath/Makefile
-	end
+	make_build_targets += LIB=%{lib}
 
 	# Install everything to the correct locations.
-	make_install_targets +=\
+	make_install_targets += \
 		bindir=%{sbindir} \
 		syslibdir=%{libdir} \
 		libdir=%{libdir}/multipath \

@@ -1,0 +1,17 @@
+---
+ multipath/main.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: multipath-tools-130222/multipath/main.c
+===================================================================
+--- multipath-tools-130222.orig/multipath/main.c
++++ multipath-tools-130222/multipath/main.c
+@@ -311,7 +311,7 @@ configure (void)
+ 	/*
+ 	 * get a path list
+ 	 */
+-	if (conf->dev)
++	if (conf->dev && !conf->list)
+ 		di_flag = DI_WWID;
+ 
+ 	if (conf->list > 1)

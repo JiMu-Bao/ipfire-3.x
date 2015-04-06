@@ -1,0 +1,101 @@
+---
+ libmultipath/prioritizers/alua.c |    4 ++--
+ multipathd/multipathd.8          |   37 +++++++++++++++++++++++++++++++++----
+ 2 files changed, 35 insertions(+), 6 deletions(-)
+
+Index: multipath-tools-130222/multipathd/multipathd.8
+===================================================================
+--- multipath-tools-130222.orig/multipathd/multipathd.8
++++ multipath-tools-130222/multipathd/multipathd.8
+@@ -42,6 +42,9 @@ format wildcards.
+ .B list|show maps|multipaths
+ Show the multipath devices that the multipathd is monitoring. 
+ .TP
++.B list|show daemon
++Show the current state of the multipathd daemon
++.TP
+ .B list|show maps|multipaths format $format
+ Show the status of all multipath devices that the multipathd is monitoring,
+ using a format string with multipath format wildcards.
+@@ -83,16 +86,16 @@ Add a path to the list of monitored path
+ .B remove|del path $path
+ Stop monitoring a path. $path is as listed in /sys/block (e.g. sda).
+ .TP
+-.B add map $map
++.B add map|multipath $map
+ Add a multipath device to the list of monitored devices. $map can either be a device-mapper device as listed in /sys/block (e.g. dm-0) or it can be the alias for the multipath device (e.g. mpath1) or the uid of the multipath device (e.g. 36005076303ffc56200000000000010aa). 
+ .TP
+-.B remove|del map $map
++.B remove|del map|multipath $map
+ Stop monitoring a multipath device.
+ .TP
+ .B resize map|multipath $map
+ Resizes map $map to the given size
+ .TP 
+-.B switch|switchgroup map $map group $group
++.B switch|switchgroup map|multipath $map group $group
+ Force a multipath device to switch to a specific path group. $group is the path group index, starting with 1.
+ .TP
+ .B reconfigure
+@@ -104,6 +107,13 @@ Sets map $map into suspend state.
+ .B resume map|multipath $map
+ Resumes map $map from suspend state.
+ .TP
++.B reset map|multipath $map
++Reassign existing device-mapper table(s) use use the multipath device, instead
++of its path devices.
++.TP
++.B reload map|multipath $map
++Reload a multipath device.
++.TP
+ .B fail path $path
+ Sets path $path into failed state.
+ .TP
+@@ -120,10 +130,29 @@ Restore queueing on all multipath device
+ Disable queuing on multipathed map $map
+ .TP
+ .B restorequeueing map|multipath $map
+-Restore queuing on multipahted map $map
++Restore queuing on multipathed map $map
++.TP
++.B forcequeueing daemon
++Forces multipathd into queue_without_daemon mode, so that no_path_retry queueing
++will not be disabled when the daemon stops
++.TP
++.B restorequeueing daemon
++Restores configured queue_without_daemon mode
++.TP
++.B map|multipath $map setprstatus
++Enable persistent reservation management on $map
++.TP
++.B map|multipath $map unsetprstatus
++Disable persistent reservation management on $map
++.TP
++.B map|multipath $map getprstatus
++Get the current persistent reservation management status of $map
+ .TP
+ .B quit|exit
+ End interactive session.
++.TP
++.B shutdown
++Stop multipathd.
+ 
+ .SH "SEE ALSO"
+ .BR multipath (8)
+Index: multipath-tools-130222/libmultipath/prioritizers/alua.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/prioritizers/alua.c
++++ multipath-tools-130222/libmultipath/prioritizers/alua.c
+@@ -119,10 +119,10 @@ int getprio (struct path * pp, char * ar
+ 				condlog(0, "%s: couldn't get target port group", pp->dev);
+ 				break;
+ 			case ALUA_PRIO_GETAAS_FAILED:
+-				condlog(0, "%s: couln't get asymmetric access state", pp->dev);
++				condlog(0, "%s: couldn't get asymmetric access state", pp->dev);
+ 				break;
+ 			case ALUA_PRIO_TPGS_FAILED:
+-				condlog(3, "%s: couln't get supported alua states", pp->dev);
++				condlog(3, "%s: couldn't get supported alua states", pp->dev);
+ 				break;
+ 		}
+ 	}

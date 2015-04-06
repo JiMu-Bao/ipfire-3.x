@@ -1,0 +1,85 @@
+---
+ libmultipath/structs_vec.c |   31 +++++++++++++++++++++++++++----
+ multipathd/main.c          |    4 ++++
+ 2 files changed, 31 insertions(+), 4 deletions(-)
+
+Index: multipath-tools-130222/libmultipath/structs_vec.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/structs_vec.c
++++ multipath-tools-130222/libmultipath/structs_vec.c
+@@ -280,12 +280,38 @@ update_multipath_status (struct multipat
+ 	return 0;
+ }
+ 
++void sync_paths(struct multipath *mpp, vector pathvec)
++{
++	struct path *pp;
++	struct pathgroup  *pgp;
++	int found, i, j;
++
++	vector_foreach_slot (mpp->paths, pp, i) {
++		found = 0;
++		vector_foreach_slot(mpp->pg, pgp, j) {
++			if (find_slot(pgp->paths, (void *)pp) != -1) {
++				found = 1;
++				break;
++			}
++		}
++		if (!found) {
++			condlog(3, "%s dropped path %s", mpp->alias, pp->dev);
++			vector_del_slot(mpp->paths, i--);
++			orphan_path(pp);
++		}
++	}
++	update_mpp_paths(mpp, pathvec);
++	vector_foreach_slot (mpp->paths, pp, i)
++		pp->mpp = mpp;
++}
++
+ extern int
+ update_multipath_strings (struct multipath *mpp, vector pathvec)
+ {
+ 	if (!mpp)
+ 		return 1;
+ 
++	update_mpp_paths(mpp, pathvec);
+ 	condlog(4, "%s: %s", mpp->alias, __FUNCTION__);
+ 
+ 	free_multipath_attributes(mpp);
+@@ -294,6 +320,7 @@ update_multipath_strings (struct multipa
+ 
+ 	if (update_multipath_table(mpp, pathvec))
+ 		return 1;
++	sync_paths(mpp, pathvec);
+ 
+ 	if (update_multipath_status(mpp))
+ 		return 1;
+@@ -494,13 +521,9 @@ int update_multipath (struct vectors *ve
+ 		return 2;
+ 	}
+ 
+-	free_pgvec(mpp->pg, KEEP_PATHS);
+-	mpp->pg = NULL;
+-
+ 	if (__setup_multipath(vecs, mpp, reset))
+ 		return 1; /* mpp freed in setup_multipath */
+ 
+-	adopt_paths(vecs->pathvec, mpp, 0);
+ 	/*
+ 	 * compare checkers states with DM states
+ 	 */
+Index: multipath-tools-130222/multipathd/main.c
+===================================================================
+--- multipath-tools-130222.orig/multipathd/main.c
++++ multipath-tools-130222/multipathd/main.c
+@@ -1152,6 +1152,10 @@ check_path (struct vectors * vecs, struc
+ 			pp->dev);
+ 		pp->dmstate = PSTATE_UNDEF;
+ 	}
++	/* if update_multipath_strings orphaned the path, quit early */
++	if (!pp->mpp)
++		return;
++
+ 	pp->chkrstate = newstate;
+ 	if (newstate != pp->state) {
+ 		int oldstate = pp->state;

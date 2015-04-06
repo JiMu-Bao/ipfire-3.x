@@ -1,0 +1,158 @@
+---
+ libmultipath/config.c      |    1 +
+ libmultipath/config.h      |    1 +
+ libmultipath/dict.c        |   33 +++++++++++++++++++++++++++++++++
+ libmultipath/discovery.c   |    8 ++++++--
+ multipath.conf.annotated   |   10 ++++++++++
+ multipath/multipath.conf.5 |    9 +++++++++
+ 6 files changed, 60 insertions(+), 2 deletions(-)
+
+Index: multipath-tools-130222/libmultipath/config.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/config.c
++++ multipath-tools-130222/libmultipath/config.c
+@@ -556,6 +556,7 @@ load_config (char * file, struct udev *u
+ 	conf->retain_hwhandler = DEFAULT_RETAIN_HWHANDLER;
+ 	conf->detect_prio = DEFAULT_DETECT_PRIO;
+ 	conf->hw_strmatch = 0;
++	conf->force_sync = 0;
+ 
+ 	/*
+ 	 * preload default hwtable
+Index: multipath-tools-130222/libmultipath/config.h
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/config.h
++++ multipath-tools-130222/libmultipath/config.h
+@@ -115,6 +115,7 @@ struct config {
+ 	int reassign_maps;
+ 	int retain_hwhandler;
+ 	int detect_prio;
++	int force_sync;
+ 	unsigned int version[3];
+ 
+ 	char * dev;
+Index: multipath-tools-130222/libmultipath/dict.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/dict.c
++++ multipath-tools-130222/libmultipath/dict.c
+@@ -712,6 +712,29 @@ def_hw_strmatch_handler(vector strvec)
+ 	return 0;
+ }
+ 
++static int
++def_force_sync_handler(vector strvec)
++{
++	char * buff;
++
++	buff = set_value(strvec);
++
++	if (!buff)
++		return 1;
++
++	if ((strlen(buff) == 2 && !strcmp(buff, "no")) ||
++	    (strlen(buff) == 1 && !strcmp(buff, "0")))
++		conf->force_sync = 0;
++	else if ((strlen(buff) == 3 && !strcmp(buff, "yes")) ||
++		 (strlen(buff) == 1 && !strcmp(buff, "1")))
++		conf->force_sync = 1;
++	else
++		conf->force_sync = 0;
++
++	FREE(buff);
++	return 0;
++}
++
+ /*
+  * blacklist block handlers
+  */
+@@ -2822,6 +2845,15 @@ snprint_def_hw_strmatch(char * buff, int
+ }
+ 
+ static int
++snprint_def_force_sync(char * buff, int len, void * data)
++{
++	if (conf->force_sync)
++		return snprintf(buff, len, "yes");
++	else
++		return snprintf(buff, len, "no");
++}
++
++static int
+ snprint_ble_simple (char * buff, int len, void * data)
+ {
+ 	struct blentry * ble = (struct blentry *)data;
+@@ -2889,6 +2921,7 @@ init_keywords(void)
+ 	install_keyword("retain_attached_hw_handler", &def_retain_hwhandler_handler, &snprint_def_retain_hwhandler_handler);
+ 	install_keyword("detect_prio", &def_detect_prio_handler, &snprint_def_detect_prio);
+ 	install_keyword("hw_str_match", &def_hw_strmatch_handler, &snprint_def_hw_strmatch);
++	install_keyword("force_sync", &def_force_sync_handler, &snprint_def_force_sync);
+ 	__deprecated install_keyword("default_selector", &def_selector_handler, NULL);
+ 	__deprecated install_keyword("default_path_grouping_policy", &def_pgpolicy_handler, NULL);
+ 	__deprecated install_keyword("default_uid_attribute", &def_uid_attribute_handler, NULL);
+Index: multipath-tools-130222/libmultipath/discovery.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/discovery.c
++++ multipath-tools-130222/libmultipath/discovery.c
+@@ -952,8 +952,12 @@ get_state (struct path * pp, int daemon)
+ 		}
+ 	}
+ 	checker_clear_message(c);
+-	if (daemon)
+-		checker_set_async(c);
++	if (daemon) {
++		if (conf->force_sync == 0)
++			checker_set_async(c);
++		else
++			checker_set_sync(c);
++	}
+ 	if (!conf->checker_timeout &&
+ 	    (pp->bus != SYSFS_BUS_SCSI ||
+ 	     sysfs_get_timeout(pp, &(c->timeout))))
+Index: multipath-tools-130222/multipath.conf.annotated
+===================================================================
+--- multipath-tools-130222.orig/multipath.conf.annotated
++++ multipath-tools-130222/multipath.conf.annotated
+@@ -214,6 +214,8 @@
+ #	# values  : n > 0
+ #	# default : determined by the OS
+ #	dev_loss_tmo 600
++#
++#	#
+ #	# name    : bindings_file
+ #	# scope   : multipath
+ #	# desc    : The location of the bindings file that is used with
+@@ -222,6 +224,14 @@
+ #	# default : "/var/lib/multipath/bindings"
+ #	bindings_file "/etc/multipath_bindings"
+ #
++#	#
++#	# name    : force_sync
++#	# scope   : multipathd
++#	# desc    : If set to yes, multipath will run all of the checkers in
++#	#           sync mode, even if the checker has an async mode.
++#	# values  : yes|no
++#	# default : no
++#	force_sync yes
+ #}
+ #	
+ ##
+Index: multipath-tools-130222/multipath/multipath.conf.5
+===================================================================
+--- multipath-tools-130222.orig/multipath/multipath.conf.5
++++ multipath-tools-130222/multipath/multipath.conf.5
+@@ -411,6 +411,15 @@ modify an existing config, or create a n
+ , the user device configs will be regular expression matched against the
+ built-in configs instead. Default is
+ .I no
++.TP
++.B force_sync
++If set to
++.I yes
++, multipathd will call the path checkers in sync mode only.  This means that
++only one checker will run at a time.  This is useful in the case where many
++multipathd checkers running in parallel causes significant CPU pressure. The
++Default is
++.I no
+ .
+ .SH "blacklist section"
+ The

@@ -1,0 +1,33 @@
+---
+ libmultipath/print.c |   11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+Index: multipath-tools-130222/libmultipath/print.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/print.c
++++ multipath-tools-130222/libmultipath/print.c
+@@ -510,6 +510,16 @@ snprint_tgt_wwnn (char * buff, size_t le
+ }
+ 
+ static int
++snprint_host_adapter (char * buff, size_t len, struct path * pp)
++{
++	char adapter[SLOT_NAME_SIZE];
++
++	if (sysfs_get_host_adapter_name(pp, adapter))
++		return snprintf(buff, len, "[undef]");
++	return snprint_str(buff, len, adapter);
++}
++
++static int
+ snprint_path_checker (char * buff, size_t len, struct path * pp)
+ {
+ 	struct checker * c = &pp->checker;
+@@ -557,6 +567,7 @@ struct path_data pd[] = {
+ 	{'n', "target WWNN",   0, snprint_tgt_wwnn},
+ 	{'R', "host WWPN",     0, snprint_host_wwpn},
+ 	{'r', "target WWPN",   0, snprint_tgt_wwpn},
++	{'a', "host adapter",  0, snprint_host_adapter},
+ 	{0, NULL, 0 , NULL}
+ };
+ 

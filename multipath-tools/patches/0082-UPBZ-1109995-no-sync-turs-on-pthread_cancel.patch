@@ -1,0 +1,32 @@
+---
+ libmultipath/checkers/tur.c |    9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
+
+Index: multipath-tools-130222/libmultipath/checkers/tur.c
+===================================================================
+--- multipath-tools-130222.orig/libmultipath/checkers/tur.c
++++ multipath-tools-130222/libmultipath/checkers/tur.c
+@@ -409,7 +409,6 @@ libcheck_check (struct checker * c)
+ 				ct->running = 0;
+ 				MSG(c, MSG_TUR_TIMEOUT);
+ 				tur_status = PATH_DOWN;
+-				ct->state = PATH_UNCHECKED;
+ 			} else {
+ 				condlog(3, "%d:%d: tur checker not finished",
+ 					TUR_DEVT(ct));
+@@ -426,12 +425,10 @@ libcheck_check (struct checker * c)
+ 		pthread_mutex_unlock(&ct->lock);
+ 	} else {
+ 		if (ct->thread) {
+-			/* pthread cancel failed. continue in sync mode */
+ 			pthread_mutex_unlock(&ct->lock);
+-			condlog(3, "%d:%d: tur thread not responding, "
+-				"using sync mode", TUR_DEVT(ct));
+-			return tur_check(c->fd, c->timeout, c->message,
+-					 ct->wwid);
++			condlog(3, "%d:%d: tur thread not responding, ",
++				TUR_DEVT(ct));
++			return PATH_DOWN;
+ 		}
+ 		/* Start new TUR checker */
+ 		ct->state = PATH_UNCHECKED;
