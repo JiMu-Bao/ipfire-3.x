@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = fontconfig
-version    = 2.7.1
+version    = 2.11.93
 release    = 1
 
 groups     = System/Graphics
@@ -18,7 +18,7 @@ description
 	applications.
 end
 
-source_dl  =
+source_dl  = http://www.freedesktop.org/software/fontconfig/release/
 
 build
 	requires
@@ -28,14 +28,31 @@ build
 	end
 
 	configure_options += \
-		--sysconfdir=/etc \
-		--localstatedir=/var \
 		--enable-libxml2 \
 		--with-add-fonts=/usr/share/X11/fonts/Type1,/usr/share/X11/fonts/TTF,/usr/local/share/fonts
+
+	test
+		make check
+	end
+
+	install_cmds
+		for i in $(find %{BUILDROOT}%{sysconfdir}/fonts/conf.d -type l); do
+			ln -svf --relative %{BUILDROOT}$(readlink -m ${i}) ${i}
+		done
+	end
 end
 
 packages
 	package %{name}
+		postinst
+			umask 0022
+
+			mkdir -p %{localstatedir}/cache/fontconfig
+
+			if [ -x "%{bindir}/fc-cache" ]; then
+				HOME=/root %{bindir}/fc-cache -f
+			fi
+		end
 	end
 
 	package %{name}-devel
