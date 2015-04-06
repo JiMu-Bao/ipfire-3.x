@@ -5,7 +5,7 @@
 
 name       = diffutils
 version    = 3.3
-release    = 1
+release    = 2
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/diffutils/diffutils.html
