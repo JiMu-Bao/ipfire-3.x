@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = pinentry
-version    = 0.7.6
+version    = 0.9.0
 release    = 1
 
 groups     = System/Libraries
@@ -19,7 +19,8 @@ description
 	curses (text) based version of the PIN entry dialog.
 end
 
-source_dl  =
+source_dl  = ftp://ftp.gnupg.org/gcrypt/pinentry/
+sources    = %{thisapp}.tar.bz2
 
 build
 	requires
