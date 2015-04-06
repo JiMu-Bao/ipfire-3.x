@@ -5,7 +5,7 @@
 
 name       = sysvinit
 version    = 2.86
-release    = 6
+release    = 7
 
 groups     = System/Base
 url        = https://alioth.debian.org/projects/pkg-sysvinit/
@@ -34,11 +34,9 @@ build
 
 		# Install binaries.
 		install -m 0755 src/killall5 %{BUILDROOT}%{sbindir}
-		ln -sf ../sbin/killall5 %{BUILDROOT}%{bindir}/pidof
 
 		# Install man-pages.
 		install -m 0664 man/killall5.8 %{BUILDROOT}%{mandir}/man8
-		install -m 0664 man/pidof.8 %{BUILDROOT}%{mandir}/man8
 	end
 end
 
@@ -47,7 +45,6 @@ packages
 		groups += Base
 
 		provides
-			/bin/pidof
 			/sbin/killall5
 		end
 	end
