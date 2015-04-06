@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = iputils
-version    = s20071127
-release    = 4
+version    = s20140519
+release    = 1
 
 groups     = Networking/Tools
 url        = http://www.skbuff.net/iputils
@@ -19,27 +19,14 @@ description
 	the target machine is alive and receiving network traffic.
 end
 
-source_dl  = http://www.skbuff.net/iputils/
-sources    = %{thisapp}.tar.bz2
-
-patches    = %{thisapp}-addrcache.patch
-patches   += %{thisapp}-arping-infiniband.patch
-patches   += %{thisapp}-arping_timeout.patch
-patches   += %{thisapp}-countermeasures.patch
-patches   += %{thisapp}-idn.patch
-patches   += %{thisapp}-open-max.patch
-patches   += %{thisapp}-ping-subint.patch
-patches   += %{thisapp}-ping_cleanup.patch
-patches   += %{thisapp}-rh.patch
-patches   += %{thisapp}-traffic_class.patch
-patches   += %{thisapp}-warnings.patch
-patches   += %{thisapp}-output.patch
+source_dl  = https://github.com/iputils/iputils/archive/%{version}.tar.gz#/
 
 build
 	requires
 		docbook-utils
 		libcap-devel
 		libidn-devel
+		openssl-devel
 	end
 
 	# Generate manpages with docbook.
@@ -55,7 +42,6 @@ build
 		install -cp arping           %{BUILDROOT}%{sbindir}
 		install -cp ping             %{BUILDROOT}%{bindir}
 		install -cp ping6            %{BUILDROOT}%{bindir}
-		install -cp rdisc            %{BUILDROOT}%{sbindir}
 		install -cp tracepath        %{BUILDROOT}%{bindir}
 		install -cp tracepath6       %{BUILDROOT}%{bindir}
 
@@ -85,7 +71,6 @@ packages
 			/bin/ping
 			/bin/ping6
 			/sbin/arping
-			/sbin/rdisc
 		end
 	end
 
