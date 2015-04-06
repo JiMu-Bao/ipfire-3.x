@@ -1,0 +1,47 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = gnome-doc-utils
+ver_major  = 0.20
+ver_minor  = 10
+version    = %{ver_major}.%{ver_minor}
+release    = 1
+
+groups     = Development/Tools
+url        = http://www.gnome.org/
+license    = GPLv2+ and LGPLv2+ and GFDL
+summary    = Documentation utilities for GNOME.
+
+description
+	gnome-doc-utils is a collection of documentation utilities for the GNOME
+	project. Notably, it contains utilities for building documentation and
+	all auxiliary files in your source tree.
+end
+
+source_dl  = http://download.gnome.org/sources/gnome-doc-utils/%{ver_major}/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		perl(XML::Parser)
+		intltool >= 0.35.0
+		libxml2-devel >= 2.6.12
+		libxslt-devel >= 1.1.8
+	end
+end
+
+packages
+	package %{name}
+		requires
+			docbook-dtds
+			libxml2 >= 2.6.12
+			libxslt >= 1.1.8
+		end
+	end
+
+	package %{name}-devel
+		template DEVEL
+	end
+end
