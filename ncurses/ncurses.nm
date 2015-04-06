@@ -6,7 +6,7 @@
 name       = ncurses
 version    = 5.9
 revision   = 20150117
-release    = 10.%{revision}
+release    = 11.%{revision}
 thisapp    = %{name}-%{version}-%{revision}
 
 groups     = System/Base
@@ -71,6 +71,12 @@ build
 		chmod -v 755 %{BUILDROOT}%{libdir}/lib*.so.*.*
 
 		mkdir -pv %{BUILDROOT}/etc/terminfo
+
+		mkdir %{BUILDROOT}%{includedir}/ncurses{,w}
+		for l in %{BUILDROOT}%{includedir}/*.h; do
+			ln -s ../$(basename $l) %{BUILDROOT}%{includedir}/ncurses
+			ln -s ../$(basename $l) %{BUILDROOT}%{includedir}/ncursesw
+		done
 
 		# don't require -ltinfo when linking with --no-add-needed
 		for l in %{BUILDROOT}%{libdir}/libncurses{,w}.so; do
