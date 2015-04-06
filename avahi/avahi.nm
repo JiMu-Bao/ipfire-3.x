@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = avahi
-version    = 0.6.30
-release    = 4
+version    = 0.6.31
+release    = 1
 
 groups     = Networking/Zeroconf
 url        = http://avahi.org/
@@ -26,6 +26,7 @@ source_dl  = http://avahi.org/download/
 
 build
 	requires
+		automake
 		dbus-devel
 		dbus-glib-devel
 		expat-devel
@@ -39,6 +40,13 @@ build
 		python-devel
 		python-dbus
 		systemd-units
+	end
+
+	prepare_cmds
+		# for aarch64
+		for i in $(find . -name config.guess -or -name config.sub); do
+			cp -vf %{datadir}/automake-*/config.{guess,sub} $(dirname ${i})
+		done
 	end
 
 	configure_options += \
