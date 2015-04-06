@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = libaio
-version    = 0.3.109
-release    = 3
+version    = 0.3.110
+release    = 1
 
 groups     = System/Libraries
 url        = ftp://ftp.kernel.org/pub/linux/libs/aio/
@@ -21,8 +21,7 @@ description
 	applications which require the Linux-native async I/O API.
 end
 
-source_dl  =
-sources    = %{thisapp}.tar.bz2
+source_dl  = https://fedorahosted.org/releases/l/i/libaio/
 
 build
 	requires
