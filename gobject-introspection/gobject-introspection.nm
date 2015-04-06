@@ -5,7 +5,7 @@
 
 name       = gobject-introspection
 version    = %{major_ver}.%{minor_ver}
-release    = 1
+release    = 2
 
 major_ver  = 1.48
 minor_ver  = 0
@@ -27,6 +27,7 @@ sources    = %{thisapp}.tar.xz
 
 build
 	requires
+		automake
 		bison
 		cairo-devel
 		flex
