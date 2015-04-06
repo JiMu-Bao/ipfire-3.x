@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = lcms2
-version    = 2.6
+version    = 2.7
 release    = 1
 
 groups     = System/Tools
@@ -22,9 +22,17 @@ source_dl  = http://www.littlecms.com/
 
 build
 	requires
+		automake
 		libjpeg-devel
 		libtiff-devel
 		zlib-devel
+	end
+
+	prepare_cmds
+		# for aarch64
+		for i in $(find . -name config.guess -or -name config.sub); do
+			cp -vf %{datadir}/automake-*/config.{guess,sub} $(dirname ${i})
+		done
 	end
 
 	configure_options +=\
