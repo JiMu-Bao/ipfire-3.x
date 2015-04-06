@@ -5,8 +5,8 @@
 
 name       = pango
 version    = %{ver_major}.%{ver_minor}
-ver_major  = 1.32
-ver_minor  = 5
+ver_major  = 1.36
+ver_minor  = 8
 release    = 1
 
 groups     = System/Libraries
