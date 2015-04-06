@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = perl-DBI
-version    = 1.618
+version    = 1.633
 release    = 1
 thisapp    = DBI-%{version}
 
@@ -37,7 +37,8 @@ build
 		make test
 	end
 
-	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+	make_install_targets = \
+		pure_install DESTDIR=%{BUILDROOT}
 end
 
 packages
@@ -48,7 +49,7 @@ packages
 		end
 
 		requires
-			perl
+			perl(:MODULE_COMPAT_%{perl_version})
 		end
 	end
 

@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = perl-BDB
-version    = 1.9
+version    = 1.91
 release    = 1
 thisapp    = BDB-%{version}
 
@@ -36,13 +36,14 @@ build
 		make test
 	end
 
-	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+	make_install_targets = \
+		pure_install DESTDIR=%{BUILDROOT}
 end
 
 packages
 	package %{name}
 		requires
-			perl
+			perl(:MODULE_COMPAT_%{perl_version})
 		end
 	end
 

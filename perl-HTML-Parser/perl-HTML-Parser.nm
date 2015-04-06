@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = perl-HTML-Parser
-version    = 3.68
+version    = 3.71
 release    = 1
 
 groups     = Development/Libratries
@@ -18,7 +18,7 @@ description
 	HTML::LinkExtor, HTML::PullParser, and HTML::TokeParser modules.
 end
 
-source_dl  =
+source_dl  = http://search.cpan.org/CPAN/authors/id/G/GA/GAAS/
 
 thisapp    = HTML-Parser-%{version}
 
@@ -42,6 +42,10 @@ end
 
 packages
 	package %{name}
+		requires
+			perl(:MODULE_COMPAT_%{perl_version})
+		end
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO

@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = perl-WWW-Curl
-version    = 4.15
-release    = 2
+version    = 4.17
+release    = 1
 thisapp    = WWW-Curl-%{version}
 
 groups     = Development/Libraries
@@ -37,7 +37,7 @@ end
 packages
 	package %{name}
 		requires
-			perl
+			perl(:MODULE_COMPAT_%{perl_version})
 		end
 	end
 

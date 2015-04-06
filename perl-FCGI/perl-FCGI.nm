@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = perl-FCGI
-version    = 0.74
-release    = 2
+version    = 0.77
+release    = 1
 thisapp    = FCGI-%{version}
 
 groups     = Development/Libraries
@@ -17,7 +17,7 @@ description
 	FastCGI perl bindings.
 end
 
-source_dl  = http://search.cpan.org/CPAN/authors/id/F/FL/FLORA/
+source_dl  = http://search.cpan.org/CPAN/authors/id/E/ET/ETHER/
 
 build
 	requires
@@ -34,13 +34,14 @@ build
 		make test
 	end
 
-	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+	make_install_targets = \
+		pure_install DESTDIR=%{BUILDROOT}
 end
 
 packages
 	package %{name}
 		requires
-			perl
+			perl(:MODULE_COMPAT_%{perl_version})
 		end
 	end
 

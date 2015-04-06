@@ -19,7 +19,7 @@ description
 	HTML parsing operations, such as tag and entity names.
 end
 
-source_dl  =
+source_dl  = http://search.cpan.org/CPAN/authors/id/P/PE/PETDANCE/
 
 build
 	requires

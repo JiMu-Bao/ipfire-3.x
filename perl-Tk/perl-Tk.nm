@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = perl-Tk
-version    = 804.029
-release    = 2
+version    = 804.033
+release    = 1
 thisapp    = Tk-%{version}
 
 groups     = Development/Libraries
@@ -56,6 +56,10 @@ packages
 			perl(Tk::LabRadio) = 4.004
 			perl(Tk::TextReindex)
 			perl(Tk) = %{version}
+		end
+
+		requires
+			perl(:MODULE_COMPAT_%{perl_version})
 		end
 	end
 

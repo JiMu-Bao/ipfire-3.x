@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = perl-IO-AIO
-version    = 4.15
+version    = 4.32
 release    = 1
 thisapp    = IO-AIO-%{version}
 
@@ -37,7 +37,8 @@ build
 		make test
 	end
 
-	make_install_targets = pure_install DESTDIR=%{BUILDROOT}
+	make_install_targets = \
+		pure_install DESTDIR=%{BUILDROOT}
 
 	install_cmds
 		# Remove script we don't want packaged
@@ -48,7 +49,7 @@ end
 packages
 	package %{name}
 		requires
-			perl
+			perl(:MODULE_COMPAT_%{perl_version})
 		end
 	end
 
