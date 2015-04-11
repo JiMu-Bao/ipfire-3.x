@@ -3,9 +3,10 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = nettle
-version    = 3.1
+name       = compat-nettle
+version    = 2.7.1
 release    = 1
+thisapp    = nettle-%{version}
 
 groups     = System/Libraries
 url        = http://www.lysator.liu.se/~nisse/nettle/
@@ -30,40 +31,31 @@ build
 	configure_options += \
 		--enable-shared
 
-	enable_fat = 0
-
-	# Does not work. Binaries are immediately crashing
-	#if "%{DISTRO_ARCH}" == "x86_64"
-	#	enable_fat = 1
-	#end
-
-	if "%{DISTRO_PLATFORM}" == "arm"
-		enable_fat = 1
-	end
-
-	if "%{enable_fat}" == "1"
-		configure_options += \
-			--enable-fat
-	end
-
 	test
 		make check
 	end
 
-	install_cmds
-		# Fix library permissions.
-		chmod 755 %{BUILDROOT}%{libdir}/libhogweed.so.*
-		chmod 755 %{BUILDROOT}%{libdir}/libnettle.so.*
+	install
+		# Install just the library and no headers.
+		mkdir -pv %{BUILDROOT}%{libdir}
+
+		install -m 755 libhogweed.so %{BUILDROOT}%{libdir}/libhogweed.so.2.5
+		ln -svf libhogweed.so.2.5 %{BUILDROOT}%{libdir}/libhogweed.so.2
+
+		install -m 755 libnettle.so %{BUILDROOT}%{libdir}/libnettle.so.4.7
+		ln -svf libnettle.so.4.7 %{BUILDROOT}%{libdir}/libnettle.so.4
 	end
 end
 
 packages
 	package %{name}
+		provides
+			nettle = %{thisver}
+		end
 
-	package %{name}-devel
-		template DEVEL
-
-		requires += gmp-devel
+		obsoletes
+			nettle <= %{thisver}
+		end
 	end
 
 	package %{name}-debuginfo
