@@ -5,7 +5,7 @@
 
 name       = tmux
 version    = 1.9a
-release    = 1
+release    = 2
 
 groups     = Application/System
 url        = http://sourceforge.net/projects/tmux
