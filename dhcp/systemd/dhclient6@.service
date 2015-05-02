@@ -1,0 +1,19 @@
+[Unit]
+Description=DHCP client daemon for IPv6 on %I
+
+[Service]
+Restart=on-failure
+ExecStartPre=/usr/lib/network/dhclient-helper start %I ipv6
+ExecStart=/usr/sbin/dhclient -d %I -6 -P -N \
+	-cf /run/network/dhclient/%I/dhclient6.conf \
+	-lf /var/lib/dhclient/dhclient6-%I.leases \
+	-pf /run/network/dhclient/%I/dhclient6.pid
+ExecStop=/usr/lib/network/dhclient-helper stop %I ipv6
+
+# This could be used if you want to release a lease.
+#ExecStop=/usr/sbin/dhclient -d -r %I -6 \
+#	-cf /run/network/dhclient/%I/dhclient6.conf \
+#	-lf /var/lib/dhclient/dhclient6-%I.leases \
+#	-pf /run/network/dhclient/%I/dhclient6.pid
+
+UtmpIdentifier=%I
