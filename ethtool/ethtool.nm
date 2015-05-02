@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = ethtool
-version    = 2.6.34
-release    = 3
+version    = 3.18
+release    = 1
 
 groups     = Applications/System
-url        = http://sourceforge.net/projects/gkernel/
+url        = https://www.kernel.org/pub/software/network/ethtool/
 license    = GPLv2
 summary    = Ethernet settings tool for PCI ethernet cards.
 
@@ -18,7 +18,7 @@ description
 	network devices, especially of ethernet devices.
 end
 
-source_dl  =
+source_dl  = https://www.kernel.org/pub/software/network/ethtool/
 
 packages
 	package %{name}
