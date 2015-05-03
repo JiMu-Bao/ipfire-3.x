@@ -5,7 +5,7 @@
 
 name       = dhcp
 version    = 4.2.5
-release    = 1
+release    = 2
 
 groups     = Networking/Daemons
 url        = http://isc.org/products/DHCP/
