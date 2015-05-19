@@ -1,0 +1,36 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = lzip
+version    = 1.16
+release    = 1
+
+groups     = Application/File
+url        = http://www.nongnu.org/lzip/lzip.html
+license    = GPLv3+
+summary    = LZMA compressor with integrity checking
+
+description
+	Lzip compresses data using LZMA (Lempel-Ziv-Markov chain-Algorithm). It
+	supports integrity checking using CRC (Cyclic Redundancy Check). To archive
+	multiple files, tar can be used with lzip. Please note, that the lzip file
+	format (.lz) is not compatible with the lzma file format (.lzma).
+end
+
+source_dl  = http://download.savannah.gnu.org/releases/lzip/
+
+build
+	make_install_target += install-man
+end
+
+packages
+	package %{name}
+		groups += Build
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
