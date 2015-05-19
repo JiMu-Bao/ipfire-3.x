@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = ed
-version    = 1.5
-release    = 4
+version    = 1.11
+release    = 1
 
 groups     = Application/Text
 url        = http://www.gnu.org/software/ed/
@@ -19,10 +19,13 @@ description
 	(emacs and vi, for example).
 end
 
-source_dl  =
+source_dl  = http://ftpmirror.gnu.org/ed/
+sources    = %{thisapp}.tar.lz
 
 build
-	make_build_target = CFLAGS="%{CFLAGS}"
+	requires
+		lzip
+	end
 end
 
 packages
