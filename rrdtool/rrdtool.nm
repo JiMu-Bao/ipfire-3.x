@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = rrdtool
-version    = 1.4.9
+version    = 1.5.2
 release    = 1
 
 groups     = Applications/Databases
@@ -25,14 +25,18 @@ source_dl  = http://oss.oetiker.ch/rrdtool/pub/
 build
 	requires
 		cairo-devel
+		freetype-devel
 		gcc-c++
 		gettext
 		groff
 		libtool
 		libxml2-devel
+		openssl-devel
 		pango-devel
 		pkg-config
 		python-devel
+		systemd-devel
+		zlib-devel
 	end
 
 	configure_options += \
@@ -42,7 +46,7 @@ build
 		--disable-ruby \
 		--disable-static \
 		--enable-python \
-		--enable-latin2
+		--with-pic
 
 	prepare_cmds
 		# Remove rpath
@@ -60,9 +64,13 @@ end
 
 packages
 	package %{name}
+		requires = %{name}-libs = %{thisver}
+	end
 
 	package %{name}-libs
 		template LIBS
+
+		requires += dejavu-fonts-sans-mono-fonts
 	end
 
 	package python-%{name}
