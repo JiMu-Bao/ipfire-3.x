@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = collecty
-version    = 0.0.2
+version    = 002
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -23,18 +23,55 @@ source_dl  = http://source.ipfire.org/releases/collecty/
 
 build
 	requires
-		gettext
+		autoconf
+		automake
+		docbook-utils
+		docbook-xsl
+		gettext-devel
+		intltool
+		libtool-devel
+		libxslt
 		python
+		systemd-devel
 	end
 
-	install
-		mkdir -pv %{BUILDROOT}%{bindir}
-		make install DESTDIR=%{BUILDROOT}
+	prepare_cmds
+		[ -e "configure" ] || ./autogen.sh
 	end
 end
 
 packages
 	package %{name}
 		groups += Base
+
+		requires
+			pygobject2
+			python-dbus
+			python-rrdtool
+		end
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+
+			# The collecty service should be started on default.
+			systemctl enable collecty.service > /dev/null 2>&1 || :
+		end
+
+		# Disable the service that is to be removed and stop it if it is still running.
+		script preun
+			systemctl --no-reload disable collecty.service >/dev/null 2>&1 || :
+			systemctl stop collecty.service >/dev/null 2>&1 || :
+		end
+
+		# Just tell systemd that unitfiles have been removed.
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		# Try to restart the service if it is running.
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart collecty.service >/dev/null 2>&1 || :
+		end
 	end
 end
