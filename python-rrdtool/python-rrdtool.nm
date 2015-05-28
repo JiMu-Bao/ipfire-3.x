@@ -1,0 +1,44 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = python-rrdtool
+version    = 0.1.1
+release    = 1
+thisapp    = rrdtool-%{version}
+
+groups     = System/Libraries
+url        = https://github.com/commx/python-rrdtool
+license    = LGPLv3+
+summary    = Python bindings for rrdtool
+
+description
+	Python bindings for RRDtool with a native C extension and an
+	object-oriented way to work with Round Robin Databases.
+end
+
+source_dl  = https://pypi.python.org/packages/source/r/rrdtool/
+
+build
+	requires
+		python3-devel
+		rrdtool-devel
+	end
+
+	build
+		python3 setup.py build
+	end
+
+	install
+		python3 setup.py install --root=%{BUILDROOT}
+	end
+end
+
+packages
+	package python3-rrdtool
+
+	package python3-rrdtool-debuginfo
+		template DEBUGINFO
+	end
+end
