@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = kernel
-version    = 3.19.1
+version    = 4.0.4
 release    = 1
 thisapp    = linux-%{version}
 
@@ -25,7 +25,7 @@ end
 localversion = %{release}.%{DISTRO_DISTTAG}.%{DISTRO_ARCH}
 fullver      = %{version}-%{localversion}
 
-source_dl    = http://www.kernel.org/pub/linux/kernel/v3.x/
+source_dl    = http://www.kernel.org/pub/linux/kernel/v4.x/
 sources      = %{thisapp}.tar.xz
 
 build
