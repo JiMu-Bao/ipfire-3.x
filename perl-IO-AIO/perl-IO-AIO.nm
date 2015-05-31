@@ -5,7 +5,7 @@
 
 name       = perl-IO-AIO
 version    = 4.32
-release    = 1
+release    = 1.1
 thisapp    = IO-AIO-%{version}
 
 groups     = Development/Libraries
@@ -26,6 +26,7 @@ build
 		perl(ExtUtils::ParseXS)
 		perl(Carp)
 		perl(common::sense)
+		pakfire >= 0.9.26-3.1
 	end
 
 	build

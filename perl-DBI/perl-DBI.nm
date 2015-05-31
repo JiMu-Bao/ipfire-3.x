@@ -5,7 +5,7 @@
 
 name       = perl-DBI
 version    = 1.633
-release    = 1
+release    = 1.1
 thisapp    = DBI-%{version}
 
 groups     = Development/Libraries
@@ -26,6 +26,7 @@ build
 		perl(ExtUtils::ParseXS)
 		perl(Carp)
 		perl(Test::Simple)
+		pakfire >= 0.9.26-3.1
 	end
 
 	build

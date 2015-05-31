@@ -5,7 +5,7 @@
 
 name       = perl-HTML-Parser
 version    = 3.71
-release    = 1
+release    = 1.1
 
 groups     = Development/Libratries
 url        = http://search.cpan.org/dist/HTML-Parser/
@@ -28,6 +28,7 @@ build
 		perl-devel
 		perl(HTML::Tagset)
 		perl(Test::More)
+		pakfire >= 0.9.26-3.1
 	end
 
 	build

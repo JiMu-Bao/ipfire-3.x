@@ -5,7 +5,7 @@
 
 name       = perl-XML-Parser
 version    = 2.44
-release    = 1
+release    = 1.1
 thisapp    = XML-Parser-%{version}
 
 groups     = Development/Libraries
@@ -24,6 +24,7 @@ source_dl  = http://search.cpan.org/CPAN/authors/id/T/TO/TODDR/
 build
 	requires
 		expat-devel
+		pakfire >= 0.9.26-3.1
 		perl-core
 		perl-devel
 	end
