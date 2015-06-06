@@ -5,7 +5,7 @@
 
 name       = iproute2
 version    = 3.14.0
-release    = 1
+release    = 2
 
 groups     = Networking/Tools
 url        = http://www.linuxfoundation.org/en/Net:Iproute2
@@ -28,7 +28,6 @@ build
 		libdb-devel
 		libnl-devel
 		linux-atm-devel >= 2.5.1
-		iptables-devel >= 1.4.19
 	end
 
 	prepare_cmds
@@ -60,10 +59,7 @@ build
 		ln -svf lnstat %{BUILDROOT}%{sbindir}/rtstat
 
 		# Install libs.
-		for lib in tc/q_atm.so tc/m_xt.so; do
-			install -v -m 755 ${lib} %{BUILDROOT}%{libdir}/tc
-		done
-		ln -svf m_xt.so %{BUILDROOT}%{libdir}/tc/m_ipt.so
+		install -v -m 755 tc/q_atm.so %{BUILDROOT}%{libdir}/tc
 
 		# libnetlink
 		install -v -m 644 include/libnetlink.h %{BUILDROOT}%{includedir}
