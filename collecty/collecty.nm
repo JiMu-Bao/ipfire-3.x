@@ -5,7 +5,7 @@
 
 name       = collecty
 version    = 003
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Monitoring
@@ -76,5 +76,9 @@ packages
 			systemctl daemon-reload >/dev/null 2>&1 || :
 			systemctl try-restart collecty.service >/dev/null 2>&1 || :
 		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
 	end
 end
