@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = collecty
-version    = 002
+version    = 003
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -29,9 +29,12 @@ build
 		docbook-xsl
 		gettext-devel
 		intltool
+		libatasmart-devel
 		libtool-devel
 		libxslt
-		python
+		lm-sensors-devel
+		python3-devel
+		python3-rrdtool
 		systemd-devel
 	end
 
@@ -45,9 +48,9 @@ packages
 		groups += Base
 
 		requires
-			pygobject2
-			python-dbus
-			python-rrdtool
+			python3-dbus
+			python3-gobject3
+			python3-rrdtool
 		end
 
 		script postin
