@@ -5,7 +5,7 @@
 
 name       = perl-WWW-Curl
 version    = 4.17
-release    = 1
+release    = 1.1
 thisapp    = WWW-Curl-%{version}
 
 groups     = Development/Libraries
@@ -24,6 +24,7 @@ build
 		perl(ExtUtils::MakeMaker)
 		perl(ExtUtils::ParseXS)
 		libcurl-devel
+		pakfire >= 0.9.26-3.1
 	end
 
 	build

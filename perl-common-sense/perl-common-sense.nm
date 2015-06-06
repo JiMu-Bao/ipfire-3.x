@@ -5,7 +5,7 @@
 
 name       = perl-common-sense
 version    = 3.73
-release    = 1
+release    = 1.1
 arch       = noarch
 thisapp    = common-sense-%{version}
 
@@ -30,6 +30,7 @@ build
 	requires
 		perl(ExtUtils::MakeMaker)
 		perl(ExtUtils::ParseXS)
+		pakfire >= 0.9.26-3.1
 	end
 
 	build

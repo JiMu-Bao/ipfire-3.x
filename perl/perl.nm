@@ -6,7 +6,7 @@
 name       = perl
 version    = 5.20.2
 # Never reset release in this package, just increase.
-release    = 13.1
+release    = 13.2
 
 perl_epoch = 2
 thisver = %{perl_epoch}:%{version}-%{_release}
@@ -40,6 +40,7 @@ build
 		perl
 		procps
 		zlib-devel
+		pakfire >= 0.9.26-3.1
 	end
 
 	# Perl passes -fstack-protector, if no argument is passed that enables the SSP.

@@ -5,7 +5,7 @@
 
 name       = perl-Coro
 version    = 6.42
-release    = 1
+release    = 1.1
 thisapp    = Coro-%{version}
 
 groups     = Development/Libraries
@@ -26,6 +26,7 @@ build
 	requires
 		perl(ExtUtils::MakeMaker)
 		perl(ExtUtils::ParseXS)
+		pakfire >= 0.9.26-3.1
 	end
 
 	prepare_cmds

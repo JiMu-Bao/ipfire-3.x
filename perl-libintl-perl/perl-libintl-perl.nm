@@ -5,7 +5,7 @@
 
 name       = perl-libintl-perl
 version    = 1.23
-release    = 2
+release    = 2.1
 thisapp    = libintl-perl-%{version}
 
 groups     = Development/Libraries
@@ -24,9 +24,8 @@ source_dl  = http://search.cpan.org/CPAN/authors/id/G/GU/GUIDO/
 build
 	requires
 		/usr/bin/xsubpp
-		# required for perl macros
-		pakfire-builder >= 0.9.23-6
 		perl(ExtUtils::MakeMaker)
+		pakfire >= 0.9.26-3.1
 	end
 
 	build

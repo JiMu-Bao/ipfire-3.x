@@ -5,7 +5,7 @@
 
 name       = perl-BDB
 version    = 1.91
-release    = 1
+release    = 1.1
 thisapp    = BDB-%{version}
 
 groups     = Development/Libraries
@@ -25,6 +25,7 @@ build
 		perl(ExtUtils::MakeMaker)
 		perl(ExtUtils::ParseXS)
 		libdb-devel
+		pakfire >= 0.9.26-3.1
 	end
 
 	build
