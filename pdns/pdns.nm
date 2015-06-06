@@ -5,7 +5,7 @@
 
 name       = pdns
 version    = 3.3.1
-release    = 1
+release    = 2
 
 groups     = Networking/DNS
 url        = http://powerdns.com/
@@ -99,10 +99,6 @@ packages
 			sqlite
 		end
 
-		requires
-			pdns-recursor >= 3.3-8
-		end
- 
 		configfiles
 			%{sysconfdir}/pdns/pdns.conf
 		end
