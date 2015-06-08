@@ -1,21 +1,126 @@
-CREATE TABLE ulog (
-			raw_mac		VARCHAR(80),
-			oob_time_sec	INT UNSIGNED,
-			oob_time_usec	INT UNSIGNED,
-			ip_saddr	INT UNSIGNED,
-			ip_daddr	INT UNSIGNED,
-			ip_protocol	TINYINT UNSIGNED,
-			ip_totlen       SMALLINT UNSIGNED,
-			tcp_sport	SMALLINT UNSIGNED,
-			tcp_dport	SMALLINT UNSIGNED,
-			udp_sport	SMALLINT UNSIGNED,
-			udp_dport	SMALLINT UNSIGNED,
-			udp_len		SMALLINT UNSIGNED,
-			icmp_type	TINYINT UNSIGNED,
-			icmp_code	TINYINT UNSIGNED,
-			icmp_echoid	SMALLINT UNSIGNED,
-			icmp_echoseq	SMALLINT UNSIGNED,
-			icmp_gateway	INT UNSIGNED,
-			icmp_fragmtu	SMALLINT UNSIGNED
-		);
+CREATE TABLE hits (
+	oob_time_sec		INTEGER NOT NULL,
+	oob_time_usec		INTEGER NOT NULL,
+	oob_hook		INTEGER,
+	oob_prefix		TEXT,
+	mac_saddr_str		TEXT,
+	mac_daddr_str		TEXT,
+	oob_in			TEXT,
+	oob_out			TEXT,
+	oob_family		INTEGER,
+	oob_protocol		INTEGER,
+	oob_uid			INTEGER,
+	oob_gid			INTEGER,
+	oob_mark		INTEGER,
+	ip_saddr		BLOB,
+	ip_saddr_str		TEXT,
+	ip_daddr		BLOB,
+	ip_daddr_str		TEXT,
+	ip_protocol		INTEGER,
+	ip_tos			INTEGER,
+	ip_ttl			INTEGER,
+	ip_totlen		INTEGER,
+	ip_id			INTEGER,
+	ip_fragoff		INTEGER,
+	ip6_payloadlen		INTEGER,
+	ip6_priority		INTEGER,
+	ip6_hoplimit		INTEGER,
+	ip6_flowlabel		INTEGER,
+	ip6_nexthdr		INTEGER,
+	ip6_fragoff		INTEGER,
+	ip6_fragid		INTEGER,
+	tcp_sport		INTEGER,
+	tcp_dport		INTEGER,
+	tcp_seq			INTEGER,
+	tcp_ackseq		INTEGER,
+	tcp_window		INTEGER,
+	tcp_syn			INTEGER,
+	tcp_ack			INTEGER,
+	tcp_rst			INTEGER,
+	tcp_fin			INTEGER,
+	tcp_urg			INTEGER,
+	tcp_urgp		INTEGER,
+	udp_sport		INTEGER,
+	udp_dport		INTEGER,
+	udp_len			INTEGER,
+	icmp_type		INTEGER,
+	icmp_code		INTEGER,
+	icmp_echoid		INTEGER,
+	icmp_echoseq		INTEGER,
+	icmp_gateway		INTEGER,
+	icmp_fragmtu		INTEGER,
+	icmpv6_type		INTEGER,
+	icmpv6_code		INTEGER,
+	icmpv6_echoid		INTEGER,
+	icmpv6_echoseq		INTEGER,
+	icmpv6_csum		INTEGER,
+	ahesp_spi		INTEGER,
+	arp_hwtype		INTEGER,
+	arp_protocoltype	INTEGER,
+	arp_operation		INTEGER,
+	arp_shwaddr		BLOB,
+	arp_saddr_str		TEXT,
+	arp_dhwaddr		BLOB,
+	arp_daddr_str		TEXT,
+	sctp_sport		INTEGER,
+	sctp_dport		INTEGER,
+	sctp_csum		INTEGER
+);
 
+CREATE INDEX hits_time ON hits(oob_time_sec);
+CREATE INDEX hits_prefix ON hits(oob_prefix);
+CREATE INDEX hits_oob_family ON hits(oob_family);
+
+/* Layer 2 - MAC addresses */
+CREATE INDEX hits_mac_saddr ON hits(mac_saddr_str);
+CREATE INDEX hits_mac_daddr ON hits(mac_daddr_str);
+
+/* Layer 3 - IP */
+CREATE INDEX hits_ip_saddr ON hits(ip_saddr);
+CREATE INDEX hits_ip_daddr ON hits(ip_daddr);
+CREATE INDEX hits_ip_protocol ON hits(ip_protocol);
+
+/* Layer 4 protocols */
+CREATE INDEX hits_tcp_sport ON hits(tcp_sport);
+CREATE INDEX hits_tcp_dport ON hits(tcp_dport);
+CREATE INDEX hits_udp_sport ON hits(udp_sport);
+CREATE INDEX hits_udp_dport ON hits(udp_dport);
+CREATE INDEX hits_sctp_sport ON hits(sctp_sport);
+CREATE INDEX hits_sctp_dport ON hits(sctp_dport);
+
+CREATE INDEX hits_icmpv6_type ON hits(icmpv6_type);
+CREATE INDEX hits_icmp_type ON hits(icmp_type);
+
+CREATE TABLE flows (
+	flow_start_sec		INTEGER,
+	flow_start_usec		INTEGER,
+	flow_end_sec		INTEGER,
+	flow_end_usec		INTEGER,
+	orig_ip_saddr		BLOB NOT NULL,
+	orig_ip_saddr_str	TEXT NOT NULL,
+	orig_ip_daddr		BLOB NOT NULL,
+	orig_ip_daddr_str	TEXT NOT NULL,
+	orig_ip_protocol	INTEGER NOT NULL,
+	orig_l4_sport		INTEGER,
+	orig_l4_dport		INTEGER,
+	orig_raw_pktcount	INTEGER NOT NULL,
+	orig_raw_pktlen		INTEGER NOT NULL,
+	reply_ip_saddr		BLOB NOT NULL,
+	reply_ip_saddr_str	BLOB NOT NULL,
+	reply_ip_daddr		BLOB NOT NULL,
+	reply_ip_daddr_str	BLOB NOT NULL,
+	reply_ip_protocol	INTEGER NOT NULL,
+	reply_l4_sport		INTEGER,
+	reply_l4_dport		INTEGER,
+	reply_raw_pktcount	INTEGER NOT NULL,
+	reply_raw_pktlen	INTEGER NOT NULL,
+	icmp_code		INTEGER,
+	icmp_type		INTEGER,
+	ct_id			INTEGER NOT NULL,
+	ct_event		INTEGER NOT NULL,
+	ct_mark			INTEGER
+);
+
+CREATE INDEX flows_ip_saddr ON flows(orig_ip_saddr);
+CREATE INDEX flows_ip_daddr ON flows(orig_ip_daddr);
+CREATE INDEX flows_ip_protocol ON flows(orig_ip_protocol);

@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = ulogd2
-version    = 2.0.4
+version    = 2.0.5
 release    = 1
 epoch      = 1
 
@@ -40,15 +40,15 @@ build
 	# Set libdir to "/usr/lib" for every architecture to install the ulogd2 plugins
 	# to this folder.
 	configure_options+= \
-		--sysconfdir=/etc \
 		--libdir=%{prefix}/lib
 
 	install_cmds
-		mkdir -pv %{BUILDROOT}/etc
-		cp -vf %{DIR_SOURCE}/ulogd.conf %{BUILDROOT}/etc/ulogd.conf
+		mkdir -pv %{BUILDROOT}%{sysconfdir}
+		cp -vf %{DIR_SOURCE}/ulogd.conf %{BUILDROOT}%{sysconfdir}/ulogd.conf
 
-		mkdir -pv %{BUILDROOT}/var/log/ulogd
-		sqlite3 -echo %{BUILDROOT}/var/log/ulogd/ulogd.db < %{DIR_SOURCE}/sqlite3.table
+		mkdir -pv %{BUILDROOT}%{sharedstatedir}/ulogd
+		sqlite3 -echo %{BUILDROOT}%{sharedstatedir}/ulogd/ulogd.db \
+			< %{DIR_SOURCE}/sqlite3.table
 	end
 end
 
@@ -61,7 +61,11 @@ packages
 		end
 
 		configfiles
-			/etc/ulogd.conf
+			%{sysconfdir}/ulogd.conf
+		end
+
+		datafiles
+			%{sharedstatedir}/ulogd/ulogd.db
 		end
 
 		script postin

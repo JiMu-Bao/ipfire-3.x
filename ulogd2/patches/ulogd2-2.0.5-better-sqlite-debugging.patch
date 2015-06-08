@@ -1,0 +1,26 @@
+diff --git a/output/sqlite3/ulogd_output_SQLITE3.c b/output/sqlite3/ulogd_output_SQLITE3.c
+index 5c49055..e3eff6f 100644
+--- a/output/sqlite3/ulogd_output_SQLITE3.c
++++ b/output/sqlite3/ulogd_output_SQLITE3.c
+@@ -212,7 +212,8 @@ sqlite3_interp(struct ulogd_pluginstance *pi)
+ 	return ULOGD_IRET_OK;
+ 
+  err_bind:
+-	ulogd_log(ULOGD_ERROR, "SQLITE: bind: %s\n", sqlite3_errmsg(priv->dbh));
++	ulogd_log(ULOGD_ERROR, "SQLITE: bind: %s (field: %s)\n", sqlite3_errmsg(priv->dbh),
++		f->key->name);
+ 	
+ 	return ULOGD_IRET_ERR;
+ }
+@@ -353,8 +354,10 @@ sqlite3_init_db(struct ulogd_pluginstance *pi)
+ 		}
+ 		strncpy(f->name, buf, ULOGD_MAX_KEYLEN);
+ 
+-		if ((f->key = ulogd_find_key(pi, buf)) == NULL)
++		if ((f->key = ulogd_find_key(pi, buf)) == NULL) {
++			ulogd_log(ULOGD_ERROR, "SQLITE3: Could not find field %s\n", buf);
+ 			return -1;
++		}
+ 
+ 		TAILQ_INSERT_TAIL(&priv->fields, f, link);
+ 	}
