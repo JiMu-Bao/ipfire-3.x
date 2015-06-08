@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = libmpc
-version    = 1.0
-release    = 2
+version    = 1.0.3
+release    = 1
 thisapp    = mpc-%{version}
 
 groups     = System/Libraries
@@ -32,7 +32,7 @@ build
 		--disable-static
 
 	test
-		#export LD_LIBRARY_PATH=$(pwd)/src/.libs
+		export LD_LIBRARY_PATH=$(pwd)/src/.libs
 		make check
 	end
 end

@@ -1,5 +1,0 @@
-# IPFire Macro
-# This macro handles WWW traffic.
-# ACTION	SRC		DST		PROTO	SRC_PORT	DST_PORT	RATE
-INCLUDE		HTTP
-INCLUDE		HTTPS

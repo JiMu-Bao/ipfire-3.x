@@ -6,7 +6,7 @@
 name       = squid
 major_ver  = 3.1
 version    = %{major_ver}.19
-release    = 1
+release    = 2
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
@@ -32,7 +32,6 @@ build
 		openssl-devel
 		openldap-devel
 		samba-devel
-		iptables-devel
 		pam-devel
 		libcap-devel
 		/usr/bin/smbclient
