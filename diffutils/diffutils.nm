@@ -5,7 +5,7 @@
 
 name       = diffutils
 version    = 3.3
-release    = 2
+release    = 3
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/diffutils/diffutils.html
@@ -25,6 +25,12 @@ sources    = %{thisapp}.tar.xz
 build
 	requires
 		perl
+	end
+
+	prepare_cmds
+		# Disable gnulib test suite which does not work on
+		# grsecurity kernels
+		sed -e "s/gnulib-tests//" -i Makefile.{am,in}
 	end
 
 	test
