@@ -1,0 +1,60 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = compat-libgcrypt
+version    = 1.5.4
+release    = 1
+thisapp    = libgcrypt-%{version}
+
+groups     = System/Libraries
+url        = http://www.gnupg.org/
+license    = LGPLv2.1+
+summary    = A general-purpose cryptography library
+
+description
+	Libgcrypt is a general purpose crypto library based on the code used
+	in GNU Privacy Guard.
+end
+
+source_dl  = ftp://ftp.gnupg.org/gcrypt/libgcrypt/
+sources    = %{thisapp}.tar.bz2
+
+build
+	requires
+		gcc-c++
+		libgpg-error-devel
+	end
+
+	configure_options += \
+		--enable-noexecstack
+
+	test
+		make check
+	end
+
+	install
+		# Install just the library and no headers.
+		mkdir -pv %{BUILDROOT}%{libdir}
+
+		install -m 755 src/.libs/libgcrypt.so.11.8.3 %{BUILDROOT}%{libdir}
+		ln -svf libgcrypt.so.11.8.3 %{BUILDROOT}%{libdir}/libgcrypt.so.11
+	end
+end
+
+packages
+	package %{name}
+		provides
+			libgcrypt = %{thisver}
+		end
+
+		obsoletes
+			libgcrypt <= %{thisver}
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
