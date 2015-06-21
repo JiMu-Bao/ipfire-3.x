@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 215
-release    = 1
+release    = 2
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -226,6 +226,9 @@ packages
 		end
 
 		script postup
+			# Re-exec systemd after update.
+			/usr/bin/systemctl daemon-reexec
+
 			# Restart login service after update
 			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
 			/usr/bin/systemctl try-restart systemd-logind.service >/dev/null 2>&1 || :
