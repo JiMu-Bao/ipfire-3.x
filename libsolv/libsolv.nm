@@ -6,7 +6,7 @@
 name       = libsolv
 version    = 0.4.1
 git_ver    = bcedc98
-release    = 1.git%{git_ver}
+release    = 2.git%{git_ver}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -26,7 +26,6 @@ build
 	requires
 		gcc-c++
 		cmake >= 2.8.4-2
-		db4-devel
 		expat-devel
 		zlib-devel
 	end
