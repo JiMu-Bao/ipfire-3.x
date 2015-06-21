@@ -3,9 +3,11 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = xz
-version    = 5.2.1
+name       = compat-xz
+version    = 4.999.9beta
 release    = 1
+
+thisapp = xz-%{version}
 
 groups     = Applications/Compression
 url        = http://tukaani.org/xz/
@@ -31,37 +33,26 @@ build
 		export LD_LIBRARY_PATH=$(pwd)/src/liblzma/.libs
 		make check
 	end
+
+	install
+		# Only install libraries.
+		mkdir -pv %{BUILDROOT}%{libdir}
+		cp -vr src/liblzma/.libs/liblzma.so.0* %{BUILDROOT}%{libdir}
+	end
 end
 
 packages
 	package %{name}
-		groups += Build
-	end
-
-	package %{name}-libs
-		template LIBS
-	end
-
-	package %{name}-devel
-		template DEVEL
-	end
-
-	package xz-lzma-compat
-		summary = Older LZMA format compatibility binaries.
-		description
-			The xz-lzma-compat package contains compatibility
-			links for older commands that deal with the older
-			LZMA format.
+		provides
+			xz = %{thisver}
 		end
-		license = GPLv2+ and LGPLv2+
-		groups += Build
 
-		requires = %{name}=%{thisver}
-		provides = lzma
+		obsoletes
+			xz-compat
+		end
 
-		files
-			/usr/bin/*lz*
-			/usr/share/man/man1/*lz*
+		conflicts
+			xz <= %{thisver}
 		end
 	end
 
