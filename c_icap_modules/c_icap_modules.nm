@@ -7,7 +7,6 @@ name       = c_icap_modules
 version    = 0.1.6
 release    = 3
 
-maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
 url        = http://c-icap.sourceforge.net
 license    = GPLv2
