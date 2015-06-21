@@ -6,7 +6,7 @@
 name       = perl
 version    = 5.20.2
 # Never reset release in this package, just increase.
-release    = 13.2
+release    = 13.3
 
 perl_epoch = 2
 thisver = %{perl_epoch}:%{version}-%{_release}
@@ -33,10 +33,10 @@ source_dl  = http://www.cpan.org/src/5.0/
 
 build
 	requires
-		db4-devel
 		gcc-c++
 		gdbm-devel
 		iana-etc
+		libdb-devel
 		perl
 		procps
 		zlib-devel
