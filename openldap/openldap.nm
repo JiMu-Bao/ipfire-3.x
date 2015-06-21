@@ -5,7 +5,7 @@
 
 name       = openldap
 version    = 2.4.40
-release    = 1
+release    = 2
 
 groups     = System/Daemons
 url        = http://www.openldap.org/
@@ -27,9 +27,9 @@ sources    = %{thisapp}.tgz
 build
 	requires
 		automake
-		db4-devel
 		cyrus-sasl-devel
 		groff
+		libdb-devel
 		libtool
 		libtool-devel
 		openssl-devel
