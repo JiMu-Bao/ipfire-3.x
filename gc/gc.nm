@@ -5,7 +5,7 @@
 
 name       = gc
 version    = 7.4.2
-release    = 1
+release    = 1.1
 
 groups     = System/Libraries
 url        = http://www.hboehm.info/gc/
@@ -46,8 +46,8 @@ build
 	end
 
 	test
-		# Disabled because gctest hangs forever.
-		make check
+		# Disabled because gctest hangs for ever on armv5tel
+		#make check
 	end
 
 	install_cmds
