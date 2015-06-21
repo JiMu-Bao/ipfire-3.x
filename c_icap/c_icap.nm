@@ -5,7 +5,7 @@
 
 name       = c_icap
 version    = 0.1.7
-release    = 3
+release    = 4
 
 maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
@@ -25,7 +25,7 @@ build
 	requires
 		autoconf
 		automake
-		db4-devel
+		libdb-devel
 		libtool-devel
 		zlib-devel
 	end
