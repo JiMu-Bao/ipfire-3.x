@@ -1,0 +1,47 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-Net-SSLeay
+version    = 1.69
+release    = 1
+thisapp    = Net-SSLeay-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/~flora/Net_SSLeay.pm/
+license    = GPL+ or Artistic
+summary    = Perl extension for using OpenSSL
+
+description
+	Net::SSLeay module contains perl bindings to openssl library.
+end
+
+source_dl  = http://search.cpan.org/CPAN/authors/id/M/MI/MIKEM/
+
+build
+	requires
+		openssl-devel
+		perl(ExtUtils::MakeMaker)
+		perl(Test::More) >= 0.47
+		zlib-devel
+	end
+
+	build
+		PERL_MM_USE_DEFAULT=1 perl Makefile.PL \
+			INSTALLDIRS=vendor OPTIMIZE="%{CFLAGS}"
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make test
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
