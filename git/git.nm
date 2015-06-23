@@ -5,7 +5,7 @@
 
 name       = git
 version    = 1.8.1
-release    = 3
+release    = 4
 
 groups     = Development/Tools
 url        = http://git-scm.com/
@@ -94,6 +94,9 @@ packages
 			/usr/bin/vi
 		end
 
+		recommends
+			%{name}-email
+		end
 	end
 
 	package %{name}-daemon
@@ -194,6 +197,8 @@ packages
 		requires
 			git=%{thisver}
 			perl-Git=%{thisver}
+			perl(Authen::SASL)
+			perl(Net::SMTP::SSL)
 		end
 
 		files
