@@ -1,0 +1,42 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-Net-SMTP-SSL
+version    = 1.03
+release    = 1
+arch       = noarch
+thisapp    = Net-SMTP-SSL-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/~rjbs/%{thisapp}/
+license    = GPL+ or Artistic
+summary    = SSL support for Net::SMTP
+
+description
+	Adds SSL support for the Net::SMTP perl module.
+end
+
+source_dl  = http://search.cpan.org/CPAN/authors/id/R/RJ/RJBS/
+
+build
+	requires
+		perl(ExtUtils::MakeMaker)
+		perl(IO::Socket::SSL)
+		perl(Test::More) >= 0.47
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make test
+	end
+end
+
+packages
+	package %{name}
+end
