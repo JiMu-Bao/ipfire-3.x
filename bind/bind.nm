@@ -5,7 +5,7 @@
 
 name       = bind
 version    = 9.9.6-P1
-release    = 1
+release    = 2
 
 groups     = Networking/Tools
 url        = http://www.isc.org/products/BIND/
@@ -27,10 +27,9 @@ build
 		autoconf
 		automake
 		chrpath
-		db4-devel
-		libtool
 		libcap-devel
 		libidn-devel
+		libtool
 		pkg-config
 		openssl-devel >= 1.0.1h-2
 		shadow-utils

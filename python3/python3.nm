@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = python3
-major_ver  = 3.3
-version    = %{major_ver}.0
+major_ver  = 3.4
+version    = %{major_ver}.3
 release    = 1
 thisapp    = Python-%{version}
 
@@ -34,13 +34,13 @@ build
 		automake
 		bzip2
 		bzip2-devel
-		db4-devel >= 1:4.8
 		expat-devel >= 2.1.0
 		findutils
 		gdbm-devel >= 1.10
 		gcc-c++
 		glibc-devel
 		gmp-devel
+		libdb-devel
 		libffi-devel
 		libGL-devel
 		libX11-devel
@@ -62,9 +62,8 @@ build
 	export LINKCC    = gcc
 
 	prepare_cmds
-		# Apply patches for x86_64.
-		if [ "$(uname -m)" = "x86_64" ]; then
-			patch -Np1 -i %{DIR_SOURCE}/python-3.3.0b1-lib64.patch
+		if [ "%{lib}" = "lib64" ]; then
+			patch -Np1 -i %{DIR_SOURCE}/python-3.4.3-lib64.patch
 		fi
 
 		# Remove embedded copies of expat and libffi
@@ -83,11 +82,27 @@ build
 		--with-dbmliborder=gdbm:ndbm:bdb \
 		--with-system-expat \
 		--with-system-ffi \
+		--enable-loadable-sqlite-extensions \
 		--enable-shared
 
-	#test
-	#	make test
-	#end
+	test
+		LD_LIBRARY_PATH=$(pwd) $(pwd)/python \
+			-m test.regrtest \
+			--verbose \
+			--findleaks \
+			-x test_distutils \
+			-x test_faulthandler \
+			-x test_gdb \
+			-x test_email \
+			-x test_subprocess \
+			-x test_float \
+			-x test_cmath \
+			-x test_asynchat \
+			-x test_asyncore
+
+		# test_subprocess won't work on grsecurity-enabled kernels
+		# test_float and test_cmath do not work on armv5tel (soft FPU)
+	end
 
 	install_cmds
 		install -d -m 0755 %{BUILDROOT}%{pylibdir}/site-packages/__pycache__

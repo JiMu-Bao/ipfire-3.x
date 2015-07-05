@@ -1,0 +1,44 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-GSSAPI
+version    = 0.28
+release    = 1
+thisapp    = GSSAPI-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/GSSAPI
+license    = GPL+ or Artistic
+summary    = Perl extension providing access to the GSSAPIv2 library
+
+description
+	This module gives access to the routines of the GSSAPI library, as
+	described in rfc2743 and rfc2744 and implemented by the Kerberos-1.2
+	distribution from MIT.
+end
+
+source_dl  = http://www.cpan.org/authors/id/A/AG/AGROLMS/
+
+build
+	requires
+		krb5-devel
+		perl(ExtUtils::MakeMaker)
+		perl(Test::More) >= 0.47
+	end
+
+	build
+		PERL_MM_USE_DEFAULT=1 perl Makefile.PL \
+			INSTALLDIRS=vendor OPTIMIZE="%{CFLAGS}"
+		make %{PARALLELISMFLAGS}
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

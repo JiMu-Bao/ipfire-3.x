@@ -1,0 +1,45 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-IO-Socket-SSL
+version    = 2.016
+release    = 1
+arch       = noarch
+thisapp    = IO-Socket-SSL-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/~sullr/%{thisapp}/
+license    = GPL+ or Artistic
+summary    = SSL sockets with IO::Socket interface
+
+description
+	IO::Socket::SSL makes using SSL/TLS much easier by wrapping the
+	necessary functionality into the familiar IO::Socket interface and
+	providing secure defaults whenever possible.
+end
+
+source_dl  = http://search.cpan.org/CPAN/authors/id/S/SU/SULLR/
+
+build
+	requires
+		perl(ExtUtils::MakeMaker)
+		perl(Net::SSLeay)
+		perl(Test::More) >= 0.47
+		perl(URI) >= 1.50
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make test
+	end
+end
+
+packages
+	package %{name}
+end

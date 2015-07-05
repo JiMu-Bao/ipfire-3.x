@@ -5,7 +5,7 @@
 
 name       = man-db
 version    = 2.7.1
-release    = 2
+release    = 3
 
 groups     = Documentation
 url        = http://savannah.nongnu.org/projects/man-db
@@ -24,7 +24,6 @@ sources    = %{thisapp}.tar.xz
 
 build
 	requires
-		db4-devel
 		gdbm-devel
 		groff
 		less

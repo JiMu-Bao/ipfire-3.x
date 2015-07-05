@@ -5,9 +5,8 @@
 
 name       = c_icap_modules
 version    = 0.1.6
-release    = 2
+release    = 3
 
-maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Networking/Daemons
 url        = http://c-icap.sourceforge.net
 license    = GPLv2
@@ -27,7 +26,7 @@ build
 		automake
 		c_icap >= 0.1.7-3
 		clamav-devel
-		db4-devel
+		libdb-devel
 		libtool-devel
 	end
 

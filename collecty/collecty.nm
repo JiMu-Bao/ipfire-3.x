@@ -5,7 +5,7 @@
 
 name       = collecty
 version    = 003
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Monitoring
@@ -31,6 +31,7 @@ build
 		intltool
 		libatasmart-devel
 		libtool-devel
+		liboping-devel
 		libxslt
 		lm-sensors-devel
 		python3-devel

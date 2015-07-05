@@ -1,0 +1,45 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-Digest-HMAC
+version    = 1.03
+release    = 1
+arch       = noarch
+thisapp    = Digest-HMAC-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/Digest-HMAC/
+license    = GPL+ or Artistic
+summary    = Keyed-Hashing for Message Authentication
+
+description
+	HMAC is used for message integrity checks between two parties that
+	share a secret key, and works in combination with some other Digest
+	algorithm, usually MD5 or SHA-1. The HMAC mechanism is described in
+	RFC 2104.
+end
+
+source_dl  = http://www.cpan.org/authors/id/G/GA/GAAS/
+
+build
+	requires
+		perl(Digest::MD5)
+		perl(Digest::SHA1)
+		perl(ExtUtils::MakeMaker)
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor
+		make %{PARALLELISMFLAGS}
+	end
+
+	test
+		make test
+	end
+end
+
+packages
+	package %{name}
+end

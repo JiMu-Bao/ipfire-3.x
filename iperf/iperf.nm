@@ -7,7 +7,6 @@ name       = iperf
 version    = 2.0.5
 release    = 1
 
-maintainer = Christian Schmidt <christian.schmidt@ipfire.org>
 groups     = Applications/Internet
 url        = http://www..sourceforge.net/projects/iperf/files/
 license    = GPLv3+ and LGPLv3+
@@ -29,7 +28,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO

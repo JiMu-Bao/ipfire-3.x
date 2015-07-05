@@ -1,0 +1,42 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = perl-Authen-SASL
+version    = 2.16
+release    = 1
+arch       = noarch
+thisapp    = Authen-SASL-%{version}
+
+groups     = Development/Libraries
+url        = http://search.cpan.org/dist/Authen-SASL/
+license    = GPL+ or Artistic
+summary    = SASL Authentication framework for Perl
+
+description
+	SASL is a generic mechanism for authentication used by several
+	network protocols. Authen::SASL provides an implementation framework
+	that all protocols should be able to share.
+end
+
+source_dl  = http://www.cpan.org/authors/id/G/GB/GBARR/
+
+build
+	requires
+		perl(Digest::HMAC)
+		perl(Digest::MD5)
+		perl(ExtUtils::MakeMaker)
+		perl(File::Path)
+		perl(GSSAPI)
+	end
+
+	build
+		perl Makefile.PL INSTALLDIRS=vendor
+		make %{PARALLELISMFLAGS}
+	end
+end
+
+packages
+	package %{name}
+end

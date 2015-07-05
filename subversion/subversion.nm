@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = subversion
-version    = 1.7.2
+version    = 1.8.13
 release    = 1
 
 groups     = Development/Tools
@@ -31,9 +31,9 @@ build
 		autoconf
 		apr-util-devel
 		automake
-		db4-devel
 		expat-devel
 		libapr-devel
+		libdb-devel
 		perl-devel
 		sqlite-devel
 		swig
