@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openssl
-version    = 1.0.1h
-release    = 2
+version    = 1.0.2c
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -118,16 +118,42 @@ build
 
 		# Rename man pages so that they don't conflict with other system man pages.
 		pushd %{BUILDROOT}%{mandir}
-		for manpage in man*/*; do
-			if [ -L ${manpage} ]; then
-				TARGET=`ls -l ${manpage} | awk '{ print $NF }'`
-				ln -snf ${TARGET}ssl ${manpage}ssl
-				rm -f ${manpage}
-			else
-				mv ${manpage} ${manpage}ssl
-			fi
+		for m in $(find . -type f | xargs grep -L '#include'); do
+			d="${m%/*}"
+			d="${d#./}"
+			m="${m##*/}"
+			[[ ${m} == openssl.1* ]] && continue
+			[[ -n "$(find -L "${d}" -type l)" ]] && exit 1
+			mv ${d}/{,ssl-}${m}
+
+			# fix up references to renamed man pages
+			sed -i '/^[.]SH "SEE ALSO"/,/^[.]/s:\([^(, ]*(1)\):ssl-\1:g' "${d}/ssl-${m}"
+			ln -s "ssl-${m}" "${d}/openssl-${m}"
+
+			# locate any symlinks that point to this man page ... we assume
+			# that any broken links are due to the above renaming
+			for s in $(find -L "${d}" -type l); do
+				s="${s##*/}"
+				rm -f "${d}/${s}"
+				ln -s "ssl-${m}" "${d}/ssl-${s}"
+				ln -s "ssl-${s}" "${d}/openssl-${s}"
+			done
 		done
+
+		[[ -n "$(find -L "${d}" -type l)" ]] && exit 1 # "broken manpage links found :("
 		popd
+
+		#pushd %{BUILDROOT}%{mandir}
+		#for manpage in man*/*; do
+		#	if [ -L "${manpage}" ]; then
+		#		TARGET="$(ls -l "${manpage}" | awk '{ print $NF }')"
+		#		ln -snf "${TARGET}ssl" "${manpage}ssl"
+		#		rm -f "${manpage}"
+		#	else
+		#		mv "${manpage}" "${manpage}ssl"
+		#	fi
+		#done
+		#popd
 	end
 end
 
