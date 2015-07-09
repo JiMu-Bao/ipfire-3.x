@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openssl
-version    = 1.0.2c
-release    = 1
+version    = 1.0.2d
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -40,9 +40,6 @@ build
 		find crypto/ -name Makefile -exec \
 			sed 's/^ASFLAGS=/&-Wa,--noexecstack /' -i {} \;
 
-		# Modify the various perl scripts to reference perl in the right location.
-		perl util/perlpath.pl /usr/bin
-
 		# Generate a table with the compile settings for my perusal.
 		touch Makefile
 		make TABLE PERL=/usr/bin/perl
@@ -57,11 +54,11 @@ build
 	end
 
 	if "%{DISTRO_ARCH}" == "armv5tel"
-		ssl_arch = linux-generic32
+		ssl_arch = linux-armv4
 	end
 
 	if "%{DISTRO_ARCH}" == "armv7hl"
-		ssl_arch = linux-generic32
+		ssl_arch = linux-armv4
 	end
 
 	build
@@ -142,18 +139,6 @@ build
 
 		[[ -n "$(find -L "${d}" -type l)" ]] && exit 1 # "broken manpage links found :("
 		popd
-
-		#pushd %{BUILDROOT}%{mandir}
-		#for manpage in man*/*; do
-		#	if [ -L "${manpage}" ]; then
-		#		TARGET="$(ls -l "${manpage}" | awk '{ print $NF }')"
-		#		ln -snf "${TARGET}ssl" "${manpage}ssl"
-		#		rm -f "${manpage}"
-		#	else
-		#		mv "${manpage}" "${manpage}ssl"
-		#	fi
-		#done
-		#popd
 	end
 end
 
