@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = openssl
-version    = 1.0.2c
+version    = 1.0.2d
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -39,9 +39,6 @@ build
 
 		find crypto/ -name Makefile -exec \
 			sed 's/^ASFLAGS=/&-Wa,--noexecstack /' -i {} \;
-
-		# Modify the various perl scripts to reference perl in the right location.
-		perl util/perlpath.pl /usr/bin
 
 		# Generate a table with the compile settings for my perusal.
 		touch Makefile
@@ -142,18 +139,6 @@ build
 
 		[[ -n "$(find -L "${d}" -type l)" ]] && exit 1 # "broken manpage links found :("
 		popd
-
-		#pushd %{BUILDROOT}%{mandir}
-		#for manpage in man*/*; do
-		#	if [ -L "${manpage}" ]; then
-		#		TARGET="$(ls -l "${manpage}" | awk '{ print $NF }')"
-		#		ln -snf "${TARGET}ssl" "${manpage}ssl"
-		#		rm -f "${manpage}"
-		#	else
-		#		mv "${manpage}" "${manpage}ssl"
-		#	fi
-		#done
-		#popd
 	end
 end
 
