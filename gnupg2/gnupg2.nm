@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = gnupg2
-version    = 2.0.21
+version    = 2.1.6
 release    = 1
 thisapp    = gnupg-%{version}
 
@@ -31,8 +31,8 @@ build
 		libgpg-error >= 1.11
 		libgcrypt-devel
 		libksba-devel
+		npth-devel
 		pinentry
-		pth-devel
 		zlib-devel
 	end
 
