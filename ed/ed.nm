@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = ed
-version    = 1.11
+version    = 1.12
 release    = 1
 
 groups     = Application/Text
@@ -26,6 +26,11 @@ build
 	requires
 		lzip
 	end
+
+	configure_options += \
+		CFLAGS="%{CFLAGS}" \
+		CPPFLAGS="%{CPPFLAGS}" \
+		LDFLAGS="%{LDFLAGS}"
 end
 
 packages
