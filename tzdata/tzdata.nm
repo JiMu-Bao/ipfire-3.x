@@ -8,7 +8,7 @@ tzcode_version = 2014j
 
 name       = tzdata
 version    = %{tzdata_version}
-release    = 1
+release    = 2
 arch       = noarch
 
 groups     = System/Base
@@ -63,7 +63,7 @@ build
 
 	install
 		mkdir -pv %{BUILDROOT}%{datadir}/zoneinfo
-		cp -prd zoneinfo %{BUILDROOT}%{datadir}/zoneinfo
+		cp -prd zoneinfo/* %{BUILDROOT}%{datadir}/zoneinfo
 
 		install -p -m 644 zone.tab iso3166.tab \
 			%{BUILDROOT}%{datadir}/zoneinfo

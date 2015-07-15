@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = strongswan
-version    = 5.0.1
+version    = 5.3.2
 release    = 1
 
 groups     = Networking/VPN
@@ -24,6 +24,8 @@ sources    = %{thisapp}.tar.bz2
 
 build
 	requires
+		autoconf
+		automake
 		bison
 		flex
 		gmp-devel
@@ -46,24 +48,30 @@ build
 		--enable-openssl \
 		--enable-sqlite \
 		--enable-gcrypt \
-		--with-capabilities=libcap
+		--enable-ccm \
+		--enable-ctr \
+		--enable-gcm \
+		--enable-xauth-eap \
+		--enable-xauth-noauth \
+		--enable-eap-radius \
+		--enable-eap-tls \
+		--enable-eap-ttls \
+		--enable-eap-peap \
+		--enable-eap-mschapv2 \
+		--enable-eap-identity \
+		--with-capabilities=libcap \
+		--enable-swanctl \
+		--enable-kernel-libipsec
 
 	if "%{DISTRO_ARCH}" == "i686"
 		configure_options += --enable-padlock
 	end
 
-	test
-		make check
-	end
-
-	install_cmds
-		# Make the shared libraries available to the runtime linker.
-		# (RPATH issues, whatever...)
-		cd %{BUILDROOT}%{libdir}
-		for lib in libcharon.so.0 libhydra.so.0 libstrongswan.so.0; do
-			ln -svf ipsec/${lib} .
-		done
-	end
+	# The testsuite does not run through in the build system
+	# on ARM systems.
+	#test
+	#	make check
+	#end
 end
 
 packages
