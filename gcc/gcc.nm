@@ -7,7 +7,7 @@
 build_cloog = 1
 
 name       = gcc
-version    = 4.9.2
+version    = 4.9.3
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
