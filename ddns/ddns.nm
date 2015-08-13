@@ -5,7 +5,7 @@
 
 name       = ddns
 version    = 008
-release    = 1
+release    = 2
 arch       = noarch
 
 groups     = System/Tools
@@ -45,6 +45,10 @@ build
 	install_cmds
 		# Ship an empty configuration file.
 		touch %{BUILDROOT}%{sysconfdir}/%{name}/ddns.conf
+
+		mkdir -pv %{BUILDROOT}%{prefix}/lib/network/triggers
+		install -v -m 755 %{DIR_SOURCE}/10-ddns \
+			%{BUILDROOT}%{prefix}/lib/network/triggers/10-ddns
 	end
 end
 
