@@ -5,7 +5,7 @@
 
 name       = aiccu
 version    = 20070115
-release    = 2
+release    = 3
 
 groups     = System/Daemons
 url        = http://www.sixxs.net/tools/aiccu/
