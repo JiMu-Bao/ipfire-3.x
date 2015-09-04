@@ -1,0 +1,5 @@
+#!/bin/bash
+
+[ "${ACTION}" = "online" ] || exit 0
+
+exec systemctl start ddns.service

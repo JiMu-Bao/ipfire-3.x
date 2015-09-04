@@ -1,5 +1,5 @@
 [repo:unstable]
 description = IPFire 3 - Public unstable repository.
-enabled = 0
+enabled = 1
 baseurl = http://pakfire.ipfire.org/repositories/ipfire3/unstable/%{arch}
 mirrors = https://pakfire.ipfire.org/distro/ipfire3/repo/unstable/mirrorlist?arch=%{arch}

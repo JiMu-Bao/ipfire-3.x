@@ -2,10 +2,9 @@
 CONFIG_X86_32=y
 CONFIG_OUTPUT_FORMAT="elf32-i386"
 CONFIG_ARCH_DEFCONFIG="arch/x86/configs/i386_defconfig"
-# CONFIG_ZONE_DMA32 is not set
-# CONFIG_AUDIT_ARCH is not set
 CONFIG_X86_32_SMP=y
 CONFIG_ARCH_HWEIGHT_CFLAGS="-fcall-saved-ecx -fcall-saved-edx"
+CONFIG_PGTABLE_LEVELS=3
 
 #
 # Timers subsystem
@@ -233,9 +232,13 @@ CONFIG_SCx200_ACB=m
 CONFIG_PTP_1588_CLOCK_PCH=m
 
 #
-# PCI GPIO expanders:
+# MFD GPIO expanders
 #
 # CONFIG_GPIO_CS5535 is not set
+
+#
+# PCI GPIO expanders
+#
 # CONFIG_GPIO_PCH is not set
 
 #

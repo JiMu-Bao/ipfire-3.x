@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = ddns
-version    = 005
-release    = 1
+version    = 008
+release    = 2
 arch       = noarch
 
 groups     = System/Tools
@@ -25,14 +25,18 @@ build
 	requires
 		autoconf
 		automake
+		docbook-xsl
 		gettext-devel
 		intltool
 		m4
+		systemd-devel
 	end
 
 	configure_options += \
 		--prefix=%{prefix} \
-		--sysconfdir=%{sysconfdir}
+		--sysconfdir=%{sysconfdir} \
+		--enable-manpages \
+		--with-systemd
 
 	prepare_cmds
 		./autogen.sh
@@ -41,6 +45,10 @@ build
 	install_cmds
 		# Ship an empty configuration file.
 		touch %{BUILDROOT}%{sysconfdir}/%{name}/ddns.conf
+
+		mkdir -pv %{BUILDROOT}%{prefix}/lib/network/triggers
+		install -v -m 755 %{DIR_SOURCE}/10-ddns \
+			%{BUILDROOT}%{prefix}/lib/network/triggers/10-ddns
 	end
 end
 
@@ -52,6 +60,28 @@ packages
 
 		configfiles
 			%{sysconfdir}/%{name}/ddns.conf
+		end
+
+		datafiles
+			%{localestatedir}/%{name}.db
+		end
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl enable ddns.timer >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl disable ddns.timer >/dev/null 2>&1 || :
+			systemctl stop ddns.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
 		end
 	end
 end

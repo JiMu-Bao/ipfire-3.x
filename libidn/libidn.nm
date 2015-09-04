@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libidn
-version    = 1.31
+version    = 1.32
 release    = 1
 
 groups     = System/Libraries

@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kernel
-version    = 4.0.4
-release    = 2
+version    = 4.1.3
+release    = 1
 thisapp    = linux-%{version}
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -29,11 +29,6 @@ source_dl    = http://www.kernel.org/pub/linux/kernel/v4.x/
 sources      = %{thisapp}.tar.xz
 
 build
-	# icecream cannot be used to compile the kernel.
-	# Because the PaX patch does use GCC plugins to harden the kernel which
-	# are not available on the remote compilers, we need to disable it here.
-	export ICECC=no
-
 	kernel_logo = /usr/share/pixmaps/kernel-logo.ppm
 
 	requires
