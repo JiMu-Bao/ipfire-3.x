@@ -6,7 +6,7 @@
 name       = ntp
 version    = %{ver_major}.8
 ver_major  = 4.2
-release    = 1
+release    = 2
 
 groups     = System/Daemons
 url        = http://www.ntp.org/
@@ -130,6 +130,8 @@ end
 
 packages
 	package %{name}
+		groups += Base
+
 		requires
 			ntpdate = %{thisver}
 		end
@@ -140,6 +142,7 @@ packages
 
 		script postin
 			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl --no-reload enable ntpd.service >/dev/null 2>&1 || :
 		end
 
 		script preun
