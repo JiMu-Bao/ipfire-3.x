@@ -1,63 +1,49 @@
 #!/bin/bash
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2015  Michael Tremer                                          #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
 
-# Create the host keys for the OpenSSH server.
-#
+ALGOS="rsa ecdsa ed25519"
 
-# Some functions to make the below more readable
-KEYGEN=/usr/bin/ssh-keygen
-RSA1_KEY=/etc/ssh/ssh_host_key
-RSA_KEY=/etc/ssh/ssh_host_rsa_key
-DSA_KEY=/etc/ssh/ssh_host_dsa_key
+main() {
+	local ret=0
 
-do_rsa1_keygen() {
-	if [ ! -s $RSA1_KEY ]; then
-		rm -f $RSA1_KEY
-		if test ! -f $RSA1_KEY && $KEYGEN -q -t rsa1 -f $RSA1_KEY -C '' -N '' >&/dev/null; then
-			chgrp ssh_keys $RSA1_KEY
-			chmod 600 $RSA1_KEY
-			chmod 644 $RSA1_KEY.pub
-			if [ -x /sbin/restorecon ]; then
-			    /sbin/restorecon $RSA1_KEY.pub
-			fi
-		else
-			exit 1
+	local algo
+	for algo in ${ALGOS}; do
+		local keyfile="/etc/ssh/ssh_host_${algo}_key"
+
+		# If the key already exists, there is nothing to do
+		[ -e "${keyfile}" ] && continue
+
+		# Generate a new key
+		if ! ssh-keygen -qf "${keyfile}" -N '' -t "${algo}"; then
+			ret=1
+			continue
 		fi
-	fi
+
+		# Fix permissions
+		chgrp ssh_keys "${keyfile}"
+		chmod 600 "${keyfile}"
+		chmod 644 "${keyfile}.pub"
+	done
+
+	return ${ret}
 }
 
-do_rsa_keygen() {
-	if [ ! -s $RSA_KEY ]; then
-		rm -f $RSA_KEY
-		if test ! -f $RSA_KEY && $KEYGEN -q -t rsa -f $RSA_KEY -C '' -N '' >&/dev/null; then
-			chgrp ssh_keys $RSA_KEY
-			chmod 600 $RSA_KEY
-			chmod 644 $RSA_KEY.pub
-			if [ -x /sbin/restorecon ]; then
-			    /sbin/restorecon $RSA_KEY.pub
-			fi
-		else
-			exit 1
-		fi
-	fi
-}
-
-do_dsa_keygen() {
-	if [ ! -s $DSA_KEY ]; then
-		rm -f $DSA_KEY
-		if test ! -f $DSA_KEY && $KEYGEN -q -t dsa -f $DSA_KEY -C '' -N '' >&/dev/null; then
-			chgrp ssh_keys $DSA_KEY
-			chmod 600 $DSA_KEY
-			chmod 644 $DSA_KEY.pub
-			if [ -x /sbin/restorecon ]; then
-			    /sbin/restorecon $DSA_KEY.pub
-			fi
-		else
-			exit 1
-		fi
-	fi
-}
-
-# Create keys
-do_rsa_keygen
-do_rsa1_keygen
-do_dsa_keygen
+main; exit $?
