@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = systemd
-version    = 215
-release    = 2
+version    = 221
+release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -18,7 +18,8 @@ description
 	SysV and LSB init scripts.
 end
 
-source_dl  = http://cgit.freedesktop.org/systemd/systemd/snapshot/
+source_dl  = http://www.freedesktop.org/software/systemd/
+sources    = %{thisapp}.tar.xz
 
 build
 	unitdir = %{prefix}/lib/systemd/system
@@ -26,12 +27,11 @@ build
 	requires
 		attr-devel
 		audit-devel
-		automake
-		autoconf
 		cryptsetup-luks-devel >= 1.4.2
 		dbus-devel
 		docbook-utils
 		docbook-xsl
+		elfutils-devel
 		gettext-devel
 		glib2-devel
 		gobject-introspection-devel >= 1.31
@@ -43,28 +43,41 @@ build
 		libblkid-devel
 		libcap-devel
 		libgcrypt-devel
+		libmount-devel
 		libselinux-devel
-		libtool
 		libuuid-devel
+		m4
 		pam-devel
 		pciutils-devel
 		usbutils
 		vala
 		xz-devel
+		zlib-devel
 	end
 
 	configure_options += \
 		--with-sysvinit-path= \
 		--with-sysvrcnd-path= \
-		--enable-introspection=yes \
+		--enable-introspection \
+		--enable-zlib \
+		--disable-smack \
+		--disable-backlight \
+		--disable-firstboot \
+		--disable-hibernate \
+		--disable-importd \
+		--disable-libiptc \
+		--disable-machined \
 		--disable-networkd \
-		--disable-resolvd \
+		--disable-resolved \
 		--disable-sysusers \
 		--disable-timesyncd \
+		--disable-timedated \
+		--disable-polkit \
+		--disable-kdbus \
 		--disable-static
 
 	prepare_cmds
-		./autogen.sh ac
+		%{create_groups}
 	end
 
 	install_cmds
@@ -119,6 +132,7 @@ build
 
 		# Remove unneeded stuff for rpm.
 		rm -rvf %{BUILDROOT}/etc/rpm
+		rm -rvf %{BUILDROOT}/usr/lib/rpm
 
 		# Use journald. Enable the import of kernel messages.
 		# Stop forwarding to a syslog daemon.
@@ -133,7 +147,25 @@ build
 		# Remove udev rules for "predictable" network device renaming.
 		# http://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/
 		rm -vf %{BUILDROOT}/usr/lib/udev/rules.d/80-net-name-slot.rules
+
+		# Create journald related folders.
+		mkdir -pv %{BUILDROOT}/run/log/journal
+		chown root:systemd-journal %{BUILDROOT}/run/log/journal
+
+		mkdir -pv %{BUILDROOT}/var/log/journal
+		chown root:systemd-journal %{BUILDROOT}/var/log/journal
 	end
+end
+
+create_groups
+	# Create groups for udev.
+	getent group cdrom >/dev/null || groupadd -g 11 cdrom || :
+	getent group tape >/dev/null || groupadd -g 33 tape || :
+	getent group dialout >/dev/null || groupadd -g 18 dialout || :
+	getent group floppy >/dev/null || groupadd -g 19 floppy || :
+
+	# Create group for journald.
+	getent group systemd-journal >/dev/null || /usr/sbin/groupadd -r systemd-journal
 end
 
 packages
@@ -189,11 +221,7 @@ packages
 		end
 
 		script prein
-			# Create groups for udev.
-			getent group cdrom >/dev/null || groupadd -g 11 cdrom || :
-			getent group tape >/dev/null || groupadd -g 33 tape || :
-			getent group dialout >/dev/null || groupadd -g 18 dialout || :
-			getent group floppy >/dev/null || groupadd -g 19 floppy || :
+			%{create_groups}
 		end
 
 		script postin
@@ -223,6 +251,8 @@ packages
 			# Be sure to stop the old udev before updating.
 			/usr/bin/systemctl stop udev.service udev-trigger.service \
 				udev-control.socket udev-kernel.socket >/dev/null 2>&1 || :
+
+			%{create_groups}
 		end
 
 		script postup
