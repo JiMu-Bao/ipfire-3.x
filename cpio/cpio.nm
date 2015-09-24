@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = cpio
-version    = 2.11
-release    = 2
+version    = 2.12
+release    = 1
 
 groups     = System/Packaging
 url        = http://www.gnu.org/software/cpio/
