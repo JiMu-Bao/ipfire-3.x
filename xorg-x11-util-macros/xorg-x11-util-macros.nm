@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = xorg-x11-util-macros
-version    = 1.17
+version    = 1.19.0
 release    = 1
 arch       = noarch
 
