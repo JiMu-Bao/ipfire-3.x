@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = icu
-version    = %{ver_major}.%{ver_minor}.%{ver_plevel}
-ver_major  = 50
+version    = %{ver_major}.%{ver_minor}
+ver_major  = 56
 ver_minor  = 1
-ver_plevel = 2
-release    = 3
+ver_plevel =
+release    = 1
 
 groups     = Development/Tools
 url        = http://www.icu-project.org
@@ -20,7 +20,7 @@ description
 end
 
 source_dl  = http://download.icu-project.org/files/icu4c/%{version}/
-sources    = icu4c-%{ver_major}_%{ver_minor}_%{ver_plevel}-src.tgz
+sources    = icu4c-%{ver_major}_%{ver_minor}-src.tgz
 
 build
 	DIR_APP = %{DIR_SRC}/icu/source
