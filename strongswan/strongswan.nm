@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = strongswan
-version    = 5.3.2
+version    = 5.3.3
 release    = 1
 
 groups     = Networking/VPN
@@ -38,11 +38,12 @@ build
 		openssl-devel
 		perl
 		sqlite-devel
-		systemd-devel
-		systemd-units
+		systemd-devel >= 221-2
 	end
 
 	configure_options += \
+		--disable-static \
+		--with-ipseclibdir=%{libdir}/ipsec \
 		--enable-curl \
 		--enable-ldap \
 		--enable-openssl \
@@ -61,6 +62,7 @@ build
 		--enable-eap-identity \
 		--with-capabilities=libcap \
 		--enable-swanctl \
+		--enable-systemd \
 		--enable-kernel-libipsec
 
 	if "%{DISTRO_ARCH}" == "i686"
@@ -72,6 +74,14 @@ build
 	#test
 	#	make check
 	#end
+
+	install_cmds
+		# Drop unneeded files.
+		rm -rvf %{BUILDROOT}%{libdir}/ipsec/lib*.so
+
+		# Move libraries to libdir.
+		mv %{BUILDROOT}%{libdir}/ipsec/lib*.so.* %{BUILDROOT}%{libdir}
+	end
 end
 
 packages
@@ -83,11 +93,14 @@ packages
 		script postup
 			systemctl daemon-reload >/dev/null 2>&1 || :
 			systemctl reload-or-try-restart strongswan.service >/dev/null 2>&1 || :
+			systemctl reload-or-try-restart strongswan-swanctl.service >/dev/null 2>&1 || :
 		end
 
 		script preun
 			systemctl disable --no-reload strongswan.service >/dev/null 2>&1 || :
+			systemctl disable --no-reload strongswan-swanctl.service >/dev/null 2>&1 || :
 			systemctl stop strongswan.service >/dev/null 2>&1 || :
+			systemctl stop strongswan-swanctl.service >/dev/null 2>&1 || :
 		end
 
 		script postun
