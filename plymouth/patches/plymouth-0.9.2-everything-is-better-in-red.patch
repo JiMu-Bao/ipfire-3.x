@@ -1,0 +1,16 @@
+diff -Nur a/src/plugins/splash/text/plugin.c b/src/plugins/splash/text/plugin.c
+--- a/src/plugins/splash/text/plugin.c	2015-02-26 19:32:41.000000000 +0100
++++ b/src/plugins/splash/text/plugin.c	2015-09-10 22:03:27.266902240 +0200
+@@ -174,10 +174,10 @@
+                                           0x2e3436);
+         ply_terminal_set_color_hex_value (terminal,
+                                           PLY_TERMINAL_COLOR_WHITE,
+-                                          0xffffff);
++                                          0xCC0A00);
+         ply_terminal_set_color_hex_value (terminal,
+                                           PLY_TERMINAL_COLOR_BROWN,
+-                                          0x979a9b);
++                                          0x880400);
+ 
+         ply_text_display_set_background_color (view->display,
+                                                PLY_TERMINAL_COLOR_BLACK);
