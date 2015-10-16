@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = ddns
-version    = 008
-release    = 2
+version    = 009
+release    = 1
 arch       = noarch
 
 groups     = System/Tools
