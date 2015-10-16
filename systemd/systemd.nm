@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 221
-release    = 1
+release    = 2
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -60,6 +60,7 @@ build
 		--with-sysvrcnd-path= \
 		--enable-introspection \
 		--enable-zlib \
+		--enable-compat-libs \
 		--disable-smack \
 		--disable-backlight \
 		--disable-firstboot \
@@ -358,8 +359,29 @@ packages
 		end
 	end
 
+	package %{name}-compat-libs
+		summary = systemd compatibility libraries.
+		description
+			Compatibility libraries for systemd. If your package requires this
+			package, you need to update your link options and build.
+		end
+
+		requires
+			%{name}-libs = %{thisver}
+		end
+
+		files
+			%{libdir}/libsystemd-daemon.so.*
+			%{libdir}/libsystemd-login.so.*
+			%{libdir}/libsystemd-journal.so.*
+			%{libdir}/libsystemd-id128.so.*
+		end
+	end
+
 	package %{name}-devel
 		template DEVEL
+
+		requires += %{name}-compat-libs = %{thisver}
 
 		files += %{prefix}/lib/pakfire/macros/
 	end
