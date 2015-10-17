@@ -5,9 +5,9 @@
 
 name       = pygobject3
 version    = %{ver_major}.%{ver_minor}
-ver_major  = 3.7
-ver_minor  = 4
-release    = 2
+ver_major  = 3.18
+ver_minor  = 0
+release    = 1
 
 groups     = Development/Tools
 url        = http://www.pygtk.org/
@@ -27,14 +27,13 @@ sources    = %{thisapp}.tar.xz
 build
 	requires
 		cairo-gobject-devel >= 1.12.12
-		chrpath
 		glib2-devel >= 2.34.2
 		gobject-introspection-devel >= 1.34.2
 		pkg-config
 		python-cairo-devel
 		python3-cairo-devel
 		python-devel
-		python3-devel
+		python3-devel >= 3.4
 	end
 
 	DIR_APP3 = %{DIR_APP}-python3
@@ -65,12 +64,10 @@ build
 		pushd %{DIR_APP3}
 		export PYTHON=%{python3}
 		make install DESTDIR=%{BUILDROOT}
-		chrpath --delete %{BUILDROOT}%{python3_sitearch}/gi/{*.so,*/*.so}
 		popd
 
 		export PYTHON=%{python}
 		make install DESTDIR=%{BUILDROOT}
-		chrpath --delete %{BUILDROOT}%{python_sitearch}/gi/{*.so,*/*.so}
 	end
 end
 
