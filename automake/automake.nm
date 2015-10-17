@@ -5,7 +5,7 @@
 
 name       = automake
 version    = 1.13.2
-release    = 1
+release    = 2
 arch       = noarch
 
 groups     = Development/Tools
@@ -26,12 +26,17 @@ required_autoconf_version = 2.62
 build
 	requires
 		autoconf >= %{required_autoconf_version}
-		perl
+		perl(threads)
+		perl(Thread::Queue)
 	end
 end
 
 packages
 	package %{name}
-		requires = autoconf >= %{required_autoconf_version}
+		requires
+			autoconf >= %{required_autoconf_version}
+			perl(threads)
+			perl(Thread::Queue)
+		end
 	end
 end
