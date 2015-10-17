@@ -4,9 +4,8 @@
 ###############################################################################
 
 name       = python-tornado
-version    = 3.0
+version    = 4.2.1
 release    = 1
-arch       = noarch
 thisapp    = tornado-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -28,7 +27,7 @@ build
 	requires
 		pakfire-builder >= 0.9.23-2
 		python-devel
-		python3-devel
+		python3-devel >= 3.4
 	end
 
 	DIR_APP3 = %{DIR_APP}-python3
