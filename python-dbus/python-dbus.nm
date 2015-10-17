@@ -5,7 +5,7 @@
 
 name       = python-dbus
 version    = 1.1.1
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.freedesktop.org/software/dbus/
@@ -26,7 +26,7 @@ build
 		dbus-glib-devel
 		pkg-config
 		python-devel
-		python3-devel
+		python3-devel >= 3.4
 	end
 
 	configure_options += \

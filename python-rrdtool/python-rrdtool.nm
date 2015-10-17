@@ -5,7 +5,7 @@
 
 name       = python-rrdtool
 version    = 0.1.1
-release    = 1
+release    = 2
 thisapp    = rrdtool-%{version}
 
 groups     = System/Libraries
@@ -22,7 +22,7 @@ source_dl  = https://pypi.python.org/packages/source/r/rrdtool/
 
 build
 	requires
-		python3-devel
+		python3-devel >= 3.4
 		rrdtool-devel
 	end
 
