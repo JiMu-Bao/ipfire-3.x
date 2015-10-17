@@ -5,7 +5,7 @@
 
 name       = python3-cairo
 version    = 1.10.0
-release    = 1
+release    = 2
 
 groups     = Development/Tools
 url        = http://cairographics.org/pycairo
@@ -25,7 +25,21 @@ build
 	requires
 		cairo-devel
 		pkg-config
-		python3-devel
+		python3-devel >= 3.4
+	end
+
+	prepare
+		# Extract source tarball.
+		%{MACRO_EXTRACT_TARBALL}
+
+		# Ensure that ./waf has created the cached unpacked version
+		# of the wafadmin source tree.
+		# This will be created to a subdirectory like
+		#    .waf3-1.5.18-a7b91e2a913ce55fa6ecdf310df95752
+		python3 ./waf --version
+
+		# Apply all patches.
+		%{MACRO_PATCHES}
 	end
 
 	build
