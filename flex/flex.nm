@@ -5,7 +5,7 @@
 
 name       = flex
 version    = 2.5.39
-release    = 1
+release    = 2
 
 groups     = Development/Tools
 url        = http://flex.sourceforge.net/
@@ -41,7 +41,7 @@ build
 
 	install_cmds
 		echo "#!/bin/sh"			>  %{BUILDROOT}/usr/bin/lex
-		echo "exec /usr/bin/flex -l \"$$@\""	>> %{BUILDROOT}/usr/bin/lex
+		echo "exec /usr/bin/flex -l \"\$@\""	>> %{BUILDROOT}/usr/bin/lex
 		chmod 755 %{BUILDROOT}/usr/bin/lex
 	end
 end
