@@ -6,7 +6,7 @@
 name       = network
 epoch      = 1
 version    = 007
-release    = 1
+release    = 1.1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Base Networking/Tools
@@ -25,8 +25,15 @@ source_dl  = http://source.ipfire.org/releases/network/
 
 build
 	requires
+		autoconf
+		automake
 		docbook-xsl
 		libxslt
+		systemd-devel
+	end
+
+	prepare_cmds
+		[ -e "configure" ] || ./autogen.sh
 	end
 
 	install_cmds
@@ -63,23 +70,23 @@ packages
 		end
 
 		configfiles
-			/etc/firewall
 			/etc/network
 		end
 
-		# Enable network service, so it starts at the first boot.
 		script postin
 			systemctl daemon-reload >/dev/null 2>&1 || :
-			systemctl --no-reload enable network.service >/dev/null 2>&1 || :
 		end
 
-		script preun
-			systemctl --no-reload disable network.service >/dev/null 2>&1 || :
-			systemctl stop network.service >/dev/null 2>&1 || :
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
 		end
 
 		script postup
 			systemctl daemon-reload >/dev/null 2>&1 || :
 		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
 	end
 end
