@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = pdns
-version    = 3.3.1
-release    = 2
+version    = 3.4.7
+release    = 1
 
 groups     = Networking/DNS
 url        = http://powerdns.com/
@@ -20,6 +20,7 @@ description
 end
 
 source_dl  = http://downloads.powerdns.com/releases/
+sources    = %{thisapp}.tar.bz2
 
 build
 	requires
@@ -38,16 +39,20 @@ build
 
 	configure_options += \
 		--sysconfdir=%{sysconfdir}/pdns \
-		--libdir=%{libdir}/powerdns \
 		--with-system-polarssl \
 		--with-modules="" \
 		--with-dynmodules="pipe geo gsqlite3" \
 		--with-lua \
 		--enable-tools \
-		--disable-static
+		--disable-static \
+		--enable-unit-tests
 
 	prepare_cmds
 		%{create_user}
+	end
+
+	test
+		make -C pdns check
 	end
 
 	install_cmds
@@ -78,7 +83,7 @@ build
 		chrpath --delete %{BUILDROOT}/usr/bin/pdns_control
 		chrpath --delete %{BUILDROOT}/usr/bin/zone2sql
 		chrpath --delete %{BUILDROOT}/usr/sbin/pdns_server
-		chrpath --delete %{BUILDROOT}%{libdir}/powerdns/*.so
+		chrpath --delete %{BUILDROOT}%{libdir}/pdns/*.so
 		chrpath --delete %{BUILDROOT}/usr/bin/dnsreplay
 		chrpath --delete %{BUILDROOT}/usr/bin/pdnssec
 	end
