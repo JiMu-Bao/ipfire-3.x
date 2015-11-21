@@ -75,9 +75,9 @@
  enable_plugin
  pluginlibs
 @@ -920,6 +922,7 @@
- enable_plugin
  enable_libquadmath_support
  with_linker_hash_style
+ with_diagnostics_color
 +enable_esp
  '
        ac_precious_vars='build_alias
