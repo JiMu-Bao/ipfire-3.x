@@ -7,7 +7,7 @@
 build_graphite = 1
 
 name       = gcc
-version    = 5.2.0
+version    = 5.3.0
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
