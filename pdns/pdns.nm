@@ -5,7 +5,7 @@
 
 name       = pdns
 version    = 3.4.7
-release    = 1
+release    = 2
 
 groups     = Networking/DNS
 url        = http://powerdns.com/
@@ -23,12 +23,16 @@ source_dl  = http://downloads.powerdns.com/releases/
 sources    = %{thisapp}.tar.bz2
 
 build
+	# pdns uses polarssl which is no longer maintained
+	# upstream any more. Since nothing else is using
+	# polarssl any more we have dropped this from the
+	# distribution and bundle it with pdns.
+
 	requires
 		boost-devel
 		chrpath
 		gcc-c++
 		lua-devel
-		polarssl-devel
 		shadow-utils
 		sqlite-devel
 		zlib-devel
@@ -39,7 +43,6 @@ build
 
 	configure_options += \
 		--sysconfdir=%{sysconfdir}/pdns \
-		--with-system-polarssl \
 		--with-modules="" \
 		--with-dynmodules="pipe geo gsqlite3" \
 		--with-lua \
