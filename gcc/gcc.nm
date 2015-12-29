@@ -369,10 +369,6 @@ packages
 		# We do not ship libgcc-devel anymore.
 		provides += libgcc-devel = %{thisver}
 		obsoletes += libgcc-devel < %{thisver}
-
-		if "%{build_cloog}" == "1"
-			requires += cloog >= %{cloog_version}
-		end
 	end
 
 	package %{name}-c++
