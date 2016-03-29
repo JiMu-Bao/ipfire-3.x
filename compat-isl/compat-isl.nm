@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = compat-isl
-version    = 0.12.2
+version    = 0.14.1
 release    = 1
 thisapp    = isl-%{version}
 
@@ -23,7 +23,7 @@ description
 end
 
 source_dl += http://isl.gforge.inria.fr/
-sources    = %{thisapp}.tar.lzma
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -38,13 +38,21 @@ build
 	install
 		# Install just the library and no headers.
 		mkdir -pv %{BUILDROOT}%{libdir}
-		install -m 644 .libs/libisl.so.10.2.2 %{BUILDROOT}%{libdir}
-		ln -svf libisl.so.10.2.2 %{BUILDROOT}%{libdir}/libisl.so.10
+		install -m 644 .libs/libisl.so.13.1.1 %{BUILDROOT}%{libdir}
+		ln -svf libisl.so.13.1.1 %{BUILDROOT}%{libdir}/libisl.so.13
 	end
 end
 
 packages
 	package %{name}
+		provides
+			isl = %{thisver}
+		end
+
+		obsoletes
+			isl <= %{thisver}
+		end
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
