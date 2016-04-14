@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libvirt
-version    = 0.9.9
+version    = 1.3.3
 release    = 1
 
 maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
@@ -18,7 +18,8 @@ description
 	versions of Linux.
 end
 
-source_dl  =
+source_dl  = ftp://libvirt.org/libvirt/
+sources    = %{thisapp}.tar.gz
 
 build
 	requires
