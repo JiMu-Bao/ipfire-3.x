@@ -5,7 +5,7 @@
 
 name       = libvirt
 version    = 1.3.3
-release    = 1
+release    = 2
 
 maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
 groups     = Applications/Virtualization
@@ -43,7 +43,6 @@ build
 		pkg-config
 		python-devel
 		readline-devel
-		xen-devel
 		/bin/mount
 		/bin/umount
 	end
@@ -59,7 +58,7 @@ build
 		--without-polkit \
 		--without-uml \
 		--without-vbox \
-		--with-xen \
+		--without-xen \
 		--with-storage-fs \
 		--with-storage-lvm \
 		--with-storage-mpath \
