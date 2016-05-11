@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 4.1.7
-release    = 2
+release    = 3
 thisapp    = linux-%{version}
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -95,7 +95,6 @@ build
 	if "%{DISTRO_ARCH}" == "armv7hl"
 		# Build the default unified kernel.
 		build_kernel_default = 1
-		build_kernel_lpae = 1
 
 		kernel_target = zImage
 	end
@@ -113,11 +112,6 @@ build
 	# Build legacy kernel.
 	if "%{build_kernel_legacy}" == "1"
 		kernels += legacy
-	end
-
-	# Build lpae kernel
-	if "%{build_kernel_lpae}" == "1"
-		kernels += lpae
 	end
 
 	perf_make = make %{MAKETUNING} -C tools/perf V=1 WERROR=0 \
@@ -547,22 +541,6 @@ packages
 
 			kernel_name = kernel-legacy
 			kernel_release = %{fullver}.legacy
-		end
-	end
-
-	if "%{build_kernel_lpae}" == "1"
-		package kernel-lpae
-			template KERNEL
-
-			kernel_name = kernel-lpae
-			kernel_release = %{fullver}.lpae
-		end
-
-		package kernel-lpae-devel
-			template KERNELDEVEL
-
-			kernel_name = kernel-lpae
-			kernel_release = %{fullver}.lpae
 		end
 	end
 

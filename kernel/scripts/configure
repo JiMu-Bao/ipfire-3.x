@@ -17,7 +17,7 @@ CONFIGS="${CONFIGS} i686:legacy i686:default"
 CONFIGS="${CONFIGS} aarch64:default"
 
 # armv7hl
-CONFIGS="${CONFIGS} armv7hl:lpae armv7hl:default"
+CONFIGS="${CONFIGS} armv7hl:default"
 
 PLATFORMS="x86 arm"
 declare -A SUBPLATFORMS
@@ -129,10 +129,6 @@ function merge_config() {
 		armv7hl:default)
 			configs="${configs} config-arm-generic config-arm32-generic"
 			;;
-		armv7hl:lpae)
-			configs="${configs} config-arm-generic config-arm32-generic"
-			configs="${configs} config-armv7hl-lpae"
-			;;
 		*)
 			echo >&2 "ERROR: Invalid parameters given: $@"
 			return 1
@@ -240,9 +236,6 @@ function diff_configs() {
 
 		# Do not include leaf configuration.
 		case "${config}" in
-			armv7hl:lpae)
-				continue
-				;;
 			i686:legacy)
 				continue
 				;;
