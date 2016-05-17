@@ -29,7 +29,6 @@ CONFIG_VIRT_CPU_ACCOUNTING_GEN=y
 CONFIG_CONTEXT_TRACKING=y
 CONFIG_RCU_USER_QS=y
 CONFIG_CONTEXT_TRACKING_FORCE=y
-CONFIG_RCU_FANOUT=64
 CONFIG_ARCH_SUPPORTS_NUMA_BALANCING=y
 CONFIG_ARCH_SUPPORTS_INT128=y
 # CONFIG_NUMA_BALANCING is not set
@@ -148,20 +147,32 @@ CONFIG_SGI_IOC4=m
 CONFIG_INTEL_MIC_BUS=m
 
 #
-# Intel MIC Host Driver
+# SCIF Bus Driver
 #
-# CONFIG_INTEL_MIC_HOST is not set
+# CONFIG_SCIF_BUS is not set
 
 #
-# Intel MIC Card Driver
+# SCIF Driver
 #
-# CONFIG_INTEL_MIC_CARD is not set
 # CONFIG_GENWQE is not set
 
 #
 # SCSI Transports
 #
 CONFIG_SCSI_FLASHPOINT=y
+
+#
+# Distributed Switch Architecture drivers
+#
+CONFIG_THUNDER_NIC_PF=m
+CONFIG_THUNDER_NIC_VF=m
+CONFIG_THUNDER_NIC_BGX=m
+CONFIG_LIQUIDIO=m
+
+#
+# Input Device Drivers
+#
+CONFIG_KEYBOARD_STMPE=m
 
 #
 # PC SMBus host controller drivers
@@ -171,6 +182,16 @@ CONFIG_SCSI_FLASHPOINT=y
 # CONFIG_I2C_ALI15X3 is not set
 # CONFIG_I2C_SIS5595 is not set
 # CONFIG_I2C_SIS630 is not set
+
+#
+# MFD GPIO expanders
+#
+CONFIG_GPIO_TC3589X=y
+
+#
+# USB GPIO expanders
+#
+CONFIG_POWER_RESET_AS3722=y
 
 #
 # Media digital TV PCI Adapters
@@ -197,6 +218,7 @@ CONFIG_INTEL_MIC_X100_DMA=m
 #
 CONFIG_CRYPTO_SKEIN=y
 # CONFIG_UNISYSSPAR is not set
+CONFIG_COMMON_CLK_XLNX_CLKWZRD=m
 
 #
 # Generic IOMMU Pagetable Support
@@ -210,11 +232,6 @@ CONFIG_IRQ_REMAP=y
 # File systems
 #
 CONFIG_QUOTACTL_COMPAT=y
-
-#
-# Memory Debugging
-#
-CONFIG_KASAN_SHADOW_OFFSET=0xdffffc0000000000
 
 #
 # Runtime Testing
