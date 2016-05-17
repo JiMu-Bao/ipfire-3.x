@@ -736,12 +736,10 @@ CONFIG_RCU_CPU_STALL_TIMEOUT=21
 # Runtime Testing
 #
 # CONFIG_PID_IN_CONTEXTIDR is not set
-# CONFIG_DEBUG_SET_MODULE_RONX is not set
-CONFIG_DEBUG_RODATA=y
 # CONFIG_CORESIGHT is not set
 
 #
-# Logging Options
+# Security options
 #
 CONFIG_LSM_MMAP_MIN_ADDR=32768
 

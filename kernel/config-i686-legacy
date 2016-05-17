@@ -7,6 +7,7 @@ CONFIG_HIGHMEM4G=y
 # CONFIG_HIGHMEM64G is not set
 # CONFIG_VMSPLIT_3G_OPT is not set
 # CONFIG_VMSPLIT_2G_OPT is not set
+# CONFIG_PHYS_ADDR_T_64BIT is not set
 
 #
 # Power management and ACPI options
@@ -336,11 +337,6 @@ CONFIG_PWM_PCA9685=m
 CONFIG_PWM_TWL=m
 CONFIG_PWM_TWL_LED=m
 CONFIG_IRQCHIP=y
-
-#
-# Non-executable pages
-#
-CONFIG_PAX_KERNEXEC_MODULE_TEXT=4
 
 #
 # Random Number Generation

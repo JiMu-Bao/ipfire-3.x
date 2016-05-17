@@ -399,6 +399,7 @@ CONFIG_ACPI_REDUCED_HARDWARE_ONLY=y
 #
 # Pseudo filesystems
 #
+# CONFIG_PROC_KCORE is not set
 # CONFIG_HUGETLBFS is not set
 CONFIG_EFIVAR_FS=y
 CONFIG_KVM_MMIO=y
@@ -415,14 +416,6 @@ CONFIG_ARCH_WANT_FRAME_POINTERS=y
 CONFIG_FRAME_POINTER=y
 
 #
-# Lock Debugging (spinlocks, mutexes, etc...)
-#
-# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
-# CONFIG_DEBUG_LOCK_ALLOC is not set
-# CONFIG_PROVE_LOCKING is not set
-# CONFIG_LOCK_STAT is not set
-
-#
 # RCU Debugging
 #
 CONFIG_FUNCTION_GRAPH_TRACER=y
@@ -432,11 +425,6 @@ CONFIG_FUNCTION_GRAPH_TRACER=y
 #
 # CONFIG_ARM64_PTDUMP is not set
 # CONFIG_ARM64_RANDOMIZE_TEXT_OFFSET is not set
-
-#
-# Memory Protections
-#
-CONFIG_GRKERNSEC_KSTACKOVERFLOW=y
 
 #
 # Random Number Generation
