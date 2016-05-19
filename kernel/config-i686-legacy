@@ -122,11 +122,6 @@ CONFIG_LEDS_PWM=m
 #
 # Microsoft Hyper-V guest support
 #
-# CONFIG_FB_OLPC_DCON is not set
-
-#
-# Android
-#
 CONFIG_XO1_RFKILL=m
 # CONFIG_XO15_EBOOK is not set
 

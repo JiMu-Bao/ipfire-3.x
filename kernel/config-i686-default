@@ -136,7 +136,6 @@ CONFIG_X86_LONGRUN=y
 CONFIG_PCI_GOANY=y
 CONFIG_PCI_BIOS=y
 # CONFIG_PCI_PRI is not set
-# CONFIG_PCI_PASID is not set
 
 #
 # PCI host controller drivers
@@ -324,9 +323,8 @@ CONFIG_LEDS_OT200=m
 CONFIG_PCH_DMA=m
 
 #
-# Android
+# Microsoft Hyper-V guest support
 #
-# CONFIG_COMMON_CLK_XLNX_CLKWZRD is not set
 CONFIG_TC1100_WMI=m
 CONFIG_INTEL_IMR=y
 
