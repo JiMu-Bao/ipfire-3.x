@@ -1,0 +1,17 @@
+diff --git a/gcc/Makefile.in b/gcc/Makefile.in
+index 6c5adc0..73d817d 100644
+--- a/gcc/Makefile.in
++++ b/gcc/Makefile.in
+@@ -261,12 +261,6 @@ endif
+ NO_PIE_CFLAGS = @NO_PIE_CFLAGS@
+ NO_PIE_FLAG = @NO_PIE_FLAG@
+ 
+-# We don't want to compile the compilers with -fPIE, it make PCH fail.
+-COMPILER += $(NO_PIE_CFLAGS)
+-
+-# Link with -no-pie since we compile the compiler with -fno-PIE.
+-LINKER += $(NO_PIE_FLAG)
+-
+ # Like LINKER, but use a mutex for serializing front end links.
+ ifeq (@DO_LINK_MUTEX@,true)
+ LLINKER = $(SHELL) $(srcdir)/lock-and-run.sh linkfe.lck $(LINKER)

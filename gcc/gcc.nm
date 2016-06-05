@@ -7,7 +7,7 @@
 build_graphite = 1
 
 name       = gcc
-version    = 5.3.0
+version    = 6.1.0
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -124,9 +124,6 @@ build
 			--with-isl
 	end
 
-	# CFLAGS for hardening.
-	HARD_CFLAGS = -DENABLE_ESP -DEFAULT_PIE_SSP -DEFAULT_RELRO -DEFAULT_BIND_NOW
-
 	prepare_cmds
 		mkdir -v %{DIR_SRC}/gcc-build
 
@@ -153,19 +150,6 @@ build
 
 		sed -i gcc/Makefile.in \
 			-e "s/-fno-exceptions/& -fno-asynchronous-unwind-tables/"
-
-		# we want to be able to control the pie patch logic via something other
-		# than ALL_CFLAGS and ALL_CXXFLAGS...
-		sed -i gcc/Makefile.in \
-			-e '/^ALL_CFLAGS/iHARD_CFLAGS = %{HARD_CFLAGS}' \
-			-e 's|^ALL_CFLAGS = |ALL_CFLAGS = $(HARD_CFLAGS) |' \
-			-e '/^ALL_CXXFLAGS/iHARD_CFLAGS = %{HARD_CFLAGS}' \
-			-e 's|^ALL_CXXFLAGS = |ALL_CXXFLAGS = $(HARD_CFLAGS) |'
-
-		# However, genautomata crashes with a "Bus Error" when compiled
-		# with PIC.
-		sed -i gcc/Makefile.in \
-			-e 's|^build/genautomata$(build_exeext) .*|& -fno-PIC|'
 
 		# Default to -gdwarf-4 -fno-debug-types-section rather than -gdwarf-2
 		sed -i gcc/common.opt \
@@ -221,6 +205,7 @@ build
 			--enable-languages=c,c++,lto \
 			--enable-bootstrap \
 			--enable-checking=release \
+			--enable-default-pie \
 			--disable-werror \
 			--disable-libssp \
 			--with-system-zlib \
@@ -304,7 +289,7 @@ build
 		chmod 755 %{BUILDROOT}%{libdir}/libgomp.so.1.*
 
 		# libstdc++
-		ln -svf ../../../libstdc++.so.6.0.21 ${FULLPATH}/libstdc++.so
+		ln -svf ../../../libstdc++.so.6.0.22 ${FULLPATH}/libstdc++.so
 		mv -vf %{BUILDROOT}%{libdir}/lib{std,sup}c++.a ${FULLPATH}
 
 		# libquadmath
