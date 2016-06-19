@@ -7,8 +7,8 @@ name       = gobject-introspection
 version    = %{major_ver}.%{minor_ver}
 release    = 1
 
-major_ver  = 1.39
-minor_ver  = 3
+major_ver  = 1.48
+minor_ver  = 0
 
 groups     = Development/Libraries
 url        = http://live.gnome.org/GObjectIntrospection
@@ -30,11 +30,13 @@ build
 		bison
 		cairo-devel
 		flex
-		glib2-devel
+		glib2-devel >= 2.48.0
 		libffi-devel
 		libtool
 		python-devel
 	end
+
+	export LD_LIBRARY_PATH = %{DIR_APP}/.libs:%{DIR_APP}/tests/offsets/.libs
 
 	configure_options += \
 		--disable-static
