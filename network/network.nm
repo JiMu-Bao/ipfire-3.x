@@ -5,8 +5,8 @@
 
 name       = network
 epoch      = 1
-version    = 007
-release    = 2
+version    = 008
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Base Networking/Tools
