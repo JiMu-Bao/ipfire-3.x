@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = bird
-version    = 1.5.0
+version    = 1.6.0
 release    = 1
 
 groups     = Networking/Routing
@@ -26,10 +26,6 @@ build
 		ncurses-devel
 		readline-devel
 	end
-
-	configure_options += \
-		--sysconfdir=/etc \
-		--localstatedir=/var
 
 	prepare_cmds
 		mkdir -pv %{DIR_APP}/ipv6
