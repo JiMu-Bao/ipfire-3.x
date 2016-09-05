@@ -5,7 +5,7 @@
 
 name       = quagga
 version    = 1.0.20160315
-release    = 1
+release    = 2
 
 groups     = Networking/Routing
 url        = http://www.quagga.net/
@@ -31,8 +31,13 @@ build
 		systemd-units
 	end
 
+	prepare_cmds
+		%{create_user}
+	end
+
 	configure_options += \
 		--sysconfdir=/etc/quagga \
+		--localstatedir=%{localstatedir}/run/quagga \
 		--disable-static \
 		--disable-watchquagga \
 		--enable-multipath=64 \
@@ -40,6 +45,11 @@ build
 		--disable-pimd \
 		--disable-ripd \
 		--disable-ripngd
+
+	install_cmds
+		mkdir -pv %{localstatedir}/run/quagga
+		chown -v quagga.quagga %{localstatedir}/run/quagga
+	end
 end
 
 create_user
