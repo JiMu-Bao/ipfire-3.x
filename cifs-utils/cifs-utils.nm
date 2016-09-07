@@ -1,0 +1,42 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = cifs-utils
+version    = 6.6
+release    = 1
+
+groups     = System/Tools
+url        = https://wiki.samba.org/index.php/LinuxCIFS_utils
+license    = GPL
+summary    = A utility for the Common Internet File System
+
+description
+	This package of tools is called cifs-utils. Although not really part
+	of Samba proper, these tools were originally part of the Samba package.
+	For several reasons, shipping these tools as part of Samba was
+	problematic and it was deemed better to split them off into their own
+	package.
+end
+
+source_dl  = http://download.samba.org/pub/linux-cifs/cifs-utils/
+sources    = %{thisapp}.tar.bz2
+
+build
+	test
+		make check
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
