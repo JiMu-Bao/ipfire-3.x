@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = ding-libs
-version    = 0.5.0
-release    = 2
+version    = 0.6.0
+release    = 1
 
 groups     = System/Libraries
 url        = http://fedorahosted.org/sssd/
