@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = sssd
-version    = 1.9.4
-release    = 2
+version    = 1.14.1
+release    = 1
 
 groups     = System/Tools
 url        = http://fedorahosted.org/sssd/
@@ -22,29 +22,46 @@ end
 source_dl  = https://fedorahosted.org/released/sssd/
 
 build
+	# The system security services daemon and many tools requires
+	# an rpath to run properly. Disable the macro for fixing these rpath's.
+	MACRO_FIX_LIBTOOL = # Do nothing.
+
 	requires
 		/usr/bin/nsupdate
+		autoconf
+		automake
 		c-ares-devel
+		cifs-utils-devel >= 6.6
 		cyrus-sasl-devel
 		dbus-devel
+		ding-libs-devel >= 0.6.0
 		docbook-xsl
+		gettext-devel
 		glib2-devel
 		krb5-devel >= 1.10.3
 		libcollection-devel
 		libdhash-devel
 		libini_config-devel
 		libldb-devel
-		libnl-devel
+		libnl3-devel
+		libnfsidmap-devel
 		libsemanage-devel
 		libtalloc-devel
 		libtdb-devel
 		libtevent-devel
+		libtool
 		openldap-devel
 		openssl-devel
 		pam-devel >= 1.1.6
 		pcre-devel
 		popt-devel
-		python-devel
+		python3-devel
+		samba-devel >= 4.0.5
+		systemd-devel
+	end
+
+	prepare_cmds
+		autoreconf -vfi
 	end
 
 	configure_options += \
@@ -60,7 +77,13 @@ build
 		--with-systemdunitdir=%{unitdir} \
 		--enable-pammoddir=%{libdir}/security \
 		--disable-static \
-		--disable-rpath
+		--disable-rpath \
+		--disable-config-lib \
+		--without-secrets
+
+	test
+		make check
+	end
 
 	install_cmds
 		# Install default config file.
@@ -69,6 +92,14 @@ build
 
 		# Remove old sysVinit stuff.
 		rm -rvf %{BUILDROOT}%{sysconfdir}/rc.d
+	end
+end
+
+quality-agent
+	whitelist_rpath
+		%{libdir}/sssd
+		%{libdir}:%{libdir}/sssd
+		%{libdir}/sssd:%{libdir}
 	end
 end
 
