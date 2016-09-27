@@ -5,7 +5,7 @@
 
 name       = gobject-introspection
 version    = %{major_ver}.%{minor_ver}
-release    = 2
+release    = 3
 
 major_ver  = 1.48
 minor_ver  = 0
@@ -41,6 +41,13 @@ build
 
 	configure_options += \
 		--disable-static
+
+	install_cmds
+		# Fix interpreter
+		sed -e "s@^#!.*@#!/usr/bin/python@" \
+			-i %{BUILDROOT}%{bindir}/g-ir-scanner \
+			-i %{BUILDROOT}%{bindir}/g-ir-annotation-tool
+	end
 end
 
 packages
