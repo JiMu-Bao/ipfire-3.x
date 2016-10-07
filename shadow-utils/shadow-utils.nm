@@ -4,13 +4,13 @@
 ###############################################################################
 
 name       = shadow-utils
-version    = 4.2.1
-release    = 2.1
+version    = 4.4
+release    = 1
 thisapp    = shadow-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
-url        = http://pkg-shadow.alioth.debian.org/
+url        = https://github.com/shadow-maint/shadow/
 license    = GPLv2+
 summary    = Utilities to deal with user accounts.
 
@@ -20,37 +20,46 @@ description
 	format, plus programs for managing user and group accounts.
 end
 
-source_dl  = http://pkg-shadow.alioth.debian.org/releases/
-sources    = %{thisapp}.tar.xz
+source_dl  = https://github.com/shadow-maint/shadow/archive/%{version}.tar.gz#/
 
 build
 	requires
+		autoconf
+		automake
 		audit-devel
 		bison
+		docbook-xsl
 		flex
+		gettext-devel
 		gnome-doc-utils
 		libacl-devel
 		libattr-devel
 		libcap-devel
-		libselinux-devel
-		libsemanage-devel
+		libtool
 	end
 
 	configure_options += \
 		--enable-shadowgrp \
+		--enable-man \
 		--with-sha-crypt \
-		--with-selinux \
 		--without-libcrack \
 		--without-libpam \
 		--disable-static \
 		--with-group-name-max-length=32
 
 	prepare_cmds
+		autoreconf -vfi
+
 		# Do not build these files:
 		for i in nologin chfn chgpasswd chpasswd chsh expiry gpasswd groups login \
 				logoutd passwd su; do \
+
+			# Do not generate any manpages for them.
+			find man -name Makefile.in -exec sed -i -e "/$i\.[1-9]\.xml/d" {} \;; \
+			find man -name Makefile.in -exec sed -i -e "s/man1\/$i\.1/ /" {} \;; \
+
+			# Do not compile them.
 			sed -i "s/$i\$(EXEEXT)//" src/Makefile.in; \
-			find man -name Makefile.in -exec sed -i "s/$i\.1/ /" {} \;; \
 		done
 
 		sed -i src/Makefile.in \
