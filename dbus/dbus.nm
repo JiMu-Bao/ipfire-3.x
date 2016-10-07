@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = dbus
-version    = 1.11.2
+version    = 1.11.4
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -23,16 +23,16 @@ source_dl  = http://dbus.freedesktop.org/releases/dbus/
 
 build
 	requires
+		/usr/bin/xsltproc
 		audit-devel
 		expat-devel
 		libcap-ng-devel
-		libselinux-devel
-		systemd-units
+		systemd-devel
+		xmlto
 	end
 
 	configure_options += \
 		--enable-libaudit \
-		--enable-selinux=yes \
 		--with-systemdsystemunitdir=%{unitdir} \
 		--with-dbus-user=dbus
 end
