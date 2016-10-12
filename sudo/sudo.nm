@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = sudo
-version    = 1.8.17p1
+version    = 1.8.18p1
 release    = 1
 
 groups     = Applications/System
@@ -30,7 +30,6 @@ build
 	requires
 		audit-devel
 		cyrus-sasl-devel
-		libselinux-devel
 		openldap-devel
 		pam-devel
 	end
@@ -41,18 +40,17 @@ build
 		--with-logfac=authpriv \
 		--with-pam \
 		--with-pam-login \
-		--with-editor=/usr/bin/vi \
+		--with-editor=%{bindir}/vi \
 		--with-env-editor \
 		--with-ignore-dot \
 		--with-tty-tickets \
 		--with-ldap \
 		--with-passprompt="[sudo] password for %p: " \
-		--with-selinux \
 		--with-linux-audit
 
 	install_cmds
 		mkdir -pv %{BUILDROOT}/etc
-		cp -vf %{DIR_SOURCE}/sudoers %{BUILDROOT}/etc/sudoers
+		cp -vf %{DIR_SOURCE}/sudoers %{BUILDROOT}%{sysconfdir}/sudoers
 	end
 end
 
@@ -61,7 +59,7 @@ packages
 		groups += Base
 
 		configfiles
-			/etc/sudoers
+			%{sysconfdir}/sudoers
 		end
 	end
 
