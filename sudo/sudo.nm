@@ -5,7 +5,7 @@
 
 name       = sudo
 version    = 1.8.18p1
-release    = 1
+release    = 2
 
 groups     = Applications/System
 url        = http://www.sudo.ws/
@@ -34,6 +34,8 @@ build
 		pam-devel
 	end
 
+	export LD_LIBRARY_PATH = %{DIR_APP}/lib/util/.libs/
+
 	configure_options += \
 		--libexecdir=%{libdir} \
 		--with-logging=syslog \
@@ -48,8 +50,18 @@ build
 		--with-passprompt="[sudo] password for %p: " \
 		--with-linux-audit
 
+	prepare_cmds
+		# The tarball contains files owned by a stange uid:gid which will let
+		# the testsuite (testsudoers/test3) fail. Fix the ownership of this files.
+		chown -R 0:0 %{DIR_APP}
+	end
+
+	test
+		make check
+	end
+
 	install_cmds
-		mkdir -pv %{BUILDROOT}/etc
+		mkdir -pv %{BUILDROOT}%{sysconfdir}
 		cp -vf %{DIR_SOURCE}/sudoers %{BUILDROOT}%{sysconfdir}/sudoers
 	end
 end
