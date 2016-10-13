@@ -5,7 +5,7 @@
 
 name       = xcb-util
 version    = 0.3.6
-release    = 1
+release    = 2
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = X/Libraries
@@ -37,13 +37,13 @@ build
 		--disable-static
 
 	test
+		export LD_LIBRARY_PATH=%{DIR_APP}/aux/.libs:%{DIR_APP}/image/.libs
 		make check
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
