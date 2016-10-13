@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = nettle
-version    = 3.2
+version    = 3.3
 release    = 1
 
 groups     = System/Libraries
@@ -23,7 +23,7 @@ source_dl  = http://www.lysator.liu.se/~nisse/archive/
 
 build
 	requires
-		gmp-devel
+		gmp-devel >= 5.0.0
 		m4
 	end
 
@@ -63,7 +63,7 @@ packages
 	package %{name}-devel
 		template DEVEL
 
-		requires += gmp-devel
+		requires += gmp-devel >= 5.0.0
 	end
 
 	package %{name}-debuginfo
