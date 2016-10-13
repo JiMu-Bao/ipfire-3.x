@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = lsof
-version    = 4.85
-release    = 2
+version    = 4.89
+release    = 1
 
 groups     = Development/Debuggers
 url        = ftp://lsof.itap.purdue.edu/pub/tools/unix/lsof/
@@ -21,10 +21,6 @@ end
 thisapp    = %{name}_%{version}_src
 
 build
-	requires
-		libselinux-devel
-	end
-
 	export LSOF_CFGL = %{CFLAGS} %{LDFLAGS}
 
 	build
