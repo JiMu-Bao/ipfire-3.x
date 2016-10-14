@@ -4,12 +4,8 @@
 ###############################################################################
 
 name       = multipath-tools
-version    = %{rel_ver}.%{rel_date}
+version    = 0.6.3
 release    = 1
-
-thisapp    = %{name}-%{rel_date}
-rel_ver    = 0.4.9
-rel_date   = 130222
 
 groups     = System/Base
 url        = http://christophe.varoqui.free.fr/
@@ -21,7 +17,8 @@ description
 	instructing the device-mapper multipath kernel module what to do.
 end
 
-sources    = %{thisapp}.tgz
+# git archive 0.6.3 --prefix=multipath-tools-0.6.3/ --format=tar | gzip --best > multipath-tools-0.6.3.tar.gz
+sources    = %{thisapp}.tar.gz
 
 build
 	requires
@@ -33,49 +30,18 @@ build
 		readline-devel
 	end
 
-	make_build_targets += LIB=%{lib}
+	make_build_targets += -C kpartx LIB=%{lib} LDFLAGS="%{LDFLAGS} -ldevmapper"
 
 	# Install everything to the correct locations.
 	make_install_targets += \
+		-C kpartx \
 		bindir=%{sbindir} \
 		syslibdir=%{libdir} \
 		libdir=%{libdir}/multipath \
 		unitdir=%{unitdir}
-
-	install_cmds
-		# Remove old SysV init script and folder.
-		rm -rf %{BUILDROOT}/etc/rc.d
-
-		# Install configuration file.
-		install -m 0664 %{DIR_SOURCE}/multipath.conf %{BUILDROOT}%{sysconfdir}/multipath.conf
-	end
 end
 
 packages
-	package %{name}
-		configfiles
-			/etc/multipath.conf
-		end
-
-		script postin
-			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-		end
-
-		script preun
-			/usr/bin/systemctl --no-reload disable multipathd.service >/dev/null 2>&1 || :
-			/usr/bin/systemctl stop multipathd.service >/dev/null 2>&1 || :
-		end
-
-		script postun
-			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-		end
-
-		script postup
-			/usr/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-			/usr/bin/systemctl try-restart multipathd.service >/dev/null 2>&1 || :
-		end
-	end
-
 	package kpartx
 		summary = Partition manager for device-mapper devices.
 		description
@@ -86,10 +52,6 @@ packages
 			%{sbindir}/kpartx
 			%{mandir}/man8/kpartx.8*
 		end
-	end
-
-	package %{name}-devel
-		template DEVEL
 	end
 
 	package %{name}-debuginfo
