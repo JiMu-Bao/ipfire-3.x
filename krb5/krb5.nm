@@ -5,8 +5,8 @@
 
 name       = krb5
 version    = %{version_maj}.%{version_min}
-version_maj= 1.10
-version_min= 3
+version_maj= 1.14
+version_min= 4
 release    = 1
 
 groups     = System/Libraries
@@ -20,36 +20,7 @@ description
 	practice of sending passwords over the network in unencrypted form.
 end
 
-# Upstream only provides a "signed" tarball which contains the actual
-# tar archive.
-#source_dl  = http://we1b.mit.edu/kerberos/dist/krb5/%{version_maj}/
-#sources    = %{thisapp}-signed.tar
-
-patches
-	krb5-1.10.2-pam.patch
-	krb5-1.10.2-manpaths.patch
-	krb5-1.10.2-selinux-label.patch
-	krb5-1.3.1-dns.patch
-	krb5-1.3.4-send-pr-tempfile.patch
-	krb5-1.7-ktany.patch
-	krb5-1.8-api.patch
-	krb5-1.9-debuginfo.patch0
-	krb5-1.9-dirsrv-accountlock.patch
-	krb5-1.10-buildconf.patch
-	krb5-1.10-doublelog.patch
-	krb5-1.10-gcc47.patch0
-	krb5-1.10-kpasswd_tcp.patch
-	krb5-1.10-kprop-mktemp.patch
-	krb5-1.10-ksu-access.patch
-	krb5-1.10-ksu-path.patch
-	krb5-1.10.2-keytab-etype.patch
-	krb5-kvno-230379.patch
-	krb5-tex-pdf.sh
-	krb5-trunk-7046.patch
-	krb5-trunk-7047.patch
-	krb5-trunk-7048.patch
-	krb5-trunk-pkinit-anchorsign.patch
-end
+source_dl   = http://web.mit.edu/kerberos/dist/krb5/%{version_maj}/
 
 build
 	requires
@@ -70,26 +41,6 @@ build
 		systemd-units
 		tcl-devel
 		texinfo
-	end
-
-	prepare_cmds
-		pushd src
-		for file in appl/sample/sserver/sserver.M \
-				config-files/kdc.conf.M \
-				config-files/krb5.conf.M \
-				gen-manpages/kerberos.M \
-				kadmin/cli/kadmin.M \
-				slave/kpropd.M \
-				slave/kprop.M; do
-			mv -v ${file} ${file}.in
-		done
-
-		rm -vf lib/krb5/krb/deltat.c
-
-		# Regenerate configure scripts.
-		autoheader
-		autoconf
-		popd
 	end
 
 	configure_options += \
@@ -117,15 +68,6 @@ build
 			%{configure_options}
 
 		make %{PARALLELISMFLAGS}
-	end
-
-	test
-		make -C src fake-install
-		tmpdir=$(mktemp -d)
-
-		# Disable the following tests, because the don't work in the chroot env.
-		#make -C src/lib check TMPDIR=${tmpdir}
-		#make -C src/kdc check TMPDIR=${tmpdir}
 	end
 
 	install
