@@ -5,7 +5,7 @@
 
 name       = ghostscript
 version    = 9.14
-release    = 1
+release    = 2
 
 groups     = Applications/Printing
 url        = http://ghostscript.com
@@ -37,6 +37,7 @@ build
 		expat-devel
 		freetype-devel
 		glib2-devel
+		gnutls-devel
 		lcms2-devel >= 2.4
 		libidn-devel
 		libjpeg-devel
