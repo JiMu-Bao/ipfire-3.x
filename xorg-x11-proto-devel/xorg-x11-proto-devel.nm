@@ -5,7 +5,7 @@
 
 name       = xorg-x11-proto-devel
 version    = 7.7
-release    = 1
+release    = 2
 arch       = noarch
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -59,6 +59,8 @@ build
 		for object in %{sources}; do
 			%{MACRO_EXTRACT} %{DIR_DL}/${object}
 		done
+
+		%{MACRO_FIX_AUTOTOOLS}
 	end
 
 	# Place the .pc files in /usr/share so they
