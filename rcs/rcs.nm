@@ -5,7 +5,7 @@
 
 name       = rcs
 version    = 5.9.4
-release    = 1
+release    = 2
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/rcs/
@@ -28,15 +28,13 @@ sources    = %{thisapp}.tar.xz
 
 build
 	requires
-		autoconf
 		ed
 		ghostscript
 		groff
 	end
 
-	prepare_cmds
-		autoconf
-	end
+	# Has some inlining problems, so we need to go back to C99
+	CFLAGS += -std=c99
 
 	configure_options += \
 		--with-diffutils
