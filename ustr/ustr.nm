@@ -5,7 +5,7 @@
 
 name       = ustr
 version    = 1.0.4
-release    = 2
+release    = 3
 
 groups     = System/Libraries
 url        = http://www.and.org/ustr/
@@ -20,9 +20,12 @@ source_dl  = http://www.and.org/ustr/%{version}/
 sources    = %{thisapp}.tar.bz2
 
 build
+	CFLAGS += -fgnu89-inline
+
 	make_build_targets += \
 		all-shared \
-		CFLAGS="%{CFLAGS}"
+		CFLAGS="%{CFLAGS}" \
+		LDFLAGS="%{LDFLAGS}"
 
 	test
 		make check
