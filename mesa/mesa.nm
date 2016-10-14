@@ -5,7 +5,7 @@
 
 name       = mesa
 version    = 9.0.2
-release    = 2
+release    = 4
 
 groups     = Development/Tools
 url        = http://www.mesa3d.org
@@ -45,7 +45,7 @@ build
 	DIR_APP = %{DIR_SRC}/Mesa-%{version}
 
 	if "%{DISTRO_PLATFORM}" == "x86"
-		platform_drivers = ,i915,i965
+		platform_drivers = nouveau,radeon,i915,i965
 	end
 
 	configure_options += \
@@ -54,7 +54,7 @@ build
 		--enable-pic \
 		--enable-dri \
 		--enable-egl \
-		--with-dri-drivers="nouveau,radeon,r200%{platform_drivers}" \
+		--with-dri-drivers="%{platform_drivers}" \
 		--with-gallium-drivers=swrast \
 		--disable-asm \
 		--disable-gallium-llvm \
