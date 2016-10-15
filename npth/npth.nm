@@ -5,7 +5,7 @@
 
 name       = npth
 version    = 1.2
-release    = 1
+release    = 2
 
 url        = http://git.gnupg.org/cgi-bin/gitweb.cgi?p=npth.git
 license    = LGPLv3+
@@ -24,6 +24,7 @@ sources    = %{thisapp}.tar.bz2
 
 build
 	test
+		export LD_LIBRARY_PATH=$(pwd)/src/.libs
 		make check
 	end
 end
