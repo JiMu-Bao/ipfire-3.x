@@ -5,7 +5,7 @@
 
 name       = perl-YAML
 version    = 0.84
-release    = 1
+release    = 2
 arch       = noarch
 thisapp    = YAML-%{version}
 
@@ -39,6 +39,9 @@ build
 		perl(ExtUtils::MakeMaker)
 		perl(File::Path)
 		perl(lib)
+
+		# For the testsuite
+		perl(Filter::Util::Call)
 	end
 
 	build
