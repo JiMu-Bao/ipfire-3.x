@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openldap
-version    = 2.4.40
-release    = 2
+version    = 2.4.44
+release    = 1
 
 groups     = System/Daemons
 url        = http://www.openldap.org/
@@ -29,7 +29,9 @@ build
 		automake
 		cyrus-sasl-devel
 		groff
-		libdb-devel
+		# Cannot be built with libdb 6 and above
+		# because of an incompatibility with AGPL
+		libdb-devel < 6
 		libtool
 		libtool-devel
 		openssl-devel
@@ -39,8 +41,6 @@ build
 
 	configure_options += \
 		--libexecdir=%{libdir} \
-		--sysconfdir=/etc \
-		--localstatedir=/var \
 		--with-threads=posix \
 		--disable-perl \
 		--enable-dynamic \
@@ -57,11 +57,6 @@ build
 
 	prepare_cmds
 		%{create_user}
-
-		# for aarch64
-		for i in $(find . -name config.guess -or -name config.sub); do
-			cp -vf %{datadir}/automake-*/config.{guess,sub} $(dirname ${i})
-		done
 	end
 
 	install_cmds
