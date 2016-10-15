@@ -5,7 +5,7 @@
 
 name       = traceroute
 version    = 2.1.0
-release    = 1
+release    = 2
 
 groups     = Application/Internet
 url        = http://traceroute.sourceforge.net
@@ -25,9 +25,7 @@ end
 source_dl  = http://downloads.sourceforge.net/project/%{name}/%{name}/%{thisapp}/
 
 build
-	prepare_cmds
-		echo "CFLAGS += %{CFLAGS}" >> Make.defines
-	end
+	make_build_targets += CFLAGS="%{CFLAGS}" LDFLAGS="%{LDFLAGS}"
 
 	install
 		make install prefix=%{BUILDROOT}/usr
@@ -39,7 +37,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
