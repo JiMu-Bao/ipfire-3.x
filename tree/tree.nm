@@ -5,7 +5,7 @@
 
 name       = tree
 version    = 1.7.0
-release    = 1
+release    = 2
 
 groups     = Applications/File
 url        = http://mama.indstate.edu/users/ice/tree/
@@ -22,9 +22,9 @@ source_dl  = ftp://mama.indstate.edu/linux/tree/
 sources    = %{thisapp}.tgz
 
 build
-	build
-		make CFLAGS="%{CFLAGS} $(getconf LFS_CFLAGS)" %{PARALLELISMFLAGS}
-	end
+	make_build_targets += \
+		CFLAGS="%{CFLAGS} $(getconf LFS_CFLAGS)" \
+		LDFLAGS="%{LDFLAGS}"
 
 	install
 		make install BINDIR=%{BUILDROOT}%{bindir} \
