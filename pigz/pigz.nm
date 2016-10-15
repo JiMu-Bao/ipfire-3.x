@@ -5,7 +5,7 @@
 
 name       = pigz
 version    = 2.3.3
-release    = 1
+release    = 2
 
 groups     = Applications/Compression
 url        = http://www.zlib.net/pigz/
@@ -26,7 +26,7 @@ build
 		zlib-devel
 	end
 
-	make_build_targets += CFLAGS="%{CFLAGS}"
+	make_build_targets += CC=gcc CFLAGS="%{CFLAGS}" LDFLAGS="%{LDFLAGS} -lz"
 
 	test
 		make test
