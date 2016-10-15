@@ -5,7 +5,7 @@
 
 name       = pptp
 version    = 1.7.2
-release    = 2
+release    = 3
 
 groups     = Networking/Dialin
 url        = http://pptpclient.sourceforge.net/
@@ -31,6 +31,7 @@ build
 		sed -i Makefile \
 			-e "s/install -o root -m 555 pptp/install -m 755 pptp/" \
 			-e "s/^OPTIMIZE=.*/OPTIMIZE=%{CFLAGS}/" \
+			-e "s/^LDFLAGS	=/LDFLAGS=%{LDFLAGS}/" \
 			-e "s/^IP.*/IP=\/sbin\/ip/"
 	end
 
