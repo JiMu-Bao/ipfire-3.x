@@ -5,7 +5,7 @@
 
 name       = openssl
 version    = 1.0.2d
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -103,8 +103,10 @@ build
 		mkdir -pv %{BUILDROOT}/usr/share
 		mv -v %{BUILDROOT}/etc/pki/tls/man %{BUILDROOT}/usr/share/
 
-		mkdir -pv %{BUILDROOT}%{libdir}/openssl
-		mv -v %{BUILDROOT}%{libdir}/engines %{BUILDROOT}%{libdir}/openssl
+		if [ -d "%{BUILDROOT}%{libdir}/engines" ]; then
+			mkdir -pv %{BUILDROOT}%{libdir}/openssl
+			mv -v %{BUILDROOT}%{libdir}/engines %{BUILDROOT}%{libdir}/openssl
+		fi
 
 		mkdir -pv %{BUILDROOT}/etc/pki/CA/private
 		chmod -v 700 -R %{BUILDROOT}/etc/pki/CA

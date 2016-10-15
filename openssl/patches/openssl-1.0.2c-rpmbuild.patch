@@ -19,7 +19,7 @@ diff -up openssl-1.0.2c/Configure.rpmbuild openssl-1.0.2c/Configure
 -"linux-armv4",	"gcc: -O3 -Wall::-D_REENTRANT::-ldl:BN_LLONG RC4_CHAR RC4_CHUNK DES_INT DES_UNROLL BF_PTR:${armv4_asm}:dlfcn:linux-shared:-fPIC::.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)",
 -"linux-aarch64","gcc: -O3 -Wall::-D_REENTRANT::-ldl:SIXTY_FOUR_BIT_LONG RC4_CHAR RC4_CHUNK DES_INT DES_UNROLL BF_PTR:${aarch64_asm}:linux64:dlfcn:linux-shared:-fPIC::.so.\$(SHLIB_MAJOR).\$(SHLIB_MINOR)",
 +"linux-armv4",	"gcc:-Wall \$(RPM_OPT_FLAGS)::-D_REENTRANT::-Wl,-z,relro -ldl:BN_LLONG RC4_CHAR RC4_CHUNK DES_INT DES_UNROLL BF_PTR:${armv4_asm}:dlfcn:linux-shared:-fPIC:\$(RPM_OPT_FLAGS):.so.\$(SHLIB_SONAMEVER)",
-+"linux-aarch64","gcc:-DL_ENDIAN -Wall \$(RPM_OPT_FLAGS)::-D_REENTRANT::-Wl,-z,relro -ldl:SIXTY_FOUR_BIT_LONG RC4_CHAR RC4_CHUNK DES_INT DES_UNROLL BF_PTR:${aarch64_asm}:linux64:dlfcn:linux-shared:-fPIC:\$(RPM_OPT_FLAGS):.so.\$(SHLIB_SONAMEVER)",
++"linux-aarch64","gcc:-DL_ENDIAN -Wall \$(RPM_OPT_FLAGS)::-D_REENTRANT::-Wl,-z,relro -ldl:SIXTY_FOUR_BIT_LONG RC4_CHAR RC4_CHUNK DES_INT DES_UNROLL BF_PTR:${aarch64_asm}:linux64:dlfcn:linux-shared:-fPIC:\$(RPM_OPT_FLAGS):.so.\$(SHLIB_SONAMEVER):::64",
  # Configure script adds minimally required -march for assembly support,
  # if no -march was specified at command line. mips32 and mips64 below
  # refer to contemporary MIPS Architecture specifications, MIPS32 and
