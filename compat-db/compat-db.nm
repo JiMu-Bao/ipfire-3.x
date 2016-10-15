@@ -6,7 +6,7 @@
 name       = compat-db
 version    = %{main_version}
 # Release cannot be reset because the sub-packages won't get updated
-release    = 8
+release    = 9
 thisapp    = db-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -53,15 +53,6 @@ build
 
 	build
 		for version in %{versions}; do
-			# Fix autotools on aarch64
-			for i in $(find %{DIR_SRC}/db-${version} -name config.guess -or -name config.sub); do
-				if ! grep -q "aarch64" ${i}; then
-					if [ -e "%{datadir}/pakfire/$(basename ${i})" ]; then
-						cp -vf %{datadir}/pakfire/$(basename ${i}) $(dirname ${i})
-					fi
-				fi
-			done
-
 			cd %{DIR_SRC}/db-${version}/build_unix
 			../dist/configure \
 				%{configure_options}
@@ -101,9 +92,17 @@ build
 			mkdir -pv %{BUILDROOT}%{includedir}/db-${version}
 			mv -v %{BUILDROOT}%{includedir}/*.h \
 				%{BUILDROOT}%{includedir}/db-${version}/
+			ln -svf --relative \
+				%{BUILDROOT}%{includedir}/db-${version} \
+				%{BUILDROOT}%{includedir}/db-${major}
 
 			# Remove documentation.
 			rm -rf %{BUILDROOT}%{datadir}/doc
+		done
+
+		# Link latest headers into /usr/include
+		for file in %{BUILDROOT}%{includedir}/db-%{main_version}/*.h; do
+			ln -svf --relative ${file} %{BUILDROOT}%{includedir}/
 		done
 	end
 end
@@ -143,7 +142,7 @@ packages
 			db4-cxx < 1:%{version_major}
 			db4-utils < 1:%{version_major}
 
-			libdb < %{version_major}
+			libdb <= %{version_major}
 		end
 
 		conflicts
@@ -194,12 +193,23 @@ packages
 
 			This package contains Berkeley DB library headers used for compatibility.
 		end
-		arch = noarch
 
 		files = %{includedir}
 
 		requires
 			compat-db = %{main_version}-%{_release}
+		end
+
+		provides
+			libdb-devel = %{version_db53}
+			libdb-devel = %{version_db52}
+			db4-devel = %{version_db48}
+			db4-devel = %{version_db47}
+			db4-devel = %{version_db46}
+		end
+
+		conflicts
+			libdb-devel
 		end
 	end
 
