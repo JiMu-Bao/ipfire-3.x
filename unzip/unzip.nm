@@ -5,7 +5,7 @@
 
 name       = unzip
 version    = 6.0
-release    = 4
+release    = 5
 
 groups     = Applications/Archiving
 url        = ftp://ftp.info-zip.org/pub/infozip/src/
@@ -31,22 +31,14 @@ CFLAGS    += -D_LARGEFILE64_SOURCE
 build
 	DIR_APP = %{DIR_SRC}/%{thisapp}
 
-	prepare_cmds
-		ln -svf unix/Makefile Makefile
+	build
+		make -f unix/Makefile prefix=%{prefix} \
+			CF="%{CFLAGS} -I." LF2="%{LDFLAGS}" unzips %{PARALLELISMFLAGS}
 	end
 
-	make_build_targets += \
-		generic \
-		CC="gcc %{CFLAGS}" \
-		LD=gcc
-
-	make_install_targets += \
-		prefix=%{BUILDROOT}/usr \
-		MANDIR=/usr/share/man/man1 \
-		INSTALL="cp -p"
-
-	install_cmds
-		chown -v root.root %{BUILDROOT}/usr/bin/zipgrep
+	install
+		make -f unix/Makefile prefix=%{BUILDROOT}%{prefix} \
+			MANDIR=%{BUILDROOT}%{mandir}/man1 INSTALL="cp -p" install
 	end
 end
 
