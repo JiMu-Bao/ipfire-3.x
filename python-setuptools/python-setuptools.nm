@@ -4,10 +4,10 @@
 ###############################################################################
 
 name       = python-setuptools
-version    = 0.6.28
-release    = 2
+version    = 28.2.0
+release    = 1
 arch       = noarch
-thisapp    = distribute-%{version}
+thisapp    = setuptools-%{version}
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Libraries
@@ -21,8 +21,6 @@ description
 	especially ones that have dependencies on other packages.
 end
 
-source_dl  = http://pypi.python.org/packages/source/d/distribute/
-
 build
 	requires
 		pakfire-builder >= 0.9.23-2
@@ -34,20 +32,6 @@ build
 
 	prepare_cmds
 		cp -av %{DIR_APP} %{DIR_APP3}
-
-		pushd %{DIR_APP3}
-		for file in setuptools/command/easy_install.py distribute_setup.py ; do
-			sed -i '1s|^#!python|#!%{python3}|' $file
-		done
-		popd
-
-		# Scripts seem to have a wrong hashbang
-		for file in setuptools/command/easy_install.py distribute_setup.py ; do
-			sed -i '1s|^#!python|#!%{python}|' $file
-		done
-
-		# Fix file permissions.
-		chmod -R 644 {%{DIR_APP},%{DIR_APP3}}/distribute.egg-info
 	end
 
 	build
