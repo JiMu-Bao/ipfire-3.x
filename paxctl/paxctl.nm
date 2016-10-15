@@ -5,7 +5,7 @@
 
 name       = paxctl
 version    = 0.8
-release    = 1
+release    = 2
 
 groups     = Applications/System
 url        = http://pax.grsecurity.net/
@@ -25,7 +25,7 @@ build
 	end
 
 	build
-		make %{PARALLELISMFLAGS} CFLAGS="%{CFLAGS}"
+		make %{PARALLELISMFLAGS} CFLAGS="%{CFLAGS}" LDFLAGS="%{LDFLAGS}"
 	end
 end
 
