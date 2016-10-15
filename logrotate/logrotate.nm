@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = logrotate
-version    = 3.7.7
-release    = 3
+version    = 3.9.1
+release    = 1
 
 groups     = System/Base
 url        = https://fedorahosted.org/releases/l/o/logrotate/
@@ -13,41 +13,36 @@ license    = GPL+
 summary    = Rotates, compresses, removes and mails system log files.
 
 description
-	The logrotate utility is designed to simplify the administration of \
-	log files on a system which generates a lot of log files. Logrotate \
-	allows for the automatic rotation compression, removal and mailing of \
-	log files.  Logrotate can be set to handle a log file daily, weekly, \
+	The logrotate utility is designed to simplify the administration of
+	log files on a system which generates a lot of log files. Logrotate
+	allows for the automatic rotation compression, removal and mailing of
+	log files.  Logrotate can be set to handle a log file daily, weekly,
 	monthly or when the log file gets to a certain size.
 end
 
-source_dl  =
+source_dl  = https://fedorahosted.org/releases/l/o/logrotate/
 
 build
 	requires
 		coreutils
 		gzip
-		libselinux-devel
 		popt-devel
 		which
 	end
 
 	build
-		make RPM_OPT_FLAGS="%{CFLAGS}" WITH_SELINUX=yes %{PARALLELISMFLAGS}
-	end
-
-	test
-		make test
+		make RPM_OPT_FLAGS="%{CFLAGS}" %{PARALLELISMFLAGS}
 	end
 
 	install
-		make install BASEDIR=/usr PREFIX=%{BUILDROOT} \
-			MANDIR=/usr/share/man
+		make install BASEDIR=%{prefix} PREFIX=%{BUILDROOT} \
+			MANDIR=%{mandir}
 
-		mkdir -pv %{BUILDROOT}/var/lib
-		touch %{BUILDROOT}/var/lib/logrotate.status
+		mkdir -pv %{BUILDROOT}%{localstatedir}
+		touch %{BUILDROOT}%{localstatedir}/logrotate.status
 
 		# Creating directory for config files
-		mkdir -pv %{BUILDROOT}/etc/logrotate.d
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/logrotate.d
 	end
 end
 
