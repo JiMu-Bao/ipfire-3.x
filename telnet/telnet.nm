@@ -5,7 +5,7 @@
 
 name       = telnet
 version    = 0.17
-release    = 2
+release    = 3
 
 groups     = Applications/Internet
 url        = http://www.ibiblio.org/pub/Linux/system/network/netkit/
@@ -55,7 +55,6 @@ build
 	configure_options = \
 		--prefix=/usr
 
-
 	# For the telnet client we have to extract a second tarball into the source
 	# directory of the main tarball.
 	prepare
@@ -64,6 +63,9 @@ build
 		cd %{DIR_APP} && %{MACRO_EXTRACT} %{DIR_DL}/telnet-client.tar.gz
 
 		%{MACRO_PATCHES}
+
+		sed -i configure \
+			-e "s/LDFLAGS=/LDFLAGS=\"%{LDFLAGS}\"/"
 	end
 
 	install
