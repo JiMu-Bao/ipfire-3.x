@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = netpbm
-version    = 10.61.01
+version    = 10.71.02
 release    = 1
 
 groups     = System/Libraries
@@ -19,9 +19,12 @@ description
 	.ppm (portable pixmaps) and others.
 end
 
+sources    = %{thisapp}.tar.xz
+
 build
 	requires
 		flex
+		ghostscript
 		libjpeg-devel
 		libpng-devel
 		libtiff-devel
@@ -30,17 +33,11 @@ build
 		perl
 	end
 
-	prepare_cmds
-		#sed -i 's/STRIPFLAG = -s/STRIPFLAG =/g' config.mk.in
-		#rm -rf converter/other/jpeg2000/libjasper/
-		#sed -i -e 's/^SUBDIRS = libjasper/SUBDIRS =/' converter/other/jpeg2000/Makefile
-	end
-
 	build
 		yes "" | ./configure
 
 		make \
-			LDFLAGS="-L$(pwd)/pbm -L$(pwd)/pgm -L$(pwd)/pnm -L$(pwd)/ppm" \
+			LDFLAGS="%{LDFLAGS} -L$(pwd)/pbm -L$(pwd)/pgm -L$(pwd)/pnm -L$(pwd)/ppm" \
 			CFLAGS="%{CFLAGS} -flax-vector-conversions -fno-strict-aliasing" \
 			LADD="-lm" \
 			LINUXSVGALIB="NONE"
