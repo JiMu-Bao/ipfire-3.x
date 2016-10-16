@@ -5,7 +5,7 @@
 
 name       = slang
 version    = 2.3.0
-release    = 2
+release    = 2.1
 
 groups     = System/Libraries
 url        = http://www.jedsoft.org/slang/
