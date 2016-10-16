@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = pakfire
-version    = 0.9.26
-release    = 3.1
+version    = 0.9.27
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Packaging
@@ -55,6 +55,11 @@ build
 		# Remove all example repository definitions.
 		# Those will be solely provided by system-release.
 		rm -rfv %{BUILDROOT}%{sysconfdir}/pakfire/repos/*
+
+		mkdir -pv %{BUILDROOT}%{datadir}/pakfire
+		for i in $(find %{datadir}/automake-* -name config.guess -or -name config.sub); do
+			cp -vf ${i} %{BUILDROOT}%{datadir}/pakfire/
+		done
 	end
 end
 
