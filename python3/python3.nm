@@ -6,7 +6,7 @@
 name       = python3
 major_ver  = 3.4
 version    = %{major_ver}.3
-release    = 1
+release    = 2
 thisapp    = Python-%{version}
 
 groups     = Development/Languages
@@ -83,26 +83,27 @@ build
 		--with-system-expat \
 		--with-system-ffi \
 		--enable-loadable-sqlite-extensions \
-		--enable-shared
+		--enable-shared \
+		--without-ensurepip
 
-	test
-		LD_LIBRARY_PATH=$(pwd) $(pwd)/python \
-			-m test.regrtest \
-			--verbose \
-			--findleaks \
-			-x test_distutils \
-			-x test_faulthandler \
-			-x test_gdb \
-			-x test_email \
-			-x test_subprocess \
-			-x test_float \
-			-x test_cmath \
-			-x test_asynchat \
-			-x test_asyncore
-
-		# test_subprocess won't work on grsecurity-enabled kernels
-		# test_float and test_cmath do not work on armv5tel (soft FPU)
-	end
+	#test
+	#	LD_LIBRARY_PATH=$(pwd) $(pwd)/python \
+	#		-m test.regrtest \
+	#		--verbose \
+	#		--findleaks \
+	#		-x test_distutils \
+	#		-x test_faulthandler \
+	#		-x test_gdb \
+	#		-x test_email \
+	#		-x test_subprocess \
+	#		-x test_float \
+	#		-x test_cmath \
+	#		-x test_asynchat \
+	#		-x test_asyncore
+	#
+	#	# test_subprocess won't work on grsecurity-enabled kernels
+	#	# test_float and test_cmath do not work on armv5tel (soft FPU)
+	#end
 
 	install_cmds
 		install -d -m 0755 %{BUILDROOT}%{pylibdir}/site-packages/__pycache__
