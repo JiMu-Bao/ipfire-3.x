@@ -5,7 +5,7 @@
 
 name       = xorg-x11-fonts
 version    = 7.2
-release    = 4
+release    = 5
 arch       = noarch
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -84,6 +84,8 @@ build
 				%{MACRO_EXTRACT} %{DIR_DL}/${object}
 			fi
 		done
+
+		%{MACRO_FIX_AUTOTOOLS}
 	end
 
 	build
