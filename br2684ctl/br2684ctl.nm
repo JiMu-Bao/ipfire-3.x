@@ -5,7 +5,7 @@
 
 name       = br2684ctl
 version    = ipfire-1
-release    = 1
+release    = 2
 
 groups     = Networking/Tools
 url        = http://cvs.linux-atm.sourceforge.net/viewcvs.py/linux-atm/linux-atm/src/br2684/Attic/br2684ctl.8?rev=1.1.2.1&hideattic=0&only_with_tag=V2_5_0
@@ -32,7 +32,7 @@ build
 	DIR_APP = %{DIR_SRC}/br2684ctl
 
 	build
-		gcc %{CFLAGS} -latm br2684ctl.c -o br2684ctl
+		gcc %{CFLAGS} %{LDFLAGS} -latm br2684ctl.c -o br2684ctl
 	end
 
 	install
@@ -43,7 +43,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
