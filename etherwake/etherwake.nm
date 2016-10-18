@@ -5,7 +5,7 @@
 
 name       = etherwake
 version    = 1.09
-release    = 3
+release    = 4
 
 groups     = Networking/Tools
 url        = http://www.scyld.com
@@ -21,13 +21,13 @@ end
 source_dl  =
 
 build
-	prepare_cmds
-		sed -e "s/^CFLAGS.*/CFLAGS = %{CFLAGS}/" -i Makefile
+	build
+		gcc %{CFLAGS} %{LDFLAGS} -o etherwake ether-wake.c
 	end
 
 	install
-		mkdir -pv %{BUILDROOT}/usr/sbin
-		make install DESTDIR=%{BUILDROOT}
+		mkdir -pv %{BUILDROOT}%{sbindir}
+		install -m 755 etherwake %{BUILDROOT}%{sbindir}
 
 		# Install man-page.
 		mkdir -pv %{BUILDROOT}%{mandir}/man8
