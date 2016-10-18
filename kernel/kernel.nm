@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = kernel
-version    = 4.5.7
+version    = 4.6.7
 release    = 1
 thisapp    = linux-%{version}
 

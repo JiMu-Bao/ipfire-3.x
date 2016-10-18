@@ -271,7 +271,7 @@ function diff_configs() {
 		filename=${tmpdir}/config-${arch}-${flavour}
 
 		case "${config}" in
-			aarch64:default|armv7hl:default)
+			aarch64:default|armv7hl:default|x86_64:default)
 				# Virtual configuration
 				rm -f ${filename}
 				continue
