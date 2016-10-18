@@ -6,7 +6,7 @@
 name       = iscsi-initiator-utils
 rel_ver    = 873
 version    = 6.2.0.%{rel_ver}
-release    = 2
+release    = 3
 
 groups     = System/Daemons
 url        = http://www.open-iscsi.org/
@@ -33,7 +33,7 @@ build
 	end
 
 	build
-		make OPTFLAGS="%{CFLAGS} -DUSE_KMOD -lkmod"
+		make OPTFLAGS="%{CFLAGS} %{LDFLAGS} -DUSE_KMOD -lkmod"
 
 		pushd libiscsi
 		python setup.py build
