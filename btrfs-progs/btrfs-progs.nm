@@ -5,7 +5,7 @@
 
 name       = btrfs-progs
 version    = 0.19
-release    = 2
+release    = 3
 
 groups     = System/Filesystems
 url        = http://btrfs.wiki.kernel.org/index.php/Main_Page
@@ -34,17 +34,16 @@ build
 	end
 
 	build
-		make CFLAGS="%{CFLAGS}" LDFLAGS="-lcom_err" all convert
+		make CFLAGS="%{CFLAGS}" LDFLAGS="%{LDFLAGS} -lcom_err" all convert
 	end
 
 	install
-		make bindir=%{BUILDROOT}/sbin mandir=%{BUILDROOT}/usr/share install
+		make bindir=%{BUILDROOT}%{sbindir} mandir=%{BUILDROOT}%{datadir} install
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
