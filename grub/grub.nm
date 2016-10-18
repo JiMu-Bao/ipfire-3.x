@@ -6,7 +6,7 @@
 name       = grub
 version    = 2.02
 beta       = beta3
-release    = 0.%{beta}.1
+release    = 0.%{beta}.2
 sup_arches = x86_64 i686
 thisapp    = %{name}-%{version}~%{beta}
 
@@ -120,7 +120,6 @@ packages
 	package %{name}
 		requires
 			gettext
-			os-prober
 			system-logos >= 2
 		end
 
