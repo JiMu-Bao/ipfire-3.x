@@ -4,9 +4,11 @@
 ###############################################################################
 
 name       = grub
-version    = 2.00
-release    = 5.1
+version    = 2.02
+beta       = beta3
+release    = 0.%{beta}.1
 sup_arches = x86_64 i686
+thisapp    = %{name}-%{version}~%{beta}
 
 groups     = System/Boot
 url        = http://www.gnu.org/software/grub/
@@ -39,38 +41,54 @@ build
 		gettext
 		libdevmapper-devel
 		ncurses-devel
-		paxctl
 		zlib-devel
 		%{unifont}
+	end
+
+	# Don't leak our CFLAGS to boot code
+	export HOST_CFLAGS  = %{CFLAGS}
+	export HOST_LDFLAGS = %{LDFLAGS}
+
+	platforms = efi
+
+	if "%{DISTRO_PLATFORM}" == "x86"
+		platforms += pc
 	end
 
 	prepare_cmds
 		cp -vf %{unifont} unifont.pcf.gz
 		./autogen.sh
+
+		for platform in %{platforms}; do
+			cp -r %{DIR_APP} %{DIR_APP}-${platform}
+		done
 	end
 
 	# As the modules contain always 32 bit code, they
 	# should be living in /usr/lib.
 	libdir = %{prefix}/lib
 
-	configure_options += \
-		--target="i386" \
-		--with-platform=pc \
-		--program-transform-name=s,grub,grub, \
-		--disable-werror \
-		CFLAGS="$(echo %{CFLAGS} | sed \
-			-e 's/-Wp,-D_FORTIFY_SOURCE=2//g' \
-			-e 's/-fstack-protector-strong//g' \
-			-e 's/-fstack-protector-all//g' \
-			-e 's/-fstack-protector//g' \
-			-e 's/-fPIC//g' \
-			-e 's/--param=ssp-buffer-size=4//g' \
-			-e 's/-mregparm=3/-mregparm=4/g' \
-			-e 's/-fexceptions//g' \
-			-e 's/-m64//g' \
-			-e 's/-fasynchronous-unwind-tables//g' )"
+	build
+		for platform in %{platforms}; do
+			pushd %{DIR_APP}-${platform}
+			./configure \
+				%{configure_options} \
+				--with-platform=${platform} \
+				--disable-werror \
+				CFLAGS= LDFLAGS=
 
-	install_cmds
+			make %{PARALLELISMFLAGS}
+			popd
+		done
+	end
+
+	install
+		for platform in %{platforms}; do
+			pushd %{DIR_APP}-${platform}
+			make install DESTDIR=%{BUILDROOT}
+			popd
+		done
+
 		# Install empty configuration file.
 		mkdir -pv %{BUILDROOT}/boot/grub
 		touch %{BUILDROOT}/boot/grub/grub.cfg
@@ -93,23 +111,9 @@ build
 		%{BUILDROOT}%{bindir}/grub-mkfont -o DejaVuSans-Bold-14.pf2 \
 			-s 14 %{datadir}/fonts/dejavu/DejaVuSans-Bold.ttf
 		popd
-
-		# Disable hardening.
-		paxctl -mpes \
-			%{BUILDROOT}%{sbindir}/grub-bios-setup \
-			%{BUILDROOT}%{sbindir}/grub-probe
-
-		paxctl -mpex \
-			%{BUILDROOT}%{bindir}/grub-script-check
 	end
 
 	debuginfo_strict_build_id = false
-end
-
-quality-agent
-	whitelist_nx
-		%{bindir}/*|%{sbindir}/*
-	end
 end
 
 packages
