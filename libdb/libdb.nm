@@ -8,7 +8,7 @@ version_major = 6
 version_minor = 1
 version_patch = 26
 version    = %{version_major}.%{version_minor}.%{version_patch}
-release    = 1
+release    = 2
 thisapp    = db-%{version}
 
 soversion  = %{version_major}.%{version_minor}
@@ -93,9 +93,14 @@ packages
 	package %{name}-devel
 		template DEVEL
 
+		obsoletes
+			compat-db-headers
+		end
+
 		# You cannot install libdb-devel and db4-devel
 		# at the same time.
 		conflicts
+			compat-db-headers
 			db4-devel
 		end
 
