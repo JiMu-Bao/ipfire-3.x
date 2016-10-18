@@ -5,7 +5,7 @@
 
 name       = iproute2
 version    = 3.14.0
-release    = 2
+release    = 3
 
 groups     = Networking/Tools
 url        = http://www.linuxfoundation.org/en/Net:Iproute2
@@ -34,7 +34,7 @@ build
 		sed -e "s/^LIBDIR=/LIBDIR?=/" -i Makefile
 	end
 
-	export RPM_OPT_FLAGS = %{CFLAGS}
+	export RPM_OPT_FLAGS = %{CFLAGS} %{LDFLAGS}
 	export LIBDIR = %{libdir}
 	export IPT_LIB_DIR = %{libdir}/xtables
 
