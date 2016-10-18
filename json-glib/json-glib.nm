@@ -7,7 +7,7 @@ name       = json-glib
 version    = %{ver_major}.%{ver_minor}
 ver_major  = 0.15
 ver_minor  = 2
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://live.gnome.org/JsonGlib
@@ -28,6 +28,8 @@ build
 		gobject-introspection-devel
 		pkg-config
 	end
+
+	export LD_LIBRARY_PATH = %{DIR_APP}/json-glib/.libs
 end
 
 packages
