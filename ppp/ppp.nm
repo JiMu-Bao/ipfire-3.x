@@ -5,7 +5,7 @@
 
 name       = ppp
 version    = 2.4.6
-release    = 2
+release    = 3
 
 groups     = System/Daemons
 url        = http://ppp.samba.org/
@@ -32,9 +32,6 @@ build
 		systemd-units
 	end
 
-	# Explicitely add -fPIC to CFLAGS.
-	CFLAGS += -fPIC
-
 	prepare_cmds
 		sed -e "s@^RUNDIR .*@RUNDIR = /run/ppp@" \
 			-e "s@^LOGDIR .*@LOGDIR = /var/log/ppp@" \
@@ -48,7 +45,7 @@ build
 	end
 
 	make_build_targets += \
-		CC="gcc %{CFLAGS}"
+		CC="gcc %{CFLAGS} %{LDFLAGS}"
 
 	install
 		make install INSTROOT=%{BUILDROOT}
