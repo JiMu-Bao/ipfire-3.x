@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = procps-ng
-version    = 3.3.10
+version    = 3.3.12
 release    = 1
 
 groups     = Applications/System
@@ -24,7 +24,6 @@ sources    = %{thisapp}.tar.xz
 build
 	requires
 		gettext-devel
-		libselinux-devel
 		ncurses-devel >= 5.9-11
 	end
 
@@ -35,8 +34,7 @@ build
 		--disable-modern-top \
 		--enable-watch8bit \
 		--enable-skill \
-		--enable-sigwinch \
-		--enable-libselinux
+		--enable-sigwinch
 
 	# Fix install path of some binaries.
 	make_install_targets += \
