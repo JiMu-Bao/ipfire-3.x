@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = cronie
-version    = 1.4.9
+version    = 1.5.1
 release    = 1
 
 groups     = System/Environment/Base
@@ -27,7 +27,6 @@ build
 		bison
 		libcap-devel
 		libedit-devel
-		libselinux-devel
 		pam-devel
 		readline-devel
 		systemd-units
@@ -37,11 +36,14 @@ build
 	configure_options += \
 		--with-pam \
 		--with-audit \
-		--with-selinux \
 		--with-inotify \
 		--enable-anacron \
 		--enable-pie \
 		--enable-relro
+
+	test
+		# Cronie does not provide any kind of testsuite.
+	end
 
 	install_cmds
 		mkdir -pv %{BUILDROOT}%{localstatedir}/spool/{ana,}cron
