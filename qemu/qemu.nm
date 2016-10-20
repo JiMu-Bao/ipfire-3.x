@@ -3,12 +3,12 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-name       = qemu-kvm
-version    = 0.15.0
+name       = qemu
+version    = 2.7.0
 release    = 1
 
 groups     = Applications/Virtualization
-url        = http://www.linux-kvm.org/page/Main_Page
+url        = http://www.qemu.org
 license    = GPLv2+
 summary    = QEMU is a generic and open source machine emulator and virtualizer.
 
@@ -18,31 +18,69 @@ description
 	architectures.
 end
 
-source_dl  =
+source_dl  = http://wiki.qemu-project.org/download/
+sources    = %{thisapp}.tar.bz2
 
 build
 	requires
+		SDL-devel
+		autoconf
+		automake
+		bison
+		bzip2-devel
+		flex
 		glib2-devel
-		libcurl-devel
-		libuuid-devel
 		gnutls-devel
+		libcurl-devel
+		libgcrypt-devel
+		libjpeg-devel
+		libpng-devel
+		libtasn1-devel
+		libusb-devel
+		libuuid-devel
+		lzo-devel
 		ncurses-devel
+		nettle-devel
 		pciutils-devel
-		sdl-devel
+		pixman-devel
 		zlib-devel
 	end
 
+	targets = aarch64-softmmu arm-softmmu x86_64-softmmu
+
 	configure_options = \
-		--prefix=/usr \
-		--enable-kvm \
+		--prefix=%{prefix} \
+		--bindir=%{bindir} \
+		--sysconfdir=%{sysconfdir} \
+		--libdir=%{libdir} \
+		--libexecdir=%{libdir} \
+		--datadir=%{datadir} \
+		--mandir=%{mandir} \
+		--localstatedir=%{localstatedir} \
 		--extra-cflags="%{CFLAGS}" \
+		--extra-ldflags="%{LDFLAGS}" \
 		--disable-strip \
-		--disable-xen \
-		--sysconfdir=/etc \
-		--target-list="i386-softmmu arm-softmmu"
+		--disable-werror \
+		--target-list="%{targets}" \
+		--enable-bzip2 \
+		--enable-fdt \
+		--enable-kvm \
+		--enable-libusb \
+		--enable-lzo \
+		--enable-pie \
+		--enable-vhdx \
+		--enable-vnc \
+		--enable-vnc-jpeg \
+		--enable-vnc-png \
+		--disable-xen
 
 	configure_cmds
-		sed -e "s@-Wl,-rpath,/usr/lib@@g" -i */config-target.mak
+		sed -e "s@-Wl,-rpath,%{libdir}@@g" -i config-host.mak
+	end
+
+	install_cmds
+		# Remove BIOS file which is an ELF files w/ invalid interpreter
+		rm -vf %{BUILDROOT}%{datadir}/qemu/s390-ccw.img
 	end
 end
 
