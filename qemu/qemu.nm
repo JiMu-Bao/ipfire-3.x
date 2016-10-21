@@ -5,7 +5,7 @@
 
 name       = qemu
 version    = 2.7.0
-release    = 1
+release    = 2
 
 groups     = Applications/Virtualization
 url        = http://www.qemu.org
@@ -46,6 +46,12 @@ build
 		zlib-devel
 	end
 
+	qemu_native_platform = %{DISTRO_ARCH}
+
+	if "%{DISTRO_ARCH}" == "armv7hl"
+		qemu_native_platform = arm
+	end
+
 	targets = aarch64-softmmu arm-softmmu x86_64-softmmu
 
 	configure_options = \
@@ -81,6 +87,9 @@ build
 	install_cmds
 		# Remove BIOS file which is an ELF files w/ invalid interpreter
 		rm -vf %{BUILDROOT}%{datadir}/qemu/s390-ccw.img
+
+		# Remove ivshm stuff
+		rm -vf %{BUILDROOT}%{bindir}/ivshmem* %{BUILDROOT}%{mandir}/ivshmem*
 	end
 end
 
@@ -92,6 +101,57 @@ end
 
 packages
 	package %{name}
+		# Always install the native package (for KVM)
+		requires
+			qemu-%{qemu_native_platform} = %{thisver}
+		end
+
+		recommends
+			qemu-img = %{thisver}
+		end
+	end
+
+	template QEMUARCH
+		summary = QEMU for %{qemu_arch}
+		description = %{summary}
+
+		requires = %{name} = %{thisver}
+
+		files
+			%{bindir}/qemu-system-%{qemu_arch}
+			%{mandir}/man1/qemu-system-%{qemu_arch}.1*
+		end
+	end
+
+	package %{name}-aarch64
+		template QEMUARCH
+		qemu_arch = aarch64
+	end
+
+	package %{name}-arm
+		template QEMUARCH
+		qemu_arch = arm
+	end
+
+	package %{name}-x86_64
+		template QEMUARCH
+		qemu_arch = x86_64
+	end
+
+	package %{name}-img
+		summary = QEMU command line tool for manipulating disk images
+		description
+			This package provides a command line tool for manipulating disk images
+		end
+
+		files
+			%{bindir}/qemu-img
+			%{bindir}/qemu-io
+			%{bindir}/qemu-nbd
+			%{mandir}/man1/qemu-img.1*
+			%{mandir}/man8/qemu-nbd.8*
+		end
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
