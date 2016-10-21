@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = dmraid
-version    = 1.0.0.rc15
-release    = 5
+version    = 1.0.0.rc16
+release    = 1
 
 groups     = System/Filesystems
 url        = http://people.redhat.com/heinzm/sw/dmraid
@@ -23,8 +23,7 @@ sources    = %{thisapp}.tar.bz2
 
 build
 	requires
-		libdevmapper-devel
-		libselinux-devel
+		libdevmapper-devel >= 2.02.166
 	end
 
 	DIR_APP = %{DIR_SRC}/%{name}/%{version}
@@ -34,13 +33,16 @@ build
 
 	configure_options += \
 		--disable-static \
-		--disable-static_link \
-		--enable-libselinux
+		--disable-static_link
 
 	# Dmraid doesn't automatically build and install a versioned library
 	# so we do it on or own.
 	build_cmds
 		make -C lib libdmraid.so
+	end
+
+	test
+		# Package does not offer any kind of testsuite.
 	end
 
 	install_cmds
