@@ -1,0 +1,4 @@
+d /run/cups 0755 root lp -
+d /run/cups/certs 0511 lp sys -
+
+d /var/spool/cups/tmp - - - 30d
