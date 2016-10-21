@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = lvm2
-version    = 2.02.147
+version    = 2.02.166
 release    = 1
 thisapp    = LVM2.%{version}
 
@@ -27,26 +27,195 @@ sources    = %{thisapp}.tgz
 
 build
 	requires
-		libselinux-devel
 		pkg-config
+		libblkid-devel
+		libudev-devel
 		ncurses-devel
 		readline-devel
+		systemd-devel
 	end
 
 	configure_options += \
+		--with-default-dm-run-dir=/run \
+		--with-default-run-dir=/run/lvm \
+		--with-default-pid-dir=/run/lvm \
+		--with-default-locking-dir=/run/lock/lvm \
 		--with-usrlibdir=%{libdir} \
-		--enable-pkgconfig
+		--disable-lvm1_fallback \
+		--disable-selinux \
+		--enable-fsadm \
+		--with-pool=internal \
+		--enable-write_install \
+		--with-user= \
+		--with-group= \
+		--with-device-uid=0 \
+		--with-device-gid=6 \
+		--with-device-mode=0660 \
+		--enable-dmeventd \
+		--enable-blkid_wiping \
+		--enable-pkgconfig \
+		--enable-applib \
+		--enable-cmdlib \
+		--with-udevdir=%{prefix}/lib/udev/rules.d \
+		--enable-udev_sync
+
+	test
+		# Skip the testsuite, because it requires a mounted
+		# /tmp with support for block devices (without "nodev")
+		# and at least one available loopback device, which is not
+		# available in or chroot build environment.
+	end
+
+	install_cmds
+		make install_system_dirs DESTDIR=%{BUILDROOT}
+		make install_systemd_units DESTDIR=%{BUILDROOT}
+		make install_systemd_generators DESTDIR=%{BUILDROOT}
+		make install_tmpfiles_configuration DESTDIR=%{BUILDROOT}
+	end
 end
 
 packages
 	package %{name}
+		prerequires += \
+			systemd-units
+
+		requires
+			%{name}-libs = %{thisver}
+		end
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+
+			# Enable lvm2-monitor.service on completely new installations.
+			systemctl --no-reload enable lvm2-monitor.service >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl --no-reload disable lvm2-monitor.service >/dev/null 2>&1 || :
+			systemctl stop lvm2-monitor.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart lvm2-monitor.service >/dev/null 2>&1 || :
+		end
+	end
+
+	package %{name}-libs
+		template LIBS
+
+		requires
+			libdevmapper = %{thisver}
+		end
+
+		files += \
+			%{libdir}/libdevmapper-event-lvm2.so.* \
+			%{libdir}/device-mapper
+	end
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package device-mapper
+		summary = Device mapper utility.
+		description
+			This package contains the supporting userspace utility, dmsetup,
+			for the kernel device-mapper and the dmeventd daemon for monitoring
+			the state of device-mapper devices.
+		end
+
+		prerequires += \
+			systemd-units
+
+		requires
+			libdevmapper = %{thisver}
+			util-linux >= 2.24
+		end
+
+		conflicts
+			dracut < 002
+		end
+
+		files
+			%{sbindir}/blkdeactivate
+			%{sbindir}/dmeventd
+			%{sbindir}/dmsetup
+			%{sbindir}/dmstats
+			%{mandir}/man8/blkdeactivate.8.gz
+			%{mandir}/man8/dmeventd.8.gz
+			%{mandir}/man8/dmsetup.8.gz
+			%{mandir}/man8/dmstats.8.gz
+			%{udevdir}/10-dm.rules
+			%{udevdir}/13-dm-disk.rules
+			%{udevdir}/95-dm-notify.rules
+			%{unitdir}/dm-event.socket
+			%{unitdir}/dm-event.service
+		end
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+
+			# dm-event.socket is always enabled and started and ready to
+			# serve if dmeventd is used.
+			systemctl --no-reload enable dm-event.socket >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl --no-reload disable dm-event.service >/dev/null 2>&1 || :
+			systemctl --no-reload disable dm-event.socket >/dev/null 2>&1 || :
+			systemctl stop dm-event.socket >/dev/null 2>&1 || :
+			systemctl stop dm-event.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart dm-event.service >/dev/null 2>&1 || :
+		end
+	end
 
 	package libdevmapper
 		template LIBS
+
+		summary = Device-mapper shared libraries.
+		description
+			This package contains the device-mapper shared libraries,
+			libdevmapper and libdevmapper-event.
+		end
+
+		files
+			%{libdir}/libdevmapper.so.*
+			%{libdir}/libdevmapper-event.so.*
+		end
 	end
 
 	package libdevmapper-devel
-		template DEVEL
+		summary = Development libraries and headers for the device-mapper.
+		description
+			This package contains files needed to develop applications that use
+			the device-mapper libraries.
+		end
+
+		requires
+			libdevmapper = %{thisver}
+		end
+
+		files
+			%{libdir}/libdevmapper.so
+			%{libdir}/libdevmapper-event.so
+			%{includedir}/libdevmapper.h
+			%{includedir}/libdevmapper-event.h
+			%{libdir}/pkgconfig/devmapper.pc
+			%{libdir}/pkgconfig/devmapper-event.pc
+		end
 	end
 
 	package %{name}-debuginfo
