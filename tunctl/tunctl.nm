@@ -5,7 +5,7 @@
 
 name       = tunctl
 version    = 1.5
-release    = 2
+release    = 3
 
 groups     = Networking/Tools
 url        = http://tunctl.sourceforge.net/
@@ -28,14 +28,12 @@ build
 	end
 
 	prepare_cmds
-		sed -e "s/^CFLAGS.*/CFLAGS = %{CFLAGS}/" -i Makefile
+		sed -e "s/^CFLAGS.*/CFLAGS = %{CFLAGS} %{LDFLAGS}/" -i Makefile
 	end
-
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
