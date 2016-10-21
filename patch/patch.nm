@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = patch
-version    = 2.7.1
+version    = 2.7.5
 release    = 1
 
 groups     = Development/Tools
@@ -27,7 +27,6 @@ build
 	requires
 		attr-devel
 		ed
-		libselinux-devel
 		pkg-config
 	end
 
