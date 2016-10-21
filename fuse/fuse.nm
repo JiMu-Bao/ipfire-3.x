@@ -5,7 +5,7 @@
 
 name       = fuse
 version    = 2.9.7
-release    = 1
+release    = 2
 
 groups     = System/Filesystems
 url        = http://fuse.sf.net/
@@ -21,10 +21,6 @@ end
 source_dl  = https://github.com/libfuse/libfuse/releases/download/%{thisapp}/
 
 build
-	requires
-		libselinux-devel
-	end
-
 	configure_options += \
 		--disable-static \
 		--disable-rpath
