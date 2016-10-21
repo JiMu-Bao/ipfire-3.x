@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = glib2
-ver_major  = 2.48
-ver_minor  = 0
+ver_major  = 2.50
+ver_minor  = 1
 version    = %{ver_major}.%{ver_minor}
 release    = 1
 thisapp    = glib-%{version}
@@ -31,14 +31,13 @@ build
 	requires
 		gettext
 		libffi-devel
-		libselinux-devel
+		libmount-devel
 		pcre-devel
 		pkg-config
 		zlib-devel
 	end
 
 	configure_options += \
-		--sysconfdir=/etc \
 		--with-pcre=system
 
 	install_cmds
