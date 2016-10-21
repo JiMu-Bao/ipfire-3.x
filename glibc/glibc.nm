@@ -5,7 +5,7 @@
 
 name       = glibc
 version    = 2.24
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -39,7 +39,6 @@ build
 		gettext
 		kernel-headers >= %{OPTIMIZED_KERNEL}
 		libcap-devel
-		libselinux-devel
 		libstdc++-static
 		texinfo
 	end
@@ -91,7 +90,6 @@ build
 		--disable-profile \
 		--enable-add-ons \
 		--enable-kernel=%{OPTIMIZED_KERNEL} \
-		--with-selinux \
 		--disable-werror \
 		--enable-bind-now \
 		--enable-obsolete-rpc \
