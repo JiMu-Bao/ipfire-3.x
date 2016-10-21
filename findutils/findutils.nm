@@ -5,7 +5,7 @@
 
 name       = findutils
 version    = 4.6.0
-release    = 1
+release    = 2
 
 groups     = System/Tools
 url        = http://www.gnu.org/software/findutils/
@@ -28,7 +28,6 @@ build
 		autoconf
 		automake
 		gettext-devel
-		libselinux-devel
 	end
 
 	prepare_cmds
