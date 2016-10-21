@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = libvirt
-version    = 1.3.3
-release    = 2
+version    = 2.3.0
+release    = 1
 
 maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
 groups     = Applications/Virtualization
@@ -14,12 +14,12 @@ license    = LGPLv2.1+
 summary    = A library for controlling VMs.
 
 description
-	A toolkit to interact with the virtualization capabilities of recent \
+	A toolkit to interact with the virtualization capabilities of recent
 	versions of Linux.
 end
 
 source_dl  = ftp://libvirt.org/libvirt/
-sources    = %{thisapp}.tar.gz
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -29,7 +29,6 @@ build
 		libcurl-devel
 		libgcrypt-devel
 		libnl-devel
-		libselinux-devel
 		libdevmapper-devel
 		libpciaccess-devel
 		libssh2-devel
@@ -65,8 +64,7 @@ build
 		--with-storage-disk \
 		--with-avahi \
 		--with-udev \
-		--with-libvirtd \
-		--with-selinux
+		--with-libvirtd
 end
 
 packages
