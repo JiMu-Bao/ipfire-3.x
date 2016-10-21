@@ -8,7 +8,7 @@ build_graphite = 1
 
 name       = gcc
 version    = 6.2.0
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -197,6 +197,7 @@ build
 			--libdir=%{libdir} \
 			--libexecdir=%{libdir} \
 			--mandir=%{mandir} \
+			--with-boot-ldflags="%{LDFLAGS}" \
 			--enable-esp \
 			--enable-shared \
 			--enable-threads=posix \
