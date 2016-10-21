@@ -5,9 +5,8 @@
 
 name       = zerofree
 version    = 1.0.1
-release    = 1
+release    = 2
 
-maintainer =
 groups     = Filesystem/Tools
 url        = http://intgat.tigress.co.uk/rmy/uml/
 license    = GPL+
@@ -35,7 +34,7 @@ build
 	end
 
 	build
-		make %{PARALLELISMFLAGS} CC="gcc %{CFLAGS}"
+		make %{PARALLELISMFLAGS} CC="gcc %{CFLAGS} %{LDFLAGS}"
 	end
 
 	install
@@ -46,7 +45,6 @@ end
 
 packages
 	package zerofree
-	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
