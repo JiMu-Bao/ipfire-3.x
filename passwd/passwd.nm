@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = passwd
-version    = 0.76
-release    = 2
+version    = 0.79
+release    = 1
 
 groups     = System/Base
 url        = http://fedorahosted.org/passwd
@@ -18,7 +18,7 @@ description
 	Modules) library.
 end
 
-source_dl  =
+source_dl  = https://fedorahosted.org/releases/p/a/%{name}/
 sources    = %{thisapp}.tar.bz2
 
 build
@@ -28,12 +28,11 @@ build
 		libuser-devel
 		pam-devel
 		pkg-config
-		libselinux-devel
 		popt-devel
 	end
 
 	configure_options +=\
-		--with-selinux \
+		--without-selinux \
 		--with-audit \
 		--disable-static
 
