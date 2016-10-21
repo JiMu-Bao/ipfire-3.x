@@ -8,7 +8,7 @@ major_ver  = 2.28
 minor_ver  = 2
 #version    = %{major_ver}
 version    = %{major_ver}.%{minor_ver}
-release    = 1
+release    = 2
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -70,7 +70,7 @@ build
 
 	# Build nolodin
 	build_cmds
-		gcc %{CFLAGS} -o nologin %{DIR_SOURCE}/nologin.c
+		gcc %{CFLAGS} %{LDFLAGS} -o nologin %{DIR_SOURCE}/nologin.c
 	end
 
 	install_cmds
