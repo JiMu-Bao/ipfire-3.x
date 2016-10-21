@@ -5,7 +5,7 @@
 
 name       = psmisc
 version    = 22.21
-release    = 1
+release    = 2
 
 groups     = Applications/System
 url        = http://sourceforge.net/projects/psmisc
@@ -26,12 +26,8 @@ source_dl  = http://downloads.sourceforge.net/project/psmisc/psmisc/
 
 build
 	requires
-		libselinux-devel
 		ncurses-devel
 	end
-
-	configure_options += \
-		--enable-selinux
 end
 
 packages
