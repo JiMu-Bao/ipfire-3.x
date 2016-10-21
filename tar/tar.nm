@@ -5,7 +5,7 @@
 
 name       = tar
 version    = 1.29
-release    = 1
+release    = 2
 
 groups     = System/Packaging
 url        = http://www.gnu.org/software/tar/
@@ -35,13 +35,11 @@ build
 		gettext-devel
 		libacl-devel
 		libattr-devel
-		libselinux-devel
 		texinfo
 	end
 
 	configure_options += \
 		--libexecdir=/usr/sbin \
-		--enable-selinux \
 		FORCE_UNSAFE_CONFIGURE=1
 
 	prepare_cmds
