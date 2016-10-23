@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = quagga
-version    = 1.0.20160315
-release    = 2
+version    = 1.1.0
+release    = 1
 
 groups     = Networking/Routing
 url        = http://www.quagga.net/
@@ -21,7 +21,6 @@ description
 end
 
 source_dl  = http://download.savannah.gnu.org/releases/quagga/
-sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -29,6 +28,7 @@ build
 		net-snmp-devel
 		readline-devel
 		systemd-units
+		texinfo
 	end
 
 	prepare_cmds
