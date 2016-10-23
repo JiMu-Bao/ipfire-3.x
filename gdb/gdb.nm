@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = gdb
-version    = 7.3.50.20110722
-release    = 3
+version    = 7.12
+release    = 1
 
 groups     = Development/Debuggers
 url        = http://gnu.org/software/gdb/
@@ -13,66 +13,55 @@ license    = GPLv3+
 summary    = A GNU source-level debugger for C, C++, Java and other languages.
 
 description
-	GDB, the GNU debugger, allows you to debug programs written in C, C++, \
-	Java, and other languages, by executing them in a controlled fashion \
+	GDB, the GNU debugger, allows you to debug programs written in C, C++,
+	Java, and other languages, by executing them in a controlled fashion
 	and printing their data.
 end
 
-#source_dl  = ftp://ftp.gnu.org/gnu/gdb/
-source_dl  = ftp://sourceware.org/pub/gdb/snapshots/current/
-sources    = %{thisapp}.tar.bz2
+source_dl  = ftp://ftp.gnu.org/gnu/gdb/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
 		bison
 		expat-devel
 		ncurses-devel
+		readline-devel
 		texinfo
+		xz-devel
 		zlib-devel
 	end
 
 	configure_options += \
+		--with-pkgversion="%{DISTRO_NAME} gdb %{thisver}" \
+		--with-bugurl="http://bugzilla.ipfire.org/" \
 		--with-system-gdbinit=/etc/gdbinit \
-		--mandir=/usr/share/man \
+		--enable-64-bit-bfd \
 		--enable-gdb-build-warnings=,-Wno-unused \
 		--with-separate-debug-dir=/usr/lib/debug \
+		--enable-tui \
+		--disable-binutils \
+		--disable-etc \
+		--disable-gas \
+		--disable-gold \
+		--disable-gprof \
+		--disable-ld \
 		--disable-sim \
 		--disable-rpath \
-		--without-system-readline \
+		--with-system-readline \
+		--with-system-zlib \
 	        --disable-werror \
 		--with-expat \
-		--without-libexpat-prefix \
-		--enable-tui \
 		--with-python \
-		--without-rpm \
+		--with-lzma \
+		--without-libexpat-prefix \
 		--without-libunwind \
-		--enable-64-bit-bfd \
 		%{DISTRO_MACHINE}
 
-	prepare_cmds
-		echo "%{DISTRO_NAME} (%{thisver})" > gdb/version.in
-	end
-
-	# Testsuite does not succeed. Needs to be fixed eventually.
-	#test
-	#	make check
-	#end
-
 	install_cmds
-		# Install gcore script.
-		cp -v gdb/gdb_gcore.sh %{BUILDROOT}/usr/bin/gcore
-		chmod -v 755 %{BUILDROOT}/usr/bin/gcore
-
-		# Remove gdb/gdbtui binaries duplicity.
-		ln -svf gdb %{BUILDROOT}/usr/bin/gdbtui
-		ln -svf gdb.1 %{BUILDROOT}/usr/share/man/man1/gdbtui.1
-
-		mkdir -pv %{BUILDROOT}/etc/gdbinit.d
-		cp -vf %{DIR_SOURCE}/gdbinit %{BUILDROOT}/etc/gdbinit
-
 		# Remove locale data and headers which is provided by binutils.
-		rm -rf %{BUILDROOT}%{datadir}/locale/
-		rm -rf %{BUILDROOT}%{includedir}/{ansidecl,bfd,bfdlink,dis-asm,symcat}.h
+		rm -vrf %{BUILDROOT}%{datadir}/locale/
+		rm -vrf %{BUILDROOT}%{includedir}/{ansidecl,bfd,bfdlink,dis-asm,symcat}.h
 	end
 end
 
