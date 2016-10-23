@@ -5,7 +5,7 @@
 
 name       = wget
 version    = 1.17
-release    = 1
+release    = 2
 
 groups     = Applications/Internet
 url        = http://www.gnu.org/software/wget/
@@ -31,7 +31,7 @@ build
 	end
 
 	export CPPFLAGS = %(pkg-config --cflags openssl)
-	export LDFLAGS = %(pkg-config --libs openssl)
+	export LDFLAGS += %(pkg-config --libs openssl)
 
 	configure_options += \
 		--with-ssl=openssl \
