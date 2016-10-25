@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = samba
-version    = 3.6.16
+version    = 4.5.1
 release    = 1
 
 groups     = Networking/Daemons
@@ -35,54 +35,63 @@ build
 		autoconf
 		automake
 		avahi-devel
-		cups-devel
+		cups-devel >= 2.1.4
+		docbook-xsl
 		gettext
+		gnutls-devel
 		ncurses-devel
 		libacl-devel
+		libattr-devel
 		libcap-devel
+		libldb-devel >= 1.1.27
+		libtalloc-devel >= 2.1.8
+		libtdb-devel >=1.3.11
+		libtevent-devel >= 0.9.29
 		openldap-devel
 		openssl-devel
 		pam-devel
 		popt-devel
+		pyldb
+		pytalloc
+		pytdb
+		pytevent
 		readline-devel
 		which
 		zlib-devel
 	end
 
-	DIR_APP = %{DIR_SRC}/%{thisapp}/source3
-
 	configure_options += \
+		--enable-fhs \
 		--prefix=%{prefix} \
-		--localstatedir=/var \
+		--localstatedir=%{localstatedir} \
 		--with-lockdir=%{sharedstatedir}/samba \
-		--with-piddir=%{rundir} \
-		--with-mandir=%{mandir} \
+		--with-piddir=%{localstatedir}/run/samba \
 		--with-privatedir=%{sharedstatedir}/samba/private \
-		--with-logfilebase=/var/log/samba \
+		--with-logfilebase=%{localstatedir}/log/samba \
 		--with-modulesdir=%{libdir}/samba \
 		--with-configdir=%{sysconfdir}/samba \
 		--with-pammodulesdir=/%{lib}/security \
-		--with-swatdir=%{datadir}/swat \
 		--with-automount \
-		--with-libsmbclient \
-		--with-libsmbsharemodes \
 		--with-pam \
-		--with-pam_smbpass \
 		--with-quotas \
 		--with-sendfile-support \
 		--with-syslog \
 		--with-utmp \
 		--with-winbind \
+		--bundled-libraries="!zlib,!popt,!tdb,!pytdb,!talloc,!pytalloc,!pytalloc-util,!tevent,!pytevent,!ldb,!pyldb,!pyldb-util" \
 		--with-shared-modules=idmap_ad,idmap_rid,idmap_adex,idmap_hash
-
-	make_build_targets += \
-		pch \
-		all modules
 
 	install_cmds
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/samba
 		echo "127.0.0.1 localhost" > %{BUILDROOT}%{sysconfdir}/samba/lmhosts
 		cp -vf %{DIR_SOURCE}/smb.conf %{BUILDROOT}/%{sysconfdir}/%{name}
+	end
+end
+
+quality-agent
+	whitelist_rpath
+		%{libdir}/samba
+		%{libdir}/tdb
 	end
 end
 
