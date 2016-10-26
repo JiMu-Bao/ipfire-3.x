@@ -6,7 +6,7 @@
 name       = net-tools
 version    = 2.0
 git_rev    = e5f1be13
-release    = 1.%{git_rev}
+release    = 2.%{git_rev}
 
 groups     = System/Base
 url        = http://net-tools.berlios.de/
@@ -24,7 +24,6 @@ sources    = %{thisapp}-%{git_rev}.tar.xz
 build
 	requires
 		gettext
-		libselinux-devel
 	end
 
 	prepare_cmds
