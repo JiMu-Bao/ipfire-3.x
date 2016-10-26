@@ -1,0 +1,38 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = debugedit
+version    = 5.3.5
+release    = 1
+
+groups     = Development/Tools
+url        = http://www.rpm5.org/
+license    = GPLv2
+summary    = Standalone version of debugedit
+
+description
+	This package contains a standalone version of debugedit from RPM5.
+end
+
+build
+	requires
+		beecrypt-devel
+		elfutils-devel
+		popt-devel
+	end
+
+	install
+		mkdir -pv %{BUILDROOT}%{bindir}
+		install -v -m 755 debugedit %{BUILDROOT}%{bindir}/debugedit
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
