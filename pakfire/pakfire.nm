@@ -5,7 +5,7 @@
 
 name       = pakfire
 version    = 0.9.27
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Packaging
@@ -24,22 +24,15 @@ build
 	requires
 		autoconf
 		automake
-		beecrypt-devel
-		elfutils-devel
 		gettext-devel
 		intltool
 		libcap-devel
 		libsolv-devel >= 0.0.0-4
-		popt-devel
 		python-devel
 		systemd-devel
 		systemd-units
 		xz-devel
 	end
-
-	# libgomp was broken in earlier releases.
-	requires += gcc >= 4.6.2-4
-	requires += beecrypt >= 4.2.1-2
 
 	prepare_cmds
 		# Generate the build system, if this was not a release
@@ -95,6 +88,7 @@ packages
 		requires
 			# For --rpm-requires.
 			bash >= 4.2-7
+			debugedit
 
 			%{name} = %{thisver}
 			quality-agent = %{thisver}

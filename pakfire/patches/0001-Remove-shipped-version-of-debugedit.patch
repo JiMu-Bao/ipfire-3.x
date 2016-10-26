@@ -1,0 +1,4576 @@
+From 559d80aa112c785fd2068ca09c5516d47ceabfe1 Mon Sep 17 00:00:00 2001
+From: Michael Tremer <michael.tremer@ipfire.org>
+Date: Wed, 26 Oct 2016 23:42:57 +0100
+Subject: [PATCH] Remove shipped version of debugedit
+
+We are now shipping this as a seperate package so that
+we can update it easier.
+
+Signed-off-by: Michael Tremer <michael.tremer@ipfire.org>
+---
+ .gitignore                       |    2 -
+ Makefile.am                      |   19 -
+ configure.ac                     |   22 -
+ src/debugedit/debugedit.c        | 1688 --------------------------------------
+ src/debugedit/hashtab.c          |  523 ------------
+ src/debugedit/hashtab.h          |  143 ----
+ src/debugedit/rpmiotypes.h       |  653 ---------------
+ src/debugedit/rpmsw.h            |  157 ----
+ src/debugedit/rpmtag.h           | 1243 ----------------------------
+ src/scripts/extract-debuginfo.in |    2 +-
+ 10 files changed, 1 insertion(+), 4451 deletions(-)
+ delete mode 100644 src/debugedit/debugedit.c
+ delete mode 100644 src/debugedit/hashtab.c
+ delete mode 100644 src/debugedit/hashtab.h
+ delete mode 100644 src/debugedit/rpmiotypes.h
+ delete mode 100644 src/debugedit/rpmsw.h
+ delete mode 100644 src/debugedit/rpmtag.h
+
+diff --git a/.gitignore b/.gitignore
+index 8fce8f6..293e999 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,6 +1,5 @@
+ /Makefile
+ /build-aux
+-/debugedit
+ /libtool
+ /missing
+ /contrib/pakfire.nm
+@@ -9,7 +8,6 @@
+ /src/scripts/extract-debuginfo
+ /src/systemd/*.service
+ /tmp
+-/tools/debugedit
+ *.py[co]
+ /*.tar.bz2
+ /*.tar.gz
+diff --git a/Makefile.am b/Makefile.am
+index 28dd954..bf7e42f 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -244,25 +244,6 @@ libpakfire_preload_la_LIBADD = \
+ 
+ # ------------------------------------------------------------------------------
+ 
+-libexec_PROGRAMS += \
+-	debugedit
+-
+-debugedit_SOURCES = \
+-	src/debugedit/debugedit.c \
+-	src/debugedit/hashtab.c \
+-	src/debugedit/hashtab.h \
+-	src/debugedit/rpmiotypes.h \
+-	src/debugedit/rpmsw.h \
+-	src/debugedit/rpmtag.h
+-
+-debugedit_LDADD = \
+-	$(AM_CFLAGS) \
+-	$(BEECRYPT_LIBS) \
+-	$(ELF_LIBS) \
+-	$(POPT_LIBS)
+-
+-# ------------------------------------------------------------------------------
+-
+ scripts_SCRIPTS = \
+ 	src/scripts/extract-debuginfo \
+ 	src/scripts/quality-agent
+diff --git a/configure.ac b/configure.ac
+index 4030541..1e188e7 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -103,12 +103,6 @@ AM_PATH_PYTHON([2.7])
+ 
+ save_LIBS="$LIBS"
+ 
+-# beecrypt
+-LIBS=
+-AC_SEARCH_LIBS([hashFunctionContextInit], [beecrypt], [], [AC_MSG_ERROR([*** beecrypt library not found])])
+-BEECRYPT_LIBS="$LIBS"
+-AC_SUBST(BEECRYPT_LIBS)
+-
+ # libdl
+ LIBS=
+ AC_SEARCH_LIBS([dlsym], [dl], [], [AC_MSG_ERROR([*** Dynamic linking loader library not found])])
+@@ -123,22 +117,6 @@ AC_SEARCH_LIBS([cap_init], [cap], [], [AC_MSG_ERROR([*** POSIX caps library not
+ CAP_LIBS="$LIBS"
+ AC_SUBST(CAP_LIBS)
+ 
+-# libelf
+-AC_CHECK_HEADERS([libelf.h gelf.h], [], [AC_MSG_ERROR([*** libelf headers not found])])
+-
+-LIBS=
+-AC_SEARCH_LIBS([gelf_getvernaux], [elf], [], [AC_MSG_ERROR([*** libelf library not found])])
+-ELF_LIBS="$LIBS"
+-AC_SUBST(ELF_LIBS)
+-
+-# libpopt
+-AC_CHECK_HEADERS([popt.h], [], [AC_MSG_ERROR([*** libpopt headers not found])])
+-
+-LIBS=
+-AC_SEARCH_LIBS([poptGetContext], [popt], [], [AC_MSG_ERROR([*** libpopt library not found])])
+-POPT_LIBS="$LIBS"
+-AC_SUBST(POPT_LIBS)
+-
+ # libsolv
+ AC_CHECK_HEADERS([solv/solvversion.h], [], [AC_MSG_ERROR([*** libsolv headers not found])])
+ 
+diff --git a/src/debugedit/debugedit.c b/src/debugedit/debugedit.c
+deleted file mode 100644
+index 75b48f0..0000000
+--- a/src/debugedit/debugedit.c
++++ /dev/null
+@@ -1,1688 +0,0 @@
+-/* Copyright (C) 2001, 2002, 2003, 2005, 2007, 2009 Red Hat, Inc.
+-   Written by Alexander Larsson <alexl@redhat.com>, 2002
+-   Based on code by Jakub Jelinek <jakub@redhat.com>, 2001.
+-
+-   This program is free software; you can redistribute it and/or modify
+-   it under the terms of the GNU General Public License as published by
+-   the Free Software Foundation; either version 2, or (at your option)
+-   any later version.
+-
+-   This program is distributed in the hope that it will be useful,
+-   but WITHOUT ANY WARRANTY; without even the implied warranty of
+-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-   GNU General Public License for more details.
+-
+-   You should have received a copy of the GNU General Public License
+-   along with this program; if not, write to the Free Software Foundation,
+-   Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+-
+-/* Needed for libelf */
+-#define _FILE_OFFSET_BITS 64
+-
+-#include <assert.h>
+-#include <byteswap.h>
+-#include <endian.h>
+-#include <errno.h>
+-#include <error.h>
+-#include <limits.h>
+-#include <string.h>
+-#include <stdlib.h>
+-#include <unistd.h>
+-#include <sys/types.h>
+-#include <sys/stat.h>
+-#include <fcntl.h>
+-#include <popt.h>
+-
+-#include <gelf.h>
+-
+-/* some defines taken from the dwarf standard */
+-
+-#define DW_TAG_compile_unit	0x11
+-
+-#define DW_AT_name		0x03
+-#define DW_AT_stmt_list		0x10
+-#define DW_AT_comp_dir		0x1b
+-
+-#define DW_FORM_addr		0x01
+-#define DW_FORM_block2		0x03
+-#define DW_FORM_block4		0x04
+-#define DW_FORM_data2		0x05
+-#define DW_FORM_data4		0x06
+-#define DW_FORM_data8		0x07
+-#define DW_FORM_string		0x08
+-#define DW_FORM_block		0x09
+-#define DW_FORM_block1		0x0a
+-#define DW_FORM_data1		0x0b
+-#define DW_FORM_flag		0x0c
+-#define DW_FORM_sdata		0x0d
+-#define DW_FORM_strp		0x0e
+-#define DW_FORM_udata		0x0f
+-#define DW_FORM_ref_addr	0x10
+-#define DW_FORM_ref1		0x11
+-#define DW_FORM_ref2		0x12
+-#define DW_FORM_ref4		0x13
+-#define DW_FORM_ref8		0x14
+-#define DW_FORM_ref_udata	0x15
+-#define DW_FORM_indirect	0x16
+-
+-#include <beecrypt/beecrypt.h>
+-#include "hashtab.h"
+-#include "rpmtag.h"
+-
+-#define DW_TAG_partial_unit 0x3c
+-#define DW_FORM_sec_offset 0x17
+-#define DW_FORM_exprloc 0x18
+-#define DW_FORM_flag_present 0x19
+-#define DW_FORM_ref_sig8 0x20
+-
+-char *base_dir = NULL;
+-char *dest_dir = NULL;
+-char *list_file = NULL;
+-int list_file_fd = -1;
+-int do_build_id = 0;
+-
+-typedef struct
+-{
+-  Elf *elf;
+-  GElf_Ehdr ehdr;
+-  Elf_Scn **scn;
+-  const char *filename;
+-  int lastscn;
+-  GElf_Shdr shdr[0];
+-} DSO;
+-
+-typedef struct
+-{
+-  unsigned char *ptr;
+-  rpmuint32_t addend;
+-} REL;
+-
+-#define read_uleb128(ptr) ({		\
+-  unsigned int ret = 0;			\
+-  unsigned int c;			\
+-  int shift = 0;			\
+-  do					\
+-    {					\
+-      c = *ptr++;			\
+-      ret |= (c & 0x7f) << shift;	\
+-      shift += 7;			\
+-    } while (c & 0x80);			\
+-					\
+-  if (shift >= 35)			\
+-    ret = UINT_MAX;			\
+-  ret;					\
+-})
+-
+-static rpmuint16_t (*do_read_16) (unsigned char *ptr);
+-static rpmuint32_t (*do_read_32) (unsigned char *ptr);
+-static void (*write_32) (unsigned char *ptr, GElf_Addr val);
+-
+-static int ptr_size;
+-static int cu_version;
+-
+-static inline rpmuint16_t
+-buf_read_ule16 (unsigned char *data)
+-{
+-  return data[0] | (data[1] << 8);
+-}
+-
+-static inline rpmuint16_t
+-buf_read_ube16 (unsigned char *data)
+-{
+-  return data[1] | (data[0] << 8);
+-}
+-
+-static inline rpmuint32_t
+-buf_read_ule32 (unsigned char *data)
+-{
+-  return data[0] | (data[1] << 8) | (data[2] << 16) | (data[3] << 24);
+-}
+-
+-static inline rpmuint32_t
+-buf_read_ube32 (unsigned char *data)
+-{
+-  return data[3] | (data[2] << 8) | (data[1] << 16) | (data[0] << 24);
+-}
+-
+-static const char *
+-strptr (DSO *dso, int sec, off_t offset)
+-{
+-  Elf_Scn *scn;
+-  Elf_Data *data;
+-
+-  scn = dso->scn[sec];
+-  if (offset >= 0 && (GElf_Addr) offset < dso->shdr[sec].sh_size)
+-    {
+-      data = NULL;
+-      while ((data = elf_rawdata (scn, data)) != NULL)
+-	{
+-	  if (data->d_buf
+-	      && offset >= data->d_off
+-	      && offset < data->d_off + (off_t)data->d_size)
+-	    return (const char *) data->d_buf + (offset - data->d_off);
+-	}
+-    }
+-
+-  return NULL;
+-}
+-
+-
+-#define read_1(ptr) *ptr++
+-
+-#define read_16(ptr) ({					\
+-  rpmuint16_t ret = do_read_16 (ptr);			\
+-  ptr += 2;						\
+-  ret;							\
+-})
+-
+-#define read_32(ptr) ({					\
+-  rpmuint32_t ret = do_read_32 (ptr);			\
+-  ptr += 4;						\
+-  ret;							\
+-})
+-
+-REL *relptr, *relend;
+-int reltype;
+-
+-#define do_read_32_relocated(ptr) ({			\
+-  rpmuint32_t dret = do_read_32 (ptr);			\
+-  if (relptr)						\
+-    {							\
+-      while (relptr < relend && relptr->ptr < ptr)	\
+-	++relptr;					\
+-      if (relptr < relend && relptr->ptr == ptr)	\
+-	{						\
+-	  if (reltype == SHT_REL)			\
+-	    dret += relptr->addend;			\
+-	  else						\
+-	    dret = relptr->addend;			\
+-	}						\
+-    }							\
+-  dret;							\
+-})
+-
+-#define read_32_relocated(ptr) ({			\
+-  rpmuint32_t ret = do_read_32_relocated (ptr);		\
+-  ptr += 4;						\
+-  ret;							\
+-})
+-
+-static void
+-dwarf2_write_le32 (unsigned char *p, GElf_Addr val)
+-{
+-  rpmuint32_t v = (rpmuint32_t) val;
+-
+-  p[0] = v;
+-  p[1] = v >> 8;
+-  p[2] = v >> 16;
+-  p[3] = v >> 24;
+-}
+-
+-
+-static void
+-dwarf2_write_be32 (unsigned char *p, GElf_Addr val)
+-{
+-  rpmuint32_t v = (rpmuint32_t) val;
+-
+-  p[3] = v;
+-  p[2] = v >> 8;
+-  p[1] = v >> 16;
+-  p[0] = v >> 24;
+-}
+-
+-static struct
+-  {
+-    const char *name;
+-    unsigned char *data;
+-    Elf_Data *elf_data;
+-    size_t size;
+-    int sec, relsec;
+-  } debug_sections[] =
+-  {
+-#define DEBUG_INFO	0
+-#define DEBUG_ABBREV	1
+-#define DEBUG_LINE	2
+-#define DEBUG_ARANGES	3
+-#define DEBUG_PUBNAMES	4
+-#define DEBUG_PUBTYPES	5
+-#define DEBUG_MACINFO	6
+-#define DEBUG_LOC	7
+-#define DEBUG_STR	8
+-#define DEBUG_FRAME	9
+-#define DEBUG_RANGES	10
+-#define DEBUG_TYPES	11
+-#define DEBUG_MACRO	12
+-    { ".debug_info", NULL, NULL, 0, 0, 0 },
+-    { ".debug_abbrev", NULL, NULL, 0, 0, 0 },
+-    { ".debug_line", NULL, NULL, 0, 0, 0 },
+-    { ".debug_aranges", NULL, NULL, 0, 0, 0 },
+-    { ".debug_pubnames", NULL, NULL, 0, 0, 0 },
+-    { ".debug_pubtypes", NULL, NULL, 0, 0, 0 },
+-    { ".debug_macinfo", NULL, NULL, 0, 0, 0 },
+-    { ".debug_loc", NULL, NULL, 0, 0, 0 },
+-    { ".debug_str", NULL, NULL, 0, 0, 0 },
+-    { ".debug_frame", NULL, NULL, 0, 0, 0 },
+-    { ".debug_ranges", NULL, NULL, 0, 0, 0 },
+-    { ".debug_types", NULL, NULL, 0, 0, 0 },
+-    { ".debug_macro", NULL, NULL, 0, 0, 0 },
+-    { NULL, NULL, NULL, 0, 0, 0 }
+-  };
+-
+-struct abbrev_attr
+-  {
+-    unsigned int attr;
+-    unsigned int form;
+-  };
+-
+-struct abbrev_tag
+-  {
+-    unsigned int entry;
+-    unsigned int tag;
+-    int nattr;
+-    struct abbrev_attr attr[0];
+-  };
+-
+-static hashval_t
+-abbrev_hash (const void *p)
+-{
+-  struct abbrev_tag *t = (struct abbrev_tag *)p;
+-
+-  return t->entry;
+-}
+-
+-static int
+-abbrev_eq (const void *p, const void *q)
+-{
+-  struct abbrev_tag *t1 = (struct abbrev_tag *)p;
+-  struct abbrev_tag *t2 = (struct abbrev_tag *)q;
+-
+-  return t1->entry == t2->entry;
+-}
+-
+-static void
+-abbrev_del (void *p)
+-{
+-  free (p);
+-}
+-
+-static htab_t
+-read_abbrev (DSO *dso, unsigned char *ptr)
+-{
+-  htab_t h = htab_try_create (50, abbrev_hash, abbrev_eq, abbrev_del);
+-  unsigned int attr, form;
+-  struct abbrev_tag *t;
+-  int size;
+-  void **slot;
+-
+-  if (h == NULL)
+-    {
+-no_memory:
+-      error (0, ENOMEM, "%s: Could not read .debug_abbrev", dso->filename);
+-      if (h)
+-        htab_delete (h);
+-      return NULL;
+-    }
+-
+-  while ((attr = read_uleb128 (ptr)) != 0)
+-    {
+-      size = 10;
+-      t = malloc (sizeof (*t) + size * sizeof (struct abbrev_attr));
+-      if (t == NULL)
+-        goto no_memory;
+-      t->entry = attr;
+-      t->nattr = 0;
+-      slot = htab_find_slot (h, t, INSERT);
+-      if (slot == NULL)
+-        {
+-	  free (t);
+-	  goto no_memory;
+-        }
+-      if (*slot != NULL)
+-	{
+-	  error (0, 0, "%s: Duplicate DWARF abbreviation %d", dso->filename,
+-		 t->entry);
+-	  free (t);
+-	  htab_delete (h);
+-	  return NULL;
+-	}
+-      t->tag = read_uleb128 (ptr);
+-      ++ptr; /* skip children flag.  */
+-      while ((attr = read_uleb128 (ptr)) != 0)
+-        {
+-	  if (t->nattr == size)
+-	    {
+-	      size += 10;
+-	      t = realloc (t, sizeof (*t) + size * sizeof (struct abbrev_attr));
+-	      if (t == NULL)
+-		goto no_memory;
+-	    }
+-	  form = read_uleb128 (ptr);
+-	  if (form == 2
+-	      || (form > DW_FORM_flag_present && form != DW_FORM_ref_sig8))
+-	    {
+-	      error (0, 0, "%s: Unknown DWARF DW_FORM_%d", dso->filename, form);
+-	      htab_delete (h);
+-	      return NULL;
+-	    }
+-
+-	  t->attr[t->nattr].attr = attr;
+-	  t->attr[t->nattr++].form = form;
+-        }
+-      if (read_uleb128 (ptr) != 0)
+-        {
+-	  error (0, 0, "%s: DWARF abbreviation does not end with 2 zeros",
+-		 dso->filename);
+-	  htab_delete (h);
+-	  return NULL;
+-        }
+-      *slot = t;
+-    }
+-
+-  return h;
+-}
+-
+-#define IS_DIR_SEPARATOR(c) ((c)=='/')
+-
+-static char *
+-canonicalize_path (const char *s, char *d)
+-{
+-  char *rv = d;
+-  const char *sroot;
+-  char *droot;
+-
+-  if (IS_DIR_SEPARATOR (*s))
+-    {
+-      *d++ = *s++;
+-      if (IS_DIR_SEPARATOR (*s) && !IS_DIR_SEPARATOR (s[1]))
+-	{
+-	  /* Special case for "//foo" meaning a Posix namespace
+-	     escape.  */
+-	  *d++ = *s++;
+-	}
+-      while (IS_DIR_SEPARATOR (*s))
+-	s++;
+-    }
+-  droot = d;
+-  sroot = s;
+-
+-  while (*s)
+-    {
+-      /* At this point, we're always at the beginning of a path
+-	 segment.  */
+-
+-      if (s[0] == '.' && (s[1] == 0 || IS_DIR_SEPARATOR (s[1])))
+-	{
+-	  s++;
+-	  if (*s)
+-	    while (IS_DIR_SEPARATOR (*s))
+-	      ++s;
+-	}
+-
+-      else if (s[0] == '.' && s[1] == '.'
+-	       && (s[2] == 0 || IS_DIR_SEPARATOR (s[2])))
+-	{
+-	  char *pre = d - 1; /* includes slash */
+-	  while (droot < pre && IS_DIR_SEPARATOR (*pre))
+-	    pre--;
+-	  if (droot <= pre && ! IS_DIR_SEPARATOR (*pre))
+-	    {
+-	      while (droot < pre && ! IS_DIR_SEPARATOR (*pre))
+-		pre--;
+-	      /* pre now points to the slash */
+-	      if (droot < pre)
+-		pre++;
+-	      if (pre + 3 == d && pre[0] == '.' && pre[1] == '.')
+-		{
+-		  *d++ = *s++;
+-		  *d++ = *s++;
+-		}
+-	      else
+-		{
+-		  d = pre;
+-		  s += 2;
+-		  if (*s)
+-		    while (IS_DIR_SEPARATOR (*s))
+-		      s++;
+-		}
+-	    }
+-	  else
+-	    {
+-	      *d++ = *s++;
+-	      *d++ = *s++;
+-	    }
+-	}
+-      else
+-	{
+-	  while (*s && ! IS_DIR_SEPARATOR (*s))
+-	    *d++ = *s++;
+-	}
+-
+-      if (IS_DIR_SEPARATOR (*s))
+-	{
+-	  *d++ = *s++;
+-	  while (IS_DIR_SEPARATOR (*s))
+-	    s++;
+-	}
+-    }
+-  while (droot < d && IS_DIR_SEPARATOR (d[-1]))
+-    --d;
+-  if (d == rv)
+-    *d++ = '.';
+-  *d = 0;
+-
+-  return rv;
+-}
+-
+-static int
+-has_prefix (const char  *str,
+-	    const char  *prefix)
+-{
+-  size_t str_len;
+-  size_t prefix_len;
+-  
+-  str_len = strlen (str);
+-  prefix_len = strlen (prefix);
+-
+-  if (str_len < prefix_len)
+-    return 0;
+-  
+-  return strncmp (str, prefix, prefix_len) == 0;
+-}
+-
+-static int
+-edit_dwarf2_line (DSO *dso, rpmuint32_t off, char *comp_dir, int phase)
+-{
+-  unsigned char *ptr = debug_sections[DEBUG_LINE].data, *dir;
+-  unsigned char **dirt;
+-  unsigned char *endsec = ptr + debug_sections[DEBUG_LINE].size;
+-  unsigned char *endcu, *endprol;
+-  unsigned char opcode_base;
+-  rpmuint32_t value, dirt_cnt;
+-  size_t comp_dir_len = strlen (comp_dir);
+-  size_t abs_file_cnt = 0, abs_dir_cnt = 0;
+-
+-  if (phase != 0)
+-    return 0;
+-  
+-  ptr += off;
+-  
+-  endcu = ptr + 4;
+-  endcu += read_32 (ptr);
+-  if (endcu == ptr + 0xffffffff)
+-    {
+-      error (0, 0, "%s: 64-bit DWARF not supported", dso->filename);
+-      return 1;
+-    }
+-
+-  if (endcu > endsec)
+-    {
+-      error (0, 0, "%s: .debug_line CU does not fit into section",
+-	     dso->filename);
+-      return 1;
+-    }
+-
+-  value = read_16 (ptr);
+-  if (value != 2 && value != 3 && value != 4)
+-    {
+-      error (0, 0, "%s: DWARF version %d unhandled", dso->filename,
+-	     value);
+-      return 1;
+-    }
+-  
+-  endprol = ptr + 4;
+-  endprol += read_32 (ptr);
+-  if (endprol > endcu)
+-    {
+-      error (0, 0, "%s: .debug_line CU prologue does not fit into CU",
+-	     dso->filename);
+-      return 1;
+-    }
+-  
+-  opcode_base = ptr[4 + (value >= 4)];
+-  ptr = dir = ptr + 4 + (value >= 4) + opcode_base;
+-  
+-  /* dir table: */
+-  value = 1;
+-  while (*ptr != 0)
+-    {
+-      ptr = (unsigned char *) strchr ((char *)ptr, 0) + 1;
+-      ++value;
+-    }
+-
+-  dirt = (unsigned char **) alloca (value * sizeof (unsigned char *));
+-  dirt[0] = (unsigned char *) ".";
+-  dirt_cnt = 1;
+-  ptr = dir;
+-  while (*ptr != 0)
+-    {
+-      dirt[dirt_cnt++] = ptr;
+-      ptr = (unsigned char *) strchr ((char *)ptr, 0) + 1;
+-    }
+-  ptr++;
+-
+-  /* file table: */
+-  while (*ptr != 0)
+-    {
+-      char *s, *file;
+-      size_t file_len, dir_len;
+-
+-      file = (char *) ptr;
+-      ptr = (unsigned char *) strchr ((char *)ptr, 0) + 1;
+-      value = read_uleb128 (ptr);
+-
+-      if (value >= dirt_cnt)
+-	{
+-	  error (0, 0, "%s: Wrong directory table index %u",
+-		 dso->filename, value);
+-	  return 1;
+-	}
+-      file_len = strlen (file);
+-      dir_len = strlen ((char *)dirt[value]);
+-      s = malloc (comp_dir_len + 1 + file_len + 1 + dir_len + 1);
+-      if (s == NULL)
+-	{
+-	  error (0, ENOMEM, "%s: Reading file table", dso->filename);
+-	  return 1;
+-	}
+-      if (*file == '/')
+-	{
+-	  memcpy (s, file, file_len + 1);
+-	  if (dest_dir && has_prefix (file, base_dir))
+-	    ++abs_file_cnt;
+-	}
+-      else if (*dirt[value] == '/')
+-	{
+-	  memcpy (s, dirt[value], dir_len);
+-	  s[dir_len] = '/';
+-	  memcpy (s + dir_len + 1, file, file_len + 1);
+-	}
+-      else
+-	{
+-	  char *p = s;
+-	  if (comp_dir_len != 0)
+-	    {
+-	      memcpy (s, comp_dir, comp_dir_len);
+-	      s[comp_dir_len] = '/';
+-	      p += comp_dir_len + 1;
+-	    }
+-	  memcpy (p, dirt[value], dir_len);
+-	  p[dir_len] = '/';
+-	  memcpy (p + dir_len + 1, file, file_len + 1);
+-	}
+-      canonicalize_path (s, s);
+-      if (list_file_fd != -1)
+-	{
+-	  char *p = NULL;
+-	  if (base_dir == NULL)
+-	    p = s;
+-	  else if (has_prefix (s, base_dir))
+-	    p = s + strlen (base_dir);
+-	  else if (has_prefix (s, dest_dir))
+-	    p = s + strlen (dest_dir);
+-
+-	  if (p)
+-	    {
+-	      size_t size = strlen (p) + 1;
+-	      while (size > 0)
+-		{
+-		  ssize_t ret = write (list_file_fd, p, size);
+-		  if (ret == -1)
+-		    break;
+-		  size -= ret;
+-		  p += ret;
+-		}
+-	    }
+-	}
+-
+-      free (s);
+-      
+-      read_uleb128 (ptr);
+-      read_uleb128 (ptr);
+-    }
+-  ++ptr;
+-  
+-  if (dest_dir)
+-    {
+-      unsigned char *srcptr, *buf = NULL;
+-      size_t base_len = strlen (base_dir);
+-      size_t dest_len = strlen (dest_dir);
+-      size_t shrank = 0;
+-
+-      if (dest_len == base_len)
+-	abs_file_cnt = 0;
+-      if (abs_file_cnt)
+-	{
+-	  srcptr = buf = malloc (ptr - dir);
+-	  memcpy (srcptr, dir, ptr - dir);
+-	  ptr = dir;
+-	}
+-      else
+-	ptr = srcptr = dir;
+-      while (*srcptr != 0)
+-	{
+-	  size_t len = strlen ((char *)srcptr) + 1;
+-	  const unsigned char *readptr = srcptr;
+-
+-	  if (*srcptr == '/' && has_prefix ((char *)srcptr, base_dir))
+-	    {
+-	      if (dest_len < base_len)
+-		  ++abs_dir_cnt;
+-	      memcpy (ptr, dest_dir, dest_len);
+-	      ptr += dest_len;
+-	      readptr += base_len;
+-		}
+-	  srcptr += len;
+-
+-	  shrank += srcptr - readptr;
+-	  canonicalize_path ((char *)readptr, (char *)ptr);
+-	  len = strlen ((char *)ptr) + 1;
+-	  shrank -= len;
+-	  ptr += len;
+-
+-	      elf_flagdata (debug_sections[DEBUG_STR].elf_data,
+-			    ELF_C_SET, ELF_F_DIRTY);
+-	    }
+-
+-      if (shrank > 0)
+-	{
+-	  if (--shrank == 0)
+-	    error (EXIT_FAILURE, 0,
+-		   "canonicalization unexpectedly shrank by one character");
+-	  else
+-	    {	    
+-	      memset (ptr, 'X', shrank);
+-	      ptr += shrank;
+-	      *ptr++ = '\0';
+-	    }
+-	}
+-
+-      if (abs_dir_cnt + abs_file_cnt != 0)
+-	{
+-	  size_t len = (abs_dir_cnt + abs_file_cnt) * (base_len - dest_len);
+-
+-	  if (len == 1)
+-	    error (EXIT_FAILURE, 0, "-b arg has to be either the same length as -d arg, or more than 1 char shorter");
+-	  memset (ptr, 'X', len - 1);
+-	  ptr += len - 1;
+-	  *ptr++ = '\0';
+-	}
+-      *ptr++ = '\0';
+-      ++srcptr;
+-
+-      while (*srcptr != 0)
+-	{
+-	  size_t len = strlen ((char *)srcptr) + 1;
+-
+-	  if (*srcptr == '/' && has_prefix ((char *)srcptr, base_dir))
+-	    {
+-	      memcpy (ptr, dest_dir, dest_len);
+-	      if (dest_len < base_len)
+-		{
+-		  memmove (ptr + dest_len, srcptr + base_len,
+-			   len - base_len);
+-		  ptr += dest_len - base_len;
+-		}
+-	      elf_flagdata (debug_sections[DEBUG_STR].elf_data,
+-			    ELF_C_SET, ELF_F_DIRTY);
+-	    }
+-	  else if (ptr != srcptr)
+-	    memmove (ptr, srcptr, len);
+-	  srcptr += len;
+-	  ptr += len;
+-	  dir = srcptr;
+-	  read_uleb128 (srcptr);
+-	  read_uleb128 (srcptr);
+-	  read_uleb128 (srcptr);
+-	  if (ptr != dir)
+-	    memmove (ptr, dir, srcptr - dir);
+-	  ptr += srcptr - dir;
+-	}
+-      *ptr = '\0';
+-      free (buf);
+-    }
+-  return 0;
+-}
+-
+-
+-
+-static unsigned char *
+-edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
+-{
+-  int i;
+-  rpmuint32_t list_offs;
+-  int found_list_offs;
+-  char *comp_dir;
+-  
+-  comp_dir = NULL;
+-  list_offs = 0;
+-  found_list_offs = 0;
+-  for (i = 0; i < t->nattr; ++i)
+-    {
+-      rpmuint32_t form = t->attr[i].form;
+-      size_t len = 0;
+-      size_t base_len, dest_len;
+-      
+-
+-      while (1)
+-	{
+-	  if (t->attr[i].attr == DW_AT_stmt_list)
+-	    {
+-	      if (form == DW_FORM_data4
+-		  || form == DW_FORM_sec_offset)
+-		{
+-		  list_offs = do_read_32_relocated (ptr);
+-		  found_list_offs = 1;
+-		}
+-	    }
+-
+-	  if (t->attr[i].attr == DW_AT_comp_dir)
+-	  {
+-	      if ( form == DW_FORM_string )
+-	      {
+-		  free (comp_dir);
+-		  comp_dir = strdup ((char *)ptr);
+-		  
+-		  if (phase == 1 && dest_dir && has_prefix ((char *)ptr, base_dir))
+-		  {
+-		      base_len = strlen (base_dir);
+-		      dest_len = strlen (dest_dir);
+-		      
+-		      memcpy (ptr, dest_dir, dest_len);
+-		      if (dest_len < base_len)
+-		      {
+-			  memset(ptr + dest_len, '/',
+-				 base_len - dest_len);
+-			  
+-		      }
+-		      elf_flagdata (debug_sections[DEBUG_INFO].elf_data,
+-				    ELF_C_SET, ELF_F_DIRTY);
+-		  }
+-	      }
+-	  
+-	      else if (form == DW_FORM_strp &&
+-		       debug_sections[DEBUG_STR].data)
+-	      {
+-		  char *dir;
+-
+-		  dir = (char *) debug_sections[DEBUG_STR].data
+-		      + do_read_32_relocated (ptr);
+-
+-		  free (comp_dir);
+-		  comp_dir = strdup (dir);
+-
+-		  if (phase == 1 && dest_dir && has_prefix (dir, base_dir))
+-		  {
+-		      base_len = strlen (base_dir);
+-		      dest_len = strlen (dest_dir);
+-		  
+-		      memcpy (dir, dest_dir, dest_len);
+-		      if (dest_len < base_len)
+-		      {
+-			  memmove (dir + dest_len, dir + base_len,
+-				   strlen (dir + base_len) + 1);
+-		      }
+-		      elf_flagdata (debug_sections[DEBUG_STR].elf_data,
+-				    ELF_C_SET, ELF_F_DIRTY);
+-		  }
+-	      }
+-	  }
+-	  else if ((t->tag == DW_TAG_compile_unit
+-		    || t->tag == DW_TAG_partial_unit)
+-		   && t->attr[i].attr == DW_AT_name
+-		   && form == DW_FORM_strp
+-		   && debug_sections[DEBUG_STR].data)
+-	    {
+-	      char *name;
+-	      
+-	      name = (char *) debug_sections[DEBUG_STR].data
+-		     + do_read_32_relocated (ptr);
+-	      if (*name == '/' && comp_dir == NULL)
+-		{
+-		  char *enddir = strrchr (name, '/');
+-
+-		  if (enddir != name)
+-		    {
+-		      comp_dir = malloc (enddir - name + 1);
+-		      memcpy (comp_dir, name, enddir - name);
+-		      comp_dir [enddir - name] = '\0';
+-		    }
+-		  else
+-		    comp_dir = strdup ("/");
+-		}
+-
+-	      if (phase == 1 && dest_dir && has_prefix (name, base_dir))
+-		{
+-		  base_len = strlen (base_dir);
+-		  dest_len = strlen (dest_dir);
+-		  
+-		  memcpy (name, dest_dir, dest_len);
+-		  if (dest_len < base_len)
+-		    {
+-		      memmove (name + dest_len, name + base_len,
+-			       strlen (name + base_len) + 1);
+-		    }
+-		  elf_flagdata (debug_sections[DEBUG_STR].elf_data,
+-				ELF_C_SET, ELF_F_DIRTY);
+-		}
+-	    }
+-
+-	  switch (form)
+-	    {
+-	    case DW_FORM_ref_addr:
+-	      if (cu_version == 2)
+-		ptr += ptr_size;
+-	      else
+-		ptr += 4;
+-	      break;
+-	    case DW_FORM_flag_present:
+-	      break;
+-	    case DW_FORM_addr:
+-	      ptr += ptr_size;
+-	      break;
+-	    case DW_FORM_ref1:
+-	    case DW_FORM_flag:
+-	    case DW_FORM_data1:
+-	      ++ptr;
+-	      break;
+-	    case DW_FORM_ref2:
+-	    case DW_FORM_data2:
+-	      ptr += 2;
+-	      break;
+-	    case DW_FORM_ref4:
+-	    case DW_FORM_data4:
+-	    case DW_FORM_sec_offset:
+-	      ptr += 4;
+-	      break;
+-	    case DW_FORM_ref8:
+-	    case DW_FORM_data8:
+-	    case DW_FORM_ref_sig8:
+-	      ptr += 8;
+-	      break;
+-	    case DW_FORM_sdata:
+-	    case DW_FORM_ref_udata:
+-	    case DW_FORM_udata:
+-	      read_uleb128 (ptr);
+-	      break;
+-	    case DW_FORM_strp:
+-	      ptr += 4;
+-	      break;
+-	    case DW_FORM_string:
+-	      ptr = (unsigned char *) strchr ((char *)ptr, '\0') + 1;
+-	      break;
+-	    case DW_FORM_indirect:
+-	      form = read_uleb128 (ptr);
+-	      continue;
+-	    case DW_FORM_block1:
+-	      len = *ptr++;
+-	      break;
+-	    case DW_FORM_block2:
+-	      len = read_16 (ptr);
+-	      form = DW_FORM_block1;
+-	      break;
+-	    case DW_FORM_block4:
+-	      len = read_32 (ptr);
+-	      form = DW_FORM_block1;
+-	      break;
+-	    case DW_FORM_block:
+-	    case DW_FORM_exprloc:
+-	      len = read_uleb128 (ptr);
+-	      form = DW_FORM_block1;
+-	      assert (len < UINT_MAX);
+-	      break;
+-	    default:
+-	      error (0, 0, "%s: Unknown DWARF DW_FORM_%d", dso->filename,
+-		     form);
+-	      return NULL;
+-	    }
+-
+-	  if (form == DW_FORM_block1)
+-	    ptr += len;
+-	  
+-	  break;
+-	}
+-    }
+-
+-  /* Ensure the CU current directory will exist even if only empty.  Source
+-     filenames possibly located in its parent directories refer relatively to
+-     it and the debugger (GDB) cannot safely optimize out the missing
+-     CU current dir subdirectories.  */
+-  if (comp_dir && list_file_fd != -1)
+-    {
+-      char *p;
+-      size_t size;
+-
+-      if (base_dir && has_prefix (comp_dir, base_dir))
+-	p = comp_dir + strlen (base_dir);
+-      else if (dest_dir && has_prefix (comp_dir, dest_dir))
+-	p = comp_dir + strlen (dest_dir);
+-      else
+-	p = comp_dir;
+-
+-      size = strlen (p) + 1;
+-      while (size > 0)
+-	{
+-	  ssize_t ret = write (list_file_fd, p, size);
+-	  if (ret == -1)
+-	    break;
+-	  size -= ret;
+-	  p += ret;
+-	}
+-    }
+-
+-  if (found_list_offs && comp_dir)
+-    edit_dwarf2_line (dso, list_offs, comp_dir, phase);
+-
+-  free (comp_dir);
+-
+-  return ptr;
+-}
+-
+-static int
+-rel_cmp (const void *a, const void *b)
+-{
+-  REL *rela = (REL *) a, *relb = (REL *) b;
+-
+-  if (rela->ptr < relb->ptr)
+-    return -1;
+-
+-  if (rela->ptr > relb->ptr)
+-    return 1;
+-
+-  return 0;
+-}
+-
+-static int
+-edit_dwarf2 (DSO *dso)
+-{
+-  Elf_Data *data;
+-  Elf_Scn *scn;
+-  int i, j;
+-
+-  for (i = 0; debug_sections[i].name; ++i)
+-    {
+-      debug_sections[i].data = NULL;
+-      debug_sections[i].size = 0;
+-      debug_sections[i].sec = 0;
+-      debug_sections[i].relsec = 0;
+-    }
+-  ptr_size = 0;
+-
+-  for (i = 1; i < dso->ehdr.e_shnum; ++i)
+-    if (! (dso->shdr[i].sh_flags & (SHF_ALLOC | SHF_WRITE | SHF_EXECINSTR))
+-	&& dso->shdr[i].sh_size)
+-      {
+-        const char *name = strptr (dso, dso->ehdr.e_shstrndx,
+-				   dso->shdr[i].sh_name);
+-
+-	if (strncmp (name, ".debug_", sizeof (".debug_") - 1) == 0)
+-	  {
+-	    for (j = 0; debug_sections[j].name; ++j)
+-	      if (strcmp (name, debug_sections[j].name) == 0)
+-	 	{
+-		  if (debug_sections[j].data)
+-		    {
+-		      error (0, 0, "%s: Found two copies of %s section",
+-			     dso->filename, name);
+-		      return 1;
+-		    }
+-
+-		  scn = dso->scn[i]; 
+-		  data = elf_rawdata (scn, NULL);
+-		  assert (data != NULL && data->d_buf != NULL);
+-		  assert (elf_rawdata (scn, data) == NULL);
+-		  assert (data->d_off == 0);
+-		  assert (data->d_size == dso->shdr[i].sh_size);
+-		  debug_sections[j].data = data->d_buf;
+-		  debug_sections[j].elf_data = data;
+-		  debug_sections[j].size = data->d_size;
+-		  debug_sections[j].sec = i;
+-		  break;
+-		}
+-
+-	    if (debug_sections[j].name == NULL)
+-	      {
+-		error (0, 0, "%s: Unknown debugging section %s",
+-		       dso->filename, name);
+-	      }
+-	  }
+-	else if (dso->ehdr.e_type == ET_REL
+-		 && ((dso->shdr[i].sh_type == SHT_REL
+-		      && strncmp (name, ".rel.debug_",
+-				  sizeof (".rel.debug_") - 1) == 0)
+-		     || (dso->shdr[i].sh_type == SHT_RELA
+-			 && strncmp (name, ".rela.debug_",
+-				     sizeof (".rela.debug_") - 1) == 0)))
+-	  {
+-	    for (j = 0; debug_sections[j].name; ++j)
+-	      if (strcmp (name + sizeof (".rel") - 1
+-			  + (dso->shdr[i].sh_type == SHT_RELA),
+-			  debug_sections[j].name) == 0)
+-	 	{
+-		  debug_sections[j].relsec = i;
+-		  break;
+-		}
+-	  }
+-      }
+-
+-  if (dso->ehdr.e_ident[EI_DATA] == ELFDATA2LSB)
+-    {
+-      do_read_16 = buf_read_ule16;
+-      do_read_32 = buf_read_ule32;
+-      write_32 = dwarf2_write_le32;
+-    }
+-  else if (dso->ehdr.e_ident[EI_DATA] == ELFDATA2MSB)
+-    {
+-      do_read_16 = buf_read_ube16;
+-      do_read_32 = buf_read_ube32;
+-      write_32 = dwarf2_write_be32;
+-    }
+-  else
+-    {
+-      error (0, 0, "%s: Wrong ELF data enconding", dso->filename);
+-      return 1;
+-    }
+-
+-  if (debug_sections[DEBUG_INFO].data != NULL)
+-    {
+-      unsigned char *ptr, *endcu, *endsec;
+-      rpmuint32_t value;
+-      htab_t abbrev;
+-      struct abbrev_tag tag, *t;
+-      int phase;
+-      REL *relbuf = NULL;
+-
+-      if (debug_sections[DEBUG_INFO].relsec)
+-	{
+-	  int ndx, maxndx;
+-	  GElf_Rel rel;
+-	  GElf_Rela rela;
+-	  GElf_Sym sym;
+-	  GElf_Addr base = dso->shdr[debug_sections[DEBUG_INFO].sec].sh_addr;
+-	  Elf_Data *symdata = NULL;
+-	  int rtype;
+-
+-	  i = debug_sections[DEBUG_INFO].relsec;
+-	  scn = dso->scn[i]; 
+-	  data = elf_getdata (scn, NULL);
+-	  assert (data != NULL && data->d_buf != NULL);
+-	  assert (elf_getdata (scn, data) == NULL);
+-	  assert (data->d_off == 0);
+-	  assert (data->d_size == dso->shdr[i].sh_size);
+-	  maxndx = dso->shdr[i].sh_size / dso->shdr[i].sh_entsize;
+-	  relbuf = malloc (maxndx * sizeof (REL));
+-	  reltype = dso->shdr[i].sh_type;
+-	  if (relbuf == NULL)
+-	    error (1, errno, "%s: Could not allocate memory", dso->filename);
+-
+-	  symdata = elf_getdata (dso->scn[dso->shdr[i].sh_link], NULL);
+-	  assert (symdata != NULL && symdata->d_buf != NULL);
+-	  assert (elf_getdata (dso->scn[dso->shdr[i].sh_link], symdata)
+-		  == NULL);
+-	  assert (symdata->d_off == 0);
+-	  assert (symdata->d_size
+-		  == dso->shdr[dso->shdr[i].sh_link].sh_size);
+-
+-	  for (ndx = 0, relend = relbuf; ndx < maxndx; ++ndx)
+-	    {
+-	      if (dso->shdr[i].sh_type == SHT_REL)
+-		{
+-		  gelf_getrel (data, ndx, &rel);
+-		  rela.r_offset = rel.r_offset;
+-		  rela.r_info = rel.r_info;
+-		  rela.r_addend = 0;
+-		}
+-	      else
+-		gelf_getrela (data, ndx, &rela);
+-	      gelf_getsym (symdata, ELF64_R_SYM (rela.r_info), &sym);
+-	      /* Relocations against section symbols are uninteresting
+-		 in REL.  */
+-	      if (dso->shdr[i].sh_type == SHT_REL && sym.st_value == 0)
+-		continue;
+-	      /* Only consider relocations against .debug_str, .debug_line
+-		 and .debug_abbrev.  */
+-	      if (sym.st_shndx != debug_sections[DEBUG_STR].sec
+-		  && sym.st_shndx != debug_sections[DEBUG_LINE].sec
+-		  && sym.st_shndx != debug_sections[DEBUG_ABBREV].sec)
+-		continue;
+-	      rela.r_addend += sym.st_value;
+-	      rtype = ELF64_R_TYPE (rela.r_info);
+-	      switch (dso->ehdr.e_machine)
+-		{
+-		case EM_SPARC:
+-		case EM_SPARC32PLUS:
+-		case EM_SPARCV9:
+-		  if (rtype != R_SPARC_32 && rtype != R_SPARC_UA32)
+-		    goto fail;
+-		  break;
+-		case EM_386:
+-		  if (rtype != R_386_32)
+-		    goto fail;
+-		  break;
+-		case EM_PPC:
+-		case EM_PPC64:
+-		  if (rtype != R_PPC_ADDR32 && rtype != R_PPC_UADDR32)
+-		    goto fail;
+-		  break;
+-		case EM_S390:
+-		  if (rtype != R_390_32)
+-		    goto fail;
+-		  break;
+-		case EM_IA_64:
+-		  if (rtype != R_IA64_SECREL32LSB)
+-		    goto fail;
+-		  break;
+-		case EM_X86_64:
+-		  if (rtype != R_X86_64_32)
+-		    goto fail;
+-		  break;
+-		case EM_ALPHA:
+-		  if (rtype != R_ALPHA_REFLONG)
+-		    goto fail;
+-		  break;
+-		default:
+-		fail:
+-		  error (1, 0, "%s: Unhandled relocation %d in .debug_info section",
+-			 dso->filename, rtype);
+-		}
+-	      relend->ptr = debug_sections[DEBUG_INFO].data
+-			    + (rela.r_offset - base);
+-	      relend->addend = rela.r_addend;
+-	      ++relend;
+-	    }
+-	  if (relbuf == relend)
+-	    {
+-	      free (relbuf);
+-	      relbuf = NULL;
+-	      relend = NULL;
+-	    }
+-	  else
+-	    qsort (relbuf, relend - relbuf, sizeof (REL), rel_cmp);
+-	}
+-
+-      for (phase = 0; phase < 2; phase++)
+-	{
+-	  ptr = debug_sections[DEBUG_INFO].data;
+-	  relptr = relbuf;
+-	  endsec = ptr + debug_sections[DEBUG_INFO].size;
+-	  while (ptr < endsec)
+-	    {
+-	      if (ptr + 11 > endsec)
+-		{
+-		  error (0, 0, "%s: .debug_info CU header too small",
+-			 dso->filename);
+-		  return 1;
+-		}
+-
+-	      endcu = ptr + 4;
+-	      endcu += read_32 (ptr);
+-	      if (endcu == ptr + 0xffffffff)
+-		{
+-		  error (0, 0, "%s: 64-bit DWARF not supported", dso->filename);
+-		  return 1;
+-		}
+-	      
+-	      if (endcu > endsec)
+-		{
+-		  error (0, 0, "%s: .debug_info too small", dso->filename);
+-		  return 1;
+-		}
+-	      
+-	      cu_version = read_16 (ptr);
+-	      if (cu_version != 2 && cu_version != 3 && cu_version != 4)
+-		{
+-		  error (0, 0, "%s: DWARF version %d unhandled", dso->filename,
+-			 cu_version);
+-		  return 1;
+-		}
+-	      
+-	      value = read_32_relocated (ptr);
+-	      if (value >= debug_sections[DEBUG_ABBREV].size)
+-		{
+-		  if (debug_sections[DEBUG_ABBREV].data == NULL)
+-		    error (0, 0, "%s: .debug_abbrev not present", dso->filename);
+-		  else
+-		    error (0, 0, "%s: DWARF CU abbrev offset too large",
+-			   dso->filename);
+-		  return 1;
+-		}
+-	      
+-	      if (ptr_size == 0)
+-		{
+-		  ptr_size = read_1 (ptr);
+-		  if (ptr_size != 4 && ptr_size != 8)
+-		    {
+-		      error (0, 0, "%s: Invalid DWARF pointer size %d",
+-			     dso->filename, ptr_size);
+-		      return 1;
+-		    }
+-		}
+-	      else if (read_1 (ptr) != ptr_size)
+-		{
+-		  error (0, 0, "%s: DWARF pointer size differs between CUs",
+-			 dso->filename);
+-		  return 1;
+-		}
+-	      
+-	      abbrev = read_abbrev (dso,
+-				    debug_sections[DEBUG_ABBREV].data + value);
+-	      if (abbrev == NULL)
+-		return 1;
+-	      
+-	      while (ptr < endcu)
+-		{
+-		  tag.entry = read_uleb128 (ptr);
+-		  if (tag.entry == 0)
+-		    continue;
+-		  t = htab_find_with_hash (abbrev, &tag, tag.entry);
+-		  if (t == NULL)
+-		    {
+-		      error (0, 0, "%s: Could not find DWARF abbreviation %d",
+-			     dso->filename, tag.entry);
+-		      htab_delete (abbrev);
+-		      return 1;
+-		    }
+-		  
+-		  ptr = edit_attributes (dso, ptr, t, phase);
+-		  if (ptr == NULL)
+-		    break;
+-		}
+-	      
+-	      htab_delete (abbrev);
+-	    }
+-	}
+-      free (relbuf);
+-    }
+-  
+-  return 0;
+-}
+-
+-static struct poptOption optionsTable[] = {
+-    { "base-dir",  'b', POPT_ARG_STRING, &base_dir, 0,
+-      "base build directory of objects", NULL },
+-    { "dest-dir",  'd', POPT_ARG_STRING, &dest_dir, 0,
+-      "directory to rewrite base-dir into", NULL },
+-    { "list-file",  'l', POPT_ARG_STRING, &list_file, 0,
+-      "file where to put list of source and header file names", NULL },
+-    { "build-id",  'i', POPT_ARG_NONE, &do_build_id, 0,
+-      "recompute build ID note and print ID on stdout", NULL },
+-      POPT_AUTOHELP
+-    { NULL, 0, 0, NULL, 0, NULL, NULL }
+-};
+-
+-static DSO *
+-fdopen_dso (int fd, const char *name)
+-{
+-  Elf *elf = NULL;
+-  GElf_Ehdr ehdr;
+-  int i;
+-  DSO *dso = NULL;
+-
+-  elf = elf_begin (fd, ELF_C_RDWR_MMAP, NULL);
+-  if (elf == NULL)
+-    {
+-      error (0, 0, "cannot open ELF file: %s", elf_errmsg (-1));
+-      goto error_out;
+-    }
+-
+-  if (elf_kind (elf) != ELF_K_ELF)
+-    {
+-      error (0, 0, "\"%s\" is not an ELF file", name);
+-      goto error_out;
+-    }
+-
+-  if (gelf_getehdr (elf, &ehdr) == NULL)
+-    {
+-      error (0, 0, "cannot get the ELF header: %s",
+-	     elf_errmsg (-1));
+-      goto error_out;
+-    }
+-
+-  if (ehdr.e_type != ET_DYN && ehdr.e_type != ET_EXEC && ehdr.e_type != ET_REL)
+-    {
+-      error (0, 0, "\"%s\" is not a shared library", name);
+-      goto error_out;
+-    }
+-
+-  /* Allocate DSO structure. Leave place for additional 20 new section
+-     headers.  */
+-  dso = (DSO *)
+-	malloc (sizeof(DSO) + (ehdr.e_shnum + 20) * sizeof(GElf_Shdr)
+-	        + (ehdr.e_shnum + 20) * sizeof(Elf_Scn *));
+-  if (!dso)
+-    {
+-      error (0, ENOMEM, "Could not open DSO");
+-      goto error_out;
+-    }
+-
+-  elf_flagelf (elf, ELF_C_SET, ELF_F_LAYOUT);
+-  
+-  memset (dso, 0, sizeof(DSO));
+-  dso->elf = elf;
+-  dso->ehdr = ehdr;
+-  dso->scn = (Elf_Scn **) &dso->shdr[ehdr.e_shnum + 20];
+-
+-  for (i = 0; i < ehdr.e_shnum; ++i)
+-    {
+-      dso->scn[i] = elf_getscn (elf, i);
+-      gelf_getshdr (dso->scn[i], dso->shdr + i);
+-    }
+-
+-  dso->filename = (const char *) strdup (name);
+-  return dso;
+-
+-error_out:
+-  if (dso)
+-    {
+-      free ((char *) dso->filename);
+-      free (dso);
+-    }
+-  if (elf)
+-    elf_end (elf);
+-  if (fd != -1)
+-    close (fd);
+-  return NULL;
+-}
+-
+-/* Compute a fresh build ID bit-string from the editted file contents.  */
+-static void
+-handle_build_id (DSO *dso, Elf_Data *build_id,
+-		 size_t build_id_offset, size_t build_id_size)
+-{
+-  hashFunctionContext ctx;
+-  const hashFunction *hf = NULL;
+-  int i = hashFunctionCount ();
+-
+-  while (i-- > 0)
+-    {
+-      hf = hashFunctionGet (i);
+-      if (hf != NULL && hf->digestsize == build_id_size)
+-	break;
+-    }
+-  if (hf == NULL)
+-    {
+-      fprintf (stderr, "Cannot handle %Zu-byte build ID\n", build_id_size);
+-      exit (1);
+-    }
+-
+-  if (elf_update (dso->elf, ELF_C_NULL) < 0)
+-    {
+-      fprintf (stderr, "Failed to update file: %s\n",
+-	       elf_errmsg (elf_errno ()));
+-      exit (1);
+-    }
+-
+-  /* Clear the old bits so they do not affect the new hash.  */
+-  memset ((char *) build_id->d_buf + build_id_offset, 0, build_id_size);
+-
+-  hashFunctionContextInit (&ctx, hf);
+-
+-  /* Slurp the relevant header bits and section contents and feed them
+-     into the hash function.  The only bits we ignore are the offset
+-     fields in ehdr and shdrs, since the semantically identical ELF file
+-     could be written differently if it doesn't change the phdr layout.
+-     We always use the GElf (i.e. Elf64) formats for the bits to hash
+-     since it is convenient.  It doesn't matter whether this is an Elf32
+-     or Elf64 object, only that we are consistent in what bits feed the
+-     hash so it comes out the same for the same file contents.  */
+-  {
+-    auto inline void process (const void *data, size_t size);
+-    auto inline void process (const void *data, size_t size)
+-    {
+-      memchunk chunk = { .data = (void *) data, .size = size };
+-      hashFunctionContextUpdateMC (&ctx, &chunk);
+-    }
+-    union
+-    {
+-      GElf_Ehdr ehdr;
+-      GElf_Phdr phdr;
+-      GElf_Shdr shdr;
+-    } u;
+-    Elf_Data x = { .d_version = EV_CURRENT, .d_buf = &u };
+-
+-    x.d_type = ELF_T_EHDR;
+-    x.d_size = sizeof u.ehdr;
+-    u.ehdr = dso->ehdr;
+-    u.ehdr.e_phoff = u.ehdr.e_shoff = 0;
+-    if (elf64_xlatetom (&x, &x, dso->ehdr.e_ident[EI_DATA]) == NULL)
+-      {
+-      bad:
+-	fprintf (stderr, "Failed to compute header checksum: %s\n",
+-		 elf_errmsg (elf_errno ()));
+-	exit (1);
+-      }
+-
+-    x.d_type = ELF_T_PHDR;
+-    x.d_size = sizeof u.phdr;
+-    for (i = 0; i < dso->ehdr.e_phnum; ++i)
+-      {
+-	if (gelf_getphdr (dso->elf, i, &u.phdr) == NULL)
+-	  goto bad;
+-	if (elf64_xlatetom (&x, &x, dso->ehdr.e_ident[EI_DATA]) == NULL)
+-	  goto bad;
+-	process (x.d_buf, x.d_size);
+-      }
+-
+-    x.d_type = ELF_T_SHDR;
+-    x.d_size = sizeof u.shdr;
+-    for (i = 0; i < dso->ehdr.e_shnum; ++i)
+-      if (dso->scn[i] != NULL)
+-	{
+-	  u.shdr = dso->shdr[i];
+-	  u.shdr.sh_offset = 0;
+-	  if (elf64_xlatetom (&x, &x, dso->ehdr.e_ident[EI_DATA]) == NULL)
+-	    goto bad;
+-	  process (x.d_buf, x.d_size);
+-
+-	  if (u.shdr.sh_type != SHT_NOBITS)
+-	    {
+-	      Elf_Data *d = elf_rawdata (dso->scn[i], NULL);
+-	      if (d == NULL)
+-		goto bad;
+-	      process (d->d_buf, d->d_size);
+-	    }
+-	}
+-  }
+-
+-  hashFunctionContextDigest (&ctx, (byte *) build_id->d_buf + build_id_offset);
+-  hashFunctionContextFree (&ctx);
+-
+-  elf_flagdata (build_id, ELF_C_SET, ELF_F_DIRTY);
+-
+-  /* Now format the build ID bits in hex to print out.  */
+-  {
+-    const rpmuint8_t * id = (rpmuint8_t *)build_id->d_buf + build_id_offset;
+-    char hex[build_id_size * 2 + 1];
+-    int n = snprintf (hex, 3, "%02" PRIx8, id[0]);
+-    assert (n == 2);
+-    for (i = 1; i < (int)build_id_size; ++i)
+-      {
+-	n = snprintf (&hex[i * 2], 3, "%02" PRIx8, id[i]);
+-	assert (n == 2);
+-      }
+-    puts (hex);
+-  }
+-}
+-
+-int
+-main (int argc, char *argv[])
+-{
+-  DSO *dso;
+-  int fd, i;
+-  const char *file;
+-  poptContext optCon;   /* context for parsing command-line options */
+-  int nextopt;
+-  const char **args;
+-  struct stat stat_buf;
+-  char *p;
+-  Elf_Data *build_id = NULL;
+-  size_t build_id_offset = 0, build_id_size = 0;
+-
+-  optCon = poptGetContext("debugedit", argc, (const char **)argv, optionsTable, 0);
+-  
+-  while ((nextopt = poptGetNextOpt (optCon)) > 0 || nextopt == POPT_ERROR_BADOPT)
+-    /* do nothing */ ;
+-
+-  if (nextopt != -1)
+-    {
+-      fprintf (stderr, "Error on option %s: %s.\nRun '%s --help' to see a full list of available command line options.\n",
+-	      poptBadOption (optCon, 0),
+-	      poptStrerror (nextopt),
+-	      argv[0]);
+-      exit (1);
+-    }
+-  
+-  args = poptGetArgs (optCon);
+-  if (args == NULL || args[0] == NULL || args[1] != NULL)
+-    {
+-      poptPrintHelp(optCon, stdout, 0);
+-      exit (1);
+-    }
+-
+-  if (dest_dir != NULL)
+-    {
+-      if (base_dir == NULL)
+-	{
+-	  fprintf (stderr, "You must specify a base dir if you specify a dest dir\n");
+-	  exit (1);
+-	}
+-      if (strlen (dest_dir) > strlen (base_dir))
+-	{
+-	  fprintf (stderr, "Only dest dir longer than base dir not supported\n");
+-	  exit (1);
+-	}
+-    }
+-
+-  /* Make sure there are trailing slashes in dirs */
+-  if (base_dir != NULL && base_dir[strlen (base_dir)-1] != '/')
+-    {
+-      p = malloc (strlen (base_dir) + 2);
+-      strcpy (p, base_dir);
+-      strcat (p, "/");
+-      free (base_dir);
+-      base_dir = p;
+-    }
+-  if (dest_dir != NULL && dest_dir[strlen (dest_dir)-1] != '/')
+-    {
+-      p = malloc (strlen (dest_dir) + 2);
+-      strcpy (p, dest_dir);
+-      strcat (p, "/");
+-      free (dest_dir);
+-      dest_dir = p;
+-    }
+-  
+-  if (list_file != NULL)
+-    {
+-      list_file_fd = open (list_file, O_WRONLY|O_CREAT|O_APPEND, 0644);
+-    }
+-  
+-  file = args[0];
+-
+-  if (elf_version(EV_CURRENT) == EV_NONE)
+-    {
+-      fprintf (stderr, "library out of date\n");
+-      exit (1);
+-    }
+-
+-  if (stat(file, &stat_buf) < 0)
+-    {
+-      fprintf (stderr, "Failed to open input file '%s': %s\n", file, strerror(errno));
+-      exit (1);
+-    }
+-
+-  /* Make sure we can read and write */
+-  chmod (file, stat_buf.st_mode | S_IRUSR | S_IWUSR);
+-
+-  fd = open (file, O_RDWR);
+-  if (fd < 0)
+-    {
+-      fprintf (stderr, "Failed to open input file '%s': %s\n", file, strerror(errno));
+-      exit (1);
+-    }
+-
+-  dso = fdopen_dso (fd, file);
+-  if (dso == NULL)
+-    exit (1);
+-
+-  for (i = 1; i < dso->ehdr.e_shnum; i++)
+-    {
+-      const char *name;
+-      
+-      switch (dso->shdr[i].sh_type)
+-	{
+-	case SHT_PROGBITS:
+-	case SHT_MIPS_DWARF:
+-	  name = strptr (dso, dso->ehdr.e_shstrndx, dso->shdr[i].sh_name);
+-	  /* TODO: Handle stabs */
+-#if 0
+-	  if (strcmp (name, ".stab") == 0)
+-	    edit_stabs (dso, i);
+-#endif
+-	  if (strcmp (name, ".debug_info") == 0)
+-	    edit_dwarf2 (dso);
+-
+-	  break;
+-	case SHT_NOTE:
+-	  if (do_build_id
+-	      && build_id == NULL && (dso->shdr[i].sh_flags & SHF_ALLOC))
+-	    {
+-	      /* Look for a build-ID note here.  */
+-	      Elf_Data *data = elf_rawdata (elf_getscn (dso->elf, i), NULL);
+-	      Elf32_Nhdr nh;
+-	      Elf_Data dst =
+-		{
+-		  .d_version = EV_CURRENT, .d_type = ELF_T_NHDR,
+-		  .d_buf = &nh, .d_size = sizeof nh
+-		};
+-	      Elf_Data src = dst;
+-	      src.d_buf = data->d_buf;
+-	      assert (sizeof (Elf32_Nhdr) == sizeof (Elf64_Nhdr));
+-	      while ((char *) data->d_buf + data->d_size - 
+-		     (char *) src.d_buf > (int) sizeof nh
+-		     && elf32_xlatetom (&dst, &src, dso->ehdr.e_ident[EI_DATA]))
+-		{
+-		  Elf32_Word len = sizeof nh + nh.n_namesz;
+-		  len = (len + 3) & ~3;
+-
+-		  if (nh.n_namesz == sizeof "GNU" && nh.n_type == 3
+-		      && !memcmp ((char *) src.d_buf + sizeof nh, "GNU", sizeof "GNU"))
+-		    {
+-		      build_id = data;
+-		      build_id_offset = (char *) src.d_buf + len - 
+-					(char *) data->d_buf;
+-		      build_id_size = nh.n_descsz;
+-		      break;
+-		    }
+-
+-		  len += nh.n_descsz;
+-		  len = (len + 3) & ~3;
+-		  src.d_buf = (char *) src.d_buf + len;
+-		}
+-	    }
+-	  break;
+-	default:
+-	  break;
+-	}
+-    }
+-
+-  if (do_build_id && build_id != NULL)
+-    handle_build_id (dso, build_id, build_id_offset, build_id_size);
+-
+-  if (elf_update (dso->elf, ELF_C_WRITE) < 0)
+-    {
+-      fprintf (stderr, "Failed to write file: %s\n", elf_errmsg (elf_errno()));
+-      exit (1);
+-    }
+-  if (elf_end (dso->elf) < 0)
+-    {
+-      fprintf (stderr, "elf_end failed: %s\n", elf_errmsg (elf_errno()));
+-      exit (1);
+-    }
+-  close (fd);
+-
+-  /* Restore old access rights */
+-  chmod (file, stat_buf.st_mode);
+-  
+-  poptFreeContext (optCon);
+-
+-  return 0;
+-}
+diff --git a/src/debugedit/hashtab.c b/src/debugedit/hashtab.c
+deleted file mode 100644
+index e498545..0000000
+--- a/src/debugedit/hashtab.c
++++ /dev/null
+@@ -1,523 +0,0 @@
+-/* An expandable hash tables datatype.  
+-   Copyright (C) 1999, 2000, 2001 Free Software Foundation, Inc.
+-   Contributed by Vladimir Makarov (vmakarov@cygnus.com).
+-
+-This file is part of the libiberty library.
+-Libiberty is free software; you can redistribute it and/or
+-modify it under the terms of the GNU Library General Public
+-License as published by the Free Software Foundation; either
+-version 2 of the License, or (at your option) any later version.
+-
+-Libiberty is distributed in the hope that it will be useful,
+-but WITHOUT ANY WARRANTY; without even the implied warranty of
+-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+-Library General Public License for more details.
+-
+-You should have received a copy of the GNU Library General Public
+-License along with libiberty; see the file COPYING.LIB.  If
+-not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+-Boston, MA 02111-1307, USA.  */
+-
+-/* This package implements basic hash table functionality.  It is possible
+-   to search for an entry, create an entry and destroy an entry.
+-
+-   Elements in the table are generic pointers.
+-
+-   The size of the table is not fixed; if the occupancy of the table
+-   grows too high the hash table will be expanded.
+-
+-   The abstract data implementation is based on generalized Algorithm D
+-   from Knuth's book "The art of computer programming".  Hash table is
+-   expanded by creation of new hash table and transferring elements from
+-   the old table to the new table. */
+-
+-#include <sys/types.h>
+-#include <stdlib.h>
+-#include <string.h>
+-#include <stdio.h>
+-#include "hashtab.h"
+-
+-/* This macro defines reserved value for empty table entry. */
+-
+-#define EMPTY_ENTRY    ((void *) 0)
+-
+-/* This macro defines reserved value for table entry which contained
+-   a deleted element. */
+-
+-#define DELETED_ENTRY  ((void *) 1)
+-
+-static unsigned long higher_prime_number (unsigned long);
+-static hashval_t hash_pointer (const void *);
+-static int eq_pointer (const void *, const void *);
+-static int htab_expand (htab_t);
+-static void **find_empty_slot_for_expand  (htab_t, hashval_t);
+-
+-/* At some point, we could make these be NULL, and modify the
+-   hash-table routines to handle NULL specially; that would avoid
+-   function-call overhead for the common case of hashing pointers.  */
+-htab_hash htab_hash_pointer = hash_pointer;
+-htab_eq htab_eq_pointer = eq_pointer;
+-
+-/* The following function returns a nearest prime number which is
+-   greater than N, and near a power of two. */
+-
+-static unsigned long
+-higher_prime_number (n)
+-     unsigned long n;
+-{
+-  /* These are primes that are near, but slightly smaller than, a
+-     power of two.  */
+-  static unsigned long primes[] = {
+-    (unsigned long) 2,
+-    (unsigned long) 7,
+-    (unsigned long) 13,
+-    (unsigned long) 31,
+-    (unsigned long) 61,
+-    (unsigned long) 127,
+-    (unsigned long) 251,
+-    (unsigned long) 509,
+-    (unsigned long) 1021,
+-    (unsigned long) 2039,
+-    (unsigned long) 4093,
+-    (unsigned long) 8191,
+-    (unsigned long) 16381,
+-    (unsigned long) 32749,
+-    (unsigned long) 65521,
+-    (unsigned long) 131071,
+-    (unsigned long) 262139,
+-    (unsigned long) 524287,
+-    (unsigned long) 1048573,
+-    (unsigned long) 2097143,
+-    (unsigned long) 4194301,
+-    (unsigned long) 8388593,
+-    (unsigned long) 16777213,
+-    (unsigned long) 33554393,
+-    (unsigned long) 67108859,
+-    (unsigned long) 134217689,
+-    (unsigned long) 268435399,
+-    (unsigned long) 536870909,
+-    (unsigned long) 1073741789,
+-    (unsigned long) 2147483647,
+-					/* 4294967291L */
+-    ((unsigned long) 2147483647) + ((unsigned long) 2147483644),
+-  };
+-
+-  unsigned long* low = &primes[0];
+-  unsigned long* high = &primes[sizeof(primes) / sizeof(primes[0])];
+-
+-  while (low != high)
+-    {
+-      unsigned long* mid = low + (high - low) / 2;
+-      if (n > *mid)
+-	low = mid + 1;
+-      else
+-	high = mid;
+-    }
+-
+-  /* If we've run out of primes, abort.  */
+-  if (n > *low)
+-    {
+-      fprintf (stderr, "Cannot find prime bigger than %lu\n", n);
+-      abort ();
+-    }
+-
+-  return *low;
+-}
+-
+-/* Returns a hash code for P.  */
+-
+-static hashval_t
+-hash_pointer (p)
+-     const void * p;
+-{
+-  return (hashval_t) ((long)p >> 3);
+-}
+-
+-/* Returns non-zero if P1 and P2 are equal.  */
+-
+-static int
+-eq_pointer (p1, p2)
+-     const void * p1;
+-     const void * p2;
+-{
+-  return p1 == p2;
+-}
+-
+-/* This function creates table with length slightly longer than given
+-   source length.  The created hash table is initiated as empty (all the
+-   hash table entries are EMPTY_ENTRY).  The function returns the created
+-   hash table.  Memory allocation may fail; it may return NULL.  */
+-
+-htab_t
+-htab_try_create (size, hash_f, eq_f, del_f)
+-     size_t size;
+-     htab_hash hash_f;
+-     htab_eq eq_f;
+-     htab_del del_f;
+-{
+-  htab_t result;
+-
+-  size = higher_prime_number (size);
+-  result = (htab_t) calloc (1, sizeof (struct htab));
+-  if (result == NULL)
+-    return NULL;
+-
+-  result->entries = (void **) calloc (size, sizeof (void *));
+-  if (result->entries == NULL)
+-    {
+-      free (result);
+-      return NULL;
+-    }
+-
+-  result->size = size;
+-  result->hash_f = hash_f;
+-  result->eq_f = eq_f;
+-  result->del_f = del_f;
+-  result->return_allocation_failure = 1;
+-  return result;
+-}
+-
+-/* This function frees all memory allocated for given hash table.
+-   Naturally the hash table must already exist. */
+-
+-void
+-htab_delete (htab)
+-     htab_t htab;
+-{
+-  int i;
+-
+-  if (htab->del_f)
+-    for (i = htab->size - 1; i >= 0; i--)
+-      if (htab->entries[i] != EMPTY_ENTRY
+-	  && htab->entries[i] != DELETED_ENTRY)
+-	(*htab->del_f) (htab->entries[i]);
+-
+-  free (htab->entries);
+-  free (htab);
+-}
+-
+-/* This function clears all entries in the given hash table.  */
+-
+-void
+-htab_empty (htab)
+-     htab_t htab;
+-{
+-  int i;
+-
+-  if (htab->del_f)
+-    for (i = htab->size - 1; i >= 0; i--)
+-      if (htab->entries[i] != EMPTY_ENTRY
+-	  && htab->entries[i] != DELETED_ENTRY)
+-	(*htab->del_f) (htab->entries[i]);
+-
+-  memset (htab->entries, 0, htab->size * sizeof (void *));
+-}
+-
+-/* Similar to htab_find_slot, but without several unwanted side effects:
+-    - Does not call htab->eq_f when it finds an existing entry.
+-    - Does not change the count of elements/searches/collisions in the
+-      hash table.
+-   This function also assumes there are no deleted entries in the table.
+-   HASH is the hash value for the element to be inserted.  */
+-
+-static void **
+-find_empty_slot_for_expand (htab, hash)
+-     htab_t htab;
+-     hashval_t hash;
+-{
+-  size_t size = htab->size;
+-  hashval_t hash2 = 1 + hash % (size - 2);
+-  unsigned int index = hash % size;
+-
+-  for (;;)
+-    {
+-      void **slot = htab->entries + index;
+-
+-      if (*slot == EMPTY_ENTRY)
+-	return slot;
+-      else if (*slot == DELETED_ENTRY)
+-	abort ();
+-
+-      index += hash2;
+-      if (index >= size)
+-	index -= size;
+-    }
+-}
+-
+-/* The following function changes size of memory allocated for the
+-   entries and repeatedly inserts the table elements.  The occupancy
+-   of the table after the call will be about 50%.  Naturally the hash
+-   table must already exist.  Remember also that the place of the
+-   table entries is changed.  If memory allocation failures are allowed,
+-   this function will return zero, indicating that the table could not be
+-   expanded.  If all goes well, it will return a non-zero value.  */
+-
+-static int
+-htab_expand (htab)
+-     htab_t htab;
+-{
+-  void **oentries;
+-  void **olimit;
+-  void **p;
+-
+-  oentries = htab->entries;
+-  olimit = oentries + htab->size;
+-
+-  htab->size = higher_prime_number (htab->size * 2);
+-
+-  if (htab->return_allocation_failure)
+-    {
+-      void **nentries = (void **) calloc (htab->size, sizeof (void **));
+-      if (nentries == NULL)
+-	return 0;
+-      htab->entries = nentries;
+-    }
+-
+-  htab->n_elements -= htab->n_deleted;
+-  htab->n_deleted = 0;
+-
+-  p = oentries;
+-  do
+-    {
+-      void * x = *p;
+-
+-      if (x != EMPTY_ENTRY && x != DELETED_ENTRY)
+-	{
+-	  void **q = find_empty_slot_for_expand (htab, (*htab->hash_f) (x));
+-
+-	  *q = x;
+-	}
+-
+-      p++;
+-    }
+-  while (p < olimit);
+-
+-  free (oentries);
+-  return 1;
+-}
+-
+-/* This function searches for a hash table entry equal to the given
+-   element.  It cannot be used to insert or delete an element.  */
+-
+-void *
+-htab_find_with_hash (htab, element, hash)
+-     htab_t htab;
+-     const void * element;
+-     hashval_t hash;
+-{
+-  unsigned int index;
+-  hashval_t hash2;
+-  size_t size;
+-  void * entry;
+-
+-  htab->searches++;
+-  size = htab->size;
+-  index = hash % size;
+-
+-  entry = htab->entries[index];
+-  if (entry == EMPTY_ENTRY
+-      || (entry != DELETED_ENTRY && (*htab->eq_f) (entry, element)))
+-    return entry;
+-
+-  hash2 = 1 + hash % (size - 2);
+-
+-  for (;;)
+-    {
+-      htab->collisions++;
+-      index += hash2;
+-      if (index >= size)
+-	index -= size;
+-
+-      entry = htab->entries[index];
+-      if (entry == EMPTY_ENTRY
+-	  || (entry != DELETED_ENTRY && (*htab->eq_f) (entry, element)))
+-	return entry;
+-    }
+-}
+-
+-/* Like htab_find_slot_with_hash, but compute the hash value from the
+-   element.  */
+-
+-void *
+-htab_find (htab, element)
+-     htab_t htab;
+-     const void * element;
+-{
+-  return htab_find_with_hash (htab, element, (*htab->hash_f) (element));
+-}
+-
+-/* This function searches for a hash table slot containing an entry
+-   equal to the given element.  To delete an entry, call this with
+-   INSERT = 0, then call htab_clear_slot on the slot returned (possibly
+-   after doing some checks).  To insert an entry, call this with
+-   INSERT = 1, then write the value you want into the returned slot.
+-   When inserting an entry, NULL may be returned if memory allocation
+-   fails.  */
+-
+-void **
+-htab_find_slot_with_hash (htab, element, hash, insert)
+-     htab_t htab;
+-     const void * element;
+-     hashval_t hash;
+-     enum insert_option insert;
+-{
+-  void **first_deleted_slot;
+-  unsigned int index;
+-  hashval_t hash2;
+-  size_t size;
+-
+-  if (insert == INSERT && htab->size * 3 <= htab->n_elements * 4
+-      && htab_expand (htab) == 0)
+-    return NULL;
+-
+-  size = htab->size;
+-  hash2 = 1 + hash % (size - 2);
+-  index = hash % size;
+-
+-  htab->searches++;
+-  first_deleted_slot = NULL;
+-
+-  for (;;)
+-    {
+-      void * entry = htab->entries[index];
+-      if (entry == EMPTY_ENTRY)
+-	{
+-	  if (insert == NO_INSERT)
+-	    return NULL;
+-
+-	  htab->n_elements++;
+-
+-	  if (first_deleted_slot)
+-	    {
+-	      *first_deleted_slot = EMPTY_ENTRY;
+-	      return first_deleted_slot;
+-	    }
+-
+-	  return &htab->entries[index];
+-	}
+-
+-      if (entry == DELETED_ENTRY)
+-	{
+-	  if (!first_deleted_slot)
+-	    first_deleted_slot = &htab->entries[index];
+-	}
+-      else  if ((*htab->eq_f) (entry, element))
+-	return &htab->entries[index];
+-      
+-      htab->collisions++;
+-      index += hash2;
+-      if (index >= size)
+-	index -= size;
+-    }
+-}
+-
+-/* Like htab_find_slot_with_hash, but compute the hash value from the
+-   element.  */
+-
+-void **
+-htab_find_slot (htab, element, insert)
+-     htab_t htab;
+-     const void * element;
+-     enum insert_option insert;
+-{
+-  return htab_find_slot_with_hash (htab, element, (*htab->hash_f) (element),
+-				   insert);
+-}
+-
+-/* This function deletes an element with the given value from hash
+-   table.  If there is no matching element in the hash table, this
+-   function does nothing.  */
+-
+-void
+-htab_remove_elt (htab, element)
+-     htab_t htab;
+-     void * element;
+-{
+-  void **slot;
+-
+-  slot = htab_find_slot (htab, element, NO_INSERT);
+-  if (*slot == EMPTY_ENTRY)
+-    return;
+-
+-  if (htab->del_f)
+-    (*htab->del_f) (*slot);
+-
+-  *slot = DELETED_ENTRY;
+-  htab->n_deleted++;
+-}
+-
+-/* This function clears a specified slot in a hash table.  It is
+-   useful when you've already done the lookup and don't want to do it
+-   again.  */
+-
+-void
+-htab_clear_slot (htab, slot)
+-     htab_t htab;
+-     void **slot;
+-{
+-  if (slot < htab->entries || slot >= htab->entries + htab->size
+-      || *slot == EMPTY_ENTRY || *slot == DELETED_ENTRY)
+-    abort ();
+-
+-  if (htab->del_f)
+-    (*htab->del_f) (*slot);
+-
+-  *slot = DELETED_ENTRY;
+-  htab->n_deleted++;
+-}
+-
+-/* This function scans over the entire hash table calling
+-   CALLBACK for each live entry.  If CALLBACK returns false,
+-   the iteration stops.  INFO is passed as CALLBACK's second
+-   argument.  */
+-
+-void
+-htab_traverse (htab, callback, info)
+-     htab_t htab;
+-     htab_trav callback;
+-     void * info;
+-{
+-  void **slot = htab->entries;
+-  void **limit = slot + htab->size;
+-
+-  do
+-    {
+-      void * x = *slot;
+-
+-      if (x != EMPTY_ENTRY && x != DELETED_ENTRY)
+-	if (!(*callback) (slot, info))
+-	  break;
+-    }
+-  while (++slot < limit);
+-}
+-
+-/* Return the current size of given hash table. */
+-
+-size_t
+-htab_size (htab)
+-     htab_t htab;
+-{
+-  return htab->size;
+-}
+-
+-/* Return the current number of elements in given hash table. */
+-
+-size_t
+-htab_elements (htab)
+-     htab_t htab;
+-{
+-  return htab->n_elements - htab->n_deleted;
+-}
+-
+-/* Return the fraction of fixed collisions during all work with given
+-   hash table. */
+-
+-double
+-htab_collisions (htab)
+-     htab_t htab;
+-{
+-  if (htab->searches == 0)
+-    return 0.0;
+-
+-  return (double) htab->collisions / (double) htab->searches;
+-}
+diff --git a/src/debugedit/hashtab.h b/src/debugedit/hashtab.h
+deleted file mode 100644
+index 9ed18ae..0000000
+--- a/src/debugedit/hashtab.h
++++ /dev/null
+@@ -1,143 +0,0 @@
+-/* An expandable hash tables datatype.  
+-   Copyright (C) 1999, 2000 Free Software Foundation, Inc.
+-   Contributed by Vladimir Makarov (vmakarov@cygnus.com).
+-
+-This program is free software; you can redistribute it and/or modify
+-it under the terms of the GNU General Public License as published by
+-the Free Software Foundation; either version 2 of the License, or
+-(at your option) any later version.
+-
+-This program is distributed in the hope that it will be useful,
+-but WITHOUT ANY WARRANTY; without even the implied warranty of
+-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-GNU General Public License for more details.
+-
+-You should have received a copy of the GNU General Public License
+-along with this program; if not, write to the Free Software
+-Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+-
+-/* This package implements basic hash table functionality.  It is possible
+-   to search for an entry, create an entry and destroy an entry.
+-
+-   Elements in the table are generic pointers.
+-
+-   The size of the table is not fixed; if the occupancy of the table
+-   grows too high the hash table will be expanded.
+-
+-   The abstract data implementation is based on generalized Algorithm D
+-   from Knuth's book "The art of computer programming".  Hash table is
+-   expanded by creation of new hash table and transferring elements from
+-   the old table to the new table.  */
+-
+-#ifndef __HASHTAB_H__
+-#define __HASHTAB_H__
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif /* __cplusplus */
+-
+-/* The type for a hash code.  */
+-typedef unsigned int hashval_t;
+-
+-/* Callback function pointer types.  */
+-
+-/* Calculate hash of a table entry.  */
+-typedef hashval_t (*htab_hash) (const void *);
+-
+-/* Compare a table entry with a possible entry.  The entry already in
+-   the table always comes first, so the second element can be of a
+-   different type (but in this case htab_find and htab_find_slot
+-   cannot be used; instead the variants that accept a hash value
+-   must be used).  */
+-typedef int (*htab_eq) (const void *, const void *);
+-
+-/* Cleanup function called whenever a live element is removed from
+-   the hash table.  */
+-typedef void (*htab_del) (void *);
+-  
+-/* Function called by htab_traverse for each live element.  The first
+-   arg is the slot of the element (which can be passed to htab_clear_slot
+-   if desired), the second arg is the auxiliary pointer handed to
+-   htab_traverse.  Return 1 to continue scan, 0 to stop.  */
+-typedef int (*htab_trav) (void **, void *);
+-
+-/* Hash tables are of the following type.  The structure
+-   (implementation) of this type is not needed for using the hash
+-   tables.  All work with hash table should be executed only through
+-   functions mentioned below. */
+-
+-struct htab
+-{
+-  /* Pointer to hash function.  */
+-  htab_hash hash_f;
+-
+-  /* Pointer to comparison function.  */
+-  htab_eq eq_f;
+-
+-  /* Pointer to cleanup function.  */
+-  htab_del del_f;
+-
+-  /* Table itself.  */
+-  void **entries;
+-
+-  /* Current size (in entries) of the hash table */
+-  size_t size;
+-
+-  /* Current number of elements including also deleted elements */
+-  size_t n_elements;
+-
+-  /* Current number of deleted elements in the table */
+-  size_t n_deleted;
+-
+-  /* The following member is used for debugging. Its value is number
+-     of all calls of `htab_find_slot' for the hash table. */
+-  unsigned int searches;
+-
+-  /* The following member is used for debugging.  Its value is number
+-     of collisions fixed for time of work with the hash table. */
+-  unsigned int collisions;
+-
+-  /* This is non-zero if we are allowed to return NULL for function calls
+-     that allocate memory.  */
+-  int return_allocation_failure;
+-};
+-
+-typedef struct htab *htab_t;
+-
+-/* An enum saying whether we insert into the hash table or not.  */
+-enum insert_option {NO_INSERT, INSERT};
+-
+-/* The prototypes of the package functions. */
+-
+-/* This function is like htab_create, but may return NULL if memory
+-   allocation fails, and also signals that htab_find_slot_with_hash and
+-   htab_find_slot are allowed to return NULL when inserting.  */
+-extern htab_t	htab_try_create	(size_t, htab_hash, htab_eq, htab_del);
+-extern void	htab_delete	(htab_t);
+-extern void	htab_empty	(htab_t);
+-
+-extern void    *htab_find	(htab_t, const void *);
+-extern void    **htab_find_slot	(htab_t, const void *, enum insert_option);
+-extern void    *htab_find_with_hash (htab_t, const void *, hashval_t);
+-extern void    **htab_find_slot_with_hash (htab_t, const void *, hashval_t,
+-					  enum insert_option);
+-extern void	htab_clear_slot	(htab_t, void **);
+-extern void	htab_remove_elt	(htab_t, void *);
+-
+-extern void	htab_traverse	(htab_t, htab_trav, void *);
+-
+-extern size_t	htab_size	(htab_t);
+-extern size_t	htab_elements	(htab_t);
+-extern double	htab_collisions	(htab_t);
+-
+-/* A hash function for pointers.  */
+-extern htab_hash htab_hash_pointer;
+-
+-/* An equality function for pointers.  */
+-extern htab_eq htab_eq_pointer;
+-
+-#ifdef __cplusplus
+-}
+-#endif /* __cplusplus */
+-
+-#endif /* __HASHTAB_H */
+diff --git a/src/debugedit/rpmiotypes.h b/src/debugedit/rpmiotypes.h
+deleted file mode 100644
+index 04891a1..0000000
+--- a/src/debugedit/rpmiotypes.h
++++ /dev/null
+@@ -1,653 +0,0 @@
+-#ifndef _H_RPMIOTYPES_
+-#define	_H_RPMIOTYPES_
+-
+-/** \ingroup rpmio
+- * \file rpmio/rpmiotypes.h
+- */
+-
+-/** \ingroup rpmio
+- * RPM return codes.
+- */
+-typedef	enum rpmRC_e {
+-    RPMRC_OK		= 0,	/*!< Generic success code */
+-    RPMRC_NOTFOUND	= 1,	/*!< Generic not found code. */
+-    RPMRC_FAIL		= 2,	/*!< Generic failure code. */
+-    RPMRC_NOTTRUSTED	= 3,	/*!< Signature is OK, but key is not trusted. */
+-    RPMRC_NOKEY		= 4	/*!< Public key is unavailable. */
+-} rpmRC;
+-
+-/** \ingroup rpmio
+- * Private int typedefs to avoid C99 portability issues.
+- */
+-typedef	/*@unsignedintegraltype@*/	unsigned char		rpmuint8_t;
+-typedef /*@unsignedintegraltype@*/	unsigned short		rpmuint16_t;
+-typedef /*@unsignedintegraltype@*/	unsigned int		rpmuint32_t;
+-typedef /*@unsignedintegraltype@*/	unsigned long long	rpmuint64_t;
+-
+-/** \ingroup rpmio
+- */
+-typedef /*@signedintegraltype@*/	int			rpmint32_t;
+-
+-/**
+- */
+-typedef	/*@refcounted@*/ struct rpmioItem_s * rpmioItem;
+-struct rpmioItem_s {
+-/*@null@*/
+-    void *use;			/*!< use count -- return to pool when zero */
+-/*@kept@*/ /*@null@*/
+-    void *pool;			/*!< pool (or NULL if malloc'd) */
+-#if defined(__LCLINT__)
+-/*@refs@*/
+-    int nrefs;			/*!< (unused) keep splint happy */
+-#endif
+-};
+-
+-/**
+- */
+-typedef struct rpmioPool_s * rpmioPool;
+-
+-/** \ingroup rpmio
+- */
+-typedef /*@abstract@*/ /*@refcounted@*/ struct rpmiob_s * rpmiob;
+-
+-/** \ingroup rpmio
+- */
+-/*@unchecked@*/
+-extern size_t _rpmiob_chunk;
+-
+-/** \ingroup rpmio
+- */
+-typedef struct rpmioP_s {
+-    char * str;
+-    char * next;
+-    const char ** av;
+-    int ac;
+-} * rpmioP;
+-
+-/** \ingroup rpmpgp
+- */
+-typedef /*@abstract@*/ struct DIGEST_CTX_s * DIGEST_CTX;
+-
+-/** \ingroup rpmpgp
+- */
+-typedef /*@abstract@*/ struct pgpPkt_s * pgpPkt;
+-
+-/** \ingroup rpmpgp
+- */
+-typedef /*@abstract@*/ /*@refcounted@*/ struct pgpDig_s * pgpDig;
+-
+-/** \ingroup rpmpgp
+- */
+-typedef /*@abstract@*/ struct pgpDigParams_s * pgpDigParams;
+-
+-/** \ingroup rpmpgp
+- */
+-typedef rpmuint8_t pgpKeyID_t[8];
+-
+-/** \ingroup rpmpgp
+- */
+-typedef rpmuint8_t pgpTime_t[4];
+-
+-/** \ingroup rpmpgp
+- * Bit(s) to control digest and signature verification.
+- */
+-typedef enum pgpVSFlags_e {
+-    RPMVSF_DEFAULT	= 0,
+-    RPMVSF_NOHDRCHK	= (1 <<  0),
+-    RPMVSF_NEEDPAYLOAD	= (1 <<  1),
+-    /* bit(s) 2-7 unused */
+-    RPMVSF_NOSHA1HEADER	= (1 <<  8),
+-    RPMVSF_NOMD5HEADER	= (1 <<  9),	/* unimplemented */
+-    RPMVSF_NODSAHEADER	= (1 << 10),
+-    RPMVSF_NORSAHEADER	= (1 << 11),
+-    /* bit(s) 12-15 unused */
+-    RPMVSF_NOSHA1	= (1 << 16),	/* unimplemented */
+-    RPMVSF_NOMD5	= (1 << 17),
+-    RPMVSF_NODSA	= (1 << 18),
+-    RPMVSF_NORSA	= (1 << 19)
+-    /* bit(s) 20-31 unused */
+-} pgpVSFlags;
+-
+-#define	_RPMVSF_NODIGESTS	\
+-  ( RPMVSF_NOSHA1HEADER |	\
+-    RPMVSF_NOMD5HEADER |	\
+-    RPMVSF_NOSHA1 |		\
+-    RPMVSF_NOMD5 )
+-
+-#define	_RPMVSF_NOSIGNATURES	\
+-  ( RPMVSF_NODSAHEADER |	\
+-    RPMVSF_NORSAHEADER |	\
+-    RPMVSF_NODSA |		\
+-    RPMVSF_NORSA )
+-
+-#define	_RPMVSF_NOHEADER	\
+-  ( RPMVSF_NOSHA1HEADER |	\
+-    RPMVSF_NOMD5HEADER |	\
+-    RPMVSF_NODSAHEADER |	\
+-    RPMVSF_NORSAHEADER )
+-
+-#define	_RPMVSF_NOPAYLOAD	\
+-  ( RPMVSF_NOSHA1 |		\
+-    RPMVSF_NOMD5 |		\
+-    RPMVSF_NODSA |		\
+-    RPMVSF_NORSA )
+-
+-/*@-redef@*/ /* LCL: ??? */
+-typedef /*@abstract@*/ const void * fnpyKey;
+-/*@=redef@*/
+-
+-/**
+- * Bit(s) to identify progress callbacks.
+- */
+-typedef enum rpmCallbackType_e {
+-    RPMCALLBACK_UNKNOWN         = 0,
+-    RPMCALLBACK_INST_PROGRESS   = (1 <<  0),
+-    RPMCALLBACK_INST_START      = (1 <<  1),
+-    RPMCALLBACK_INST_OPEN_FILE  = (1 <<  2),
+-    RPMCALLBACK_INST_CLOSE_FILE = (1 <<  3),
+-    RPMCALLBACK_TRANS_PROGRESS  = (1 <<  4),
+-    RPMCALLBACK_TRANS_START     = (1 <<  5),
+-    RPMCALLBACK_TRANS_STOP      = (1 <<  6),
+-    RPMCALLBACK_UNINST_PROGRESS = (1 <<  7),
+-    RPMCALLBACK_UNINST_START    = (1 <<  8),
+-    RPMCALLBACK_UNINST_STOP     = (1 <<  9),
+-    RPMCALLBACK_REPACKAGE_PROGRESS = (1 << 10),
+-    RPMCALLBACK_REPACKAGE_START = (1 << 11),
+-    RPMCALLBACK_REPACKAGE_STOP  = (1 << 12),
+-    RPMCALLBACK_UNPACK_ERROR    = (1 << 13),
+-    RPMCALLBACK_CPIO_ERROR      = (1 << 14),
+-    RPMCALLBACK_SCRIPT_ERROR    = (1 << 15)
+-} rpmCallbackType;
+-
+-/**
+- */
+-typedef void * rpmCallbackData;
+-
+-/** \ingroup rpmpgp
+- * 9.4. Hash Algorithms
+- *
+-\verbatim
+-       ID           Algorithm                              Text Name
+-       --           ---------                              ---- ----
+-       1          - MD5                                    "MD5"
+-       2          - SHA-1                                  "SHA1"
+-       3          - RIPE-MD/160                            "RIPEMD160"
+-       4          - Reserved for double-width SHA (experimental)
+-       5          - MD2                                    "MD2"
+-       6          - Reserved for TIGER/192                 "TIGER192"
+-       7          - Reserved for HAVAL (5 pass, 160-bit)   "HAVAL-5-160"
+-       100 to 110 - Private/Experimental algorithm.
+-\endverbatim
+- *
+- * Implementations MUST implement SHA-1. Implementations SHOULD
+- * implement MD5.
+- * @todo Add SHA256.
+- */
+-typedef enum pgpHashAlgo_e {
+-    PGPHASHALGO_ERROR		=  -1,
+-    PGPHASHALGO_NONE		=  0,
+-    PGPHASHALGO_MD5		=  1,	/*!< MD5 */
+-    PGPHASHALGO_SHA1		=  2,	/*!< SHA-1 */
+-    PGPHASHALGO_RIPEMD160	=  3,	/*!< RIPEMD-160 */
+-    PGPHASHALGO_MD2		=  5,	/*!< MD2 */
+-    PGPHASHALGO_TIGER192	=  6,	/*!< TIGER-192 */
+-    PGPHASHALGO_HAVAL_5_160	=  7,	/*!< HAVAL-5-160 */
+-    PGPHASHALGO_SHA256		=  8,	/*!< SHA-256 */
+-    PGPHASHALGO_SHA384		=  9,	/*!< SHA-384 */
+-    PGPHASHALGO_SHA512		= 10,	/*!< SHA-512 */
+-    PGPHASHALGO_SHA224		= 11,	/*!< SHA-224 */
+-
+-    PGPHASHALGO_MD4		= 104,	/*!< (private) MD4 */
+-    PGPHASHALGO_RIPEMD128	= 105,	/*!< (private) RIPEMD-128 */
+-    PGPHASHALGO_CRC32		= 106,	/*!< (private) CRC-32 */
+-    PGPHASHALGO_ADLER32		= 107,	/*!< (private) ADLER-32 */
+-    PGPHASHALGO_CRC64		= 108,	/*!< (private) CRC-64 */
+-    PGPHASHALGO_JLU32		= 109,	/*!< (private) Jenkins lookup3.c */
+-
+-    PGPHASHALGO_RIPEMD256	= 111,	/*!< (private) RIPEMD-256 */
+-    PGPHASHALGO_RIPEMD320	= 112,	/*!< (private) RIPEMD-320 */
+-    PGPHASHALGO_SALSA10		= 113,	/*!< (private) SALSA-10 */
+-    PGPHASHALGO_SALSA20		= 114,	/*!< (private) SALSA-20 */
+-
+-    PGPHASHALGO_MD6_224		= 128+0,/*!< (private) MD6-224 */
+-    PGPHASHALGO_MD6_256		= 128+1,/*!< (private) MD6-256 */
+-    PGPHASHALGO_MD6_384		= 128+2,/*!< (private) MD6-384 */
+-    PGPHASHALGO_MD6_512		= 128+3,/*!< (private) MD6-512 */
+-
+-    PGPHASHALGO_CUBEHASH_224	= 136+0,/*!< (private) CUBEHASH-224 */
+-    PGPHASHALGO_CUBEHASH_256	= 136+1,/*!< (private) CUBEHASH-256 */
+-    PGPHASHALGO_CUBEHASH_384	= 136+2,/*!< (private) CUBEHASH-384 */
+-    PGPHASHALGO_CUBEHASH_512	= 136+3,/*!< (private) CUBEHASH-512 */
+-
+-    PGPHASHALGO_KECCAK_224	= 144+0,/*!< (private) KECCAK-224 */
+-    PGPHASHALGO_KECCAK_256	= 144+1,/*!< (private) KECCAK-256 */
+-    PGPHASHALGO_KECCAK_384	= 144+2,/*!< (private) KECCAK-384 */
+-    PGPHASHALGO_KECCAK_512	= 144+3,/*!< (private) KECCAK-384 */
+-
+-    PGPHASHALGO_ECHO_224	= 148+0,/*!< (private) ECHO-224 */
+-    PGPHASHALGO_ECHO_256	= 148+1,/*!< (private) ECHO-256 */
+-    PGPHASHALGO_ECHO_384	= 148+2,/*!< (private) ECHO-384 */
+-    PGPHASHALGO_ECHO_512	= 148+3,/*!< (private) ECHO-384 */
+-
+-    PGPHASHALGO_EDONR_224	= 152+0,/*!< (private) EDON-R-224 */
+-    PGPHASHALGO_EDONR_256	= 152+1,/*!< (private) EDON-R-256 */
+-    PGPHASHALGO_EDONR_384	= 152+2,/*!< (private) EDON-R-384 */
+-    PGPHASHALGO_EDONR_512	= 152+3,/*!< (private) EDON-R-512 */
+-
+-    PGPHASHALGO_FUGUE_224	= 156+0,/*!< (private) FUGUE-224 */
+-    PGPHASHALGO_FUGUE_256	= 156+1,/*!< (private) FUGUE-256 */
+-    PGPHASHALGO_FUGUE_384	= 156+2,/*!< (private) FUGUE-384 */
+-    PGPHASHALGO_FUGUE_512	= 156+3,/*!< (private) FUGUE-512 */
+-
+-    PGPHASHALGO_SKEIN_224	= 160+0,/*!< (private) SKEIN-224 */
+-    PGPHASHALGO_SKEIN_256	= 160+1,/*!< (private) SKEIN-256 */
+-    PGPHASHALGO_SKEIN_384	= 160+2,/*!< (private) SKEIN-384 */
+-    PGPHASHALGO_SKEIN_512	= 160+3,/*!< (private) SKEIN-512 */
+-    PGPHASHALGO_SKEIN_1024	= 160+4,/*!< (private) SKEIN-1024 */
+-
+-    PGPHASHALGO_BMW_224		= 168+0,/*!< (private) BMW-224 */
+-    PGPHASHALGO_BMW_256		= 168+1,/*!< (private) BMW-256 */
+-    PGPHASHALGO_BMW_384		= 168+2,/*!< (private) BMW-384 */
+-    PGPHASHALGO_BMW_512		= 168+3,/*!< (private) BMW-512 */
+-
+-    PGPHASHALGO_SHABAL_224	= 176+0,/*!< (private) SHABAL-224 */
+-    PGPHASHALGO_SHABAL_256	= 176+1,/*!< (private) SHABAL-256 */
+-    PGPHASHALGO_SHABAL_384	= 176+2,/*!< (private) SHABAL-384 */
+-    PGPHASHALGO_SHABAL_512	= 176+3,/*!< (private) SHABAL-512 */
+-
+-    PGPHASHALGO_SHAVITE3_224	= 180+0,/*!< (private) SHAVITE3-224 */
+-    PGPHASHALGO_SHAVITE3_256	= 180+1,/*!< (private) SHAVITE3-256 */
+-    PGPHASHALGO_SHAVITE3_384	= 180+2,/*!< (private) SHAVITE3-384 */
+-    PGPHASHALGO_SHAVITE3_512	= 180+3,/*!< (private) SHAVITE3-512 */
+-
+-    PGPHASHALGO_BLAKE_224	= 184+0,/*!< (private) BLAKE-224 */
+-    PGPHASHALGO_BLAKE_256	= 184+1,/*!< (private) BLAKE-256 */
+-    PGPHASHALGO_BLAKE_384	= 184+2,/*!< (private) BLAKE-384 */
+-    PGPHASHALGO_BLAKE_512	= 184+3,/*!< (private) BLAKE-512 */
+-
+-    PGPHASHALGO_TIB3_224	= 192+0,/*!< (private) TIB3-224 */
+-    PGPHASHALGO_TIB3_256	= 192+1,/*!< (private) TIB3-256 */
+-    PGPHASHALGO_TIB3_384	= 192+2,/*!< (private) TIB3-384 */
+-    PGPHASHALGO_TIB3_512	= 192+3,/*!< (private) TIB3-512 */
+-
+-    PGPHASHALGO_SIMD_224	= 200+0,/*!< (private) SIMD-224 */
+-    PGPHASHALGO_SIMD_256	= 200+1,/*!< (private) SIMD-256 */
+-    PGPHASHALGO_SIMD_384	= 200+2,/*!< (private) SIMD-384 */
+-    PGPHASHALGO_SIMD_512	= 200+3,/*!< (private) SIMD-512 */
+-
+-    PGPHASHALGO_ARIRANG_224	= 208+0,/*!< (private) ARIRANG-224 */
+-    PGPHASHALGO_ARIRANG_256	= 208+1,/*!< (private) ARIRANG-256 */
+-    PGPHASHALGO_ARIRANG_384	= 208+2,/*!< (private) ARIRANG-384 */
+-    PGPHASHALGO_ARIRANG_512	= 208+3,/*!< (private) ARIRANG-512 */
+-
+-    PGPHASHALGO_LANE_224	= 212+0,/*!< (private) LANE-224 */
+-    PGPHASHALGO_LANE_256	= 212+1,/*!< (private) LANE-256 */
+-    PGPHASHALGO_LANE_384	= 212+2,/*!< (private) LANE-384 */
+-    PGPHASHALGO_LANE_512	= 212+3,/*!< (private) LANE-512 */
+-
+-    PGPHASHALGO_LUFFA_224	= 216+0,/*!< (private) LUFFA-224 */
+-    PGPHASHALGO_LUFFA_256	= 216+1,/*!< (private) LUFFA-256 */
+-    PGPHASHALGO_LUFFA_384	= 216+2,/*!< (private) LUFFA-384 */
+-    PGPHASHALGO_LUFFA_512	= 216+3,/*!< (private) LUFFA-512 */
+-
+-    PGPHASHALGO_CHI_224		= 224+0,/*!< (private) CHI-224 */
+-    PGPHASHALGO_CHI_256		= 224+1,/*!< (private) CHI-256 */
+-    PGPHASHALGO_CHI_384		= 224+2,/*!< (private) CHI-384 */
+-    PGPHASHALGO_CHI_512		= 224+3,/*!< (private) CHI-512 */
+-
+-    PGPHASHALGO_JH_224		= 232+0,/*!< (private) JH-224 */
+-    PGPHASHALGO_JH_256		= 232+1,/*!< (private) JH-256 */
+-    PGPHASHALGO_JH_384		= 232+2,/*!< (private) JH-384 */
+-    PGPHASHALGO_JH_512		= 232+3,/*!< (private) JH-512 */
+-
+-    PGPHASHALGO_GROESTL_224	= 240+0,/*!< (private) GROESTL-224 */
+-    PGPHASHALGO_GROESTL_256	= 240+1,/*!< (private) GROESTL-256 */
+-    PGPHASHALGO_GROESTL_384	= 240+2,/*!< (private) GROESTL-384 */
+-    PGPHASHALGO_GROESTL_512	= 240+3,/*!< (private) GROESTL-512 */
+-
+-    PGPHASHALGO_HAMSI_224	= 248+0,/*!< (private) HAMSI-224 */
+-    PGPHASHALGO_HAMSI_256	= 248+1,/*!< (private) HAMSI-256 */
+-    PGPHASHALGO_HAMSI_384	= 248+2,/*!< (private) HAMSI-384 */
+-    PGPHASHALGO_HAMSI_512	= 248+3,/*!< (private) HAMSI-512 */
+-
+-} pgpHashAlgo;
+-
+-/** \ingroup rpmpgp
+- * Bit(s) to control digest operation.
+- */
+-typedef enum rpmDigestFlags_e {
+-    RPMDIGEST_NONE	=	0,
+-} rpmDigestFlags;
+-
+-#if defined(_RPMIOB_INTERNAL)
+-/** \ingroup rpmio
+- */
+-struct rpmiob_s{
+-    struct rpmioItem_s _item;	/*!< usage mutex and pool identifier. */
+-    rpmuint8_t * b;		/*!< data octects. */
+-    size_t blen;		/*!< no. of octets used. */
+-    size_t allocated;		/*!< no. of octets allocated. */
+-#if defined(__LCLINT__)
+-/*@refs@*/
+-    int nrefs;				/*!< (unused) keep splint happy */
+-#endif
+-};
+-#endif
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-/** \ingroup rpmpgp
+- * Return digest algorithm identifier.
+- * @param ctx		digest context
+- * @return		digest hash algorithm identifier
+- */
+-pgpHashAlgo rpmDigestAlgo(DIGEST_CTX ctx)
+-	/*@*/;
+-
+-/** \ingroup rpmpgp
+- * Return digest flags.
+- * @param ctx		digest context
+- * @return		digest flags
+- */
+-rpmDigestFlags rpmDigestF(DIGEST_CTX ctx)
+-	/*@*/;
+-
+-/** \ingroup rpmpgp
+- * Return digest name.
+- * @param ctx		digest context
+- * @return		digest name
+- */
+-/*@observer@*/
+-const char * rpmDigestName(DIGEST_CTX ctx)
+-	/*@*/;
+-
+-/** \ingroup rpmpgp
+- * Return digest ASN1 oid string.
+- * Values from PKCS#1 v2.1 (aka RFC-3447).
+- * @param ctx		digest context
+- * @return		digest ASN1 oid string
+- */
+-/*@observer@*/ /*@null@*/
+-const char * rpmDigestASN1(DIGEST_CTX ctx)
+-	/*@*/;
+-
+-/** \ingroup rpmpgp
+- * Duplicate a digest context.
+- * @param octx		existing digest context
+- * @return		duplicated digest context
+- */
+-/*@only@*/
+-DIGEST_CTX rpmDigestDup(DIGEST_CTX octx)
+-	/*@*/;
+-
+-/** \ingroup rpmpgp
+- * Initialize digest.
+- * Set bit count to 0 and buffer to mysterious initialization constants.
+- * @param hashalgo	type of digest
+- * @param flags		bit(s) to control digest operation
+- * @return		digest context
+- */
+-/*@only@*/ /*@null@*/
+-DIGEST_CTX rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
+-	/*@*/;
+-
+-/** \ingroup rpmpgp
+- * Update context with next plain text buffer.
+- * @param ctx		digest context
+- * @param data		next data buffer
+- * @param len		no. bytes of data
+- * @return		0 on success
+- */
+-int rpmDigestUpdate(/*@null@*/ DIGEST_CTX ctx, const void * data, size_t len)
+-	/*@modifies ctx @*/;
+-
+-/** \ingroup rpmpgp
+- * Return digest and destroy context.
+- *
+- * @param ctx		digest context
+- * @retval *datap	digest
+- * @retval *lenp	no. bytes of digest
+- * @param asAscii	return digest as ascii string?
+- * @return		0 on success
+- */
+-int rpmDigestFinal(/*@only@*/ /*@null@*/ DIGEST_CTX ctx,
+-	/*@null@*/ /*@out@*/ void * datap,
+-	/*@null@*/ /*@out@*/ size_t * lenp, int asAscii)
+-		/*@modifies *datap, *lenp @*/;
+-
+-/** \ingroup rpmpgp
+- *
+- * Compute key material and add to digest context.
+- * @param ctx		digest context
+- * @param key		HMAC key (NULL does digest instead)
+- * @param keylen	HMAC key length(bytes) (0 uses strlen(key))
+- * @return		0 on success
+- */
+-int rpmHmacInit(DIGEST_CTX ctx, const void * key, size_t keylen)
+-	/*@*/;
+-
+-/** \ingroup rpmio
+- */
+-typedef void * (*rpmCallbackFunction)
+-                (/*@null@*/ const void * h,
+-                const rpmCallbackType what,
+-                const rpmuint64_t amount,
+-                const rpmuint64_t total,
+-                /*@null@*/ fnpyKey key,
+-                /*@null@*/ rpmCallbackData data)
+-        /*@globals internalState@*/
+-        /*@modifies internalState@*/;
+-
+-#if !defined(SWIG)
+-/** \ingroup rpmio
+- * Wrapper to free(3), hides const compilation noise, permit NULL, return NULL.
+- * @param p		memory to free
+- * @return		NULL always
+- */
+-#if defined(WITH_DMALLOC)
+-#define _free(p) ((p) != NULL ? free((void *)(p)) : (void)0, NULL)
+-#else
+-/*@unused@*/ static inline /*@null@*/
+-void * _free(/*@only@*/ /*@null@*/ /*@out@*/ const void * p)
+-	/*@modifies p @*/
+-{
+-    if (p != NULL)	free((void *)p);
+-    return NULL;
+-}
+-#endif
+-#endif
+-
+-/*@unused@*/ static inline int xislower(int c) /*@*/ {
+-    return (c >= (int)'a' && c <= (int)'z');
+-}
+-/*@unused@*/ static inline int xisupper(int c) /*@*/ {
+-    return (c >= (int)'A' && c <= (int)'Z');
+-}
+-/*@unused@*/ static inline int xisalpha(int c) /*@*/ {
+-    return (xislower(c) || xisupper(c));
+-}
+-/*@unused@*/ static inline int xisdigit(int c) /*@*/ {
+-    return (c >= (int)'0' && c <= (int)'9');
+-}
+-/*@unused@*/ static inline int xisalnum(int c) /*@*/ {
+-    return (xisalpha(c) || xisdigit(c));
+-}
+-/*@unused@*/ static inline int xisblank(int c) /*@*/ {
+-    return (c == (int)' ' || c == (int)'\t');
+-}
+-/*@unused@*/ static inline int xisspace(int c) /*@*/ {
+-    return (xisblank(c) || c == (int)'\n' || c == (int)'\r' || c == (int)'\f' || c == (int)'\v');
+-}
+-/*@unused@*/ static inline int xiscntrl(int c) /*@*/ {
+-    return (c < (int)' ');
+-}
+-/*@unused@*/ static inline int xisascii(int c) /*@*/ {
+-    return ((c & 0x80) != 0x80);
+-}
+-/*@unused@*/ static inline int xisprint(int c) /*@*/ {
+-    return (c >= (int)' ' && xisascii(c));
+-}
+-/*@unused@*/ static inline int xisgraph(int c) /*@*/ {
+-    return (c > (int)' ' && xisascii(c));
+-}
+-/*@unused@*/ static inline int xispunct(int c) /*@*/ {
+-    return (xisgraph(c) && !xisalnum(c));
+-}
+-
+-/*@unused@*/ static inline int xtolower(int c) /*@*/ {
+-    return ((xisupper(c)) ? (c | ('a' - 'A')) : c);
+-}
+-/*@unused@*/ static inline int xtoupper(int c) /*@*/ {
+-    return ((xislower(c)) ? (c & ~('a' - 'A')) : c);
+-}
+-
+-/** \ingroup rpmio
+- * Locale insensitive strcasecmp(3).
+- */
+-int xstrcasecmp(const char * s1, const char * s2)		/*@*/;
+-
+-/** \ingroup rpmio
+- * Locale insensitive strncasecmp(3).
+- */
+-int xstrncasecmp(const char *s1, const char * s2, size_t n)	/*@*/;
+-
+-/** \ingroup rpmio
+- * Force encoding of string.
+- */
+-/*@only@*/ /*@null@*/
+-const char * xstrtolocale(/*@only@*/ const char *str)
+-	/*@modifies *str @*/;
+-
+-/**
+- * Unreference a I/O buffer instance.
+- * @param iob		hash table
+- * @return		NULL if free'd
+- */
+-/*@unused@*/ /*@null@*/
+-rpmiob rpmiobUnlink (/*@killref@*/ /*@null@*/ rpmiob iob)
+-	/*@globals fileSystem @*/
+-	/*@modifies iob, fileSystem @*/;
+-#define	rpmiobUnlink(_iob)	\
+-    ((rpmiob)rpmioUnlinkPoolItem((rpmioItem)(_iob), __FUNCTION__, __FILE__, __LINE__))
+-
+-/**
+- * Reference a I/O buffer instance.
+- * @param iob		I/O buffer
+- * @return		new I/O buffer reference
+- */
+-/*@unused@*/ /*@newref@*/ /*@null@*/
+-rpmiob rpmiobLink (/*@null@*/ rpmiob iob)
+-	/*@globals fileSystem @*/
+-	/*@modifies iob, fileSystem @*/;
+-#define	rpmiobLink(_iob)	\
+-    ((rpmiob)rpmioLinkPoolItem((rpmioItem)(_iob), __FUNCTION__, __FILE__, __LINE__))
+-
+-/**
+- * Destroy a I/O buffer instance.
+- * @param iob		I/O buffer
+- * @return		NULL on last dereference
+- */
+-/*@null@*/
+-rpmiob rpmiobFree( /*@killref@*/ rpmiob iob)
+-	/*@globals fileSystem @*/
+-	/*@modifies iob, fileSystem @*/;
+-#define	rpmiobFree(_iob)	\
+-    ((rpmiob)rpmioFreePoolItem((rpmioItem)(_iob), __FUNCTION__, __FILE__, __LINE__))
+-
+-/**
+- * Create an I/O buffer.
+- * @param len		no. of octets to allocate
+- * @return		new I/O buffer
+- */
+-/*@newref@*/ /*@null@*/
+-rpmiob rpmiobNew(size_t len)
+-	/*@globals fileSystem @*/
+-	/*@modifies fileSystem @*/;
+-
+-/**
+- * Empty an I/O buffer.
+- * @param iob		I/O buffer
+- * @return		I/O buffer
+- */
+-rpmiob rpmiobEmpty(/*@returned@*/ rpmiob iob)
+-	/*@modifies iob @*/;
+-
+-/**
+- * Trim trailing white space.
+- * @param iob		I/O buffer
+- * @return		I/O buffer
+- */
+-rpmiob rpmiobRTrim(/*@returned@*/ rpmiob iob)
+-	/*@modifies iob @*/;
+-
+-/**
+- * Append string to I/O buffer.
+- * @param iob		I/O buffer
+- * @param s		string
+- * @param nl		append NL?
+- * @return		I/O buffer
+- */
+-rpmiob rpmiobAppend(/*@returned@*/ rpmiob iob, const char * s, size_t nl)
+-	/*@modifies iob @*/;
+-
+-/**
+- * Return I/O buffer.
+- * @param iob		I/O buffer
+- * @return		I/O buffer (as octets)
+- */
+-rpmuint8_t * rpmiobBuf(rpmiob iob)
+-	/*@*/;
+-
+-/**
+- * Return I/O buffer (as string).
+- * @param iob		I/O buffer
+- * @return		I/O buffer (as string)
+- */
+-char * rpmiobStr(rpmiob iob)
+-	/*@*/;
+-
+-/**
+- * Return I/O buffer len.
+- * @param iob		I/O buffer
+- * @return		I/O buffer length
+- */
+-size_t rpmiobLen(rpmiob iob)
+-	/*@*/;
+-
+-#if defined(_RPMIOB_INTERNAL)
+-/**
+- * Read an entire file into a buffer.
+- * @param fn		file name to read
+- * @retval *iobp	I/O buffer
+- * @return		0 on success
+- */
+-int rpmiobSlurp(const char * fn, rpmiob * iobp)
+-        /*@globals h_errno, fileSystem, internalState @*/
+-        /*@modifies *iobp, fileSystem, internalState @*/;
+-#endif
+-
+-/**
+- * Destroy a rpmioP object.
+- * @param P		parser state
+- * @return		NULL
+- */
+-/*@null@*/
+-rpmioP rpmioPFree(/*@only@*/ /*@null@*/ rpmioP P)
+-	/*@modifies P @*/;
+-
+-/**
+- * Parse next command out of a string incrementally.
+- * @param *Pptr		parser state
+- * @param str		string to parse
+- * @return		RPMRC_OK on success
+- */
+-rpmRC rpmioParse(rpmioP *Pptr, const char * str)
+-	/*@modifies *Pptr @*/;
+-
+-#ifdef __cplusplus
+-}
+-#endif
+-
+-#endif /* _H_RPMIOTYPES_ */
+diff --git a/src/debugedit/rpmsw.h b/src/debugedit/rpmsw.h
+deleted file mode 100644
+index 9023d0b..0000000
+--- a/src/debugedit/rpmsw.h
++++ /dev/null
+@@ -1,157 +0,0 @@
+-#ifndef	H_RPMSW
+-#define	H_RPMSW
+-
+-/** \ingroup rpmio
+- * \file rpmio/rpmsw.h
+- */
+-
+-/** \ingroup rpmio
+- */
+-typedef unsigned long int rpmtime_t;
+-
+-/** \ingroup rpmio
+- */
+-typedef struct rpmsw_s * rpmsw;
+-
+-/** \ingroup rpmio
+- */
+-typedef struct rpmop_s * rpmop;
+-
+-/** \ingroup rpmio
+- */
+-struct rpmsw_s {
+-    union {
+-	struct timeval tv;
+-	unsigned long long int ticks;
+-	unsigned long int tocks[2];
+-    } u;
+-};
+-
+-/** \ingroup rpmio
+- * Cumulative statistics for an operation.
+- */
+-struct rpmop_s {
+-    struct rpmsw_s	begin;	/*!< Starting time stamp. */
+-    int			count;	/*!< Number of operations. */
+-    unsigned long long	bytes;	/*!< Number of bytes transferred. */
+-    rpmtime_t		usecs;	/*!< Number of ticks. */
+-};
+-
+-/*@unchecked@*/
+-extern int _rpmsw_stats;
+-
+-/** \ingroup rpmio
+- * Indices for timestamps.
+- */
+-typedef	enum rpmswOpX_e {
+-    RPMSW_OP_TOTAL		=  0,
+-    RPMSW_OP_CHECK		=  1,
+-    RPMSW_OP_ORDER		=  2,
+-    RPMSW_OP_FINGERPRINT	=  3,
+-    RPMSW_OP_REPACKAGE		=  4,
+-    RPMSW_OP_INSTALL		=  5,
+-    RPMSW_OP_ERASE		=  6,
+-    RPMSW_OP_SCRIPTLETS		=  7,
+-    RPMSW_OP_COMPRESS		=  8,
+-    RPMSW_OP_UNCOMPRESS		=  9,
+-    RPMSW_OP_DIGEST		= 10,
+-    RPMSW_OP_SIGNATURE		= 11,
+-    RPMSW_OP_DBADD		= 12,
+-    RPMSW_OP_DBREMOVE		= 13,
+-    RPMSW_OP_DBGET		= 14,
+-    RPMSW_OP_DBPUT		= 15,
+-    RPMSW_OP_DBDEL		= 16,
+-    RPMSW_OP_READHDR		= 17,
+-    RPMSW_OP_HDRLOAD		= 18,
+-    RPMSW_OP_HDRGET		= 19,
+-    RPMSW_OP_DEBUG		= 20,
+-    RPMSW_OP_MAX		= 20
+-} rpmswOpX;
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-/** Return benchmark time stamp.
+- * @param *sw		time stamp
+- * @return		0 on success
+- */
+-/*@-exportlocal@*/
+-/*@null@*/
+-rpmsw rpmswNow(/*@returned@*/ rpmsw sw)
+-	/*@globals internalState @*/
+-	/*@modifies sw, internalState @*/;
+-/*@=exportlocal@*/
+-
+-/** Return benchmark time stamp difference.
+- * @param *end		end time stamp
+- * @param *begin	begin time stamp
+- * @return		difference in micro-seconds
+- */
+-/*@-exportlocal@*/
+-rpmtime_t rpmswDiff(/*@null@*/ rpmsw end, /*@null@*/ rpmsw begin)
+-	/*@*/;
+-/*@=exportlocal@*/
+-
+-/** Return benchmark time stamp overhead.
+- * @return		overhead in micro-seconds
+- */
+-/*@-exportlocal@*/
+-rpmtime_t rpmswInit(void)
+-	/*@globals internalState @*/
+-	/*@modifies internalState @*/;
+-/*@=exportlocal@*/
+-
+-/** \ingroup rpmio
+- * Enter timed operation.
+- * @param op			operation statistics
+- * @param rc			-1 clears usec counter
+- * @return			0 always
+- */
+-int rpmswEnter(/*@null@*/ rpmop op, ssize_t rc)
+-	/*@globals internalState @*/
+-	/*@modifies *op, internalState @*/;
+-
+-/** \ingroup rpmio
+- * Exit timed operation.
+- * @param op			operation statistics
+- * @param rc			per-operation data (e.g. bytes transferred)
+- * @return			cumulative usecs for operation
+- */
+-rpmtime_t rpmswExit(/*@null@*/ rpmop op, ssize_t rc)
+-	/*@globals internalState @*/
+-	/*@modifies op, internalState @*/;
+-
+-/** \ingroup rpmio
+- * Sum statistic counters.
+- * @param to			result statistics
+- * @param from			operation statistics
+- * @return			cumulative usecs for operation
+- */
+-rpmtime_t rpmswAdd(/*@null@*/ rpmop to, /*@null@*/ rpmop from)
+-	/*@modifies to @*/;
+-
+-/** \ingroup rpmio
+- * Subtract statistic counters.
+- * @param to			result statistics
+- * @param from			operation statistics
+- * @return			cumulative usecs for operation
+- */
+-rpmtime_t rpmswSub(rpmop to, rpmop from)
+-	/*@modifies to @*/;
+-
+-/** \ingroup rpmio
+- * Print operation statistics.
+- * @param name			operation name
+- * @param op			operation statistics
+- * @param fp			file handle (NULL uses stderr)
+- */
+-void rpmswPrint(const char * name, /*@null@*/ rpmop op, /*@null@*/ FILE * fp)
+-        /*@globals fileSystem @*/
+-        /*@modifies fp, fileSystem @*/;
+-
+-#ifdef __cplusplus
+-}
+-#endif
+-
+-#endif	/* H_RPMSW */
+diff --git a/src/debugedit/rpmtag.h b/src/debugedit/rpmtag.h
+deleted file mode 100644
+index 36e24c8..0000000
+--- a/src/debugedit/rpmtag.h
++++ /dev/null
+@@ -1,1243 +0,0 @@
+-#ifndef H_RPMTAG
+-#define	H_RPMTAG
+-
+-/** \ingroup header
+- * \file rpmdb/rpmtag.h
+- */
+-
+-#include "rpmiotypes.h"
+-#include "rpmsw.h"
+-
+-#ifdef __cplusplus
+-extern "C" {
+-#endif
+-
+-/** \ingroup header
+- */
+-typedef const char *	errmsg_t;
+-
+-/** \ingroup header
+- */
+-typedef /*@abstract@*/ /*@refcounted@*/ struct headerToken_s * Header;
+-
+-/** \ingroup header
+- * The basic types of data in tags from headers.
+- */
+-enum rpmTagType_e {
+-    	/* RPM_NULL_TYPE =  0	- never been used. */
+-	/* RPM_CHAR_TYPE =  1	- never been used, same as RPM_UINT8_TYPE. */
+-    RPM_UINT8_TYPE		=  2,
+-    RPM_UINT16_TYPE		=  3,
+-    RPM_UINT32_TYPE		=  4,
+-    RPM_UINT64_TYPE		=  5,
+-    RPM_STRING_TYPE		=  6,
+-    RPM_BIN_TYPE		=  7,
+-    RPM_STRING_ARRAY_TYPE	=  8,
+-    RPM_I18NSTRING_TYPE		=  9
+-	/* RPM_ASN1_TYPE = 10	- never been used. */
+-	/* RPM_OPENPGP_TYPE= 11	- never been used. */
+-};
+-#define	RPM_MIN_TYPE		2
+-#define	RPM_MAX_TYPE		9
+-#define	RPM_MASK_TYPE		0x0000ffff
+-
+-/** \ingroup header
+- */
+-typedef enum rpmTagType_e rpmTagType;	/*!< tag data type. */
+-
+-/** \ingroup header
+- */
+-typedef union rpmDataType_u rpmTagData;	/*!< tag data. */
+-
+-/** \ingroup header
+- */
+-typedef rpmuint32_t rpmTagCount;	/*!< tag data element count. */
+-
+-/** \ingroup header
+- */
+-typedef struct _HE_s * HE_t;	/*!< tag container. */
+-
+-/** \ingroup header
+- */
+-/*@-typeuse -fielduse@*/
+-#if !defined(SWIG)
+-union rpmDataType_u {
+-/*@null@*/
+-    void * ptr;
+-    rpmuint8_t * ui8p;		/*!< RPM_UINT8_TYPE | RPM_CHAR_TYPE */
+-    rpmuint16_t * ui16p;	/*!< RPM_UINT16_TYPE */
+-    rpmuint32_t * ui32p;	/*!< RPM_UINT32_TYPE */
+-    rpmuint64_t * ui64p;	/*!< RPM_UINT64_TYPE */
+-/*@relnull@*/
+-    const char * str;		/*!< RPM_STRING_TYPE */
+-    unsigned char * blob;	/*!< RPM_BIN_TYPE */
+-    const char ** argv;		/*!< RPM_STRING_ARRAY_TYPE */
+-    HE_t he;
+-};
+-#endif
+-/*@=typeuse =fielduse@*/
+-
+-/*@=typeuse =fielduse@*/
+-/** \ingroup header
+- */
+-/*@-enummemuse -typeuse @*/
+-typedef enum rpmSubTagType_e {
+-    RPM_REGION_TYPE		= -10,
+-    RPM_BIN_ARRAY_TYPE		= -11,
+-    RPM_XREF_TYPE		= -12
+-} rpmSubTagType;
+-/*@=enummemuse =typeuse @*/
+-
+-/** \ingroup header
+- * Identify how to return the header data type.
+- */
+-/*@-enummemuse -typeuse @*/
+-typedef enum rpmTagReturnType_e {
+-    RPM_ANY_RETURN_TYPE		= 0,
+-    RPM_SCALAR_RETURN_TYPE	= 0x00010000,
+-    RPM_ARRAY_RETURN_TYPE	= 0x00020000,
+-    RPM_MAPPING_RETURN_TYPE	= 0x00040000,
+-	/* 0x00080000 */
+-    RPM_PROBE_RETURN_TYPE	= 0x00100000,
+-    RPM_TREE_RETURN_TYPE	= 0x00200000,
+-    RPM_OPENPGP_RETURN_TYPE	= 0x00400000,
+-    RPM_X509_RETURN_TYPE	= 0x00800000,
+-    RPM_ASN1_RETURN_TYPE	= 0x01000000,
+-    RPM_OPAQUE_RETURN_TYPE	= 0x10000000,
+-    RPM_MASK_RETURN_TYPE	= 0xffff0000
+-} rpmTagReturnType;
+-/*@=enummemuse =typeuse @*/
+-
+-/**
+- * Header private tags.
+- * @note General use tags should start at 1000 (RPM's tag space starts there).
+- */
+-#define	HEADER_IMAGE		61
+-#define	HEADER_SIGNATURES	62
+-#define	HEADER_IMMUTABLE	63
+-#define	HEADER_REGIONS		64
+-#define HEADER_I18NTABLE	100
+-#define	HEADER_SIGBASE		256
+-#define	HEADER_TAGBASE		1000
+-
+-/** \ingroup header
+- */
+-typedef /*@abstract@*/ struct headerIterator_s * HeaderIterator;
+-
+-/** \ingroup header
+- */
+-typedef /*@abstract@*/ struct headerTagIndices_s * headerTagIndices;
+-
+-/** \ingroup header
+- */
+-typedef /*@abstract@*/ const struct headerSprintfExtension_s * headerSprintfExtension;
+-
+-/**
+- * Pseudo-tags used by the rpmdb and rpmgi iterator API's.
+- */
+-#define	RPMDBI_PACKAGES		0	/* Installed package headers. */
+-#define	RPMDBI_DEPENDS		1	/* Dependency resolution cache. */
+-	/* (obsolete) RPMDBI_LABEL was 2 */
+-#define	RPMDBI_ADDED		3	/* Added package headers. */
+-#define	RPMDBI_REMOVED		4	/* Removed package headers. */
+-#define	RPMDBI_AVAILABLE	5	/* Available package headers. */
+-#define	RPMDBI_HDLIST		6	/* (rpmgi) Header list. */
+-#define	RPMDBI_ARGLIST		7	/* (rpmgi) Argument list. */
+-#define	RPMDBI_FTSWALK		8	/* (rpmgi) File tree  walk. */
+-#define	RPMDBI_SEQNO		9	/* Sequence numbers. */
+-#define	RPMDBI_BTREE		10	/* (development) Generic DB_BTREE. */
+-#define	RPMDBI_HASH		11	/* (development) Generic DB_HASH. */
+-#define	RPMDBI_QUEUE		12	/* (development) Generic DB_QUEUE. */
+-#define	RPMDBI_RECNO		13	/* (development) Generic DB_RECNO. */
+-#define	RPMDBI_REPACKAGES	14	/* Re-packaged package paths. */
+-#define	RPMDBI_REPOSITORY	15	/* Repository URI's. */
+-
+-/** \ingroup header
+- * Tags identify data in package headers.
+- * @note tags should not have value 0!
+- */
+-enum rpmTag_e {
+-
+-    RPMTAG_HEADERIMAGE		= HEADER_IMAGE,		/*!< internal Current image. */
+-    RPMTAG_HEADERSIGNATURES	= HEADER_SIGNATURES,	/*!< internal Signatures. */
+-    RPMTAG_HEADERIMMUTABLE	= HEADER_IMMUTABLE,	/*!< x Original image. */
+-/*@-enummemuse@*/
+-    RPMTAG_HEADERREGIONS	= HEADER_REGIONS,	/*!< internal Regions. */
+-
+-    RPMTAG_HEADERI18NTABLE	= HEADER_I18NTABLE, /*!< s[] I18N string locales. */
+-/*@=enummemuse@*/
+-
+-/* Retrofit (and uniqify) signature tags for use by tagName() and rpmQuery. */
+-/* the md5 sum was broken *twice* on big endian machines */
+-/* XXX 2nd underscore prevents tagTable generation */
+-    RPMTAG_SIG_BASE		= HEADER_SIGBASE,
+-    RPMTAG_SIGSIZE		= RPMTAG_SIG_BASE+1,	/* i */
+-    RPMTAG_SIGLEMD5_1		= RPMTAG_SIG_BASE+2,	/* internal - obsolete */
+-    RPMTAG_SIGPGP		= RPMTAG_SIG_BASE+3,	/* x */
+-    RPMTAG_SIGLEMD5_2		= RPMTAG_SIG_BASE+4,	/* x internal - obsolete */
+-    RPMTAG_SIGMD5	        = RPMTAG_SIG_BASE+5,	/* x */
+-#define	RPMTAG_PKGID	RPMTAG_SIGMD5			/* x */
+-    RPMTAG_SIGGPG	        = RPMTAG_SIG_BASE+6,	/* x */
+-    RPMTAG_SIGPGP5	        = RPMTAG_SIG_BASE+7,	/* internal - obsolete */
+-
+-    RPMTAG_BADSHA1_1		= RPMTAG_SIG_BASE+8,	/* internal - obsolete */
+-    RPMTAG_BADSHA1_2		= RPMTAG_SIG_BASE+9,	/* internal - obsolete */
+-    RPMTAG_PUBKEYS		= RPMTAG_SIG_BASE+10,	/* s[] */
+-    RPMTAG_DSAHEADER		= RPMTAG_SIG_BASE+11,	/* x */
+-    RPMTAG_RSAHEADER		= RPMTAG_SIG_BASE+12,	/* x */
+-    RPMTAG_SHA1HEADER		= RPMTAG_SIG_BASE+13,	/* s */
+-#define	RPMTAG_HDRID	RPMTAG_SHA1HEADER	/* s */
+-
+-    RPMTAG_NAME  		= 1000,	/* s */
+-#define	RPMTAG_N	RPMTAG_NAME	/* s */
+-    RPMTAG_VERSION		= 1001,	/* s */
+-#define	RPMTAG_V	RPMTAG_VERSION	/* s */
+-    RPMTAG_RELEASE		= 1002,	/* s */
+-#define	RPMTAG_R	RPMTAG_RELEASE	/* s */
+-    RPMTAG_EPOCH   		= 1003,	/* i */
+-#define	RPMTAG_E	RPMTAG_EPOCH	/* i */
+-    RPMTAG_SUMMARY		= 1004,	/* s{} */
+-    RPMTAG_DESCRIPTION		= 1005,	/* s{} */
+-    RPMTAG_BUILDTIME		= 1006,	/* i */
+-    RPMTAG_BUILDHOST		= 1007,	/* s */
+-    RPMTAG_INSTALLTIME		= 1008,	/* i[] */
+-    RPMTAG_SIZE			= 1009,	/* i */
+-    RPMTAG_DISTRIBUTION		= 1010,	/* s */
+-    RPMTAG_VENDOR		= 1011,	/* s */
+-    RPMTAG_GIF			= 1012,	/* x */
+-    RPMTAG_XPM			= 1013,	/* x */
+-    RPMTAG_LICENSE		= 1014,	/* s */
+-    RPMTAG_PACKAGER		= 1015,	/* s */
+-    RPMTAG_GROUP		= 1016,	/* s{} */
+-/*@-enummemuse@*/
+-    RPMTAG_CHANGELOG		= 1017, /* s[] internal */
+-/*@=enummemuse@*/
+-    RPMTAG_SOURCE		= 1018,	/* s[] */
+-    RPMTAG_PATCH		= 1019,	/* s[] */
+-    RPMTAG_URL			= 1020,	/* s */
+-    RPMTAG_OS			= 1021,	/* s legacy used int */
+-    RPMTAG_ARCH			= 1022,	/* s legacy used int */
+-    RPMTAG_PREIN		= 1023,	/* s */
+-    RPMTAG_POSTIN		= 1024,	/* s */
+-    RPMTAG_PREUN		= 1025,	/* s */
+-    RPMTAG_POSTUN		= 1026,	/* s */
+-    RPMTAG_OLDFILENAMES		= 1027, /* s[] obsolete */
+-    RPMTAG_FILESIZES		= 1028,	/* i[] */
+-    RPMTAG_FILESTATES		= 1029, /* c[] */
+-    RPMTAG_FILEMODES		= 1030,	/* h[] */
+-    RPMTAG_FILEUIDS		= 1031, /* i[] internal */
+-    RPMTAG_FILEGIDS		= 1032, /* i[] internal */
+-    RPMTAG_FILERDEVS		= 1033,	/* h[] */
+-    RPMTAG_FILEMTIMES		= 1034, /* i[] */
+-    RPMTAG_FILEDIGESTS		= 1035,	/* s[] */
+-#define RPMTAG_FILEMD5S	RPMTAG_FILEDIGESTS /* s[] */
+-    RPMTAG_FILELINKTOS		= 1036,	/* s[] */
+-    RPMTAG_FILEFLAGS		= 1037,	/* i[] */
+-/*@-enummemuse@*/
+-    RPMTAG_ROOT			= 1038, /* internal - obsolete */
+-/*@=enummemuse@*/
+-    RPMTAG_FILEUSERNAME		= 1039,	/* s[] */
+-    RPMTAG_FILEGROUPNAME	= 1040,	/* s[] */
+-/*@-enummemuse@*/
+-    RPMTAG_EXCLUDE		= 1041, /* internal - obsolete */
+-    RPMTAG_EXCLUSIVE		= 1042, /* internal - obsolete */
+-/*@=enummemuse@*/
+-    RPMTAG_ICON			= 1043, /* x */
+-    RPMTAG_SOURCERPM		= 1044,	/* s */
+-    RPMTAG_FILEVERIFYFLAGS	= 1045,	/* i[] */
+-    RPMTAG_ARCHIVESIZE		= 1046,	/* i */
+-    RPMTAG_PROVIDENAME		= 1047,	/* s[] */
+-#define	RPMTAG_PROVIDES RPMTAG_PROVIDENAME	/* s[] */
+-#define	RPMTAG_P	RPMTAG_PROVIDENAME	/* s[] */
+-    RPMTAG_REQUIREFLAGS		= 1048,	/* i[] */
+-    RPMTAG_REQUIRENAME		= 1049,	/* s[] */
+-#define	RPMTAG_REQUIRES RPMTAG_REQUIRENAME	/* s[] */
+-    RPMTAG_REQUIREVERSION	= 1050,	/* s[] */
+-    RPMTAG_NOSOURCE		= 1051, /* i internal */
+-    RPMTAG_NOPATCH		= 1052, /* i internal */
+-    RPMTAG_CONFLICTFLAGS	= 1053, /* i[] */
+-    RPMTAG_CONFLICTNAME		= 1054,	/* s[] */
+-#define	RPMTAG_CONFLICTS RPMTAG_CONFLICTNAME	/* s[] */
+-#define	RPMTAG_C	RPMTAG_CONFLICTNAME	/* s[] */
+-    RPMTAG_CONFLICTVERSION	= 1055,	/* s[] */
+-    RPMTAG_DEFAULTPREFIX	= 1056, /* s internal - deprecated */
+-    RPMTAG_BUILDROOT		= 1057, /* s internal */
+-    RPMTAG_INSTALLPREFIX	= 1058, /* s internal - deprecated */
+-    RPMTAG_EXCLUDEARCH		= 1059, /* s[] */
+-    RPMTAG_EXCLUDEOS		= 1060, /* s[] */
+-    RPMTAG_EXCLUSIVEARCH	= 1061, /* s[] */
+-    RPMTAG_EXCLUSIVEOS		= 1062, /* s[] */
+-    RPMTAG_AUTOREQPROV		= 1063, /* s internal */
+-    RPMTAG_RPMVERSION		= 1064,	/* s */
+-    RPMTAG_TRIGGERSCRIPTS	= 1065,	/* s[] */
+-    RPMTAG_TRIGGERNAME		= 1066,	/* s[] */
+-    RPMTAG_TRIGGERVERSION	= 1067,	/* s[] */
+-    RPMTAG_TRIGGERFLAGS		= 1068,	/* i[] */
+-    RPMTAG_TRIGGERINDEX		= 1069,	/* i[] */
+-    RPMTAG_VERIFYSCRIPT		= 1079,	/* s */
+-    RPMTAG_CHANGELOGTIME	= 1080,	/* i[] */
+-    RPMTAG_CHANGELOGNAME	= 1081,	/* s[] */
+-    RPMTAG_CHANGELOGTEXT	= 1082,	/* s[] */
+-/*@-enummemuse@*/
+-    RPMTAG_BROKENMD5		= 1083, /* internal - obsolete */
+-/*@=enummemuse@*/
+-    RPMTAG_PREREQ		= 1084, /* internal */
+-    RPMTAG_PREINPROG		= 1085,	/* s */
+-    RPMTAG_POSTINPROG		= 1086,	/* s */
+-    RPMTAG_PREUNPROG		= 1087,	/* s */
+-    RPMTAG_POSTUNPROG		= 1088,	/* s */
+-    RPMTAG_BUILDARCHS		= 1089, /* s[] */
+-    RPMTAG_OBSOLETENAME		= 1090,	/* s[] */
+-#define	RPMTAG_OBSOLETES RPMTAG_OBSOLETENAME	/* s[] */
+-#define	RPMTAG_O	RPMTAG_OBSOLETENAME	/* s[] */
+-    RPMTAG_VERIFYSCRIPTPROG	= 1091,	/* s */
+-    RPMTAG_TRIGGERSCRIPTPROG	= 1092,	/* s[] */
+-    RPMTAG_DOCDIR		= 1093, /* internal */
+-    RPMTAG_COOKIE		= 1094,	/* s */
+-    RPMTAG_FILEDEVICES		= 1095,	/* i[] */
+-    RPMTAG_FILEINODES		= 1096,	/* i[] */
+-    RPMTAG_FILELANGS		= 1097,	/* s[] */
+-    RPMTAG_PREFIXES		= 1098,	/* s[] */
+-    RPMTAG_INSTPREFIXES		= 1099,	/* s[] */
+-    RPMTAG_TRIGGERIN		= 1100, /* internal */
+-    RPMTAG_TRIGGERUN		= 1101, /* internal */
+-    RPMTAG_TRIGGERPOSTUN	= 1102, /* internal */
+-    RPMTAG_AUTOREQ		= 1103, /* internal */
+-    RPMTAG_AUTOPROV		= 1104, /* internal */
+-/*@-enummemuse@*/
+-    RPMTAG_CAPABILITY		= 1105, /* i legacy - obsolete */
+-/*@=enummemuse@*/
+-    RPMTAG_SOURCEPACKAGE	= 1106, /* i legacy - obsolete */
+-/*@-enummemuse@*/
+-    RPMTAG_OLDORIGFILENAMES	= 1107, /* internal - obsolete */
+-/*@=enummemuse@*/
+-    RPMTAG_BUILDPREREQ		= 1108, /* internal */
+-    RPMTAG_BUILDREQUIRES	= 1109, /* internal */
+-    RPMTAG_BUILDCONFLICTS	= 1110, /* internal */
+-/*@-enummemuse@*/
+-    RPMTAG_BUILDMACROS		= 1111, /* s[] srpms only */
+-/*@=enummemuse@*/
+-    RPMTAG_PROVIDEFLAGS		= 1112,	/* i[] */
+-    RPMTAG_PROVIDEVERSION	= 1113,	/* s[] */
+-    RPMTAG_OBSOLETEFLAGS	= 1114,	/* i[] */
+-    RPMTAG_OBSOLETEVERSION	= 1115,	/* s[] */
+-    RPMTAG_DIRINDEXES		= 1116,	/* i[] */
+-    RPMTAG_BASENAMES		= 1117,	/* s[] */
+-    RPMTAG_DIRNAMES		= 1118,	/* s[] */
+-    RPMTAG_ORIGDIRINDEXES	= 1119, /* i[] relocation */
+-    RPMTAG_ORIGBASENAMES	= 1120, /* s[] relocation */
+-    RPMTAG_ORIGDIRNAMES		= 1121, /* s[] relocation */
+-    RPMTAG_OPTFLAGS		= 1122,	/* s */
+-    RPMTAG_DISTURL		= 1123,	/* s */
+-    RPMTAG_PAYLOADFORMAT	= 1124,	/* s */
+-    RPMTAG_PAYLOADCOMPRESSOR	= 1125,	/* s */
+-    RPMTAG_PAYLOADFLAGS		= 1126,	/* s */
+-    RPMTAG_INSTALLCOLOR		= 1127, /* i transaction color when installed */
+-    RPMTAG_INSTALLTID		= 1128,	/* i[] */
+-    RPMTAG_REMOVETID		= 1129,	/* i[] */
+-/*@-enummemuse@*/
+-    RPMTAG_SHA1RHN		= 1130, /* internal - obsolete */
+-/*@=enummemuse@*/
+-    RPMTAG_RHNPLATFORM		= 1131,	/* s deprecated */
+-    RPMTAG_PLATFORM		= 1132,	/* s */
+-    RPMTAG_PATCHESNAME		= 1133, /* s[] deprecated placeholder (SuSE) */
+-    RPMTAG_PATCHESFLAGS		= 1134, /* i[] deprecated placeholder (SuSE) */
+-    RPMTAG_PATCHESVERSION	= 1135, /* s[] deprecated placeholder (SuSE) */
+-    RPMTAG_CACHECTIME		= 1136,	/* i rpmcache(8) only */
+-    RPMTAG_CACHEPKGPATH		= 1137,	/* s rpmcache(8) only */
+-    RPMTAG_CACHEPKGSIZE		= 1138,	/* i rpmcache(8) only */
+-    RPMTAG_CACHEPKGMTIME	= 1139,	/* i rpmcache(8) only */
+-    RPMTAG_FILECOLORS		= 1140,	/* i[] */
+-    RPMTAG_FILECLASS		= 1141,	/* i[] */
+-    RPMTAG_CLASSDICT		= 1142,	/* s[] */
+-    RPMTAG_FILEDEPENDSX		= 1143,	/* i[] */
+-    RPMTAG_FILEDEPENDSN		= 1144,	/* i[] */
+-    RPMTAG_DEPENDSDICT		= 1145,	/* i[] */
+-    RPMTAG_SOURCEPKGID		= 1146,	/* x */
+-    RPMTAG_FILECONTEXTS		= 1147,	/* s[] */
+-    RPMTAG_FSCONTEXTS		= 1148,	/* s[] extension */
+-    RPMTAG_RECONTEXTS		= 1149,	/* s[] extension */
+-    RPMTAG_POLICIES		= 1150,	/* s[] selinux *.te policy file. */
+-    RPMTAG_PRETRANS		= 1151,	/* s */
+-    RPMTAG_POSTTRANS		= 1152,	/* s */
+-    RPMTAG_PRETRANSPROG		= 1153,	/* s */
+-    RPMTAG_POSTTRANSPROG	= 1154,	/* s */
+-    RPMTAG_DISTTAG		= 1155,	/* s */
+-    RPMTAG_SUGGESTSNAME		= 1156,	/* s[] extension */
+-#define	RPMTAG_SUGGESTS RPMTAG_SUGGESTSNAME	/* s[] */
+-    RPMTAG_SUGGESTSVERSION	= 1157,	/* s[] extension */
+-    RPMTAG_SUGGESTSFLAGS	= 1158,	/* i[] extension */
+-    RPMTAG_ENHANCESNAME		= 1159,	/* s[] extension placeholder */
+-#define	RPMTAG_ENHANCES RPMTAG_ENHANCESNAME	/* s[] */
+-    RPMTAG_ENHANCESVERSION	= 1160,	/* s[] extension placeholder */
+-    RPMTAG_ENHANCESFLAGS	= 1161,	/* i[] extension placeholder */
+-    RPMTAG_PRIORITY		= 1162, /* i[] extension placeholder */
+-    RPMTAG_CVSID		= 1163, /* s */
+-#define	RPMTAG_SVNID	RPMTAG_CVSID	/* s */
+-    RPMTAG_BLINKPKGID		= 1164, /* s[] */
+-    RPMTAG_BLINKHDRID		= 1165, /* s[] */
+-    RPMTAG_BLINKNEVRA		= 1166, /* s[] */
+-    RPMTAG_FLINKPKGID		= 1167, /* s[] */
+-    RPMTAG_FLINKHDRID		= 1168, /* s[] */
+-    RPMTAG_FLINKNEVRA		= 1169, /* s[] */
+-    RPMTAG_PACKAGEORIGIN	= 1170, /* s */
+-    RPMTAG_TRIGGERPREIN		= 1171, /* internal */
+-    RPMTAG_BUILDSUGGESTS	= 1172, /* internal */
+-    RPMTAG_BUILDENHANCES	= 1173, /* internal */
+-    RPMTAG_SCRIPTSTATES		= 1174, /* i[] scriptlet exit codes */
+-    RPMTAG_SCRIPTMETRICS	= 1175, /* i[] scriptlet execution times */
+-    RPMTAG_BUILDCPUCLOCK	= 1176, /* i */
+-    RPMTAG_FILEDIGESTALGOS	= 1177, /* i[] */
+-    RPMTAG_VARIANTS		= 1178, /* s[] */
+-    RPMTAG_XMAJOR		= 1179, /* i */
+-    RPMTAG_XMINOR		= 1180, /* i */
+-    RPMTAG_REPOTAG		= 1181,	/* s */
+-    RPMTAG_KEYWORDS		= 1182,	/* s[] */
+-    RPMTAG_BUILDPLATFORMS	= 1183,	/* s[] */
+-    RPMTAG_PACKAGECOLOR		= 1184, /* i */
+-    RPMTAG_PACKAGEPREFCOLOR	= 1185, /* i (unimplemented) */
+-    RPMTAG_XATTRSDICT		= 1186, /* s[] (unimplemented) */
+-    RPMTAG_FILEXATTRSX		= 1187, /* i[] (unimplemented) */
+-    RPMTAG_DEPATTRSDICT		= 1188, /* s[] (unimplemented) */
+-    RPMTAG_CONFLICTATTRSX	= 1189, /* i[] (unimplemented) */
+-    RPMTAG_OBSOLETEATTRSX	= 1190, /* i[] (unimplemented) */
+-    RPMTAG_PROVIDEATTRSX	= 1191, /* i[] (unimplemented) */
+-    RPMTAG_REQUIREATTRSX	= 1192, /* i[] (unimplemented) */
+-    RPMTAG_BUILDPROVIDES	= 1193, /* internal */
+-    RPMTAG_BUILDOBSOLETES	= 1194, /* internal */
+-    RPMTAG_DBINSTANCE		= 1195, /* i */
+-    RPMTAG_NVRA			= 1196, /* s */
+-    RPMTAG_FILEPATHS		= 1197, /* s[] */
+-    RPMTAG_ORIGPATHS		= 1198, /* s[] */
+-    RPMTAG_RPMLIBVERSION	= 1199, /* i */
+-    RPMTAG_RPMLIBTIMESTAMP	= 1200, /* i */
+-    RPMTAG_RPMLIBVENDOR		= 1201, /* i */
+-    RPMTAG_CLASS		= 1202, /* s arbitrary */
+-    RPMTAG_TRACK		= 1203, /* s internal arbitrary */
+-    RPMTAG_TRACKPROG		= 1204, /* s internal arbitrary */
+-    RPMTAG_SANITYCHECK		= 1205, /* s */
+-    RPMTAG_SANITYCHECKPROG	= 1206, /* s */
+-    RPMTAG_FILESTAT		= 1207, /* s[] stat(2) from metadata extension*/
+-    RPMTAG_STAT			= 1208, /* s[] stat(2) from disk extension */
+-    RPMTAG_ORIGINTID		= 1209,	/* i[] */
+-    RPMTAG_ORIGINTIME		= 1210,	/* i[] */
+-    RPMTAG_HEADERSTARTOFF	= 1211,	/* l */
+-    RPMTAG_HEADERENDOFF		= 1212,	/* l */
+-    RPMTAG_PACKAGETIME		= 1213,	/* l */
+-    RPMTAG_PACKAGESIZE		= 1214,	/* l */
+-    RPMTAG_PACKAGEDIGEST	= 1215,	/* s */
+-    RPMTAG_PACKAGESTAT		= 1216,	/* x */
+-    RPMTAG_PACKAGEBASEURL	= 1217,	/* s */
+-    RPMTAG_DISTEPOCH		= 1218, /* s */
+-#define	RPMTAG_D RPMTAG_DISTEPOCH	/* s */
+-
+-    RPMTAG_CONFLICTYAMLENTRY	= 1219, /* s[] */
+-    RPMTAG_OBSOLETEYAMLENTRY	= 1220, /* s[] */
+-    RPMTAG_PROVIDEYAMLENTRY	= 1221, /* s[] */
+-    RPMTAG_REQUIREYAMLENTRY	= 1222, /* s[] */
+-
+-    RPMTAG_FILEDIGESTALGO	= 5011, /* i file checksum algorithm */
+-    RPMTAG_BUGURL		= 5012, /* s */
+-
+-/*@-enummemuse@*/
+-    RPMTAG_FIRSTFREE_TAG,	/*!< internal */
+-/*@=enummemuse@*/
+-
+-    RPMTAG_PACKAGETRANSFLAGS	= 0x4efaafd9, /* s[] arbitrary */
+-    RPMTAG_PACKAGEDEPFLAGS	= 0x748a8314, /* s[] arbitrary */
+-
+-    RPMTAG_BUILDPREPPROG	= 0x4ba37c9e, /* s[] arbitrary */
+-    RPMTAG_BUILDPREP		= 0x799c0b4d, /* s[] arbitrary */
+-    RPMTAG_BUILDBUILDPROG	= 0x6fb46014, /* s[] arbitrary */
+-    RPMTAG_BUILDBUILD		= 0x5bae1a5a, /* s[] arbitrary */
+-    RPMTAG_BUILDINSTALLPROG	= 0x70d4ab6f, /* s[] arbitrary */
+-    RPMTAG_BUILDINSTALL		= 0x567f5983, /* s[] arbitrary */
+-    RPMTAG_BUILDCHECKPROG	= 0x488a60ce, /* s[] arbitrary */
+-    RPMTAG_BUILDCHECK		= 0x7f3b97b5, /* s[] arbitrary */
+-    RPMTAG_BUILDCLEANPROG	= 0x42c93d41, /* s[] arbitrary */
+-    RPMTAG_BUILDCLEAN		= 0x566042bf, /* s[] arbitrary */
+-
+-    RPMTAG_LASTARBITRARY_TAG	= 0x80000000  /*!< internal */
+-};
+-
+-#define	RPMTAG_EXTERNAL_TAG		1000000
+-
+-/** \ingroup signature
+- * Tags found in signature header from package.
+- */
+-enum rpmSigTag_e {
+-    RPMSIGTAG_SIZE	= 1000,	/*!< internal Header+Payload size in bytes. */
+-    RPMSIGTAG_LEMD5_1	= 1001,	/*!< internal Broken MD5, take 1 @deprecated legacy. */
+-    RPMSIGTAG_PGP	= 1002,	/*!< internal PGP 2.6.3 signature. */
+-    RPMSIGTAG_LEMD5_2	= 1003,	/*!< internal Broken MD5, take 2 @deprecated legacy. */
+-    RPMSIGTAG_MD5	= 1004,	/*!< internal MD5 signature. */
+-    RPMSIGTAG_GPG	= 1005, /*!< internal GnuPG signature. */
+-    RPMSIGTAG_PGP5	= 1006,	/*!< internal PGP5 signature @deprecated legacy. */
+-    RPMSIGTAG_PAYLOADSIZE = 1007,/*!< internal uncompressed payload size in bytes. */
+-    RPMSIGTAG_BADSHA1_1	= RPMTAG_BADSHA1_1,	/*!< internal Broken SHA1, take 1. */
+-    RPMSIGTAG_BADSHA1_2	= RPMTAG_BADSHA1_2,	/*!< internal Broken SHA1, take 2. */
+-    RPMSIGTAG_SHA1	= RPMTAG_SHA1HEADER,	/*!< internal sha1 header digest. */
+-    RPMSIGTAG_DSA	= RPMTAG_DSAHEADER,	/*!< internal DSA header signature. */
+-    RPMSIGTAG_RSA	= RPMTAG_RSAHEADER,	/*!< internal RSA header signature. */
+-    RPMSIGTAG_PADDING	= 0x3fffffff		/*!< signature header padding */
+-};
+-
+-/** \ingroup header
+- */
+-typedef enum rpmTag_e rpmTag;
+-
+-/** \ingroup header
+- */
+-typedef enum rpmSigTag_e rpmSigTag;
+-
+-/** \ingroup header
+- */
+-/*@-typeuse -fielduse@*/
+-#if !defined(SWIG)
+-struct _HE_s {
+-    rpmTag tag;
+-    rpmTagType t;
+-/*@owned@*/ /*@null@*/
+-    rpmTagData p;
+-    rpmTagCount c;
+-    int ix;
+-    unsigned int freeData	: 1;
+-    unsigned int avail		: 1;
+-    unsigned int append		: 1;
+-};
+-#endif
+-
+-/**
+- */
+-typedef struct _HE_s HE_s;
+-
+-/** \ingroup rpmdb
+- */
+-typedef struct tagStore_s * tagStore_t;
+-
+-/**
+- */
+-typedef /*@abstract@*/ const struct headerTagTableEntry_s * headerTagTableEntry;
+-
+-#if defined(_RPMTAG_INTERNAL)
+-/**
+- */
+-/** \ingroup header
+- * Associate tag names with numeric values.
+- */
+-#if !defined(SWIG)
+-struct headerTagTableEntry_s {
+-/*@observer@*/ /*@relnull@*/
+-    const char * name;		/*!< Tag name. */
+-    rpmTag val;			/*!< Tag numeric value. */
+-    rpmTagType type;		/*!< Tag type. */
+-};
+-#endif
+-
+-/**
+- */ 
+-struct tagStore_s {
+-/*@only@*/
+-    const char * str;           /*!< Tag string (might be arbitrary). */
+-    rpmTag tag;                 /*!< Tag number. */
+-    rpmiob iob;			/*!< Tag contents. */
+-};  
+-#endif	/* _RPMTAG_INTERNAL */
+-
+-/**
+- * Automatically generated table of tag name/value pairs.
+- */
+-/*@-redecl@*/
+-/*@observer@*/ /*@unchecked@*/
+-extern headerTagTableEntry rpmTagTable;
+-/*@=redecl@*/
+-
+-/**
+- * Number of entries in rpmTagTable.
+- */
+-/*@-redecl@*/
+-/*@unchecked@*/
+-extern int rpmTagTableSize;
+-
+-/*@unchecked@*/
+-extern headerTagIndices rpmTags;
+-/*@=redecl@*/
+-
+-#if defined(_RPMTAG_INTERNAL)
+-/**
+- */
+-#if !defined(SWIG)
+-struct headerTagIndices_s {
+-/*@relnull@*/
+-    int (*loadIndex) (headerTagTableEntry ** ipp, size_t * np,
+-                int (*cmp) (const void * avp, const void * bvp))
+-        /*@ modifies *ipp, *np */;	/*!< Load sorted tag index. */
+-/*@relnull@*/
+-    headerTagTableEntry * byName;	/*!< rpmTag's sorted by name. */
+-    size_t byNameSize;			/*!< No. of entries. */
+-    int (*byNameCmp) (const void * avp, const void * bvp)
+-        /*@*/;				/*!< Compare entries by name. */
+-    rpmTag (*tagValue) (const char * name)
+-	/*@*/;				/*!< Return value from name. */
+-/*@relnull@*/
+-    headerTagTableEntry * byValue;	/*!< rpmTag's sorted by value. */
+-    size_t byValueSize;			/*!< No. of entries. */
+-    int (*byValueCmp) (const void * avp, const void * bvp)
+-        /*@*/;				/*!< Compare entries by value. */
+-    const char * (*tagName) (rpmTag value)
+-	/*@*/;				/*!< Return name from value. */
+-    rpmTag (*tagType) (rpmTag value)
+-	/*@*/;				/*!< Return type from value. */
+-    size_t nameBufLen;			/*!< No. bytes allocated for nameBuf. */
+-/*@relnull@*/
+-    const char ** aTags;		/*!< Arbitrary tags array (ARGV_t) */
+-/*@owned@*/ /*@null@*/
+-    char * nameBuf;			/* Name buffer. */
+-/*@only@*/
+-    char * (*tagCanonicalize) (const char * s)
+-	/*@*/;				/*!< Canonicalize arbitrary string. */
+-    rpmTag (*tagGenerate) (const char * s)
+-	/*@*/;				/*!< Generate tag from string. */
+-};
+-#endif
+-#endif	/* _RPMTAG_INTERNAL */
+-
+-/**
+- * Return tag name from value.
+- * @param tag		tag value
+- * @return		tag name, "(unknown)" on not found
+- */
+-/*@observer@*/
+-const char * tagName(rpmTag tag)
+-	/*@*/;
+-
+-/**
+- * Return tag data type from value.
+- * @todo Return rpmTagType-like, not unsigned int. There's no clear typedef yet.
+- * @param tag		tag value
+- * @return		tag data type, 0 on not found.
+- */
+-unsigned int tagType(rpmTag tag)
+-	/*@*/;
+-
+-/**
+- * Return tag value from name.
+- * @param tagstr	name of tag
+- * @return		tag value, 0xffffffff on not found
+- */
+-rpmTag tagValue(const char * tagstr)
+-	/*@*/;
+-
+-/**
+- * Canonicalize a rpmTag string.
+- * @param s		string
+- * @return		canonicalized string
+- */
+-/*@only@*/
+-char * tagCanonicalize(const char * s)
+-	/*@*/;
+-
+-/**
+- * Generate a tag from arbitrary string.
+- * @param s		string
+- * @return		generated tag value
+- */
+-rpmTag tagGenerate(const char * s)
+-	/*@*/;
+-
+-/**
+- * Free memory in header tag indices.
+- * @param _rpmTags	header tag indices (NULL uses rpmTags)
+- */
+-void tagClean(/*@null@*/ headerTagIndices _rpmTags)
+-	/*@globals rpmTags @*/
+-	/*@modifies _rpmTags, rpmTags @*/;
+-
+-/**
+- * Destroy tagStore array.
+- * @param dbiTags	dbi tag storage
+- * @param dbiNTags	no. of dbi tags
+- * @return		NULL always
+- */
+-/*@null@*/
+-tagStore_t tagStoreFree(/*@only@*//*@null@*/tagStore_t dbiTags, size_t dbiNTags)
+-	/*@modifies dbiTags @*/;
+-
+-#if defined(_RPMTAG_INTERNAL)
+-/** \ingroup header
+- */
+-typedef enum headerSprintfExtensionType_e {
+-    HEADER_EXT_LAST = 0,	/*!< End of extension chain. */
+-    HEADER_EXT_FORMAT,		/*!< headerTagFormatFunction() extension */
+-    HEADER_EXT_MORE,		/*!< Chain to next table. */
+-    HEADER_EXT_TAG		/*!< headerTagTagFunction() extension */
+-} headerSprintfExtensionType;
+-
+-/** \ingroup header
+- * HEADER_EXT_TAG format function prototype.
+- *
+- * @param he		tag container
+- * @param av		parameter array (or NULL)
+- * @return		formatted string
+- */
+-typedef /*only@*/ char * (*headerTagFormatFunction) (HE_t he, /*@null@*/ const char ** av)
+-	/*@modifies he @*/;
+-
+-/** \ingroup header
+- * HEADER_EXT_FORMAT format function prototype.
+- * This is allowed to fail, which indicates the tag doesn't exist.
+- *
+- * @param h		header
+- * @retval he		tag container
+- * @return		0 on success
+- */
+-typedef int (*headerTagTagFunction) (Header h, HE_t he)
+-	/*@modifies he @*/;
+-
+-/** \ingroup header
+- * Define header tag output formats.
+- */
+-#if !defined(SWIG)
+-struct headerSprintfExtension_s {
+-    headerSprintfExtensionType type;		/*!< Type of extension. */
+-/*@observer@*/ /*@null@*/
+-    const char * name;				/*!< Name of extension. */
+-    union {
+-/*@observer@*/ /*@null@*/
+-	void * generic;				/*!< Private extension. */
+-	headerTagFormatFunction fmtFunction; /*!< HEADER_EXT_TAG extension. */
+-	headerTagTagFunction tagFunction; /*!< HEADER_EXT_FORMAT extension. */
+-	headerSprintfExtension * more;	/*!< Chained table extension. */
+-    } u;
+-};
+-#endif
+-#endif	/* _RPMTAG_INTERNAL */
+-
+-/** \ingroup header
+- * Supported default header tag output formats.
+- */
+-/*@unchecked@*/ /*@observer@*/
+-extern headerSprintfExtension headerDefaultFormats;
+-
+-/** \ingroup header
+- * Supported default header extension/tag output formats.
+- */
+-/*@unchecked@*/ /*@observer@*/
+-extern headerSprintfExtension headerCompoundFormats;
+-
+-/**
+- * Display list of tags that can be used in --queryformat.
+- * @param fp		file handle to use for display (NULL uses stdout)
+- * @param _rpmTagTable	rpm tag table (NULL uses rpmTagTable)
+- * @param _rpmHeaderFormats	rpm tag extensions & formats (NULL uses headerCompoundFormats)
+- */
+-void rpmDisplayQueryTags(/*@null@*/ FILE * fp,
+-		/*@null@*/ headerTagTableEntry _rpmTagTable,
+-		/*@null@*/ headerSprintfExtension _rpmHeaderFormats)
+-	/*@globals fileSystem, internalState @*/
+-	/*@modifies *fp, fileSystem, internalState @*/;
+-
+-/** \ingroup header
+- * Return formatted output string from header tags.
+- * The returned string must be free()d.
+- *
+- * @param h		header
+- * @param fmt		format to use
+- * @param tags		array of tag name/value/type triples (NULL uses default)
+- * @param exts		formatting extensions chained table (NULL uses default)
+- * @retval errmsg	error message (if any)
+- * @return		formatted output string (malloc'ed)
+- */
+-/*@only@*/ /*@null@*/
+-char * headerSprintf(Header h, const char * fmt,
+-		/*@null@*/ headerTagTableEntry tags,
+-		/*@null@*/ headerSprintfExtension exts,
+-		/*@null@*/ /*@out@*/ errmsg_t * errmsg)
+-	/*@globals headerCompoundFormats, fileSystem, internalState @*/
+-	/*@modifies h, *errmsg, fileSystem, internalState @*/;
+-
+-/** \ingroup header
+- * Retrieve extension or tag value from a header.
+- *
+- * @param h		header
+- * @param he		tag container
+- * @param flags		tag retrieval flags
+- * @return		1 on success, 0 on failure
+- */
+-int headerGet(Header h, HE_t he, unsigned int flags)
+-	/*@globals internalState @*/
+-	/*@modifies he, internalState @*/;
+-#define	HEADERGET_NOEXTENSION	(1 << 0) /*!< Extension search disabler. */
+-#define	HEADERGET_NOI18NSTRING	(1 << 1) /*!< Return i18n strings as argv. */
+-
+-/** \ingroup header
+- * Add or append tag container to header.
+- *
+- * @param h		header
+- * @param he		tag container
+- * @param flags		(unused)
+- * @return		1 on success, 0 on failure
+- */
+-/*@mayexit@*/
+-int headerPut(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+-	/*@modifies h @*/;
+-
+-/** \ingroup header
+- * Remove tag container from header.
+- *
+- * @param h		header
+- * @param he		tag container
+- * @param flags		(unused)
+- * @return		1 on success, 0 on failure
+- */
+-/*@mayexit@*/
+-int headerDel(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+-	/*@modifies h @*/;
+-
+-/** \ingroup header
+- * Modify tag container in header.
+- * If there are multiple entries with this tag, the first one gets replaced.
+- * @param h		header
+- * @param he		tag container
+- * @param flags		(unused)
+- * @return		1 on success, 0 on failure
+- */
+-int headerMod(Header h, HE_t he, /*@unused@*/ unsigned int flags)
+-	/*@modifies h @*/;
+-
+-/** \ingroup header
+- * Destroy header tag container iterator.
+- * @param hi		header tag container iterator
+- * @return		NULL always
+- */
+-/*@null@*/
+-HeaderIterator headerFini(/*@only@*/ HeaderIterator hi)
+-	/*@globals fileSystem @*/
+-	/*@modifies hi, fileSystem */;
+-
+-/** \ingroup header
+- * Create header tag iterator.
+- * @param h		header
+- * @return		header tag iterator
+- */
+-HeaderIterator headerInit(Header h)
+-	/*@globals fileSystem @*/
+-	/*@modifies h, fileSystem */;
+-
+-/** \ingroup header
+- * Return next tag from header.
+- * @param hi		header tag iterator
+- * @param he		tag container
+- * @param flags		(unused)
+- * @return		1 on success, 0 on failure
+- */
+-int headerNext(HeaderIterator hi, HE_t he, /*@unused@*/ unsigned int flags)
+-	/*@globals internalState @*/
+-	/*@modifies hi, he, internalState @*/;
+-
+-/** \ingroup header
+- * Reference a header instance.
+- * @param h		header
+- * @return		referenced header instance
+- */
+-Header headerLink(Header h)
+-	/*@modifies h @*/;
+-#define headerLink(_h)        \
+-    ((Header)rpmioLinkPoolItem((rpmioItem)(_h), __FUNCTION__, __FILE__, __LINE__))
+-
+-/** \ingroup header
+- * Dereference a header instance.
+- * @param h		header
+- * @return		NULL on last dereference
+- */
+-/*@null@*/
+-Header headerUnlink(/*@killref@*/ /*@null@*/ Header h)
+-	/*@modifies h @*/;
+-#define headerUnlink(_h)        \
+-    ((Header)rpmioUnlinkPoolItem((rpmioItem)(_h), __FUNCTION__, __FILE__, __LINE__))
+-
+-/** \ingroup header
+- * Dereference a header instance.
+- * @param h		header
+- * @return		NULL on last dereference
+- */
+-/*@null@*/
+-Header headerFree(/*@killref@*/ /*@null@*/ Header h)
+-	/*@modifies h @*/;
+-#define headerFree(_h)        \
+-    ((Header)rpmioFreePoolItem((rpmioItem)(_h), __FUNCTION__, __FILE__, __LINE__))
+-
+-/** \ingroup header
+- * Create new (empty) header instance.
+- * @return		header
+- */
+-Header headerNew(void)
+-	/*@globals fileSystem @*/
+-	/*@modifies fileSystem @*/;
+-
+-/** \ingroup header
+- * Return size of on-disk header representation in bytes.
+- * @param h		header
+- * @return		size of on-disk header
+- */
+-size_t headerSizeof(/*@null@*/ Header h)
+-	/*@modifies h @*/;
+-
+-/** \ingroup header
+- * headerUnload.
+- * @param h		header
+- * @retval *lenp	no. bytes in unloaded header blob
+- * @return		unloaded header blob (NULL on error)
+- */
+-/*@only@*/ /*@null@*/
+-void * headerUnload(Header h, /*@out@*/ /*@null@*/ size_t * lenp)
+-	/*@globals internalState @*/
+-	/*@modifies h, *lenp, internalState @*/;
+-
+-/** \ingroup header
+- * Convert header to on-disk representation, and then reload.
+- * This is used to insure that all header data is in a single
+- * contiguous memory allocation.
+- * @param h		header (with pointers)
+- * @param tag		region tag
+- * @return		on-disk header (with offsets)
+- */
+-/*@null@*/
+-Header headerReload(/*@only@*/ Header h, int tag)
+-	/*@globals fileSystem, internalState @*/
+-	/*@modifies h, fileSystem, internalState @*/;
+-
+-/** \ingroup header
+- * Duplicate a header.
+- * @param h		header
+- * @return		new header instance
+- */
+-/*@null@*/
+-Header headerCopy(Header h)
+-	/*@globals fileSystem, internalState @*/
+-	/*@modifies h, fileSystem, internalState @*/;
+-
+-/** \ingroup header
+- * Convert header to in-memory representation.
+- * @param uh		on-disk header blob (i.e. with offsets)
+- * @return		header
+- */
+-/*@null@*/
+-Header headerLoad(/*@kept@*/ void * uh)
+-	/*@globals fileSystem, internalState @*/
+-	/*@modifies uh, fileSystem, internalState @*/;
+-
+-/** \ingroup header
+- * Make a copy and convert header to in-memory representation.
+- * @param uh		on-disk header blob (i.e. with offsets)
+- * @return		header
+- */
+-/*@null@*/
+-Header headerCopyLoad(const void * uh)
+-	/*@globals fileSystem, internalState @*/
+-	/*@modifies fileSystem, internalState @*/;
+-
+-/** \ingroup header
+- * Check if tag is in header.
+- * @param h		header
+- * @param tag		tag
+- * @return		1 on success, 0 on failure
+- */
+-int headerIsEntry(/*@null@*/ Header h, rpmTag tag)
+-	/*@*/;
+-
+-/** \ingroup header
+- * Add locale specific tag to header.
+- * A NULL lang is interpreted as the C locale. Here are the rules:
+- * \verbatim
+- *	- If the tag isn't in the header, it's added with the passed string
+- *	   as new value.
+- *	- If the tag occurs multiple times in entry, which tag is affected
+- *	   by the operation is undefined.
+- *	- If the tag is in the header w/ this language, the entry is
+- *	   *replaced* (like headerModifyEntry()).
+- * \endverbatim
+- * This function is intended to just "do the right thing". If you need
+- * more fine grained control use headerAddEntry() and headerModifyEntry().
+- *
+- * @param h		header
+- * @param tag		tag
+- * @param string	tag value
+- * @param lang		locale
+- * @return		1 on success, 0 on failure
+- */
+-int headerAddI18NString(Header h, rpmTag tag, const char * string,
+-		const char * lang)
+-	/*@modifies h @*/;
+-
+-/** \ingroup header
+- * Duplicate tag values from one header into another.
+- * @param headerFrom	source header
+- * @param headerTo	destination header
+- * @param tagstocopy	array of tags that are copied
+- */
+-void headerCopyTags(Header headerFrom, Header headerTo, rpmTag * tagstocopy)
+-	/*@globals internalState @*/
+-	/*@modifies headerTo, internalState @*/;
+-
+-/** \ingroup header
+- * Return header magic.
+- * @param h		header
+- * @param *magicp	magic array
+- * @param *nmagicp	no. bytes of magic
+- * @return		0 always
+- */
+-int headerGetMagic(/*@null@*/ Header h, unsigned char **magicp, size_t *nmagicp)
+-	/*@modifies *magicp, *nmagicp @*/;
+-
+-/** \ingroup header
+- * Store header magic.
+- * @param h		header
+- * @param magic		magic array
+- * @param nmagic	no. bytes of magic
+- * @return		0 always
+- */
+-int headerSetMagic(/*@null@*/ Header h, unsigned char * magic, size_t nmagic)
+-	/*@modifies h @*/;
+-
+-/** \ingroup header
+- * Return header origin (e.g path or URL).
+- * @param h		header
+- * @return		header origin
+- */
+-/*@observer@*/ /*@null@*/
+-const char * headerGetOrigin(/*@null@*/ Header h)
+-	/*@*/;
+-
+-/** \ingroup header
+- * Store header origin (e.g path or URL).
+- * @param h		header
+- * @param origin	new header origin
+- * @return		0 always
+- */
+-int headerSetOrigin(/*@null@*/ Header h, const char * origin)
+-	/*@modifies h @*/;
+-
+-/** \ingroup header
+- * Return header parent identifier (e.g parent's NVRA).
+- * @param h		header
+- * @return		header parent
+- */
+-/*@observer@*/ /*@null@*/
+-const char * headerGetParent(/*@null@*/ Header h)
+-	/*@*/;
+-
+-/** \ingroup header
+- * Store header parent (e.g parent's NVRA).
+- * @param h		header
+- * @param parent	new header parent
+- * @return		0 always
+- */
+-int headerSetParent(/*@null@*/ Header h, const char * parent)
+-	/*@modifies h @*/;
+-
+-/** \ingroup header
+- * Return header base URL (e.g path or URL).
+- * @param h		header
+- * @return		header origin
+- */
+-/*@observer@*/ /*@null@*/
+-const char * headerGetBaseURL(/*@null@*/ Header h)
+-	/*@*/;
+-
+-/** \ingroup header
+- * Store header base URL (e.g path or URL).
+- * @param h		header
+- * @param baseurl	new header baseurl
+- * @return		0 always
+- */
+-int headerSetBaseURL(/*@null@*/ Header h, const char * baseurl)
+-	/*@modifies h @*/;
+-
+-/** \ingroup header
+- * Return header stat(2) buffer (of origin *.rpm file).
+- * @param h		header
+- * @return		header stat(2) buffer
+- */
+-struct stat * headerGetStatbuf(/*@null@*/ Header h)
+-	/*@*/;
+-
+-/** \ingroup header
+- * Copy into header stat(2) buffer (of origin *.rpm file).
+- * @param h		header
+- * @param st		new header stat(2) buffer
+- * @return		0 always
+- */
+-int headerSetStatbuf(/*@null@*/ Header h, struct stat * st)
+-	/*@modifies h @*/;
+-
+-/** \ingroup header
+- * Return digest of origin *.rpm file.
+- * @param h		header
+- * @return		header digest
+- */
+-/*@null@*/
+-const char * headerGetDigest(/*@null@*/ Header h)
+-	/*@*/;
+-
+-/** \ingroup header
+- * Store digest of origin *.rpm file.
+- * @param h		header
+- * @param st		new header digest
+- * @return		0 always
+- */
+-int headerSetDigest(/*@null@*/ Header h, const char * digest)
+-	/*@modifies h @*/;
+-
+-/** \ingroup header
+- * Return rpmdb pointer.
+- * @param h		header
+- * @return		rpmdb pointer
+- */
+-/*@null@*/
+-void * headerGetRpmdb(/*@null@*/ Header h)
+-	/*@*/;
+-
+-/** \ingroup header
+- * Store rpmdb pointer.
+- * @param h		header
+- * @param rpmdb		new rpmdb pointer (or NULL to unset)
+- * @return		NULL always
+- */
+-/*@null@*/
+-void * headerSetRpmdb(/*@null@*/ Header h, /*@null@*/ void * rpmdb)
+-	/*@modifies h @*/;
+-
+-/** \ingroup header
+- * Return header instance (if from rpmdb).
+- * @param h		header
+- * @return		header instance
+- */
+-uint32_t headerGetInstance(/*@null@*/ Header h)
+-	/*@*/;
+-
+-/** \ingroup header
+- * Store header instance (e.g path or URL).
+- * @param h		header
+- * @param instance	new header instance
+- * @return		0 always
+- */
+-uint32_t headerSetInstance(/*@null@*/ Header h, uint32_t instance)
+-	/*@modifies h @*/;
+-
+-/** \ingroup header
+- * Return header starting byte offset.
+- * @param h		header
+- * @return		header starting byte offset 
+- */
+-rpmuint32_t headerGetStartOff(/*@null@*/ Header h)
+-	/*@*/;
+-
+-/** \ingroup header
+- * Store header starting byte offset.
+- * @param h		header
+- * @param startoff	new header starting byte offset
+- * @return		0 always
+- */
+-rpmuint32_t headerSetStartOff(/*@null@*/ Header h, rpmuint32_t startoff)
+-	/*@modifies h @*/;
+-
+-/** \ingroup header
+- * Return header ending byte offset.
+- * @param h		header
+- * @return		header ending byte offset 
+- */
+-rpmuint32_t headerGetEndOff(/*@null@*/ Header h)
+-	/*@*/;
+-
+-/** \ingroup header
+- * Store header ending byte offset.
+- * @param h		header
+- * @param startoff	new header ending byte offset
+- * @return		0 always
+- */
+-rpmuint32_t headerSetEndOff(/*@null@*/ Header h, rpmuint32_t endoff)
+-	/*@modifies h @*/;
+-
+-/** \ingroup header
+- * Return header stats accumulator structure.
+- * @param h		header
+- * @param opx		per-header accumulator index (aka rpmtsOpX)
+- * @return		per-header accumulator pointer
+- */
+-/*@null@*/
+-void * headerGetStats(Header h, int opx)
+-        /*@*/;
+-
+-/**
+- * Define per-header macros.
+- * @param h		header
+- * @return		0 always
+- */
+-int headerMacrosLoad(Header h)
+-	/*@globals internalState @*/
+-	/*@modifies internalState @*/;
+-
+-/**
+- * Define per-header macros.
+- * @param h		header
+- * @return		0 always
+- */
+-int headerMacrosUnload(Header h)
+-	/*@globals internalState @*/
+-	/*@modifies internalState @*/;
+-
+-/** \ingroup header
+- * Return name, epoch, version, release, arch strings from header.
+- * @param h		header
+- * @retval *np		name pointer (or NULL)
+- * @retval *ep		epoch pointer (or NULL)
+- * @retval *vp		version pointer (or NULL)
+- * @retval *rp		release pointer (or NULL)
+- * @retval *ap		arch pointer (or NULL)
+- * @return		0 always
+- */
+-int headerNEVRA(Header h,
+-		/*@null@*/ /*@out@*/ const char ** np,
+-		/*@null@*/ /*@out@*/ /*@unused@*/ const char ** ep,
+-		/*@null@*/ /*@out@*/ const char ** vp,
+-		/*@null@*/ /*@out@*/ const char ** rp,
+-		/*@null@*/ /*@out@*/ const char ** ap)
+-	/*@globals internalState @*/
+-	/*@modifies h, *np, *vp, *rp, *ap, internalState @*/;
+-
+-/**
+- * Return header color.
+- * @param h		header
+- * @return		header color
+- */
+-rpmuint32_t hGetColor(Header h)
+-	/*@globals internalState @*/
+-	/*@modifies h, internalState @*/;
+-
+-/** \ingroup header
+- * Translate and merge legacy signature tags into header.
+- * @todo Remove headerSort() through headerInitIterator() modifies sig.
+- * @param h		header
+- * @param sigh		signature header
+- */
+-void headerMergeLegacySigs(Header h, const Header sigh)
+-	/*@globals fileSystem, internalState @*/
+-	/*@modifies h, sigh, fileSystem, internalState @*/;
+-
+-/** \ingroup header
+- * Regenerate signature header.
+- * @todo Remove headerSort() through headerInitIterator() modifies h.
+- * @param h		header
+- * @param noArchiveSize	don't copy archive size tag (pre rpm-4.1)
+- * @return		regenerated signature header
+- */
+-Header headerRegenSigHeader(const Header h, int noArchiveSize)
+-	/*@globals fileSystem, internalState @*/
+-	/*@modifies h, fileSystem, internalState @*/;
+-
+-#ifdef __cplusplus
+-}
+-#endif
+-
+-#endif	/* H_RPMTAG */
+diff --git a/src/scripts/extract-debuginfo.in b/src/scripts/extract-debuginfo.in
+index 4746df2..c258ed1 100644
+--- a/src/scripts/extract-debuginfo.in
++++ b/src/scripts/extract-debuginfo.in
+@@ -193,7 +193,7 @@ find "$BUILDROOT" ! -path "${debugdir}/*.debug" -type f \
+ 		fi
+ 
+ 		echo "  Extracting debug info from ${f#${BUILDROOT}}"
+-		id=$(@libexecdir@/debugedit -i \
++		id=$(debugedit -i \
+ 			-b "${SOURCEDIR}" \
+ 			-d /usr/src/debug \
+ 			-l "${SOURCEFILE}" \
+-- 
+2.7.4
+
