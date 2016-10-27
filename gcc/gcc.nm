@@ -8,7 +8,7 @@ build_graphite = 1
 
 name       = gcc
 version    = 6.2.0
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Development/Compilers
@@ -150,13 +150,6 @@ build
 
 		sed -i gcc/Makefile.in \
 			-e "s/-fno-exceptions/& -fno-asynchronous-unwind-tables/"
-
-		# Default to -gdwarf-4 -fno-debug-types-section rather than -gdwarf-2
-		sed -i gcc/common.opt \
-			-e '/UInteger Var(dwarf_version)/s/Init(2)/Init(4)/' \
-			-e '/flag_debug_types_section/s/Init(1)/Init(0)/' \
-			-e '/dwarf_record_gcc_switches/s/Init(0)/Init(1)/' \
-			-e 's/\(may be either 2, 3 or 4; the default version is \)2\./\14./'
 
 		#./contrib/gcc_update --touch
 	end
