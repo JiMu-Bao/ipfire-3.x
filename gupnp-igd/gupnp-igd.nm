@@ -4,19 +4,22 @@
 ###############################################################################
 
 name       = gupnp-igd
-version    = 0.1.3
+version    = %{ver_maj}.%{ver_min}
+ver_maj    = 0.2
+ver_min    = 4
 release    = 1
 
 groups     = System/Libraries
 url        = http://www.gupnp.org
 license    = LGPL
-summary    = gupnp - Internet Gateway device implementation (Microsoft).
+summary    = gupnp - Internet Gateway device implementation (Microsoft)
 
 description
 	This is a library to handle Internet Gateway Device port mappings.
 end
 
-source_dl  =
+source_dl  = https://download.gnome.org/sources/%{name}/%{ver_maj}/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -31,7 +34,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

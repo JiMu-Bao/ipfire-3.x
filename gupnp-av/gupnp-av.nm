@@ -4,7 +4,9 @@
 ###############################################################################
 
 name       = gupnp-av
-version    = 0.5.1
+version    = %{ver_maj}.%{ver_min}
+ver_maj    = 0.12
+ver_min    = 10
 release    = 1
 
 groups     = System/Libraries
@@ -17,7 +19,8 @@ description
 	applications using GUPnP.
 end
 
-source_dl  =
+source_dl  = https://download.gnome.org/sources/%{name}/%{ver_maj}/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -31,7 +34,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL

@@ -4,9 +4,9 @@
 ###############################################################################
 
 name       = gupnp
-ver_major  = 0.20
-ver_minor  = 16
 version    = %{ver_major}.%{ver_minor}
+ver_major  = 1.0
+ver_minor  = 1
 release    = 1
 
 groups     = System/Libraries
@@ -20,8 +20,8 @@ description
 	The GUPnP API is intended to be easy to use, efficient and flexible.
 end
 
-source_dl  = https://download.gnome.org/sources/gupnp/%{ver_major}/
-sources = %{thisapp}.tar.xz
+source_dl  = https://download.gnome.org/sources/%{name}/%{ver_major}/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -38,7 +38,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
