@@ -6,8 +6,8 @@
 name       = grub
 version    = 2.02
 beta       = beta3
-release    = 0.%{beta}.2
-sup_arches = x86_64 i686
+release    = 0.%{beta}.3
+sup_arches = aarch64 x86_64 i686
 thisapp    = %{name}-%{version}~%{beta}
 
 groups     = System/Boot
@@ -35,6 +35,7 @@ build
 		automake
 		bison
 		bzip2-devel
+		debugedit >= 5.3.5-2
 		dejavu-fonts-sans-fonts
 		flex
 		freetype-devel
