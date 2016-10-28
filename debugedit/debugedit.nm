@@ -5,7 +5,7 @@
 
 name       = debugedit
 version    = 5.3.5
-release    = 1
+release    = 2
 
 groups     = Development/Tools
 url        = http://www.rpm5.org/
