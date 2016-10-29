@@ -5,7 +5,7 @@
 
 name       = libuser
 version    = 0.62
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = https://fedorahosted.org/libuser/
@@ -25,22 +25,29 @@ build
 	requires
 		cyrus-sasl-devel
 		glib2-devel
-		libselinux-devel
 		openldap-devel
 		pam-devel
 		pkg-config
 		popt-devel
-		python-devel
+		python-devel >= 2.7.12-2
 	end
 
+	export LD_LIBRARY_PATH = %{DIR_APP}/lib/.libs
+
 	configure_options += \
-		--sysconfdir=/etc \
-		--with-ldap \
-		--with-selinux
+		--with-ldap
 
 	prepare_cmds
 		# Little hack that we don't build documentation that requires sgml2html
 		sed -e "s/^SUBDIRS = .*/SUBDIRS = po/" -i Makefile.in
+	end
+
+	test
+		# Disable tests which requires a running ldap server.
+		sed -e "s/tests\/default_pw_test//" -i Makefile
+		sed -e "s/tests\/ldap_test//" -i Makefile
+
+		make check
 	end
 end
 
