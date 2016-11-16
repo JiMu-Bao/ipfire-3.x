@@ -5,7 +5,7 @@
 
 name       = setup
 version    = 3.0
-release    = 7
+release    = 8
 arch       = noarch
 
 groups     = Base Build System/Base
@@ -45,8 +45,12 @@ build
 			cp -vf %{DIR_APP}/${i} %{BUILDROOT}/etc || exit 1; \
 		done
 
-		touch %{BUILDROOT}/etc/{environment,fstab}
-		chmod -v 0400 %{BUILDROOT}/etc/{,g}shadow
+		touch %{BUILDROOT}%{sysconfdir}/{environment,fstab}
+		chmod -v 0400 %{BUILDROOT}%{sysconfdir}/{,g}shadow
+
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/sysctl.d
+		install -m 644 %{DIR_APP}/sysctl/swappiness.conf \
+			%{BUILDROOT}%{sysconfdir}/sysctl.d/swappiness.conf
 	end
 end
 
