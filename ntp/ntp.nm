@@ -6,7 +6,7 @@
 name       = ntp
 version    = %{ver_major}.8
 ver_major  = 4.2
-release    = 2
+release    = 3
 
 groups     = System/Daemons
 url        = http://www.ntp.org/
@@ -21,7 +21,6 @@ description
 end
 
 source_dl  = http://www.eecis.udel.edu/~ntp/ntp_spool/ntp4/ntp-%{ver_major}/
-sources   += ntpstat-0.2.tgz
 
 # The vendor part in the NTP pool address.
 VENDORZONE = %{DISTRO_SNAME}
@@ -35,35 +34,16 @@ build
 		pps-tools-devel
 	end
 
-	prepare
-		%{MACRO_EXTRACT_TARBALL}
-
-		ln -svf ../ntpstat-0.2 .
-
-		%{MACRO_PATCHES}
-
+	prepare_cmds
 		# Create ntp user and group.
 		%{create_user}
 	end
 
 	configure_options += \
 		--sysconfdir=%{sysconfdir}/ntp/crypto \
-		--with-openssl-libdir=%{libdir} \
 		--enable-all-clocks \
 		--enable-parse-clocks \
 		--enable-ntp-signd=%{localstatedir}/run/ntp_signd
-
-	build
-		./configure %{configure_options}
-
-		echo "#define KEYFILE \"%{sysconfdir}/ntp/keys\"" >> ntpdate/ntpdate.h
-		echo "#define NTP_VAR \"%{localstatedir}/log/ntpstats/\"" >> config.h
-
-		make ${PARALLELISMFLAGS}
-
-		# Build ntpstat.
-		make -C ntpstat-0.2
-	end
 
 	make_install_targets += bindir=%{sbindir}
 
@@ -72,13 +52,6 @@ build
 		sed -i "s/sntp\.1/sntp\.8/" %{BUILDROOT}%{mandir}/man1/sntp.1
 		mv -v %{BUILDROOT}%{mandir}/man{1/sntp.1,8/sntp.8}
 		rm -rfv %{BUILDROOT}%{mandir}/man1
-
-		# Install ntpstat.
-		pushd ntpstat-0.2
-		mkdir -pv %{BUILDROOT}%{bindir}
-		install -m 755 ntpstat %{BUILDROOT}%{bindir}
-		install -m 644 ntpstat.1 %{BUILDROOT}%{mandir}/man8/ntpstat.8
-		popd
 
 		# Fix section numbers.
 		sed -i 's/\(\.TH[a-zA-Z ]*\)[1-9]\(.*\)/\18\2/' \
