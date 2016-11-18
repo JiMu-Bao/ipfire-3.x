@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = perl-Net-SMTP-SSL
-version    = 1.03
+version    = 1.04
 release    = 1
 arch       = noarch
 thisapp    = Net-SMTP-SSL-%{version}
