@@ -5,7 +5,7 @@
 
 name       = net-snmp
 version    = 5.7.2
-release    = 2
+release    = 3
 
 groups     = Networking/Daemons
 url        = http://net-snmp.sourceforge.net
@@ -53,7 +53,7 @@ build
 		sctp-mib rmon-mib etherlike-mib ucd-snmp/lmsensorsMib
 
 	configure_options += \
-		--with-cflags="%{CFLAGS}" \
+		--with-cflags="%{CFLAGS} -Wformat" \
 		--with-ldflags="%{LDFLAGS}" \
 		--with-sys-contact="root@localhost" \
 		--with-sys-location="Unknown" \
