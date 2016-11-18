@@ -4,9 +4,9 @@
 ###############################################################################
 
 name       = perl
-version    = 5.20.2
+version    = 5.20.3
 # Never reset release in this package, just increase.
-release    = 14
+release    = 15
 
 perl_epoch = 2
 thisver = %{perl_epoch}:%{version}-%{_release}
@@ -150,6 +150,7 @@ packages
 
 		provides
 			# Compat provides
+			perl(:MODULE_COMPAT_5.20.3)
 			perl(:MODULE_COMPAT_5.20.2)
 			perl(:MODULE_COMPAT_5.20.1)
 			perl(:MODULE_COMPAT_5.20.0)
