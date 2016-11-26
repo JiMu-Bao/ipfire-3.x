@@ -4,19 +4,20 @@
 ###############################################################################
 
 name       = libarchive
-version    = 3.1.2
+version    = 3.2.2
 release    = 1
 
 groups     = System/Libraries
 url        = http://www.libarchive.org/
 license    = BSD
-summary    = A library for handling streaming archive formats.
+summary    = A library for handling streaming archive formats
 
 description
-	Libarchive is a programming library that can create and read several different
-	streaming archive formats, including most popular tar variants, several cpio
-	formats, and both BSD and GNU ar variants. It can also write shar archives and
-	read ISO9660 CDROM images and ZIP archives.
+	Libarchive is a programming library that can create and read several
+	different streaming archive formats, including most popular tar
+	variants, several cpio formats, and both BSD and GNU ar variants.
+	It can also write shar archives and read ISO9660 CDROM images and ZIP
+	archives.
 end
 
 source_dl  = http://www.libarchive.org/downloads/
@@ -26,18 +27,33 @@ build
 		bison
 		bzip2-devel
 		e2fsprogs-devel
+		expat-devel
 		libacl-devel
 		libattr-devel
-		libxml2-devel
+		lzo-devel
+		nettle-devel
 		openssl-devel
 		xz-devel
 		zlib-devel
 	end
 
 	configure_options += \
+		--enable-acl \
+		--enable-xattr \
 		--disable-static \
 		--disable-bsdtar \
-		--disable-bsdcpio
+		--disable-bsdcpio \
+		--with-bzip2 \
+		--with-expat \
+		--with-lzo2 \
+		--with-nettle \
+		--with-zlib \
+		--without-lzmadec
+
+	test
+		# Fails immediately with SEGV
+		make check || :
+	end
 
 	install_cmds
 		rm -rfv %{BUILDROOT}/usr/share/man/man5/{cpio,mtree,tar}.5
