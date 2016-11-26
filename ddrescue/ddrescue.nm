@@ -1,0 +1,45 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = ddrescue
+version    = 1.21
+release    = 1
+
+groups     = System/Tools
+url        = http://gnu.org/software/ddrescue
+license    = GPLv2+
+summary    = Data recovery tool
+
+description
+	GNU ddrescue is a data recovery tool. It copies data from one file or
+	block device (hard disc, cdrom, etc) to another, trying to rescue the
+	good parts first in case of read errors. 
+end
+
+source_dl  = http://ftp.gnu.org/gnu/ddrescue/
+sources    = %{thisapp}.tar.lz
+
+build
+	# ddrescue comes with a non-traditional configure script
+	configure_options = \
+		--prefix=%{prefix} \
+		--enable-linux \
+		CPPFLAGS="%{CPPFLAGS}" \
+		CFLAGS="%{CFLAGS}" \
+		LDFLAGS="%{LDFLAGS}" \
+		CXXFLAGS="%{CXXFLAGS}"
+
+	test
+		make check
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
