@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libvirt
-version    = 2.3.0
+version    = 2.4.0
 release    = 1
 
 maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
@@ -50,7 +50,9 @@ build
 		--libexecdir=/usr/lib \
 		--disable-static \
 		--with-qemu \
+		--without-vmware \
 		--without-esx \
+		--without-phyp \
 		--without-hal \
 		--without-lxc \
 		--without-openvz \
@@ -64,6 +66,9 @@ build
 		--with-storage-disk \
 		--with-avahi \
 		--with-udev \
+		--without-secdriver-selinux \
+		--without-selinux \
+		--without-selinux-mount \
 		--with-libvirtd
 end
 
