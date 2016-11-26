@@ -5,9 +5,9 @@
 
 name       = libvirt
 version    = 2.4.0
-release    = 1
+release    = 2
 
-maintainer = Ben Schweikert <ben.schweikert@ipfire.org>
+maintainer = Jonatan Schlag <jonatan.schlag@ipfire.org>
 groups     = Applications/Virtualization
 url        = http://www.libvirt.org/
 license    = LGPLv2.1+
