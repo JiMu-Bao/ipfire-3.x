@@ -4,38 +4,37 @@
 ###############################################################################
 
 name       = libsolv
-version    = 0.4.1
-git_ver    = bcedc98
-release    = 2.git%{git_ver}
+version    = 0.6.24
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
 url        = https://github.com/openSUSE/libsolv
 license    = BSD
-summary    = A library for solving package dependencies.
+summary    = A library for solving package dependencies
 
 description
 	A library for solving package dependencies by using a SAT
 	resolver written in C++.
 end
 
-thisapp    = %{name}-%{git_ver}
-sources    = %{thisapp}.tar.xz
+source_dl  = https://github.com/openSUSE/libsolv/archive/%{version}.tar.gz#/
 
 build
 	requires
 		gcc-c++
 		cmake >= 2.8.4-2
 		expat-devel
+		gettext-devel
+		xz-devel
 		zlib-devel
 	end
-
-	DIR_APP = %{DIR_SRC}/%{name}
 
 	build
 		mkdir build
 		cd build && %{cmake} .. \
 			-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+			-DENABLE_LZMA_COMPRESSION=1 \
 			-DENABLE_PERL=0 \
 			-DENABLE_PYTHON=0 \
 			-DENABLE_RUBY=0 \
