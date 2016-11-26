@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = python-urlgrabber
-version    = 3.9.1
-release    = 4
+version    = 3.10.1
+release    = 1
 arch       = noarch
 thisapp    = urlgrabber-%{version}
 
@@ -20,7 +20,7 @@ description
 	throttling, authentication, proxies and more.
 end
 
-source_dl  =
+source_dl  = http://urlgrabber.baseurl.org/download/
 
 build
 	requires
