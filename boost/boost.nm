@@ -8,7 +8,7 @@ ver_major  = 1
 ver_minor  = 60
 ver_plevel = 0
 version    = %{ver_major}.%{ver_minor}.%{ver_plevel}
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.boost.org/
