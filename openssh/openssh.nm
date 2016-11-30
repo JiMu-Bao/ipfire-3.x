@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openssh
-version    = 6.8p1
-release    = 2
+version    = 7.3p1
+release    = 1
 
 groups     = Application/Internet
 url        = http://www.openssh.com/portable.html
@@ -28,10 +28,9 @@ build
 		automake
 		groff
 		libedit-devel
-		libselinux-devel
 		ncurses-devel
 		openldap-devel
-		openssl-devel >= 1.0.0d-2
+		openssl-devel >= 1.0.2
 		pam-devel
 		util-linux
 		zlib-devel
@@ -51,7 +50,6 @@ build
 		--with-ipaddr-display \
 		--with-pam \
 		--with-libedit \
-		--with-selinux \
 		--with-audit=linux
 
 	prepare_cmds
