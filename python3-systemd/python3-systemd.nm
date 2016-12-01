@@ -1,0 +1,57 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = python3-systemd
+version    = 232
+release    = 1
+thisapp    = python-systemd-%{version}
+
+groups     = Development/Tools
+url        = https://github.com/systemd/python-systemd
+license    = LGPLv2+
+summary    = Python module wrapping systemd functionality.
+
+description
+	This package contains various Python modulse for a native access to
+	the systemd facilities.
+end
+
+source_dl  = https://github.com/systemd/python-systemd/archive/v%{version}.tar.gz#/
+
+build
+	requires
+		python3-devel >= 3.4
+		systemd-devel
+	end
+
+	prepare_cmds
+		sed -i 's/py\.test/pytest/' Makefile
+	end
+
+	make_build_targets += \
+		PYTHON=%{python3}
+
+	test
+		# Disable testsuite, because pytest is required
+		# which is currently not available.
+		#make PYTHON=%{python3} check
+	end
+
+	make_install_targets += \
+		PYTHON=%{python3}
+
+	install_cmds
+		# Remove accidently installed files from testsuite.
+		rm -rvf %{BUILDROOT}%{python3_sitearch}/systemd/test
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
