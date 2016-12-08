@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = nmap
-version    = 6.01
+version    = 7.30
 release    = 1
 
 groups     = Networking/Sniffer
@@ -36,10 +36,27 @@ build
 	configure_options += \
 		--without-nmapfe \
 		--without-zenmap
+
+	install_cmds
+		ln -vfs ncat %{BUILDROOT}%{bindir}/nc
+	end
 end
 
 packages
 	package %{name}
+
+	package %{name}-ncat
+		summary = Ncat is an ipv4 and ipv6 able netcat implementation
+		description
+			This package provides an another netcat implementation
+		end
+		files
+			%{bindir}/ncat
+			%{bindir}/nc
+			%{datadir}/ncat/*
+			%{mandir}/man1/ncat.1*
+		end
+	end
 
 	package %{name}-debuginfo
 		template DEBUGINFO
