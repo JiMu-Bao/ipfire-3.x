@@ -4,9 +4,10 @@
 ###############################################################################
 
 name       = krb5
-version    = %{version_maj}.%{version_min}
-version_maj= 1.14
-version_min= 4
+#version    = %{version_maj}.%{version_min}
+version    = %{version_maj}
+version_maj= 1.15
+version_min=
 release    = 1
 
 groups     = System/Libraries
@@ -26,12 +27,11 @@ build
 	requires
 		autoconf
 		automake
-		bison
+		bison >= 3.0.4-2
 		dejagnu
 		flex
 		gettext
 		libcom_err-devel
-		libselinux-devel
 		libss-devel
 		ncurses-devel
 		openldap-devel
@@ -55,8 +55,7 @@ build
 		--with-dirsrv \
 		--enable-pkinit \
 		--with-crypto-impl=openssl \
-		--with-pam \
-		--with-selinux
+		--with-pam
 
 	# Don't use strlcpy that comes with glibc.
 	configure_options += \
@@ -64,6 +63,7 @@ build
 
 	build
 		cd %{DIR_APP}/src
+
 		./configure \
 			%{configure_options}
 
