@@ -5,7 +5,7 @@
 
 name       = bison
 version    = 3.0.4
-release    = 1
+release    = 2
 
 groups     = Development/Tools
 url        = http://www.gnu.org/software/bison/
@@ -23,8 +23,7 @@ sources    = %{thisapp}.tar.xz
 build
 	requires
 		flex >= 2.5.37
-		m4 >= 1.4.16
-		perl
+		m4 >= 1.4.17-2
 	end
 
 	configure_cmds
