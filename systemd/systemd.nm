@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 232
-release    = 1
+release    = 2
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -22,6 +22,11 @@ source_dl  = https://github.com/%{name}/%{name}/archive/v%{version}.tar.gz#/
 
 build
 	unitdir = %{prefix}/lib/systemd/system
+
+	# The tools which are shipped by systemd requires an rpath to
+	# the libsystemd-shared binary to run properly. So the macro for
+	# removing any rpath's have to be disabled.
+	MACRO_FIX_LIBTOOL = # Do nothing
 
 	requires
 		# Testsuite
@@ -197,6 +202,12 @@ create_groups
 
 	# Create group for journald.
 	getent group systemd-journal >/dev/null || /usr/sbin/groupadd -r systemd-journal
+end
+
+quality-agent
+	whitelist_rpath
+		%{prefix}/lib/systemd
+	end
 end
 
 packages
