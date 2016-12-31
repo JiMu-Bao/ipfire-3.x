@@ -5,7 +5,7 @@
 
 name       = sysvinit
 version    = 2.86
-release    = 7
+release    = 8
 
 groups     = System/Base
 url        = https://alioth.debian.org/projects/pkg-sysvinit/
@@ -23,8 +23,7 @@ CFLAGS    += -D_GNU_SOURCE
 
 build
 	make_build_targets += \
-		-C src CFLAGS="%{CFLAGS}" \
-		LDFLAGS=""
+		-C src CFLAGS="%{CFLAGS}" LDFLAGS="%{LDFLAGS}"
 
 	install
 		# Create directories.
