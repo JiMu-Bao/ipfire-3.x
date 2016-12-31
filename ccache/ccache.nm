@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = ccache
-version    = 3.2.5
+version    = 3.3.3
 release    = 1
 
 groups     = Development/Compilers
@@ -19,7 +19,7 @@ description
 	a 5 to 10 times speedup in common compilations.
 end
 
-source_dl  = http://samba.org/ftp/ccache/
+source_dl  = https://www.samba.org/ftp/ccache/
 sources    = %{thisapp}.tar.xz
 
 # Sets ccache max size up to 2 GB
