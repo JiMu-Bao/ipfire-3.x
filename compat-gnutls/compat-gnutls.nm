@@ -1,0 +1,83 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = compat-gnutls
+version    = %{ver_maj}.%{ver_min}
+ver_maj    = 3.3
+ver_min    = 25
+release    = 1
+thisapp    = gnutls-%{version}
+
+groups     = System/Libraries
+url        = http://www.gnu.org/software/gnutls/
+license    = LGPLv2.1+
+summary    = A general-purpose cryptography library.
+
+description
+	GnuTLS is a project that aims to develop a library which provides
+	a secure layer, over a reliable transport layer. Currently the
+	GnuTLS library implements the proposed standards by the IETF's
+	TLS working group.
+end
+
+source_dl  = ftp://ftp.gnutls.org/gcrypt/gnutls/v%{ver_maj}/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		datefudge
+		gettext
+		libgcrypt-devel
+		libidn-devel
+		libtasn1-devel >= 3.2
+		lzo-devel
+		net-tools
+		nettle-devel >= 3.2
+		perl
+		p11-kit-devel >= 0.23.1
+		readline-devel
+		texinfo
+		zlib-devel
+	end
+
+	# Build library without an executable stack.
+	CFLAGS += -Wa,--noexecstack
+
+	configure_options += \
+		--with-included-libcfg \
+		--disable-openssl-compatibility \
+		--disable-srp-authentication \
+		--disable-non-suiteb-curves \
+		--disable-guile
+
+	# Test suite does not work when srp is disabled.
+	test
+		export LD_LIBRARY_PATH=$(pwd)/lib/.libs
+		make check
+	end
+
+	install
+		# Install just the library and no headers.
+		mkdir -pv %{BUILDROOT}%{libdir}
+		cp -avf lib/.libs/libgnutls.so.* %{BUILDROOT}%{libdir}
+		cp -avf lib/.libs/libgnutlsxx.so.* %{BUILDROOT}%{libdir}
+	end
+end
+
+packages
+	package %{name}
+		provides
+			gnutls = %{thisver}
+		end
+
+		obsoletes
+			gnutls <= %{thisver}
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
