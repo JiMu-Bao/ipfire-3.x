@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = coreutils
-version    = 8.25
-release    = 2
+version    = 8.26
+release    = 1
 
 groups     = System/Base
 url        = http://www.gnu.org/software/coreutils/
@@ -30,7 +30,6 @@ build
 		libacl-devel
 		libattr-devel
 		libcap-devel
-		libselinux-devel
 		ncurses-devel
 		texinfo
 	end
