@@ -7,7 +7,7 @@ name       = compat-gnutls
 version    = %{ver_maj}.%{ver_min}
 ver_maj    = 3.3
 ver_min    = 25
-release    = 1
+release    = 2
 thisapp    = gnutls-%{version}
 
 groups     = System/Libraries
@@ -62,7 +62,6 @@ build
 		# Install just the library and no headers.
 		mkdir -pv %{BUILDROOT}%{libdir}
 		cp -avf lib/.libs/libgnutls.so.* %{BUILDROOT}%{libdir}
-		cp -avf lib/.libs/libgnutlsxx.so.* %{BUILDROOT}%{libdir}
 	end
 end
 
