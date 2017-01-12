@@ -6,7 +6,7 @@
 name       = ntp
 version    = %{ver_major}.8
 ver_major  = 4.2
-release    = 3
+release    = 4
 
 groups     = System/Daemons
 url        = http://www.ntp.org/
@@ -43,7 +43,8 @@ build
 		--sysconfdir=%{sysconfdir}/ntp/crypto \
 		--enable-all-clocks \
 		--enable-parse-clocks \
-		--enable-ntp-signd=%{localstatedir}/run/ntp_signd
+		--enable-ntp-signd=%{localstatedir}/run/ntp_signd \
+		--without-rpath
 
 	make_install_targets += bindir=%{sbindir}
 
