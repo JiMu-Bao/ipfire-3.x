@@ -5,7 +5,7 @@
 
 name       = intltool
 version    = 0.51.0
-release    = 1
+release    = 2
 arch       = noarch
 
 groups     = Localization/Tools
@@ -28,8 +28,9 @@ build
 		perl(XML::Parser)
 	end
 
-	configure_options += \
-		--mandir=/usr/share/man
+	test
+		make check
+	end
 end
 
 packages
