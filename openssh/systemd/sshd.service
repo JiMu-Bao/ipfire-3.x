@@ -1,11 +1,14 @@
 [Unit]
 Description=OpenSSH server daemon
-After=syslog.target network.target auditd.service
+After=syslog.target network.target auditd.service sshd-keygen.service
+Wants=sshd-keygen.service
 
 [Service]
-ExecStartPre=/usr/sbin/sshd-keygen
 ExecStart=/usr/sbin/sshd -D
 ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+RestartSec=30s
 
 [Install]
 WantedBy=multi-user.target

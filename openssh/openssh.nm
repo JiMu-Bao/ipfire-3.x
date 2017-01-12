@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = openssh
-version    = 7.3p1
+version    = 7.4p1
 release    = 1
 
 groups     = Application/Internet
@@ -60,11 +60,12 @@ build
 		# Disable GSS API authentication because KRB5 is required for that.
 		sed -e "s/^.*GSSAPIAuthentication/#&/" -i %{BUILDROOT}/etc/ssh/ssh_config
 
-		# Enable PAM usage, disable ChallengeResponseAuthentication and disable Motd.
+		# Enable PAM usage, disable ChallengeResponseAuthentication, enable root login and disable Motd.
 		sed \
 			-e '/^#ChallengeResponseAuthentication yes$/c ChallengeResponseAuthentication no' \
 			-e '/^#PrintMotd yes$/c PrintMotd no' \
 			-e '/^#UsePAM no$/c UsePAM yes' \
+			-e '/^#PermitRootLogin prohibit-password$/c PermitRootLogin yes' \
 			-i %{BUILDROOT}/etc/ssh/sshd_config
 
 		# Install scriptfile for key generation
@@ -140,6 +141,8 @@ packages
 			%{sysconfdir}/ssh/sshd_config
 			%{unitdir}/sshd.service
 			%{unitdir}/sshd-keygen.service
+			%{unitdir}/sshd@.service
+			%{unitdir}/sshd.socket
 			%{libdir}/openssh/sftp-server
 			%{sbindir}/sshd-keygen
 			%{sbindir}/sshd
@@ -173,7 +176,9 @@ packages
 
 		script preun
 			/bin/systemctl --no-reload disable sshd.service >/dev/null 2>&1 || :
+			/bin/systemctl --no-reload disable sshd.socket
 			/bin/systemctl stop sshd.service >/dev/null 2>&1 || :
+			/bin/systemctl stop sshd.socket >/dev/null 2>&1 || :
 		end
 
 		script postun
@@ -181,6 +186,10 @@ packages
 		end
 
 		script postup
+			# Enable root login.
+			sed -e '/^#PermitRootLogin prohibit-password$/c PermitRootLogin yes' \
+				-i %{sysconfdir}/ssh/sshd_config
+
 			/bin/systemctl daemon-reload >/dev/null 2>&1 || :
 
 			/bin/systemctl try-restart sshd.service >/dev/null 2>&1 || :
