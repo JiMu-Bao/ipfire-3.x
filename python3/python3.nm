@@ -4,9 +4,9 @@
 ###############################################################################
 
 name       = python3
-major_ver  = 3.4
-version    = %{major_ver}.3
-release    = 2
+major_ver  = 3.6
+version    = %{major_ver}.0
+release    = 1
 thisapp    = Python-%{version}
 
 groups     = Development/Languages
@@ -63,7 +63,7 @@ build
 
 	prepare_cmds
 		if [ "%{lib}" = "lib64" ]; then
-			patch -Np1 -i %{DIR_SOURCE}/python-3.4.3-lib64.patch
+			patch -Np1 -i %{DIR_SOURCE}/python-3.6.0-lib64.patch
 		fi
 
 		# Remove embedded copies of expat and libffi
@@ -86,24 +86,24 @@ build
 		--enable-shared \
 		--without-ensurepip
 
-	#test
-	#	LD_LIBRARY_PATH=$(pwd) $(pwd)/python \
-	#		-m test.regrtest \
-	#		--verbose \
-	#		--findleaks \
-	#		-x test_distutils \
-	#		-x test_faulthandler \
-	#		-x test_gdb \
-	#		-x test_email \
-	#		-x test_subprocess \
-	#		-x test_float \
-	#		-x test_cmath \
-	#		-x test_asynchat \
-	#		-x test_asyncore
-	#
+	test
+		LD_LIBRARY_PATH=$(pwd) $(pwd)/python \
+			-m test.regrtest \
+			--verbose \
+			--findleaks \
+			-x test_distutils \
+			-x test_faulthandler \
+			-x test_gdb \
+			-x test_email \
+			-x test_subprocess \
+			-x test_float \
+			-x test_cmath \
+			-x test_asynchat \
+			-x test_asyncore
+	
 	#	# test_subprocess won't work on grsecurity-enabled kernels
 	#	# test_float and test_cmath do not work on armv5tel (soft FPU)
-	#end
+	end
 
 	install_cmds
 		install -d -m 0755 %{BUILDROOT}%{pylibdir}/site-packages/__pycache__
