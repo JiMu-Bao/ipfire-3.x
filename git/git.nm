@@ -5,7 +5,7 @@
 
 name       = git
 version    = 2.6.3
-release    = 2
+release    = 3
 
 groups     = Development/Tools
 url        = http://git-scm.com/
@@ -114,6 +114,27 @@ packages
 			%{gitcoredir}/git-daemon
 			%{mandir}/man1/git-daemon*
 			%{sharedstatedir}/git
+			%{unitdir}/git@.service
+			%{unitdir}/git.socket
+		end
+
+		script postin
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script preun
+			systemctl --no-reload disable git.socket >/dev/null 2>&1 || :
+			systemctl stop git.socket >/dev/null 2>&1 || :
+			systemctl stop git@.service >/dev/null 2>&1 || :
+		end
+
+		script postun
+			systemctl daemon-reload >/dev/null 2>&1 || :
+		end
+
+		script postup
+			systemctl daemon-reload >/dev/null 2>&1 || :
+			systemctl try-restart git.socket >/dev/null 2>&1 || :
 		end
 	end
 
