@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = xfsprogs
-version    = 4.7.0
+version    = 4.9.0
 release    = 1
 
 groups     = System/Filesystems
@@ -16,7 +16,8 @@ description
 	A set of commands to use the XFS filesystem, including mkfs.xfs.
 end
 
-source_dl  = ftp://oss.sgi.com/projects/xfs/cmd_tars/
+source_dl  = https://www.kernel.org/pub/linux/utils/fs/xfs/%{name}/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -36,6 +37,8 @@ build
 
 	make_build_targets += \
 		V=1 DEBUG=-DNDEBUG
+
+	# This package does not come with a testsuite.
 
 	make_install_targets += \
 		install-dev V=1 DIST_ROOT=%{BUILDROOT} \
