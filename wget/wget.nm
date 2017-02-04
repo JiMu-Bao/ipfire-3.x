@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = wget
-version    = 1.17
-release    = 2
+version    = 1.19
+release    = 1
 
 groups     = Applications/Internet
 url        = http://www.gnu.org/software/wget/
