@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = suricata
-version    = 3.1
+version    = 3.2.1
 release    = 1
 
 groups     = Networking/IDS
@@ -29,7 +29,7 @@ build
 		libnet-devel
 		libpcap-devel
 		libyaml-devel
-		libhtp-devel >= 0.5.5
+		libhtp-devel >= 0.5.20
 		pcre-devel
 		pkg-config
 		zlib-devel >= 1.2.5-2
