@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = libhtp
-version    = 0.5.10
+version    = 0.5.20
 release    = 1
 
 groups     = System/Libraries
-url        = https://github.com/ironbee/libhtp
+url        = https://github.com/OISF/libhtp
 license    = BSD
 summary    = LibHTP is a security-aware parser.
 
@@ -17,24 +17,30 @@ description
 	related bits and pieces.
 end
 
-thisapp = htp-%{version}
-
-source_dl  = https://github.com/ironbee/%{name}/releases/download/%{version}/
-sources    = %{thisapp}.tar.gz
+source_dl  = https://github.com/OISF/%{name}/archive/%{version}.tar.gz#/
 
 build
 	requires
-		gcc
+		autoconf
+		automake
+		libtool
 		pkg-config
 		zlib-devel
 	end
 
+	export LD_LIBRARY_PATH = %{DIR_APP}/htp/.libs
+
 	configure_options += \
 		--disable-static
 
+	prepare_cmds
+		./autogen.sh
+	end
+
+	test
+		make check
+	end
 end
-
-
 
 packages
 	package %{name}
