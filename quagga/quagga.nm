@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = quagga
-version    = 1.1.0
+version    = 1.2.0
 release    = 1
 
 groups     = Networking/Routing
@@ -24,6 +24,7 @@ source_dl  = http://download.savannah.gnu.org/releases/quagga/
 
 build
 	requires
+		c-ares-devel
 		ncurses-devel
 		net-snmp-devel
 		readline-devel
