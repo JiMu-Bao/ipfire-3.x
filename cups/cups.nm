@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = cups
-version    = 2.2.1
-release    = 2
+version    = 2.2.2
+release    = 1
 
 groups     = Applications/Printing
 url        = http://cups.org/software.php
