@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = avahi
-version    = 0.6.31
+version    = 0.6.32
 release    = 1
 
 groups     = Networking/Zeroconf
@@ -22,7 +22,8 @@ description
 	convenient.
 end
 
-source_dl  = http://avahi.org/download/
+source_dl  = http://avahi.org/download/ \
+	https://github.com/lathiat/avahi/releases/download/v%{version}/
 
 build
 	requires
@@ -64,7 +65,7 @@ end
 packages
 	package %{name}
 		requires
-			libdaemon>=0.14
+			libdaemon >= 0.14
 		end
 
 		prerequires += shadow-utils
