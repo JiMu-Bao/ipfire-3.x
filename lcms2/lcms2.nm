@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = lcms2
-version    = 2.7
-release    = 2
+version    = 2.8
+release    = 1
 
 groups     = System/Tools
 url        = http://www.littlecms.com/
