@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 4.6.7
-release    = 1
+release    = 2
 thisapp    = linux-%{version}
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -99,7 +99,7 @@ build
 		kernels += default
 	end
 
-	perf_make = make %{MAKETUNING} -C tools/perf V=1 WERROR=0 \
+	perf_make = make %{PARALLELISMFLAGS} -C tools/perf V=1 WERROR=0 \
 		NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_LIBNUMA=1 \
 		NO_STRLCPY=1 NO_BIONIC=1 prefix=%{prefix} perfexecdir=lib/perf-core
 
@@ -266,7 +266,7 @@ build
 
 		# Build tools.
 		# perf
-		%{perf_make} DESTDIR=%{BUILDROOT} all
+		#%{perf_make} DESTDIR=%{BUILDROOT} all
 
 		# cpupower
 		chmod +x tools/power/cpupower/utils/version-gen.sh
@@ -274,7 +274,7 @@ build
 
 		if [ "%{DISTRO_ARCH}" = "x86_64" ]; then
 			pushd tools/power/cpupower/debug/x86_64
-			make %{MAKETUNING} centrino-decode powernow-k8-decode
+			make %{PARALLELISMFLAGS} centrino-decode powernow-k8-decode
 			popd
 
 			pushd tools/power/x86/x86_energy_perf_policy
@@ -312,7 +312,7 @@ build
 		rm -rfv %{BUILDROOT}/lib/firmware
 
 		# Install tools.
-		%{perf_make} DESTDIR=%{BUILDROOT} install-bin install-python_ext
+		#%{perf_make} DESTDIR=%{BUILDROOT} install-bin install-python_ext
 
 		# cpupower
 		make -C tools/power/cpupower DESTDIR=%{BUILDROOT} libdir=%{libdir} \
