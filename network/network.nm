@@ -6,7 +6,7 @@
 name       = network
 epoch      = 1
 version    = 008
-release    = 2
+release    = 3
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Base Networking/Tools
@@ -46,7 +46,6 @@ end
 packages
 	package %{name}
 		requires
-			aiccu
 			bash >= 4.0
 			batctl
 			crda
