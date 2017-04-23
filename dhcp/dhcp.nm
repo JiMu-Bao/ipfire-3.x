@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = dhcp
-version    = 4.2.5
-release    = 3
+version    = 4.3.5b1
+release    = 1
 
 groups     = Networking/Daemons
 url        = http://isc.org/products/DHCP/
@@ -22,61 +22,17 @@ end
 
 source_dl  = ftp://ftp.isc.org/isc/dhcp/%{version}/
 
-# Apply patches in a special order.
-patches = \
-	dhcp-4.2.5-remove-bind.patch \
-	dhcp-4.2.4-P1-remove-dst.patch \
-	dhcp-4.2.0-errwarn-message.patch \
-	dhcp-4.2.4-dhclient-options.patch \
-	dhcp-4.2.0-release-by-ifup.patch \
-	dhcp-4.2.0-dhclient-decline-backoff.patch \
-	dhcp-4.2.4-unicast-bootp.patch \
-	dhcp-4.2.0-default-requested-options.patch \
-	dhcp-4.2.2-xen-checksum.patch \
-	dhcp-4.2.5-manpages.patch \
-	dhcp-4.2.4-paths.patch \
-	dhcp-4.2.2-CLOEXEC.patch \
-	dhcp-4.2.0-garbage-chars.patch \
-	dhcp-4.2.0-add_timeout_when_NULL.patch \
-	dhcp-4.2.4-64_bit_lease_parse.patch \
-	dhcp-4.2.2-capability.patch \
-	dhcp-4.2.0-logpid.patch \
-	dhcp-4.2.4-UseMulticast.patch \
-	dhcp-4.2.5-sendDecline.patch \
-	dhcp-4.2.1-retransmission.patch \
-	dhcp-4.2.5-rfc3442-classless-static-routes.patch \
-	dhcp-4.2.0-honor-expired.patch \
-	dhcp-4.2.5-sharedlib.patch \
-	dhcp-4.2.5-PPP.patch \
-	dhcp-4.2.5-paranoia.patch \
-	dhcp-4.2.5-lpf-ib.patch \
-	dhcp-4.2.4-improved-xid.patch \
-	dhcp-4.2.2-gpxe-cid.patch \
-	dhcp-4.2.5-systemtap.patch \
-	dhcp-4.2.3-dhclient-decline-onetry.patch \
-	dhcp-4.2.3-P2-log_perror.patch \
-	dhcp-4.2.4-getifaddrs.patch \
-	dhcp-4.2.4-send_release.patch \
-	dhcp-4.2.5-rfc5970-dhcpv6-options-for-network-boot.patch \
-	dhcp-4.2.4-failOverPeer.patch \
-	dhcp-4.2.5b1-atf-pkgconfig.patch \
-	dhcp-4.2.4-P1-interval.patch \
-	dhcp-4.2.4-P2-conflex-do-forward-updates.patch \
-	dhcp-4.2.4-P2-dupl-key.patch \
-	dhcp-4.2.5-range6.patch \
-	dhcp-4.2.5-next-server.patch
-
 build
 	requires
 		autoconf
 		automake
-		bind-devel>=9
+		bind-devel>=9.9.9-P6
 		bind-devel<10
 		groff
 		libtool
 		openldap-devel
 		libcap-ng-devel
-		systemd-units
+		systemd-devel
 	end
 
 	CFLAGS += -fno-strict-aliasing
@@ -98,18 +54,37 @@ build
 		--with-libbind-libs=/usr/lib/ \
 		--disable-static \
 		--enable-paranoia \
-		--enable-early-chroot
+		--enable-early-chroot \
+		--enable-binary-leases \
+		--with-systemd
 
 	prepare_cmds
 		# Remove bundled BIND source
 		rm -rvf %{DIR_APP}/bind/bind.tar.gz
 
-		# Remove dst.
-		rm -rvf dst includes/isc-dhcp
-
 		# Regenerate build environment
-		#libtoolize --copy --force
 		autoreconf --verbose --force --install
+
+		# Change DHCLIENT_DEFAULT_PREFIX_LEN  64 -> 128
+		sed -i -e 's|DHCLIENT_DEFAULT_PREFIX_LEN 64|DHCLIENT_DEFAULT_PREFIX_LEN 128|g' \
+			includes/site.h
+
+		# Update PATH in all manpages
+		for page in client/dhclient.conf.5 client/dhclient.leases.5 \
+			client/dhclient-script.8 client/dhclient.8 ; do
+
+			sed -i -e 's|CLIENTBINDIR|%{sbindir}|g' \
+				-e 's|RUNDIR|/run|g' \
+				-e 's|DBDIR|%{localstatedir}/lib/dhclient|g' \
+				-e 's|ETCDIR|%{dhcpconfdir}|g' $page
+		done
+
+		for page in server/dhcpd.conf.5 server/dhcpd.leases.5 server/dhcpd.8 ; do
+			sed -i -e 's|CLIENTBINDIR|%{sbindir}|g' \
+				-e 's|RUNDIR|/run|g' \
+				-e 's|DBDIR|%{localstatedir}/lib/dhcpd|g' \
+				-e 's|ETCDIR|%{dhcpconfdir}|g' $page
+		done
 	end
 
 	install_cmds
