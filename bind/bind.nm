@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = bind
-version    = 9.9.6-P1
-release    = 2
+version    = 9.9.9-P6
+release    = 1
 
 groups     = Networking/Tools
 url        = http://www.isc.org/products/BIND/
@@ -19,14 +19,10 @@ end
 
 source_dl  = ftp://ftp.isc.org/isc/bind/%{version}/
 
-sources += \
-	%{name}-config-12.tar.bz2
-
 build
 	requires
 		autoconf
 		automake
-		chrpath
 		libcap-devel
 		libidn-devel
 		libtool
@@ -43,117 +39,93 @@ build
 		--disable-static \
 		--disable-openssl-version-check \
 		--enable-exportlib \
-		--with-export-libdir=/%{lib}/ \
-		--with-export-includedir=/usr/include/ \
-		--includedir=/usr/include/bind9/ \
-		--with-pkcs11=%{libdir}/pkcs11/PKCS11_API.so \
+		--with-export-libdir=%{libdir}/ \
+		--with-export-includedir=%{includedir} \
+		--includedir=%{includedir}/bind9/ \
 		--with-gssapi \
 		--enable-rrl \
 		--disable-isc-spnego
 
-	prepare
-		cd %{DIR_SRC} && %{MACRO_EXTRACT} %{DIR_DL}/%{thisapp}.tar.gz
-
+	prepare_cmds
 		# Create m4 directory.
 		cd %{DIR_APP} && mkdir -pv m4
-
-		# Apply all patches.
-		%{MACRO_PATCHES}
 
 		# Branding.
 		sed -i -e 's/RELEASEVER=\(.*\)/RELEASEVER=\1-%{DISTRO_NAME}-%{version}-%{release}/' version
 
 		# Regenerate build environment
-		libtoolize -c -f
-		aclocal -I m4 --force
-		autoconf -f
+		autoreconf -vfi
 
-		# Create user and group for /run directory.
-		%{create_user}
 	end
 
-	install
-		# Create directory layout.
-		mkdir -pv %{BUILDROOT}%{libdir}/bind
-		mkdir -pv %{BUILDROOT}/var/named/{slaves,data,dynamic}
-		mkdir -pv %{BUILDROOT}/usr/share/man/{man1,man5,man8}
-		mkdir -pv %{BUILDROOT}/run/named
-		mkdir -pv %{BUILDROOT}/var/log
+	build_cmds
+		# Build some typical system tools (dig, host, nslookup)
+		make -C bin/dig -j %{PARALLELISMFLAGS}
 
-		# Create named chroot environment.
-		mkdir -pv %{BUILDROOT}/var/named/chroot/{dev,etc,var}
-		mkdir -pv %{BUILDROOT}/var/named/chroot/var/{log,named,run/named,tmp}
-		mkdir -pv %{BUILDROOT}/var/named/chroot/etc/{pki/dnssec-keys,named}
-		mkdir -pv %{BUILDROOT}/var/named/chroot/usr/lib/bind
-		mkdir -pv %{BUILDROOT}/var/named/chroot/dev/null
-		mkdir -pv %{BUILDROOT}/var/named/chroot/dev/random
-		mkdir -pv %{BUILDROOT}/var/named/chroot/dev/zero
-		mkdir -pv %{BUILDROOT}/var/named/chroot/etc/localtime
+		# Build nsupdate
+		make -C bin/nsupdate -j %{PARALLELISMFLAGS}
+	end
 
-		touch %{BUILDROOT}/var/named/chroot/etc/named.conf
+	install_cmds
+		# Install typical system tools
+		make -C bin/dig install DESTDIR=%{BUILDROOT}
 
-		# Run make install
-		make DESTDIR=%{BUILDROOT} install
+		# Install nsupdate
+		make -C bin/nsupdate install DESTDIR=%{BUILDROOT}
 
-		# Remove RPATH from libraries.
-		chrpath --delete %{BUILDROOT}/lib*/*export*.so.*
+		# Install isc/errno2result.h header
+		install -m 644 lib/isc/unix/errno2result.h %{BUILDROOT}%{includedir}/isc
+
+		# Install trusted root key.
+		install -m 644 %{DIR_SOURCE}/trusted-key.key %{BUILDROOT}%{sysconfdir}/trusted-key.key
+
+		# Remove development libraries and headers except *-export ones
+		rm -rvf %{BUILDROOT}%{libdir}/libbind9.so
+		rm -rvf %{BUILDROOT}%{libdir}/libdns.so
+		rm -rvf %{BUILDROOT}%{libdir}/libisccc.so
+		rm -rvf %{BUILDROOT}%{libdir}/libisccfg.so
+		rm -rvf %{BUILDROOT}%{libdir}/libisc.so
+		rm -rvf %{BUILDROOT}%{libdir}/liblwres.so
+		rm -rvf %{BUILDROOT}%{includedir}/bind9
 
 		# Remove unwanted files
-		rm -rvf %{BUILDROOT}/etc/bind.keys
+		rm -rvf %{BUILDROOT}/etc
+		rm -rvf %{BUILDROOT}/var
 
-		# Create ghost config files
-		touch %{BUILDROOT}/var/log/named.log
+		# Remove unneeded tools
+		rm -rvf %{BUILDROOT}%{bindir}/isc-config.sh
+		rm -rvf %{BUILDROOT}%{bindir}/bind9-config
 
-		# Configuration files
-		tar -C %{BUILDROOT} -xaf %{DIR_DL}/bind-config-12.tar.bz2
-		touch %{BUILDROOT}/etc/rndc.key
-		touch %{BUILDROOT}/etc/rndc.conf
+		# Remove manpages for the unneeded tools
+		rm -rvf %{BUILDROOT}%{mandir}/man1/isc-config.sh.1
+		rm -rvf %{BUILDROOT}%{mandir}/man1/bind9-config.1
 
-		mkdir %{BUILDROOT}/etc/named
-		install -m 644 bind.keys %{BUILDROOT}/etc/named.iscdlv.key
-		install -m 644 %{DIR_SOURCE}/trusted-key.key %{BUILDROOT}/etc/trusted-key.key
-
-		# Recreate symlinks for export libraries
-		rm -rf %{BUILDROOT}/%{lib}/lib*-export.so
-
-		ln -svf ../../%{lib}/libdns-export.so.104 %{BUILDROOT}%{libdir}/libdns-export.so
-		ln -svf ../../%{lib}/libirs-export.so.91 %{BUILDROOT}%{libdir}/libirs-export.so
-		ln -svf ../../%{lib}/libisccfg-export.so.90 %{BUILDROOT}%{libdir}/libisccfg-export.so
-		ln -svf ../../%{lib}/libisc-export.so.95 %{BUILDROOT}%{libdir}/libisc-export.so
-
-		# Create /run/named.
-		mkdir -pv %{BUILDROOT}/run/named
-		chown -Rv named.named %{BUILDROOT}/run/named/
+		# Remove documentation for liblwres and tools
+		rm -rvf %{BUILDROOT}%{mandir}/man3
 	end
-end
-
-create_user
-	getent group named >/dev/null || /usr/sbin/groupadd -r named
-	getent passwd named >/dev/null || /usr/sbin/useradd -r -g named \
-		-d /var/named -c "User for bind DNS server" -s /sbin/nologin named
 end
 
 packages
 	package %{name}
+		# The bind package is just an umbrella package for the utils
+		# and libs package.
 		requires
-			bind-utils
-			bind-chroot
+			%{name}-libs = %{thisver}
+			%{name}-utils = %{thisver}
+			%{name}-utils-libs = %{thisver}
 		end
-
-		prerequires += shadow-utils
-
-		script prein
-			%{create_user}
-		end
-
-		# XXX Add systemd scriptlet if a service file becomes available
 	end
 
 	package %{name}-utils
 		summary = Utilities for querying bind DNS name server.
 		description = %{summary}
 
+		requires
+			%{name}-utils-libs = %{thisver}
+		end
+
 		files
+			/etc/trusted-key.key
 			/usr/bin/dig
 			/usr/bin/host
 			/usr/bin/nslookup
@@ -165,17 +137,19 @@ packages
 		end
 	end
 
-	package %{name}-chroot
-		summary = Chroot environment for bind DNS servers.
-		description = %{summary}
+	package %{name}-utils-libs
+		template LIBS
 
-		files
-			/var/named/chroot
-		end
+		summary = Required libraries for the tools in the bind-utils package.
+		description = %{summary}
 	end
 
 	package %{name}-libs
 		template LIBS
+
+		files
+			%{libdir}/*export.so.*
+		end
 	end
 
 	package %{name}-devel

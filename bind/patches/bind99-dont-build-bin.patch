@@ -1,0 +1,13 @@
+diff --git a/Makefile.in b/Makefile.in
+index 4f7f5a6..d59b9b1 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -21,7 +21,7 @@ top_srcdir =	@top_srcdir@
+ 
+ VERSION=@BIND9_VERSION@
+ 
+-SUBDIRS =	make unit lib bin doc @LIBEXPORT@
++SUBDIRS =	make lib doc @LIBEXPORT@
+ TARGETS =
+ 
+ MANPAGES =	isc-config.sh.1
