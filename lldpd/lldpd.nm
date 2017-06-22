@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = lldpd
-version    = 0.7.1
+version    = 0.9.7
 release    = 1
 
 groups     = Networking/Tools
@@ -17,10 +17,12 @@ description
 	the IEEE standard 802.1AB Link Layer Discovery Protocol.
 end
 
-source_dl = http://media.luffy.cx/files/lldpd/
+source_dl = https://github.com/vincentbernat/lldpd/archive/%{version}.tar.gz#/
 
 build
 	requires
+		autoconf
+		automake
 		libevent-devel
 		libxml2-devel
 		pkg-config
@@ -37,6 +39,8 @@ build
 
 	prepare_cmds
 		%{create_user}
+
+		./autogen.sh
 	end
 
 	install_cmds
