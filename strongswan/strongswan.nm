@@ -5,7 +5,7 @@
 
 name       = strongswan
 version    = 5.5.3
-release    = 1
+release    = 2
 
 groups     = Networking/VPN
 url        = http://www.strongswan.org/
@@ -63,6 +63,8 @@ build
 		--enable-eap-peap \
 		--enable-eap-mschapv2 \
 		--enable-eap-identity \
+		--disable-blowfish \
+		--disable-rc2 \
 		--with-capabilities=libcap \
 		--enable-unbound \
 		--enable-systemd
