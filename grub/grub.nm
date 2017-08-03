@@ -5,10 +5,10 @@
 
 name       = grub
 version    = 2.02
-beta       = beta3
-release    = 0.%{beta}.3
+release    = 0.1
+
 sup_arches = aarch64 x86_64 i686
-thisapp    = %{name}-%{version}~%{beta}
+thisapp    = %{name}-%{version}
 
 groups     = System/Boot
 url        = http://www.gnu.org/software/grub/
