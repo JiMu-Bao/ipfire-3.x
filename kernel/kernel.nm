@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kernel
-version    = 4.6.7
-release    = 3
+version    = 4.7.9
+release    = 1
 thisapp    = linux-%{version}
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -272,20 +272,6 @@ build
 		chmod +x tools/power/cpupower/utils/version-gen.sh
 		make -C tools/power/cpupower CPUFREQ_BENCH=false %{PARALLELISMFLAGS}
 
-		if [ "%{DISTRO_ARCH}" = "x86_64" ]; then
-			pushd tools/power/cpupower/debug/x86_64
-			make %{PARALLELISMFLAGS} centrino-decode powernow-k8-decode
-			popd
-
-			pushd tools/power/x86/x86_energy_perf_policy
-			make
-			popd
-
-			pushd tools/power/x86/turbostat
-			make
-			popd
-		fi
-
 		pushd tools/thermal/tmon
 		make
 		popd
@@ -318,29 +304,7 @@ build
 		make -C tools/power/cpupower DESTDIR=%{BUILDROOT} libdir=%{libdir} \
 			mandir=%{mandir} CPUFREQ_BENCH=false install
 
-		if [ "%{DISTRO_ARCH}" = "x86_64" ]; then
-			pushd tools/power/cpupower/debug/x86_64
-			install -m 755 centrino-decode \
-				%{BUILDROOT}/usr/bin/centrino-decode
-			install -m 755 powernow-k8-decode \
-				%{BUILDROOT}/usr/bin/powernow-k8-decode
-			popd
-		fi
-
 		chmod 0755 %{BUILDROOT}%{libdir}/libcpupower.so*
-
-		# This should be built for all x86 architectures
-		if [ "%{DISTRO_ARCH}" = "x86_64" ]; then
-			mkdir -pv %{BUILDROOT}%{mandir}/man8
-
-			pushd tools/power/x86/x86_energy_perf_policy
-			make DESTDIR=%{BUILDROOT} install
-			popd
-
-			pushd tools/power/x86/turbostat
-			make DESTDIR=%{BUILDROOT} install
-			popd
-		fi
 
 		# tmon
 		pushd tools/thermal/tmon
