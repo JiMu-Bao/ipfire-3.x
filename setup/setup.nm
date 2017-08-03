@@ -5,7 +5,7 @@
 
 name       = setup
 version    = 3.0
-release    = 8
+release    = 9
 arch       = noarch
 
 groups     = Base Build System/Base
@@ -49,6 +49,8 @@ build
 		chmod -v 0400 %{BUILDROOT}%{sysconfdir}/{,g}shadow
 
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/sysctl.d
+		install -m 644 %{DIR_APP}/sysctl/printk.conf \
+			%{BUILDROOT}%{sysconfdir}/sysctl.d/printk.conf
 		install -m 644 %{DIR_APP}/sysctl/swappiness.conf \
 			%{BUILDROOT}%{sysconfdir}/sysctl.d/swappiness.conf
 	end
