@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = iproute2
-version    = 3.14.0
-release    = 3
+version    = 4.12.0
+release    = 1
 
 groups     = Networking/Tools
 url        = http://www.linuxfoundation.org/en/Net:Iproute2
@@ -36,48 +36,13 @@ build
 
 	export RPM_OPT_FLAGS = %{CFLAGS} %{LDFLAGS}
 	export LIBDIR = %{libdir}
+	export SBINDIR = %{sbindir}
 	export IPT_LIB_DIR = %{libdir}/xtables
 
-	install
-		# The installation routine that comes with that package
-		# is totally unusable for use, so do it manually.
-
-		mkdir -pv \
-			%{BUILDROOT}%{includedir} \
-			%{BUILDROOT}%{sbindir} \
-			%{BUILDROOT}%{mandir}/man{3,8} \
-			%{BUILDROOT}%{datadir}/tc \
-			%{BUILDROOT}%{libdir}/tc \
-			%{BUILDROOT}%{sysconfdir}/iproute2
-
-		# Install binaries.
-		for bin in bridge/bridge genl/genl ip/{ifcfg,ip,routef,routel,rtmon,rtpr} \
-				tc/tc misc/{arpd,ifstat,lnstat,nstat,rtacct,ss}; do
-			install -v -m 755 ${bin} %{BUILDROOT}%{sbindir}
-		done
-		ln -svf lnstat %{BUILDROOT}%{sbindir}/ctstat
-		ln -svf lnstat %{BUILDROOT}%{sbindir}/rtstat
-
-		# Install libs.
-		install -v -m 755 tc/q_atm.so %{BUILDROOT}%{libdir}/tc
-
+	install_cmds
 		# libnetlink
 		install -v -m 644 include/libnetlink.h %{BUILDROOT}%{includedir}
 		install -v -m 644 lib/libnetlink.a %{BUILDROOT}%{libdir}
-
-		# Install documentation.
-		install -v -m 644 man/man3/*.3 %{BUILDROOT}%{mandir}/man3
-		install -v -m 644 man/man8/*.8 %{BUILDROOT}%{mandir}/man8
-		ln -svf lnstat.8 %{BUILDROOT}%{mandir}/man8/ctstat.8
-		ln -svf lnstat.8 %{BUILDROOT}%{mandir}/man8/rtstat.8
-		ln -svf routel.8 %{BUILDROOT}%{mandir}/man8/routef.8
-
-		for sh in netem/normal.dist netem/pareto.dist netem/paretonormal.dist; do
-			install -v -m 644 ${sh} %{BUILDROOT}%{datadir}/tc
-		done
-
-		# Install configuration.
-		install -v -m 644 etc/iproute2/* %{BUILDROOT}%{sysconfdir}/iproute2
 	end
 
 	# Keep libnetlink.a.
