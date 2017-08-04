@@ -5,7 +5,7 @@
 
 name       = strongswan
 version    = 5.5.3
-release    = 2
+release    = 3
 
 groups     = Networking/VPN
 url        = http://www.strongswan.org/
@@ -67,7 +67,10 @@ build
 		--disable-rc2 \
 		--with-capabilities=libcap \
 		--enable-unbound \
-		--enable-systemd
+		--enable-systemd \
+		--disable-charon \
+		--disable-stroke \
+		--disable-scepclient
 
 	if "%{DISTRO_ARCH}" == "i686"
 		configure_options += --enable-padlock
@@ -80,6 +83,13 @@ build
 	#end
 
 	install_cmds
+		mv -v %{BUILDROOT}%{unitdir}/strongswan{-swanctl,}.service
+
+		# Create directory for connections
+		mkdir -pv %{BUILDROOT}%{sysconfdir}/swanctl/connections
+		echo "include connections/*.conf" > \
+			%{BUILDROOT}%{sysconfdir}/swanctl/swanctl.conf
+
 		# Drop unneeded files.
 		rm -rvf %{BUILDROOT}%{libdir}/ipsec/lib*.so
 
