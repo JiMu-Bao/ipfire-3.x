@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = kernel
-version    = 4.7.9
+version    = 4.12.4
 release    = 1
 thisapp    = linux-%{version}
 
@@ -258,6 +258,9 @@ build
 				-exec chmod 644 {} \;
 
 			find %{BUILDROOT}/usr/src/kernels -name ".*.cmd" -exec rm -f {} \;
+
+			# remove device tree compiler because there are dead links
+			rm -rf %{BUILDROOT}/usr/src/kernels/*/scripts/dtc
 		}
 
 		for kernel in %{kernels}; do
