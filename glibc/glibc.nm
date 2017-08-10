@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = glibc
-version    = 2.25
+version    = 2.26
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -35,7 +35,7 @@ build
 		autoconf
 		automake
 		binutils >= 2.27
-		gcc >= 4.7
+		gcc >= 4.9
 		gettext
 		kernel-headers >= %{OPTIMIZED_KERNEL}
 		libcap-devel
