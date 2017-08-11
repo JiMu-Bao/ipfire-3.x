@@ -5,8 +5,8 @@
 
 name       = network
 epoch      = 1
-version    = 008
-release    = 3
+version    = 009
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Base Networking/Tools
@@ -61,7 +61,7 @@ packages
 			ppp >= 2.4.5-4
 			radvd
 			rp-pppoe
-			mstpd
+			strongswan
 			sqlite
 			systemd-units
 			tunctl
