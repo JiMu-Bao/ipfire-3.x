@@ -33,7 +33,6 @@ build
 
 	requires
 		asciidoc
-		audit-devel
 		bc
 		binutils >= 2.25
 		binutils-devel
