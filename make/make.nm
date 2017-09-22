@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = make
-version    = 4.1
+version    = 4.2.1
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -23,11 +23,9 @@ description
 end
 
 source_dl  = http://ftp.gnu.org/gnu/make/
-sources    = %{thisapp}.tar.bz2
 
 build
 	test
-		sed -e "s/-w/& /" -i tests/scripts/features/recursion
 		make check
 	end
 end
