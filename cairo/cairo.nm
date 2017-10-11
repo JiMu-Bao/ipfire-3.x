@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = cairo
-version    = 1.14.6
+version    = 1.14.10
 release    = 1
 
 groups     = System/Graphics
@@ -27,8 +27,6 @@ build
 		freetype-devel
 		glib2-devel >= 2.14
 		gobject-introspection-devel
-		libX11-devel
-		libXext-devel>=1.3.1
 		libxml2-devel
 		libpng-devel
 		pixman-devel >= 0.30.0
@@ -37,7 +35,6 @@ build
 	end
 
 	configure_options += \
-		--enable-xlib \
 		--enable-xml \
 		--enable-gobject \
 		--disable-gtk-doc \
