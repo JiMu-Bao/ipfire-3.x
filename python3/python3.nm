@@ -5,7 +5,7 @@
 
 name       = python3
 major_ver  = 3.6
-version    = %{major_ver}.0
+version    = %{major_ver}.3
 release    = 1
 thisapp    = Python-%{version}
 
@@ -42,8 +42,6 @@ build
 		gmp-devel
 		libdb-devel
 		libffi-devel
-		libGL-devel
-		libX11-devel
 		ncurses-devel
 		openssl-devel
 		pkg-config
