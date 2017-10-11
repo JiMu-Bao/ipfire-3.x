@@ -8,7 +8,7 @@ name       = krb5
 version    = %{version_maj}
 version_maj= 1.15
 version_min=
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://web.mit.edu/kerberos/www/
@@ -179,7 +179,6 @@ packages
 
 		requires
 			libcom_err-devel
-			libselinux-devel
 		end
 	end
 
