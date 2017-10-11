@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = dracut
-version    = 045
+version    = 046
 release    = 1
 
 groups     = System/Boot
@@ -82,7 +82,6 @@ packages
 			kbd
 			kpartx
 			less
-			libselinux
 			lvm2
 			mdadm
 			sysvinit
