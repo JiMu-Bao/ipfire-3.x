@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = ding-libs
-version    = 0.6.0
+version    = 0.6.1
 release    = 1
 
 groups     = System/Libraries
-url        = http://fedorahosted.org/sssd/
+url        = https://pagure.io/SSSD/ding-libs
 license    = GPLv3+
 summary    = "Ding is not GLib" assorted utility libraries.
 
@@ -16,7 +16,7 @@ description
 	A set of helpful libraries used by projects such as SSSD.
 end
 
-source_dl  = http://fedorahosted.org/releases/d/i/ding-libs/
+source_dl  = https://releases.pagure.org/SSSD/ding-libs/
 
 build
 	configure_options += \
