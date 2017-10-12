@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = dbus
-version    = 1.11.16
+version    = 1.11.20
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -33,6 +33,12 @@ build
 	configure_options += \
 		--with-systemdsystemunitdir=%{unitdir} \
 		--with-dbus-user=dbus
+
+	export LD_LIBRARY_PATH = %{DIR_APP}/dbus/.libs
+
+	test
+		make check
+	end
 end
 
 packages
