@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = sssd
-version    = 1.14.1
+version    = 1.14.2
 release    = 1
 
 groups     = System/Tools
-url        = http://fedorahosted.org/sssd/
+url        = https://github.com/SSSD/sssd
 license    = GPLv3+
 summary    = System Security Services Daemon.
 
@@ -19,7 +19,7 @@ description
 	account sources.
 end
 
-source_dl  = https://fedorahosted.org/released/sssd/
+source_dl  = https://releases.pagure.org/SSSD/sssd/
 
 build
 	# The system security services daemon and many tools requires
@@ -34,18 +34,17 @@ build
 		cifs-utils-devel >= 6.6
 		cyrus-sasl-devel
 		dbus-devel
-		ding-libs-devel >= 0.6.0
+		ding-libs-devel >= 0.6.1
 		docbook-xsl
 		gettext-devel
 		glib2-devel
 		krb5-devel >= 1.10.3
 		libcollection-devel
-		libdhash-devel
-		libini_config-devel
-		libldb-devel
+		libdhash-devel >= 0.6.1
+		libini_config-devel >= 0.6.1
+		libldb-devel >= 1.1.20
 		libnl3-devel
 		libnfsidmap-devel
-		libsemanage-devel
 		libtalloc-devel
 		libtdb-devel
 		libtevent-devel
@@ -79,7 +78,9 @@ build
 		--disable-static \
 		--disable-rpath \
 		--disable-config-lib \
-		--without-secrets
+		--without-secrets \
+		--without-semanage \
+		--without-selinux
 
 	test
 		make check
