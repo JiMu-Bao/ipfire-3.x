@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = wget
-version    = 1.19.1
+version    = 1.19.4
 release    = 1
 
 groups     = Applications/Internet
@@ -21,7 +21,7 @@ description
 end
 
 source_dl  = http://ftp.gnu.org/gnu/wget/
-sources    = %{thisapp}.tar.xz
+sources    = %{thisapp}.tar.gz
 
 build
 	requires
