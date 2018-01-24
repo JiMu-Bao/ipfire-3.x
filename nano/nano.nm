@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = nano
-mainversion	= 2.3
+mainversion	= 2.9
 subversion	= 2
 version    = %{mainversion}.%{subversion}
 release    = 1
@@ -30,15 +30,6 @@ build
 		--enable-color \
 		--enable-multibuffer \
 		--enable-nanorc
-
-	install_cmds
-		# Disable line wrapping.
-		sed -i doc/nanorc.sample \
-			-e "s/# set nowrap/set nowrap/"
-
-		install -v -m644 -D doc/nanorc.sample \
-			%{BUILDROOT}%{sysconfdir}/nanorc
-	end
 end
 
 packages
