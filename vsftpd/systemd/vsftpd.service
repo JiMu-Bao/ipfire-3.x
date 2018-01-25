@@ -1,9 +1,0 @@
-[Unit]
-Description=Very Secure FTP Daemon
-
-[Service]
-Type=forking
-ExecStart=/usr/bin/vsftpd /etc/vsftpd/vsftpd.conf
-
-[Install]
-WantedBy=multi-user.target
