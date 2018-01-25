@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = glib2
-ver_major  = 2.50
+ver_major  = 2.55
 ver_minor  = 1
 version    = %{ver_major}.%{ver_minor}
 release    = 1
