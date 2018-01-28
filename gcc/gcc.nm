@@ -7,7 +7,7 @@
 build_graphite = 1
 
 name       = gcc
-version    = 6.4.0
+version    = 7.3.0
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -67,6 +67,9 @@ build
 	# Build libcilkrts (only x86)
 	build_libcilkrts = 0
 
+	# Build libmpx (only on x86_64)
+	build_libmpx = 0
+
 	# A couple of configure arguments depending on the architecture and
 	# configuration.
 	configure_options =
@@ -81,6 +84,7 @@ build
 		build_libtsan = 1
 		build_libubsan = 1
 		build_libcilkrts = 1
+		build_libmpx = 1
 	end
 
 	if "%{DISTRO_ARCH}" == "i686"
@@ -283,7 +287,7 @@ build
 		chmod 755 %{BUILDROOT}%{libdir}/libgomp.so.1.*
 
 		# libstdc++
-		ln -svf ../../../libstdc++.so.6.0.22 ${FULLPATH}/libstdc++.so
+		ln -svf ../../../libstdc++.so.6.0.24 ${FULLPATH}/libstdc++.so
 		mv -vf %{BUILDROOT}%{libdir}/lib{std,sup}c++.a ${FULLPATH}
 
 		# libquadmath
@@ -319,6 +323,11 @@ build
 		if [ "%{build_libcilkrts}" = "1" ]; then
 			ln -svf ../../../libcilkrts.so.5.0.0 ${FULLPATH}/libcilkrts.so
 			chmod 755 %{BUILDROOT}%{libdir}/libcilkrts.so.5.*
+		fi
+
+		if [ "%{build_libmpx}" = "1" ]; then
+			ln -svf ../../../libmpx.so.2.0.1 ${FULLPATH}/libmpx.so
+			ln -svf ../../../libmpxwrappers.so.2.0.1 ${FULLPATH}/libmpxwrappers.so
 		fi
 	end
 
@@ -623,6 +632,22 @@ packages
 
 			files
 				%{libdir}/libcilkrts.so.5*
+			end
+		end
+	end
+
+	if "%{build_libmpx}" == "1"
+		package libmpx
+			summary = The Memory Protection Extensions runtime libraries
+			description
+				This package contains the Memory Protection Extensions
+				runtime libraries which is used for -fcheck-pointer-bounds
+				-mmpx instrumented programs.
+			end
+
+			files
+				%{libdir}/libmpx.so.*
+				%{libdir}/libmpxwrappers.so.*
 			end
 		end
 	end
