@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = git
-version    = 2.6.3
-release    = 3
+version    = 2.16.1
+release    = 1
 
 groups     = Development/Tools
 url        = http://git-scm.com/
@@ -25,29 +25,36 @@ build
 		asciidoc
 		expat-devel
 		gettext
+		gnupg2
+		groff
 		libcurl-devel
 		openssl-devel
+		pcre2-devel
 		perl-ExtUtils-MakeMaker
 		perl-devel
-		zlib-devel
+		python-devel
 		xmlto
+		zlib-devel
 	end
 
 	prepare_cmds
-		echo "CFLAGS = %{CFLAGS}" > %{DIR_APP}/config.mak
-		echo "LDFLAGS = %{LDFLAGS}" > %{DIR_APP}/config.mak
-		echo "BLK_SHA1 = 1" >> %{DIR_APP}/config.mak
-		echo "NEEDS_CRYPTO_WITH_SSL = 1" >> %{DIR_APP}/config.mak
-		echo "NO_PYTHON = 1" >> %{DIR_APP}/config.mak
-		echo "NO_TCLTK = 1" >> %{DIR_APP}/config.mak
-		echo "ETC_GITCONFIG = /etc/gitconfig" >> %{DIR_APP}/config.mak
-		echo "DESTDIR = %{BUILDROOT}" >> %{DIR_APP}/config.mak
-		echo "INSTALL = install -p" >> %{DIR_APP}/config.mak
-		echo "GITWEB_PROJECTROOT = /var/lib/git" >> %{DIR_APP}/config.mak
-		echo "htmldir = /usr/share/doc/%{thisapp}" >> %{DIR_APP}/config.mak
-		echo "prefix = /usr" >> %{DIR_APP}/config.mak
-		echo "gitwebdir = /var/www/git" >> %{DIR_APP}/config.mak
-		echo "gitexecdir = lib/git-core" >> %{DIR_APP}/config.mak
+		cat <<EOF > config.mak
+		CFLAGS = %{CFLAGS}
+		LDFLAGS = %{LDFLAGS}
+		NEEDS_CRYPTO_WITH_SSL = 1
+		USE_LIBPCRE2 = 1
+		ETC_GITCONFIG = %{sysconfdir}/gitconfig
+		DESTDIR = %{BUILDROOT}
+		INSTALL = install -p
+		GITWEB_PROJECTROOT = %{localstatedir}/git
+		GNU_ROFF = 1
+		NO_CROSS_DIRECTORY_HARDLINKS = 1
+		PYTHON_PATH = %{python}
+		prefix = %{prefix}
+		gitexecdir = lib/git-core
+		htmldir = %{datadir}/doc
+		gitwebdir = %{localstatedir}/www/git
+		EOF
 
 		# Remove shebang from bash-completion script.
 		sed -i '/^#!bash/,+1 d' contrib/completion/git-completion.bash
