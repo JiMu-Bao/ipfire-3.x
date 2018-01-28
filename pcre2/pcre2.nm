@@ -1,0 +1,103 @@
+
+name       = pcre2
+version    = 10.30
+release    = 1
+
+groups     = System/Libraries
+url        = http://www.pcre.org/
+license    = BSD
+summary    = Perl-compatible regular expression library.
+
+description
+	PCRE2 is a re-working of the original PCRE (Perl-compatible regular
+	expression) library to provide an entirely new API.
+
+	PCRE2 is written in C, and it has its own API. There are three sets of
+	functions, one for the 8-bit library, which processes strings of bytes, one
+	for the 16-bit library, which processes strings of 16-bit values, and one for
+	the 32-bit library, which processes strings of 32-bit values. There are no C++
+	wrappers. This package provides support for strings in 8-bit and UTF-8
+	encodings. Install %{name}-utf16 or %{name}-utf32 packages for the other ones.
+
+	The distribution does contain a set of C wrapper functions for the 8-bit
+	library that are based on the POSIX regular expression API (see the pcre2posix
+	man page). These can be found in a library called libpcre2posix. Note that
+	this just provides a POSIX calling interface to PCRE2; the regular expressions
+	themselves still follow Perl syntax and semantics. The POSIX API is
+	restricted, and does not give full access to all of PCRE2's facilities.
+end
+
+source_dl  = ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/
+
+build
+	requires
+		gcc-c++
+		readline-devel
+		zlib-devel
+	end
+
+	configure_options += \
+		--disable-static \
+		--docdir=%{datadir}/doc/pcre-%{version} \
+		--disable-bsr-anycrlf \
+		--disable-coverage \
+		--disable-ebcdic \
+		--disable-fuzz-support \
+		--disable-jit-sealloc \
+		--enable-jit \
+		--enable-pcre2-8 \
+		--enable-pcre2-16 \
+		--enable-pcre2-32 \
+		--enable-pcre2grep-callout \
+		--enable-pcre2grep-jit \
+		--disable-pcre2grep-libbz2 \
+		--disable-pcre2grep-libz \
+		--disable-pcre2test-libedit \
+		--enable-pcre2test-libreadline \
+		--disable-rebuild-chartables \
+		--enable-unicode \
+		--disable-valgrind
+
+	test
+		export LD_LIBRARY_PATH=$(pwd)/.libs
+		make check
+	end
+end
+
+packages
+	package %{name}
+
+	template PCRE2LIB
+		summary = UTF-%{bits} variant of pcre2
+		description
+			This is PCRE2 library working on UTF-%{bits} strings.
+		end
+
+		files
+			%{libdir}/libpcre2-%{bits}.so.*
+		end
+	end
+
+	package %{name}-utf16
+		template PCRE2LIB
+		bits = 16
+	end
+
+	package %{name}-utf32
+		template PCRE2LIB
+		bits = 32
+	end
+
+	package %{name}-devel
+		template DEVEL
+
+		requires
+			%{name}-utf16 = %{thisver}
+			%{name}-utf32 = %{thisver}
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
