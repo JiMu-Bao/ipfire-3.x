@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = binutils
-version    = 2.29.1
+version    = 2.30
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -18,7 +18,9 @@ description
 	tools for the manipulation of object code in various object file formats.
 end
 
-source_dl = http://ftp.gnu.org/gnu/binutils/
+source_dl = https://ftp.gnu.org/gnu/binutils/ \
+	https://sourceware.org/pub/binutils/releases/
+sources   = %{thisapp}.tar.xz
 
 build
 	requires
@@ -63,7 +65,9 @@ build
 		--disable-static \
 		--enable-64-bit-bfd \
 		--enable-plugins \
-		--with-bugurl="http://bugzilla.ipfire.org/"
+		--with-bugurl="http://bugzilla.ipfire.org/" \
+		--enable-relro=yes \
+		--enable-lto
 
 	build
 		cd %{DIR_SRC}/binutils-build
