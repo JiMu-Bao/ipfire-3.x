@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = clamav
-version    = 0.97.4
+version    = 0.99.3
 release    = 1
 
 groups     = System Environment/Daemons
@@ -24,26 +24,27 @@ description
 	languages for detecting threats.
 end
 
-source_dl  = http://downloads.sourceforge.net/clamav/
+source_dl  = http://www.clamav.net/downloads/production/
 
 CFLAGS    += -D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE -DLDAP_DEPRECATED
+CXXFLAGS  += -std=gnu++98
 
 build
 	requires
 		bzip2-devel
 		curl-devel
 		gmp-devel
+		libxml2-devel
 		ncurses-devel
+		openssl-devel
+		pcre-devel
 		shadow-utils
+		systemd-devel
 		zlib-devel
 	end
 
 	configure_options += \
-		--sysconfdir=/etc \
-		--disable-static \
-		--disable-rpath \
-	        --disable-silent-rules \
-	        --with-dbdir=/var/lib/clamav \
+	        --with-dbdir=%{localstatedir}/lib/clamav \
 	 	--enable-clamdtop \
 		--with-user=clamupdate \
 	        --with-group=clamupdate \
