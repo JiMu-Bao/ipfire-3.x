@@ -5,7 +5,7 @@
 
 name       = python3
 major_ver  = 3.6
-version    = %{major_ver}.3
+version    = %{major_ver}.4
 release    = 1
 thisapp    = Python-%{version}
 
