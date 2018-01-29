@@ -1,0 +1,147 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = compat-openssl
+version    = 1.0.2n
+release    = 1
+thisapp    = openssl-%{version}
+
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = System/Libraries
+url        = http://www.openssl.org/
+license    = OpenSSL
+summary    = A general purpose cryptography library with TLS implementation.
+
+description
+	The OpenSSL toolkit provides support for secure communications between
+	machines. OpenSSL includes a certificate management tool and shared
+	libraries which provide various cryptographic algorithms and protocols.
+end
+
+source_dl  = http://openssl.org/source/
+
+build
+	requires
+		bc
+		gnutls-devel
+		perl
+		util-linux
+		zlib-devel
+	end
+
+	CFLAGS += -DPURIFY
+	export RPM_OPT_FLAGS = %{CFLAGS} %{LDFLAGS}
+
+	prepare_cmds
+		sed -e 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' \
+			-i crypto/opensslv.h
+
+		find crypto/ -name Makefile -exec \
+			sed 's/^ASFLAGS=/&-Wa,--noexecstack /' -i {} \;
+
+		# Generate a table with the compile settings for my perusal.
+		touch Makefile
+		make TABLE PERL=/usr/bin/perl
+	end
+
+	# Set default ssl_arch.
+	ssl_arch = linux-%{DISTRO_ARCH}
+
+	if "%{DISTRO_ARCH}" == "i686"
+		# 386 implies no-sse2
+		ssl_arch = linux-elf no-asm 386
+	end
+
+	if "%{DISTRO_ARCH}" == "armv5tel"
+		ssl_arch = linux-armv4
+	end
+
+	if "%{DISTRO_ARCH}" == "armv7hl"
+		ssl_arch = linux-armv4
+	end
+
+	build
+		./Configure \
+			--prefix=/usr \
+			--openssldir=/etc/pki/tls \
+			--enginesdir=%{libdir}/openssl/engines \
+			shared \
+			zlib-dynamic \
+			enable-camellia \
+			enable-md2 \
+			enable-seed \
+			enable-tlsext \
+			enable-rfc3779 \
+			no-idea \
+			no-mdc2 \
+			no-rc5 \
+			no-ec2m \
+			no-srp \
+			-DSSL_FORBID_ENULL \
+			 %{ssl_arch}
+
+		# Build.
+		make depend
+		make all
+
+		# Generate hashes for the included certs.
+		make rehash
+	end
+
+	test
+		# Revert ca-dir patch. Otherwise the tests will fail.
+		patch -Np1 -R < %{DIR_PATCHES}/openssl-1.0.0-beta4-ca-dir.patch
+
+		make test
+	end
+
+	install
+		make install INSTALL_PREFIX=%{BUILDROOT}
+
+		# Remove man pages
+		rm -rfv %{BUILDROOT}%{sysconfdir}/pki/tls/man %{BUILDROOT}/usr/share/man*
+
+		# Remove configuration files
+		rm -rfv %{BUILDROOT}%{sysconfdir}/pki
+
+		# Remove engines
+		rm -rfv %{BUILDROOT}%{libdir}/{engines,openssl}
+
+		# Remove binaries
+		rm -rfv %{BUILDROOT}%{bindir}
+	end
+end
+
+packages
+	package %{name}
+		requires
+			ca-certificates
+		end
+
+		provides
+			openssl = %{thisver}
+		end
+
+		obsoletes
+			openssl <= %{thisver}
+		end
+	end
+
+	package %{name}-devel
+		template DEVEL
+
+		provides
+			openssl-devel = %{thisver}
+		end
+
+		obsoletes
+			openssl-devel <= %{thisver}
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = openssl
-version    = 1.0.2d
-release    = 4
+version    = 1.1.0g
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Libraries
@@ -23,34 +23,35 @@ source_dl  = http://openssl.org/source/
 
 build
 	requires
-		bc
-		gnutls-devel
+		ca-certificates
+		coreutils
 		perl
-		util-linux
+		perl(Math::BigInt)
+		perl(Module::Load::Conditional)
+		perl(Test::Harness)
+		perl(Test::More)
+		sed
 		zlib-devel
 	end
 
-	CFLAGS += -DPURIFY
-	export RPM_OPT_FLAGS = %{CFLAGS} %{LDFLAGS}
+	export HASHBANGPERL = %{bindir}/perl
 
-	prepare_cmds
-		sed -e 's/SHLIB_VERSION_NUMBER "1.0.0"/SHLIB_VERSION_NUMBER "%{version}"/' \
-			-i crypto/opensslv.h
-
-		find crypto/ -name Makefile -exec \
-			sed 's/^ASFLAGS=/&-Wa,--noexecstack /' -i {} \;
-
-		# Generate a table with the compile settings for my perusal.
-		touch Makefile
-		make TABLE PERL=/usr/bin/perl
-	end
+	CFLAGS += -DPURIFY -Wa,--noexecstack
 
 	# Set default ssl_arch.
 	ssl_arch = linux-%{DISTRO_ARCH}
 
+	if "%{DISTRO_ARCH}" == "x86_64"
+		ssl_arch += enable-ec_nistp_64_gcc_128
+	end
+
 	if "%{DISTRO_ARCH}" == "i686"
 		# 386 implies no-sse2
 		ssl_arch = linux-elf no-asm 386
+	end
+
+	if "%{DISTRO_ARCH}" == "aarch64"
+		ssl_arch += enable-ec_nistp_64_gcc_128
 	end
 
 	if "%{DISTRO_ARCH}" == "armv5tel"
@@ -63,84 +64,63 @@ build
 
 	build
 		./Configure \
-			--prefix=/usr \
-			--openssldir=/etc/pki/tls \
-			--enginesdir=%{libdir}/openssl/engines \
+			--prefix=%{prefix} \
+			--openssldir=%{sysconfdir}/pki/tls \
 			shared \
-			zlib-dynamic \
+			zlib \
 			enable-camellia \
-			enable-md2 \
 			enable-seed \
-			enable-tlsext \
 			enable-rfc3779 \
-			no-idea \
-			no-mdc2 \
+			enable-ssl3 \
+			enable-ssl3-method \
+			no-rc4 \
 			no-rc5 \
-			no-ec2m \
-			no-srp \
-			-DSSL_FORBID_ENULL \
-			 %{ssl_arch}
+			%{ssl_arch} \
+			${CFLAGS} \
+			${LDFLAGS}
 
-		# Build.
-		make depend
+		util/mkdef.pl crypto update
 		make all
 
-		# Generate hashes for the included certs.
-		make rehash
+		# Clean up the .pc files
+		for i in libcrypto.pc libssl.pc openssl.pc; do
+			sed -i '/^Libs.private:/{s/-L[^ ]* //;s/-Wl[^ ]* //}' $i
+		done
 	end
 
 	test
 		# Revert ca-dir patch. Otherwise the tests will fail.
-		patch -Np1 -R < %{DIR_PATCHES}/openssl-1.0.0-beta4-ca-dir.patch
+		patch -Np1 -R < %{DIR_PATCHES}/openssl-1.1.0-ca-dir.patch
 
 		make test
 	end
 
 	install
-		make install build-shared INSTALL_PREFIX=%{BUILDROOT}
-
-		# Install manpages do right place
-		mkdir -pv %{BUILDROOT}/usr/share
-		mv -v %{BUILDROOT}/etc/pki/tls/man %{BUILDROOT}/usr/share/
-
-		if [ -d "%{BUILDROOT}%{libdir}/engines" ]; then
-			mkdir -pv %{BUILDROOT}%{libdir}/openssl
-			mv -v %{BUILDROOT}%{libdir}/engines %{BUILDROOT}%{libdir}/openssl
-		fi
-
-		mkdir -pv %{BUILDROOT}/etc/pki/CA/private
-		chmod -v 700 -R %{BUILDROOT}/etc/pki/CA
-
-		mkdir -pv %{BUILDROOT}/etc/pki/tls
-		install -m 0644 %{DIR_SOURCE}/openssl.cnf %{BUILDROOT}/etc/pki/tls
-		cp -v -r certs %{BUILDROOT}/etc/pki/tls
+		make install DESTDIR=%{BUILDROOT}
 
 		# Rename man pages so that they don't conflict with other system man pages.
 		pushd %{BUILDROOT}%{mandir}
-		for m in $(find . -type f | xargs grep -L '#include'); do
-			d="${m%/*}"
-			d="${d#./}"
-			m="${m##*/}"
-			[[ ${m} == openssl.1* ]] && continue
-			[[ -n "$(find -L "${d}" -type l)" ]] && exit 1
-			mv ${d}/{,ssl-}${m}
-
-			# fix up references to renamed man pages
-			sed -i '/^[.]SH "SEE ALSO"/,/^[.]/s:\([^(, ]*(1)\):ssl-\1:g' "${d}/ssl-${m}"
-			ln -s "ssl-${m}" "${d}/openssl-${m}"
-
-			# locate any symlinks that point to this man page ... we assume
-			# that any broken links are due to the above renaming
-			for s in $(find -L "${d}" -type l); do
-				s="${s##*/}"
-				rm -f "${d}/${s}"
-				ln -s "ssl-${m}" "${d}/ssl-${s}"
-				ln -s "ssl-${s}" "${d}/openssl-${s}"
-			done
+		ln -svf config.5 man5/openssl.cnf.5
+		for manpage in man*/*; do
+			if [ -L "${manpage}" ]; then
+				TARGET=$(ls -l "${manpage}" | awk '{ print $NF }')
+				ln -snf "${TARGET}ssl" "${manpage}ssl"
+				rm -f "${manpage}"
+			else
+				mv ${manpage} ${manpage}ssl
+			fi
 		done
-
-		[[ -n "$(find -L "${d}" -type l)" ]] && exit 1 # "broken manpage links found :("
+		for conflict in passwd rand; do
+			rename ${conflict} ssl${conflict} man*/${conflict}*
+			ln -svf ssl${conflict}.1ssl %{BUILDROOT}%{mandir}/man1/openssl-${conflict}.1ssl
+		done
 		popd
+
+		# Remove dist config
+		rm -vf %{BUILDROOT}%{sysconfdir}/pki/tls/openssl.cnf.dist
+
+		# Move executable stuff to %{bindir}
+		mv -v %{BUILDROOT}%{sysconfdir}/pki/tls/misc/{CA.pl,tsget} %{BUILDROOT}%{bindir}
 	end
 end
 
@@ -156,7 +136,7 @@ packages
 
 		conflicts += %{name} < %{thisver}
 
-		files += %{libdir}/openssl
+		files += %{libdir}/openssl %{libdir}/engines*
 	end
 
 	package %{name}-devel
