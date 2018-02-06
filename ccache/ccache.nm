@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = ccache
-version    = 3.3.3
+version    = 3.3.6
 release    = 1
 
 groups     = Development/Compilers
@@ -31,10 +31,7 @@ build
 		zlib-devel
 	end
 
-	CCACHE_CACHE = /var/cache/ccache
-
-	configure_options += \
-		--mandir=/usr/share/man
+	CCACHE_CACHE = %{localstatedir}/cache/ccache
 
 	prepare_cmds
 		# Disable pch test that fails
@@ -45,8 +42,7 @@ build
 	end
 
 	test
-		# The test suite fails with GCC 6
-		: #SHELL=/bin/bash make check
+		make check
 	end
 
 	install_cmds
