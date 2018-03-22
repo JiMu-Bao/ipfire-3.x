@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 233
-release    = 1
+release    = 2
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -285,6 +285,7 @@ packages
 
 			/usr/bin/systemctl enable \
 				getty@.service \
+				serial-getty@.service \
 				remote-fs.target \
 				systemd-readahead-replay.service \
 				systemd-readahead-collect.service \
@@ -312,6 +313,9 @@ packages
 				mv /etc/systemd/journald.conf.paknew /etc/systemd/journald.conf
 				/usr/bin/systemctl restart systemd-journald.service >/dev/null 2>&1 || :
 			fi
+
+			# Enable spawning getty's on serial devices.
+			systemctl enable serial-getty@.service >/dev/null 2>&1 || :
 		end
 
 		# Be sure to start the new udev after everything is done.
