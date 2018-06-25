@@ -1,0 +1,47 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = iptables
+version    = 1.6.2
+release    = 1
+
+groups     = Networking/Tools
+url        = http://www.netfilter.org
+license    = GPL+
+summary    = Tools for managing Linux kernel packet filtering capabilities
+
+description
+	The iptables utility controls the network packet filtering code
+	in the Linux kernel.
+end
+
+source_dl  = http://ftp.netfilter.org/pub/iptables/
+sources    = %{thisapp}.tar.bz2
+
+build
+	requires
+		libnfnetlink-devel
+	end
+
+	configure_options += \
+		--disable-nftables
+
+	install_cmds
+		# Remove absolute symlink
+		ln -svf ../sbin/xtables-multi %{BUILDROOT}/usr/bin/iptables-xml
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
