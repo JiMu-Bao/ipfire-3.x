@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = glibc
-version    = 2.26
-release    = 3
+version    = 2.27
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -34,6 +34,7 @@ build
 		autoconf
 		automake
 		binutils >= 2.27
+		bison
 		gcc >= 4.9
 		gettext
 		kernel-headers >= %{OPTIMIZED_KERNEL}
