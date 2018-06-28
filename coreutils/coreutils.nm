@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = coreutils
-version    = 8.26
+version    = 8.29
 release    = 1
 
 groups     = System/Base
@@ -17,7 +17,7 @@ description
 	the old GNU fileutils, sh-utils, and textutils packages.
 end
 
-source_dl  = http://ftp.gnu.org/gnu/coreutils/
+source_dl  = https://ftp.gnu.org/gnu/coreutils/
 sources    = %{thisapp}.tar.xz
 
 build
@@ -34,33 +34,18 @@ build
 		texinfo
 	end
 
-	CFLAGS += \
-		-D_GNU_SOURCE=1 \
-		-fno-strict-aliasing \
-		-fpic
-
 	configure_options += \
 		FORCE_UNSAFE_CONFIGURE=1 \
 		--enable-dependency-tracking \
 		--libexecdir=%{libdir} \
 		--enable-largefile \
-		--disable-rpath \
 		--enable-install-program=arch \
 		--enable-no-install-program=hostname,kill,uptime \
-		--with-tty-group \
-
-	prepare_cmds
-		autoreconf -vfi
-	end
-
-	make_build_targets += \
-		V=1
+		--with-tty-group
 
 	test
-		make check || true
+		make check RUN_VERY_EXPENSIVE_TESTS=yes || true
 	end
-
-	make_install_targets += install-man
 
 	install_cmds
 		mkdir -pv %{BUILDROOT}%{sbindir}
