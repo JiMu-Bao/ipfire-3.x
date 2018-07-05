@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = strongswan
-version    = 5.6.1
+version    = 5.6.3
 release    = 1
 
 groups     = Networking/VPN
@@ -40,7 +40,7 @@ build
 		perl
 		sqlite-devel
 		systemd-devel >= 221-2
-		unbound-devel
+		unbound-devel >= 1.7
 	end
 
 	configure_options += \
@@ -54,6 +54,7 @@ build
 		--enable-ccm \
 		--enable-ctr \
 		--enable-gcm \
+		--enable-chapoly \
 		--enable-unity \
 		--enable-xauth-eap \
 		--enable-xauth-noauth \
