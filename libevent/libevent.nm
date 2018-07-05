@@ -5,7 +5,7 @@
 
 name       = libevent
 version    = 2.0.22
-release    = 2
+release    = 2.1
 
 groups     = Development/Tools
 url        = http://libevent.org
@@ -31,9 +31,6 @@ build
 	requires
 		openssl-devel
 	end
-
-	configure_options += \
-		--mandir=/usr/share/man
 end
 
 packages
