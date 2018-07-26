@@ -1,0 +1,45 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libnftnl
+version    = 1.0.6
+release    = 1
+thisapp    = %{name}-%{version}
+
+groups     = Networking/Tools
+url        = http://netfilter.org/projects/libnftnl
+license    = GPLv2
+summary    = Library for low-level interaction with nftables
+
+description
+	Library for low-level interaction with nftables Netlink's API over
+	libmnl.
+end
+
+source_dl  = http://ftp.netfilter.org/pub/libnftnl/
+sources    = %{thisapp}.tar.bz2
+
+build
+	requires
+		autoconf
+		autogen
+		automake
+		libmnl-devel
+		libtool
+	end
+
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

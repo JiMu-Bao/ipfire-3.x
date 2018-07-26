@@ -1,0 +1,51 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = nftables
+version    = 0.100
+snapshot   = 20160602
+release    = 1.%{snapshot}
+thisapp    = %{name}-%{snapshot}
+
+groups     = Networking/Tools
+url        = http://netfilter.org/projects/nftables/
+license    = GPLv2
+summary    = Netfilter Tables userspace utillites
+
+description
+	%{summary}
+end
+
+source_dl  = http://ftp.netfilter.org/pub/nftables/snapshot/
+sources    = %{thisapp}.tar.bz2
+
+build
+	requires
+		autoconf
+		autogen
+		automake
+		bison
+		docbook2X
+		docbook-xsl
+		flex
+		gmp-devel
+		libtool
+		libmnl-devel
+		libnftnl-devel >= 1.0.5
+		readline-devel
+	end
+
+	prepare_cmds
+		./autogen.sh
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
