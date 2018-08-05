@@ -7,7 +7,7 @@
 build_graphite = 1
 
 name       = gcc
-version    = 7.3.0
+version    = 8.2.0
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -64,9 +64,6 @@ build
 	# Build libubsan
 	build_libubsan = 0
 
-	# Build libcilkrts (only x86)
-	build_libcilkrts = 0
-
 	# Build libmpx (only on x86_64)
 	build_libmpx = 0
 
@@ -83,7 +80,6 @@ build
 		build_liblsan = 1
 		build_libtsan = 1
 		build_libubsan = 1
-		build_libcilkrts = 1
 		build_libmpx = 1
 	end
 
@@ -92,7 +88,6 @@ build
 
 		build_libquadmath = 1
 		build_libubsan = 1
-		build_libcilkrts = 1
 	end
 
 	if "%{DISTRO_ARCH}" == "aarch64"
@@ -287,7 +282,7 @@ build
 		chmod 755 %{BUILDROOT}%{libdir}/libgomp.so.1.*
 
 		# libstdc++
-		ln -svf ../../../libstdc++.so.6.0.24 ${FULLPATH}/libstdc++.so
+		ln -svf ../../../libstdc++.so.6.0.25 ${FULLPATH}/libstdc++.so
 		mv -vf %{BUILDROOT}%{libdir}/lib{std,sup}c++.a ${FULLPATH}
 
 		# libquadmath
@@ -315,14 +310,8 @@ build
 
 		# libubsan
 		if [ "%{build_libubsan}" = "1" ]; then
-			ln -svf ../../../libubsan.so.0.0.0 ${FULLPATH}/libubsan.so
+			ln -svf ../../../libubsan.so.1.0.0 ${FULLPATH}/libubsan.so
 			chmod 755 %{BUILDROOT}%{libdir}/libubsan.so.*
-		fi
-
-		# libcilkrts
-		if [ "%{build_libcilkrts}" = "1" ]; then
-			ln -svf ../../../libcilkrts.so.5.0.0 ${FULLPATH}/libcilkrts.so
-			chmod 755 %{BUILDROOT}%{libdir}/libcilkrts.so.5.*
 		fi
 
 		if [ "%{build_libmpx}" = "1" ]; then
@@ -532,7 +521,7 @@ packages
 		end
 
 		files
-			%{libdir}/libitm.so.1*
+			%{libdir}/libitm.so.*
 		end
 	end
 
@@ -565,7 +554,7 @@ packages
 		end
 
 		files
-			%{libdir}/libatomic.so.1*
+			%{libdir}/libatomic.so.*
 		end
 	end
 
@@ -577,7 +566,7 @@ packages
 		end
 
 		files
-			%{libdir}/libasan.so.2*
+			%{libdir}/libasan.so.*
 		end
 	end
 
@@ -590,7 +579,7 @@ packages
 			end
 
 			files
-				%{libdir}/libtsan.so.0*
+				%{libdir}/libtsan.so.*
 			end
 		end
 	end
@@ -604,7 +593,7 @@ packages
 			end
 
 			files
-				%{libdir}/libubsan.so.0*
+				%{libdir}/libubsan.so.*
 			end
 		end
 	end
@@ -618,20 +607,7 @@ packages
 			end
 
 			files
-				%{libdir}/liblsan.so.0*
-			end
-		end
-	end
-
-	if "%{build_libcilkrts}" == "1"
-		package libcilkrts
-			summary = The Cilk+ runtime library
-			description
-				This package contains the Cilk+ runtime library.
-			end
-
-			files
-				%{libdir}/libcilkrts.so.5*
+				%{libdir}/liblsan.so.*
 			end
 		end
 	end
