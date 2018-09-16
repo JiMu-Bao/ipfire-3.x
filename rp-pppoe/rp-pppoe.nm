@@ -5,7 +5,7 @@
 
 name       = rp-pppoe
 version    = 3.11
-release    = 1
+release    = 2
 
 groups     = Networking/Dialin
 url        = http://www.roaringpenguin.com/pppoe/
@@ -33,10 +33,12 @@ build
 	DIR_APP := %{DIR_APP}/src
 	CFLAGS += -D_GNU_SOURCE -fno-strict-aliasing
 
+	pppd_version = %(pppd --version 2>&1 | awk '{ print $NF }')
+
 	prepare_cmds
 		# PLUGIN_DIR defaults to /etc/ppp/plugins, which is not what we want.
 		sed -i Makefile.in \
-			-e "s@^PLUGIN_DIR=.*@PLUGIN_DIR=%{libdir}/pppd/$(pppd --version 2>&1 | awk '{ print $NF }')@"
+			-e "s@^PLUGIN_DIR=.*@PLUGIN_DIR=%{libdir}/pppd/%{pppd_version}@"
 
 		# Always enable kernel mode PPPoE for the server, because we
 		# don't ship the userspace component.
@@ -66,7 +68,7 @@ packages
 	package %{name}
 		requires
 			iproute2
-			ppp
+			ppp = %{pppd_version}
 		end
 
 		script postin
