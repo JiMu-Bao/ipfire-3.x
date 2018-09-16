@@ -5,7 +5,7 @@
 
 name       = strongswan
 version    = 5.6.3
-release    = 1
+release    = 2
 
 groups     = Networking/VPN
 url        = http://www.strongswan.org/
@@ -85,6 +85,10 @@ build
 
 	install_cmds
 		mv -v %{BUILDROOT}%{unitdir}/strongswan{-swanctl,}.service
+
+		# Install network settings
+		install -v -m 644 %{DIR_SOURCE}/network.conf \
+			%{BUILDROOT}%{sysconfdir}/strongswan.d/
 
 		# Create directory for connections
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/swanctl/connections
