@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = rp-pppoe
-version    = 3.11
-release    = 2
+version    = 3.12
+release    = 1
 
 groups     = Networking/Dialin
-url        = http://www.roaringpenguin.com/pppoe/
+url        = https://www.roaringpenguin.com/products/pppoe
 license    = GPLv2+
 summary    = Administration tools for PPPoE connections.
 
