@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = linux-firmware
-version    = 20130910
-git_ver    = 3fe01af
+version    = 20180918
+git_ver    = 44d4fca
 release    = 1.git%{git_ver}
 arch       = noarch
 thisapp    = %{name}-%{git_ver}
@@ -17,9 +17,9 @@ license    = Non-GPL
 summary    = Firmware Binaries for some Devices.
 
 description
-	linux-firmware provides some firmware binaries that \
-	are loaded into the devices at startup. \
-	For detailed license info check the WHENCE and LICENSE.* texts \
+	linux-firmware provides some firmware binaries that
+	are loaded into the devices at startup.
+	For detailed license info check the WHENCE and LICENSE.* texts
 	for the specific firmware.
 end
 
