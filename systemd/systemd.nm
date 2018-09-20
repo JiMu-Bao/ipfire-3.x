@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 233
-release    = 2
+release    = 3
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -183,6 +183,9 @@ build
 		# Remove udev rules for "predictable" network device renaming.
 		# http://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/
 		rm -vf %{BUILDROOT}/usr/lib/udev/rules.d/80-net-name-slot.rules
+
+		# Don't let udev set up any networking
+		rm -vf %{BUILDROOT}/usr/lib/udev/rules.d/80-net-setup-link.rules
 
 		# Create journald related folders.
 		mkdir -pv %{BUILDROOT}/run/log/journal
