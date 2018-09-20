@@ -165,7 +165,7 @@ build
 			cat .config
 
 			# Run the build.
-			make ARCH=%{kernel_arch} oldnoconfig >/dev/null
+			make ARCH=%{kernel_arch} olddefconfig >/dev/null
 			make ARCH=%{kernel_arch} CC="gcc -fno-PIE" %{kernel_target} modules \
 				%{kernel_build_flags} %{PARALLELISMFLAGS}
 

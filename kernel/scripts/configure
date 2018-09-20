@@ -84,7 +84,7 @@ function merge_config() {
 		fi
 	done
 
-	local config_mode="oldnoconfig"
+	local config_mode="olddefconfig"
 	local extra_configs
 	while [ $# -gt 0 ]; do
 		case "${1}" in
@@ -138,7 +138,7 @@ function merge_config() {
 	done
 
 	if [ "${config_mode}" != "none" ]; then
-		echo "Running 'make oldnoconfig' for ${arch} (${flavour})..."
+		echo "Running 'make olddefconfig' for ${arch} (${flavour})..."
 		local kernel_arch="$(get_kernel_arch "${arch}")"
 		(
 			cd ${KERNEL_DIR}
@@ -171,9 +171,9 @@ function make_oldconfig() {
 		echo "You may now edit the configuration..."
 
 		local option
-		select option in oldconfig menuconfig oldnoconfig startover quit; do
+		select option in oldconfig menuconfig olddefconfig startover quit; do
 			case "${option}" in
-				oldconfig|menuconfig|oldnoconfig)
+				oldconfig|menuconfig|olddefconfig)
 					make ARCH=${kernel_arch} ${option}
 					;;
 				startover)
