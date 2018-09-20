@@ -27,6 +27,9 @@ for filename in filelist:
 		if line.endswith("Kernel Configuration"):
 			continue
 
+		if line.startswith("# Compiler:"):
+			continue
+
 		option = value = None
 
 		m = re.match("^# (.*) is not set$", line)
