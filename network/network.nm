@@ -5,7 +5,7 @@
 
 name       = network
 epoch      = 1
-version    = 009
+version    = 010
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -21,13 +21,14 @@ description
 	everything.
 end
 
-source_dl  = http://source.ipfire.org/releases/network/
+source_dl  = https://source.ipfire.org/releases/network/
 
 build
 	requires
 		autoconf
 		automake
 		docbook-xsl
+		libnl3-devel
 		libxslt
 		systemd-devel
 	end
@@ -47,7 +48,6 @@ packages
 	package %{name}
 		requires
 			bash >= 4.0
-			batctl
 			crda
 			curl
 			dhclient >= 4.2.4-2
@@ -64,13 +64,13 @@ packages
 			strongswan
 			sqlite
 			systemd-units
-			tunctl
 			wpa_supplicant >= 1.0-2
+			/usr/bin/flock
 			/usr/bin/logger
 		end
 
 		recommends
-			quagga
+			frr
 		end
 
 		configfiles
