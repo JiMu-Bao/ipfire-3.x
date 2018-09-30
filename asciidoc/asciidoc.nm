@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = asciidoc
-version    = 8.4.5
+version    = 8.6.9
 release    = 1
 arch       = noarch
 
@@ -26,29 +26,12 @@ build
 		python
 	end
 
-	prepare_cmds
-		# Remove forbidden "env" interpreter from script.
-		sed -e "s@#!.*@#!/bin/bash@g" -i a2x
-	end
+	make_install_targets += docs
 
 	install_cmds
-		# Determite python version.
-		PYTHON_VERSION=$(python -c "import platform; print '.'.join(platform.python_version_tuple()[:2])")
-
-		# Create file layout.
-		mkdir -pv %{BUILDROOT}/etc/asciidoc
-		mkdir -pv %{BUILDROOT}/usr/lib/python${PYTHON_VERSION}/site-packages
-
-		# Move config data to /etc and link it to correct place,
-		# so asciidoc will work.
-		for dir in dblatex docbook-xsl images javascripts stylesheets ; do
-			mv %{BUILDROOT}/etc/asciidoc/$dir \
-				%{BUILDROOT}/usr/share/asciidoc
-			ln -svf ../../usr/share/asciidoc/$dir %{BUILDROOT}/etc/asciidoc/
-		done
-
 		# Install python API.
-		install -Dpm 644 asciidocapi.py %{BUILDROOT}/usr/lib/python${PYTHON_VERSION}/site-packages/asciidocapi.py
+		install -Dpm 644 asciidocapi.py \
+			%{BUILDROOT}/usr/lib/python${PYTHON_VERSION}/site-packages/asciidocapi.py
 	end
 end
 
@@ -56,6 +39,7 @@ packages
 	package %{name}
 		requires
 			docbook-xsl
+			libxslt
 		end
 	end
 end
