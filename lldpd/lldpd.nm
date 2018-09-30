@@ -4,25 +4,23 @@
 ###############################################################################
 
 name       = lldpd
-version    = 0.9.7
+version    = 1.0.1
 release    = 1
 
 groups     = Networking/Tools
 url        = http://vincentbernat.github.com/lldpd/
-license    = GPL
-summary    = Utilities for the Link Layer Discovery Protocol.
+license    = ISC
+summary    = Utilities for the Link Layer Discovery Protocol
 
 description
 	The LLDPD project aims to provide a comprehensive implementation of
 	the IEEE standard 802.1AB Link Layer Discovery Protocol.
 end
 
-source_dl = https://github.com/vincentbernat/lldpd/archive/%{version}.tar.gz#/
+source_dl = https://media.luffy.cx/files/lldpd/
 
 build
 	requires
-		autoconf
-		automake
 		libevent-devel
 		libxml2-devel
 		pkg-config
@@ -39,8 +37,6 @@ build
 
 	prepare_cmds
 		%{create_user}
-
-		./autogen.sh
 	end
 
 	install_cmds

@@ -3,9 +3,7 @@ Description=Link Layer Discovery Protocol Daemon
 After=network.target
 
 [Service]
-RemainAfterExit=yes
-ExecStartPre=/sbin/modprobe 8021q
-ExecStart=/usr/sbin/lldpd -d -c
+ExecStart=/usr/sbin/lldpd -d -k
 Restart=on-failure
 
 [Install]
