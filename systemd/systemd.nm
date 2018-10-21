@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = systemd
-version    = 233
-release    = 3
+version    = 239
+release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -35,8 +35,6 @@ build
 		/usr/bin/tree
 		/usr/bin/umount
 
-		autoconf
-		automake
 		attr-devel
 		cryptsetup-luks-devel >= 1.4.2
 		dbus-devel
@@ -55,9 +53,10 @@ build
 		libcap-devel
 		libgcrypt-devel
 		libmount-devel
-		libtool
 		libuuid-devel
 		m4
+		meson
+		ninja >= 1.5
 		pam-devel
 		pciutils-devel
 		python3-devel
@@ -70,30 +69,36 @@ build
 
 	export LD_LIBRARY_PATH = %{DIR_APP}/.libs
 
-	configure_options += \
-		PYTHON=%{python3} \
-		--with-sysvinit-path= \
-		--with-sysvrcnd-path= \
-		--enable-zlib \
-		--disable-smack \
-		--disable-backlight \
-		--disable-firstboot \
-		--disable-hibernate \
-		--disable-importd \
-		--disable-libiptc \
-		--disable-machined \
-		--disable-networkd \
-		--disable-resolved \
-		--disable-sysusers \
-		--disable-timesyncd \
-		--disable-timedated \
-		--disable-polkit \
-		--disable-static
+	configure_options = \
+		-Dsysvinit-path= \
+		-Dsysvrcnd-path= \
+		-Dzlib=true \
+		-Dsmack=false \
+		-Dbacklight=false \
+		-Dfirstboot=false \
+		-Dhibernate=false \
+		-Dimportd=false \
+		-Dlibiptc=false \
+		-Dmachined=false \
+		-Dnetworkd=false \
+		-Dresolve=false \
+		-Dportabled=false \
+		-Dsysusers=false \
+		-Dtimesyncd=false \
+		-Dtimedated=false \
+		-Dpolkit=false \
+		-Dstatic=false
 
 	prepare_cmds
 		%{create_groups}
+	end
 
-		./autogen.sh
+	build
+		# Call meson and pass configure options.
+		meson --buildtype=plain %{configure_options} . build
+
+		# Call ninja to start build
+		ninja -v %{PARALLELISMFLAGS} -C build
 	end
 
 	test
@@ -104,10 +109,16 @@ build
 		systemd-machine-id-setup
 
 		# Run the testsuite.
-		make check || true
+		ninja test -v %{PARALLELISMFLAGS} -C build || true
 	end
 
-	install_cmds
+	install
+		# Export destdir.
+		export DESTDIR=%{BUILDROOT}
+
+		# Call ninja to perform installation
+		ninja install -v %{PARALLELISMFLAGS} -C build
+
 		# Create folder in log to store the journal.
 		mkdir -pv %{BUILDROOT}/var/log/journal
 
