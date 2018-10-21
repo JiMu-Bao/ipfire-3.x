@@ -1,0 +1,52 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = meson
+version    = 0.48.1
+release    = 1
+arch	   = noarch
+
+groups     = Applications/System
+url        = http://mesonbuild.com/
+license    = ASL 2.0
+summary    = High productivity build system
+
+description
+	Meson is a build system designed to optimize programmer
+	productivity. It aims to do this by providing simple, out-of-the-box
+	support for modern software development tools and practices, such as
+	unit tests, coverage reports, Valgrind, CCache and the like.
+end
+
+source_dl  = https://github.com/mesonbuild/meson/archive/%{version}/
+
+build
+	requires
+		bison
+		boost-devel
+		flex
+		gcc-c++
+		gettext
+		ninja-build >= 1.5
+		python3-devel >= 3.5
+		python3-setuptools
+	end
+
+	build
+		%{python3} setup.py build
+	end
+
+	install
+		%{python3} setup.py install -O1 --skip-build --root %{BUILDROOT}
+	end
+end
+
+packages
+	package %{name}
+		requires
+			python3-setuptools
+		end
+	end
+end
