@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = python-setuptools
-version    = 28.2.0
+version    = 40.4.3
 release    = 1
 arch       = noarch
 thisapp    = setuptools-%{version}
@@ -21,6 +21,8 @@ description
 	especially ones that have dependencies on other packages.
 end
 
+source_dl = https://github.com/pypa/setuptools/archive/v%{version}.tar.gz#/
+
 build
 	requires
 		pakfire-builder >= 0.9.23-2
@@ -36,9 +38,11 @@ build
 
 	build
 		pushd %{DIR_APP3}
+		%{python3} bootstrap.py
 		CFLAGS="%{CFLAGS}" %{python3} setup.py build
 		popd
 
+		%{python} bootstrap.py
 		CFLAGS="%{CFLAGS}" %{python} setup.py build
 	end
 
