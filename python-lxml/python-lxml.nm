@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = python-lxml
-version    = 3.4.4
+version    = 4.2.5
 release    = 1
 thisapp    = lxml-%{version}
 
@@ -43,11 +43,6 @@ build
 
 		# Run tests.
 		%{python3} test.py -p -v
-
-		# Launch more tests.
-		export PYTHONPATH=src
-		%{python3} selftest.py
-		%{python3} selftest2.py		
 	end
 
 	install
