@@ -93,7 +93,6 @@ dbus	81	81	/		/sbin/nologin	dbus
 jonas	82	82	/var/lib/jonas		/sbin/nologin	jonas
 clamav	83	83	/tmp		/sbin/nologin	clamav
 screen	-	84	-		-	screen
-quaggavt	-	85	-		-	quagga
 sabayon	86	86	-		/sbin/nologin	sabayon
 polkituser	87	87	/		/sbin/nologin	PolicyKit
 wbpriv	-	88	-		-	samba-common
