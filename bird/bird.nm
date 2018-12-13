@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = bird
-version    = 1.6.0
+version    = 2.0.2
 release    = 1
 
 groups     = Networking/Routing
@@ -26,29 +26,6 @@ build
 		ncurses-devel
 		readline-devel
 	end
-
-	prepare_cmds
-		mkdir -pv %{DIR_APP}/ipv6
-		tar c --exclude ipv6 . | tar x -C ipv6
-	end
-
-	build
-		./configure %{configure_options}
-		make %{PARALLELISMFLAGS}
-
-		cd ipv6
-		./configure %{configure_options} --enable-ipv6
-		make %{PARALLELISMFLAGS}
-	end
-
-	install
-		make install DESTDIR=%{BUILDROOT}
-
-		cd ipv6
-		make install DESTDIR=%{BUILDROOT}
-
-		rm -rfv %{BUILDROOT}/var
-	end
 end
 
 packages
@@ -63,8 +40,6 @@ packages
 			/bin/systemctl --no-reload disable bird.service > /dev/null 2>&1 || :
 			/bin/systemctl stop bird.service > /dev/null 2>&1 || :
 
-			/bin/systemctl --no-reload disable bird6.service > /dev/null 2>&1 || :
-			/bin/systemctl stop bird6.service > /dev/null 2>&1 || :
 		end
 
 		script postun
@@ -74,7 +49,6 @@ packages
 		script postup
 			/bin/systemctl daemon-reload 2>&1 || :
 			/bin/systemctl reload-or-try-restart bird.service >/dev/null 2>&1 || :
-			/bin/systemctl reload-or-try-restart bird6.service >/dev/null 2>&1 || :
 		end
 	end
 
