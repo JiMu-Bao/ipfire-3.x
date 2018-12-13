@@ -6,7 +6,7 @@
 name       = network
 epoch      = 1
 version    = 010
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = Base Networking/Tools
@@ -70,7 +70,7 @@ packages
 		end
 
 		recommends
-			frr
+			bird
 		end
 
 		configfiles
