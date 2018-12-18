@@ -5,7 +5,7 @@
 
 name       = glibc
 version    = 2.28
-release    = 1
+release    = 2
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -45,7 +45,7 @@ build
 	end
 
 	# Build glibc with custom cflags
-	GLIBC_FLAGS = -O3 -g -fasynchronous-unwind-tables -DNDEBUG
+	GLIBC_FLAGS = -O2 -g -DNDEBUG -pipe
 
 	if "%{DISTRO_ARCH}" == "i686"
 		GLIBC_FLAGS += -march=i686 -mtune=generic
