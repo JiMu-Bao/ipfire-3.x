@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = kernel
-version    = 4.18.9
+version    = 4.18.20
 release    = 1
 thisapp    = linux-%{version}
 
@@ -61,10 +61,6 @@ build
 
 	# A list of kernels to build.
 	kernels =
-
-	# Arguments that are passed to the kernel build command
-	#  Clearning any host CFLAGS or LDFLAGS for kernel build
-	kernel_build_flags = CFLAGS= LDFLAGS=
 
 	kernel_arch = %{DISTRO_PLATFORM}
 	kernel_target = bzImage
@@ -138,7 +134,6 @@ build
 		for kernel in %{kernels}; do
 			configure_kernel ${kernel}
 		done
-
 	end
 
 	build
@@ -166,8 +161,8 @@ build
 
 			# Run the build.
 			make ARCH=%{kernel_arch} olddefconfig >/dev/null
-			make ARCH=%{kernel_arch} CC="gcc -fno-PIE" %{kernel_target} modules \
-				%{kernel_build_flags} %{PARALLELISMFLAGS}
+			make ARCH=%{kernel_arch} %{kernel_target} modules \
+				%{PARALLELISMFLAGS}
 
 			# Compile Flattened Device Tree database
 			case "${DISTRO_ARCH}" in
