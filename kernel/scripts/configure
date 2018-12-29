@@ -302,12 +302,12 @@ while [ $# -gt 0 ]; do
 		help|"")
 			echo "${0} - available commands:"
 			echo "    * merge <arch> <flavour> <output filename>"
-			echo "    * update"
 			echo "    * menuconfig"
 			echo "    * oldconfig"
+			echo "    * olddefconfig"
 			exit 0
 			;;
-		menuconfig|merge|oldconfig|update)
+		menuconfig|merge|oldconfig|olddefconfig)
 			action=${arg}
 			break
 			;;
@@ -329,12 +329,8 @@ case "${action}" in
 		merge_config $@
 		exit $?
 		;;
-	menuconfig|oldconfig)
+	menuconfig|oldconfig|olddefconfig)
 		make_config "${action}"
-		exit $?
-		;;
-	update)
-		diff_configs $@
 		exit $?
 		;;
 esac
