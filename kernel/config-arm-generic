@@ -310,8 +310,6 @@ CONFIG_POWER_RESET_VEXPRESS=y
 # CONFIG_BATTERY_88PM860X is not set
 # CONFIG_BATTERY_DA9030 is not set
 # CONFIG_BATTERY_DA9052 is not set
-# CONFIG_BATTERY_TWL4030_MADC is not set
-# CONFIG_BATTERY_RX51 is not set
 # CONFIG_CHARGER_TWL4030 is not set
 # CONFIG_CHARGER_MAX8997 is not set
 # CONFIG_CHARGER_MAX8998 is not set
@@ -657,14 +655,6 @@ CONFIG_XILINX_ZYNQMP_DMA=m
 # CONFIG_DW_DMAC_PCI is not set
 
 #
-# DMABUF options
-#
-# CONFIG_UIO_AEC is not set
-# CONFIG_UIO_SERCOS3 is not set
-# CONFIG_UIO_PCI_GENERIC is not set
-# CONFIG_UIO_MF624 is not set
-
-#
 # Common Clock Framework
 #
 CONFIG_COMMON_CLK_WM831X=y
@@ -716,9 +706,7 @@ CONFIG_ARM_PL172_MPMC=m
 #
 # Analog to digital converters
 #
-# CONFIG_LP8788_ADC is not set
 CONFIG_MESON_SARADC=m
-# CONFIG_TWL6030_GPADC is not set
 
 #
 # Temperature sensors

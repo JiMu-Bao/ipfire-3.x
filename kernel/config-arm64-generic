@@ -628,7 +628,6 @@ CONFIG_DMA_ENGINE_RAID=y
 # Xen driver support
 #
 CONFIG_XEN_EFI=y
-# CONFIG_CHROME_PLATFORMS is not set
 
 #
 # Common Clock Framework

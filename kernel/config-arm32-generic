@@ -1401,7 +1401,6 @@ CONFIG_MTK_HSDMA=m
 #
 # Xen driver support
 #
-CONFIG_CHROME_PLATFORMS=y
 # CONFIG_MELLANOX_PLATFORM is not set
 
 #
