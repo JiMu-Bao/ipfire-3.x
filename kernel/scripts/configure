@@ -22,6 +22,16 @@ SUBPLATFORMS=(
 	[arm]="arm64 arm32"
 )
 
+search_kernel_dir() {
+	local dir
+	for dir in /builddir/source/linux-*; do
+		if [ -d "${dir}" ]; then
+			echo "${dir}"
+			break
+		fi
+	done
+}
+
 function get_platform() {
 	local arch="${1}"
 
@@ -296,22 +306,17 @@ function diff_configs() {
 	rm -rf ${tmpdir}
 }
 
-KERNEL_DIR=
+KERNEL_DIR="$(search_kernel_dir)"
 
 # Parse commandline.
 while [ $# -gt 0 ]; do
 	arg=${1}; shift
 	case "${arg}" in
-		--kernel-dir=*)
-			KERNEL_DIR=${arg#--kernel-dir=}
-			;;
 		help|"")
 			echo "${0} - available commands:"
 			echo "    * merge <arch> <flavour> <output filename>"
 			echo "    * update ..."
 			echo "    * oldconfig"
-			echo ""
-			echo "    You must always set --kernel-dir=..."
 			exit 0
 			;;
 		merge|oldconfig|update)
@@ -322,7 +327,7 @@ while [ $# -gt 0 ]; do
 done
 
 if [ -z "${KERNEL_DIR}" ]; then
-	echo >&2 "--kernel-dir=... was not set!"
+	echo >&2 "KERNEL_DIR was not set!"
 	exit 2
 fi
 
