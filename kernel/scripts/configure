@@ -144,7 +144,7 @@ function merge_config() {
 	for config in ${configs}; do
 		cat ${tmp_out} > ${tmp_in}
 		perl ${SCRIPTS_DIR}/merge.pl \
-			${config} ${tmp_in} > ${tmp_out}
+			${tmp_in} ${config} > ${tmp_out}
 	done
 
 	if [ "${config_mode}" != "none" ]; then
