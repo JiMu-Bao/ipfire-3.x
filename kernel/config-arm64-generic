@@ -441,11 +441,6 @@ CONFIG_MDIO_XGENE=m
 CONFIG_INPUT_MATRIXKMAP=m
 
 #
-# Input Device Drivers
-#
-# CONFIG_KEYBOARD_SAMSUNG is not set
-
-#
 # Serial drivers
 #
 CONFIG_SERIAL_8250_PNP=y
