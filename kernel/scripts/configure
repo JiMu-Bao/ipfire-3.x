@@ -307,7 +307,7 @@ while [ $# -gt 0 ]; do
 			echo "    * olddefconfig"
 			exit 0
 			;;
-		menuconfig|merge|oldconfig|olddefconfig)
+		listnewconfig|menuconfig|merge|oldconfig|olddefconfig)
 			action=${arg}
 			break
 			;;
@@ -329,7 +329,7 @@ case "${action}" in
 		merge_config $@
 		exit $?
 		;;
-	menuconfig|oldconfig|olddefconfig)
+	listnewconfig|menuconfig|oldconfig|olddefconfig)
 		make_config "${action}"
 		exit $?
 		;;
