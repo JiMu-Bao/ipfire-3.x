@@ -101,10 +101,8 @@ CONFIG_GENERIC_IDLE_POLL_SETUP=y
 CONFIG_CLONE_BACKWARDS=y
 
 #
-# Bluetooth device drivers
+# Network testing
 #
-# CONFIG_BT_HCIBTSDIO is not set
-# CONFIG_BT_MRVL_SDIO is not set
 # CONFIG_RFKILL_GPIO is not set
 
 #
