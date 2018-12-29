@@ -163,7 +163,7 @@ function merge_config() {
 }
 
 # This function runs an interactive "make oldconfig".
-function make_oldconfig() {
+function make_config() {
 	local arch="x86_64"
 	local kernel_arch="x86"
 	local flavour="default"
@@ -175,27 +175,14 @@ function make_oldconfig() {
 	merge_config ${arch} ${flavour} ${config_in} --mode=none
 
 	(
-		cd ${KERNEL_DIR}
+		pushd ${KERNEL_DIR}
 		cat ${config_in} > .config
 
 		echo "You may now edit the configuration..."
-
-		local option
-		select option in oldconfig menuconfig olddefconfig startover quit; do
-			case "${option}" in
-				oldconfig|menuconfig|olddefconfig)
-					make ARCH=${kernel_arch} ${option}
-					;;
-				startover)
-					cat ${config_in} > .config
-					;;
-				quit)
-					break
-					;;
-			esac
-		done
+		make ARCH=${kernel_arch} "$@"
 
 		cat .config > ${config_out}
+		popd
 	)
 
 	${SCRIPTS_DIR}/configdiff.py ${config_in} ${config_out} > ${diff_out}
@@ -315,11 +302,12 @@ while [ $# -gt 0 ]; do
 		help|"")
 			echo "${0} - available commands:"
 			echo "    * merge <arch> <flavour> <output filename>"
-			echo "    * update ..."
+			echo "    * update"
+			echo "    * menuconfig"
 			echo "    * oldconfig"
 			exit 0
 			;;
-		merge|oldconfig|update)
+		menuconfig|merge|oldconfig|update)
 			action=${arg}
 			break
 			;;
@@ -341,8 +329,8 @@ case "${action}" in
 		merge_config $@
 		exit $?
 		;;
-	oldconfig)
-		make_oldconfig
+	menuconfig|oldconfig)
+		make_config "${action}"
 		exit $?
 		;;
 	update)
