@@ -35,12 +35,14 @@ Like oldconfig, but automatically answers all options with the default value.
 
 #### menuconfig
 
-If you want to edit the configuration using the kernel's config editor, you can
-do it for the main architecture (which is x86_64 right now). All other configuration
-files will be updated afterwards and potentially prompted for options that diverge
-for other architectures.
+If you want to edit the configuration using the kernel's config editor. All
+configuration files will be updated afterwards and potentially prompted for options
+that diverge for different architectures.
 
   (pakfire-shell)> scripts/configure menuconfig
+
+Appending the --arch= argument allows you to edit a specific architecture.
+Default is x86_64.
 
 #### listnewconfig
 

@@ -164,8 +164,11 @@ function merge_config() {
 
 # This function runs an interactive "make oldconfig".
 function make_config() {
-	local arch="x86_64"
-	local kernel_arch="x86"
+	local arch="${1}"
+	shift
+
+	# Detect kernel arch
+	local kernel_arch="$(get_kernel_arch "${arch}")"
 	local flavour="default"
 
 	local config_in=$(mktemp)
@@ -293,6 +296,7 @@ function diff_configs() {
 	rm -rf ${tmpdir}
 }
 
+ARCH="x86_64"
 KERNEL_DIR="$(search_kernel_dir)"
 
 # Parse commandline.
@@ -309,7 +313,16 @@ while [ $# -gt 0 ]; do
 			;;
 		listnewconfig|menuconfig|merge|oldconfig|olddefconfig)
 			action=${arg}
-			break
+			;;
+
+		# Parse switches
+		--arch=*)
+			ARCH="${arg#*=}"
+
+			if ! get_platform "${ARCH}" &>/dev/null; then
+				echo "Unknown architecture: ${ARCH}" >&2
+				exit 2
+			fi
 			;;
 	esac
 done
@@ -330,7 +343,7 @@ case "${action}" in
 		exit $?
 		;;
 	listnewconfig|menuconfig|oldconfig|olddefconfig)
-		make_config "${action}"
+		make_config "${ARCH}" "${action}"
 		exit $?
 		;;
 esac
