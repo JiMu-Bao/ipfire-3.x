@@ -17,7 +17,8 @@ the kernel directory:
   # pakfire-builder shell kernel.nm
   (pakfire-shell)> cd /usr/src/packages/kernel-x.y.z...
 
-The following commands are available:
+The following commands are available. Appending the <arch> argument allows you
+to edit a specific architecture. Default is x86_64.
 
 #### oldconfig
 
@@ -25,7 +26,7 @@ You can run this when updating the kernel to a new release or after changing any
 options manually. All unset or updated options will be prompted for and all
 configuration files for all architectures will be updated.
 
-  (pakfire-shell)> scripts/configure oldconfig
+  (pakfire-shell)> scripts/configure oldconfig <arch>
 
 #### olddefconfig
 
@@ -39,13 +40,10 @@ If you want to edit the configuration using the kernel's config editor. All
 configuration files will be updated afterwards and potentially prompted for options
 that diverge for different architectures.
 
-  (pakfire-shell)> scripts/configure menuconfig
-
-Appending the --arch= argument allows you to edit a specific architecture.
-Default is x86_64.
+  (pakfire-shell)> scripts/configure menuconfig <arch>
 
 #### listnewconfig
 
 This will list all unset options.
 
-  (pakfire-shell)> scripts/configure listnewconfig
+  (pakfire-shell)> scripts/configure listnewconfig <arch>
