@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = kmod
-version    = 22
+version    = 25
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -20,7 +20,7 @@ description
 	filesystems are two examples of loaded and unloaded modules.
 end
 
-source_dl  = ftp://ftp.kernel.org/pub/linux/utils/kernel/kmod/
+source_dl  = https://www.kernel.org/pub/linux/utils/kernel/kmod/
 sources    = %{thisapp}.tar.xz
 
 build
