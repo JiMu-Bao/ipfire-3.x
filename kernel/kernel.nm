@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 4.20
-release    = 10
+release    = 11
 thisapp    = linux-%{version}
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -162,7 +162,7 @@ build
 			# Run the build.
 			make ARCH=%{kernel_arch} olddefconfig >/dev/null
 			make ARCH=%{kernel_arch} %{kernel_target} modules \
-				%{PARALLELISMFLAGS}
+				KERNELRELEASE=${fullversion} %{PARALLELISMFLAGS}
 
 			# Compile Flattened Device Tree database
 			case "${DISTRO_ARCH}" in
