@@ -5,7 +5,7 @@
 
 name       = setup
 version    = 3.0
-release    = 10
+release    = 11
 arch       = noarch
 
 groups     = Base Build System/Base
@@ -53,6 +53,8 @@ build
 			%{BUILDROOT}%{sysconfdir}/sysctl.d/printk.conf
 		install -m 644 %{DIR_APP}/sysctl/swappiness.conf \
 			%{BUILDROOT}%{sysconfdir}/sysctl.d/swappiness.conf
+		install -m 644 %{DIR_APP}/sysctl/kernel-hardening.conf \
+			%{BUILDROOT}%{sysconfdir}/sysctl.d/kernel-hardening.conf
 	end
 end
 
