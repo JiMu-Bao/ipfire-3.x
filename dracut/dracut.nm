@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = dracut
-version    = 046
+version    = 048
 release    = 1
 
 groups     = System/Boot
