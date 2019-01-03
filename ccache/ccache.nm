@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = ccache
-version    = 3.3.6
+version    = 3.5.1
 release    = 1
 
 groups     = Development/Compilers
@@ -27,6 +27,8 @@ CFLAGS += -DDEFAULT_MAXSIZE=2097152
 
 build
 	requires
+		autoconf
+		automake
 		perl
 		zlib-devel
 	end
@@ -34,8 +36,11 @@ build
 	CCACHE_CACHE = %{localstatedir}/cache/ccache
 
 	prepare_cmds
-		# Disable pch test that fails
-		sed -e "s/^pch_suite.*/& return 0/" -i test.sh
+		# The included configure script renders an incorrect Makefile
+		autoreconf -vfi
+
+		# Do not run test for pre-compiled headers
+		sed -e "/^pch$/d" -i test/run
 
 		# Remove shipped zlib
 		rm -rf zlib
