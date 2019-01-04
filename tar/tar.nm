@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = tar
-version    = 1.29
-release    = 2
+version    = 1.31
+release    = 1
 
 groups     = System/Packaging
 url        = http://www.gnu.org/software/tar/
@@ -29,10 +29,6 @@ CONFIGURE_ENVIRONMENT = FORCE_UNSAFE_CONFIGURE=1
 
 build
 	requires
-		autoconf
-		automake
-		gettext
-		gettext-devel
 		libacl-devel
 		libattr-devel
 		texinfo
@@ -41,10 +37,6 @@ build
 	configure_options += \
 		--libexecdir=/usr/sbin \
 		FORCE_UNSAFE_CONFIGURE=1
-
-	prepare_cmds
-		autoreconf -vfi
-	end
 
 	test
 		make check
