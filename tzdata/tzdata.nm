@@ -3,8 +3,8 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-tzdata_version = 2018c
-tzcode_version = 2018c
+tzdata_version = 2018i
+tzcode_version = 2018i
 
 name       = tzdata
 version    = %{tzdata_version}
@@ -12,7 +12,7 @@ release    = 1
 arch       = noarch
 
 groups     = System/Base
-url        = http://www.iana.org/time-zones
+url        = https://www.iana.org/time-zones
 license    = Public Domain
 summary    = Timezone data.
 
@@ -21,7 +21,7 @@ description
 	the world.
 end
 
-source_dl += http://www.iana.org/time-zones/repository/releases/
+source_dl += https://www.iana.org/time-zones/repository/releases/
 sources    = tzdata%{tzdata_version}.tar.gz tzcode%{tzcode_version}.tar.gz
 
 build
