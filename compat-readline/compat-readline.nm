@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = compat-readline
-version    = 6.3
+version    = 7.0
 release    = 1
 
 thisapp    = readline-%{version}
@@ -41,11 +41,11 @@ build
 		# Only install libraries.
 		mkdir -pv %{BUILDROOT}%{libdir}
 
-		install -m 755 shlib/libhistory.so.6.3 %{BUILDROOT}%{libdir}
-		ln -svf libhistory.so.6.3 %{BUILDROOT}%{libdir}/libhistory.so.6
+		install -m 755 shlib/libhistory.so.7.0 %{BUILDROOT}%{libdir}
+		ln -svf libhistory.so.7.0 %{BUILDROOT}%{libdir}/libhistory.so.7
 
-		install -m 755 shlib/libreadline.so.6.3 %{BUILDROOT}%{libdir}
-		ln -svf libreadline.so.6.3 %{BUILDROOT}%{libdir}/libreadline.so.6
+		install -m 755 shlib/libreadline.so.7.0 %{BUILDROOT}%{libdir}
+		ln -svf libreadline.so.7.0 %{BUILDROOT}%{libdir}/libreadline.so.7
 	end
 end
 
