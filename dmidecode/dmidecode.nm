@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = dmidecode
-version    = 3.0
+version    = 3.2
 release    = 1
 
 groups     = Applications/System
-url        = http://www.nongnu.org/dmidecode/
+url        = https://www.nongnu.org/dmidecode/
 license    = GPLv2+
 summary    = Tool to analyse BIOS DMI data.
 
@@ -21,7 +21,8 @@ description
 	manufacturer.
 end
 
-source_dl  = http://download.savannah.gnu.org/releases/dmidecode/
+source_dl  = https://download.savannah.gnu.org/releases/dmidecode/
+sources    = %{thisapp}.tar.xz
 
 build
 	make_build_targets += CFLAGS="%{CFLAGS}" LDFLAGS="%{LDFLAGS}"
