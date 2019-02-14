@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = glibc
-version    = 2.28
-release    = 2
+version    = 2.29
+release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
 groups     = System/Base
@@ -23,7 +23,7 @@ description
 	Linux system will not function.
 end
 
-source_dl  = http://ftp.gnu.org/gnu/glibc/
+source_dl  = https://ftp.gnu.org/gnu/glibc/
 sources    = %{thisapp}.tar.xz
 
 build
@@ -38,9 +38,10 @@ build
 		gcc >= 8
 		gettext
 		kernel-headers >= %{OPTIMIZED_KERNEL}
-		make >= 4.0
 		libcap-devel
 		libstdc++-static
+		make >= 4.0
+		python3 >= 3.4
 		texinfo
 	end
 
