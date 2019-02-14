@@ -5,7 +5,7 @@
 
 name       = pcre
 version    = 8.41
-release    = 1
+release    = 2
 
 groups     = System/Libraries
 url        = http://www.pcre.org/
@@ -31,7 +31,7 @@ build
 	configure_options += \
 		--disable-static \
 		--docdir=/usr/share/doc/pcre-%{version} \
-		--disable-jit \
+		--enable-jit \
 		--enable-pcre8 \
 		--enable-pcre16 \
 		--enable-pcre32 \
