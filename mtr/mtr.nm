@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = mtr
-version    = 0.85
+version    = 0.92
 release    = 1
 
 groups     = Applications/Internet
@@ -21,8 +21,11 @@ source_dl  = ftp://ftp.bitwizard.nl/mtr/
 
 build
 	requires
+		autoconf
+		automake
 		ncurses-devel
 		glib2-devel
+		libcap-devel
 	end
 
 	configure_options += \
