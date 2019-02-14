@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = flex
-version    = 2.5.39
-release    = 2.1
+version    = 2.6.4
+release    = 1
 
 groups     = Development/Tools
 url        = http://flex.sourceforge.net/
@@ -24,12 +24,15 @@ description
 	build process.
 end
 
-source_dl  = http://prdownloads.sourceforge.net/flex/
+source_dl  = https://github.com/westes/flex/releases/download/v%{version}/
 
 build
 	requires
+		autoconf
+		automake
 		bison
 		gcc-c++
+		help2man
 		m4
 	end
 

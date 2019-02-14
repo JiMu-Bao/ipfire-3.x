@@ -1,0 +1,57 @@
+From 23797fd0b0908dd2c5775e6135728c7384f4e952 Mon Sep 17 00:00:00 2001
+From: Thomas Klausner <wiz@NetBSD.org>
+Date: Fri, 19 May 2017 10:22:44 +0200
+Subject: [PATCH] Use reallocarr() when available.
+
+Fixes https://github.com/westes/flex/issues/219
+---
+ configure.ac |  1 +
+ src/misc.c   | 16 ++++++++++++++--
+ 2 files changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 55e774b0..d0f3b7da 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -166,6 +166,7 @@ strtol dnl
+ AC_CHECK_FUNCS([dnl
+ pow dnl           Used only by "examples/manual/expr"
+ setlocale dnl     Needed only if NLS is enabled
++reallocarr dnl    NetBSD function. Use reallocarray if not available.
+ reallocarray dnl  OpenBSD function. We have replacement if not available.
+ ])
+ 
+diff --git a/src/misc.c b/src/misc.c
+index ef27833c..39483ea8 100644
+--- a/src/misc.c
++++ b/src/misc.c
+@@ -142,7 +142,14 @@ void add_action (const char *new_text)
+ void   *allocate_array (int size, size_t element_size)
+ {
+ 	void *mem;
+-#if HAVE_REALLOCARRAY
++#if HAVE_REALLOCARR
++	mem = NULL;
++	if (reallocarr(&mem, (size_t) size, element_size))
++		flexfatal (_
++			   ("memory allocation failed in allocate_array()"));
++
++	return mem;
++#elif HAVE_REALLOCARRAY
+ 	/* reallocarray has built-in overflow detection */
+ 	mem = reallocarray(NULL, (size_t) size, element_size);
+ #else
+@@ -659,7 +666,12 @@ char   *readable_form (int c)
+ void   *reallocate_array (void *array, int size, size_t element_size)
+ {
+ 	void *new_array;
+-#if HAVE_REALLOCARRAY
++#if HAVE_REALLOCARR
++	if (reallocarr(&array, (size_t) size, element_size))
++		flexfatal (_("attempt to increase array size failed"));
++
++	return array;
++#elif HAVE_REALLOCARRAY
+ 	/* reallocarray has built-in overflow detection */
+ 	new_array = reallocarray(array, (size_t) size, element_size);
+ #else
