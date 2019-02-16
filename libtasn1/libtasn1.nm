@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libtasn1
-version    = 4.8
+version    = 4.13
 release    = 1
 
 groups     = System/Libraries
@@ -17,7 +17,7 @@ description
 	be found at http://www.gnu.org/software/gnutls and http://www.gnutls.org.
 end
 
-source_dl  = http://ftp.gnu.org/gnu/libtasn1/
+source_dl  = https://ftp.gnu.org/gnu/libtasn1/
 
 build
 	requires
