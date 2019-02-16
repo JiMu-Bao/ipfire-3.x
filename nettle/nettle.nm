@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = nettle
-version    = 3.3
+version    = 3.4.1
 release    = 1
 
 groups     = System/Libraries
@@ -19,7 +19,7 @@ description
 	or even in kernel space.
 end
 
-source_dl  = http://www.lysator.liu.se/~nisse/archive/
+source_dl  = https://ftp.gnu.org/gnu/nettle/
 
 build
 	requires
