@@ -5,8 +5,8 @@
 
 name       = gnutls
 version    = %{ver_maj}.%{ver_min}
-ver_maj    = 3.5
-ver_min    = 4
+ver_maj    = 3.6
+ver_min    = 6
 release    = 1
 
 groups     = System/Libraries
@@ -30,10 +30,11 @@ build
 		gettext
 		libgcrypt-devel
 		libidn-devel
-		libtasn1-devel >= 3.2
+		libtasn1-devel >= 4.9
+		libunistring-devel
 		lzo-devel
 		net-tools
-		nettle-devel >= 3.2
+		nettle-devel >= 3.4.1
 		perl
 		p11-kit-devel >= 0.23.1
 		readline-devel
@@ -47,7 +48,6 @@ build
 	configure_options += \
 		--with-included-libcfg \
 		--disable-openssl-compatibility \
-		--disable-srp-authentication \
 		--disable-non-suiteb-curves \
 		--disable-guile
 
@@ -61,7 +61,7 @@ end
 packages
 	package %{name}
 		requires
-			nettle >= 2.7
+			nettle >= 3.4.1
 			p11-kit >= 0.14
 		end
 	end
