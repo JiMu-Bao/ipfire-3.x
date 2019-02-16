@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libunistring
-version    = 0.9.6
+version    = 0.9.10
 release    = 1
 
 groups     = System/Libraries
@@ -20,7 +20,7 @@ description
 	case folding and regular expressions).
 end
 
-source_dl  = ftp://ftp.gnu.org/gnu/libunistring/
+source_dl  = https://ftp.gnu.org/gnu/libunistring/
 
 build
 	configure_options += \
