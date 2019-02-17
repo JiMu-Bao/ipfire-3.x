@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = nasm
-version    = 2.12.01
+version    = 2.14.02
 release    = 1
 
 groups     = Development/Languages
@@ -18,12 +18,10 @@ description
 	Intel instruction mnemonics and syntax.
 end
 
-source_dl  = http://www.nasm.us/pub/nasm/releasebuilds/2.12.01/
+source_dl  = http://www.nasm.us/pub/nasm/releasebuilds/%{version}/
 sources    = %{thisapp}.tar.bz2
 
 build
-	CFLAGS += -fno-stack-protector
-
 	install
 		make install INSTALLROOT=%{BUILDROOT}
 	end
