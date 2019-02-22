@@ -5,8 +5,8 @@
 
 name       = python
 major_ver  = 2.7
-version    = %{major_ver}.12
-release    = 2
+version    = %{major_ver}.15
+release    = 1
 thisapp    = Python-%{version}
 
 groups     = Development/Languages
@@ -48,9 +48,11 @@ build
 	export CFLAGS  += -D_GNU_SOURCE -fwrapv
 	export CPPFLAGS = %(pkg-config --cflags-only-I libffi)
 	export OPT      = %{CFLAGS}
+	export CC       = gcc
+	export LINKCC   = gcc
 
 	if "%{lib}" == "lib64"
-		patches += %{DIR_SOURCE}/python-2.7.12-lib64.patch
+		patches += %{DIR_SOURCE}/python-2.7.13-lib64.patch
 		patches += %{DIR_SOURCE}/python-2.7-lib64-sysconfig.patch
 	end
 

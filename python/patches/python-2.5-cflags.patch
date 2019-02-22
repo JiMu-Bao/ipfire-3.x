@@ -3,7 +3,7 @@
 @@ -334,7 +334,7 @@
  
  # Build the interpreter
- $(BUILDPYTHON):	Modules/python.o $(LDLIBRARY)
+ $(BUILDPYTHON):	Modules/python.o $(LIBRARY) $(LDLIBRARY)
 -		$(LINKCC) $(LDFLAGS) $(LINKFORSHARED) -o $@ \
 +		$(LINKCC) $(CFLAGS) $(LDFLAGS) $(LINKFORSHARED) -o $@ \
  			Modules/python.o \

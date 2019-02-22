@@ -102,7 +102,7 @@
  # First, look at Setup.config; configure may have set this for you.
  
 -#crypt cryptmodule.c # -lcrypt	# crypt(3); needs -lcrypt on some systems
-+crypt cryptmodule.c -lcrypt	# crypt(3); needs -lcrypt on some systems
++crypt cryptmodule.c # -lcrypt	# crypt(3); needs -lcrypt on some systems
  
  
  # Some more UNIX dependent modules -- off by default, since these
@@ -111,7 +111,7 @@
 -#nis nismodule.c -lnsl	# Sun yellow pages -- not everywhere
 -#termios termios.c	# Steen Lumholt's termios module
 -#resource resource.c	# Jeremy Hylton's rlimit interface
-+nis nismodule.c -lnsl	# Sun yellow pages -- not everywhere
++#nis nismodule.c -lnsl -ltirpc -I/usr/include/tirpc -I/usr/include/nsl -L/usr/lib/nsl
 +termios termios.c	# Steen Lumholt's termios module
 +resource resource.c	# Jeremy Hylton's rlimit interface
  
@@ -162,15 +162,6 @@
  
  
  # The _tkinter module.
-@@ -333,7 +333,7 @@ GLHACK=-Dclear=__GLclear
- # *** Or uncomment this for Solaris:
- #	-I/usr/openwin/include \
- # *** Uncomment and edit for Tix extension only:
--#	-DWITH_TIX -ltix8.1.8.2 \
-+	-DWITH_TIX -ltix \
- # *** Uncomment and edit for BLT extension only:
- #	-DWITH_BLT -I/usr/local/blt/blt8.0-unoff/include -lBLT8.0 \
- # *** Uncomment and edit for PIL (TkImaging) extension only:
 @@ -352,7 +352,7 @@ GLHACK=-Dclear=__GLclear
  # *** Uncomment for AIX:
  #	-lld \
