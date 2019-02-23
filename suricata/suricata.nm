@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = suricata
-version    = 3.2.1
+version    = 4.0.6
 release    = 1
 
 groups     = Networking/IDS
