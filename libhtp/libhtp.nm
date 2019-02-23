@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libhtp
-version    = 0.5.20
+version    = 0.5.29
 release    = 1
 
 groups     = System/Libraries
