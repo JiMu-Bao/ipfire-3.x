@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = guile
-version    = 2.0.14
+version    = 2.2.4
 release    = 1
 
 groups     = Development/Tools
@@ -19,7 +19,7 @@ description
 	as a library during the building of extensible programs.
 end
 
-source_dl  = ftp://ftp.gnu.org/gnu/guile/
+source_dl  = https://ftp.gnu.org/gnu/%{name}/
 
 build
 	requires
