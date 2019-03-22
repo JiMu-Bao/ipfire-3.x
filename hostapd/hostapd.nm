@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = hostapd
-version    = 2.6
-release    = 2
+version    = 2.7
+release    = 1
 
 groups     = Networking/Tools
 url        = http://hostap.epitest.fi/hostapd/
@@ -33,6 +33,7 @@ build
 		# Create our custom configuration.
 		cat defconfig > .config
 		sed -i .config \
+			-e '/^#CONFIG_GETRANDOM=y/s/^#//' \
 			-e '/^#CONFIG_ACS=y/s/^#//' \
 			-e '/^#CONFIG_LIBNL32=y/s/^#//' \
 			-e '/^#CONFIG_TAXONOMY=y/s/^#//' \
