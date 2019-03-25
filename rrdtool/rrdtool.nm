@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = rrdtool
-version    = 1.5.4
+version    = 1.7.1
 release    = 1
 
 groups     = Applications/Databases
-url        = http://oss.oetiker.ch/rrdtool/
+url        = https://oss.oetiker.ch/rrdtool/
 license    = GPLv2+ with exceptions
 summary    = Round Robin Database Tool to store and display time-series data.
 
@@ -20,7 +20,7 @@ description
 	density.
 end
 
-source_dl  = http://oss.oetiker.ch/rrdtool/pub/
+source_dl  = https://oss.oetiker.ch/rrdtool/pub/
 
 build
 	requires
@@ -35,6 +35,7 @@ build
 		pango-devel
 		pkg-config
 		python-devel
+		python-setuptools
 		systemd-devel
 		zlib-devel
 	end
@@ -46,6 +47,7 @@ build
 		--disable-ruby \
 		--disable-static \
 		--enable-python \
+		--disable-rrdcached \
 		--with-pic
 
 	prepare_cmds
