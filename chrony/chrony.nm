@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = chrony
-version    = 1.26
-release    = 9
+version    = 3.4
+release    = 1
 
 groups     = System/Daemons
-url        = http://chrony.tuxfamily.org
+url        = https://chrony.tuxfamily.org
 license    = GPLv2
 summary    = An NTP client/server.
 
@@ -20,11 +20,14 @@ description
 	clocks, system real-time clock or manual input as time references.
 end
 
+source_dl  = https://download.tuxfamily.org/chrony/
+
 build
 	requires
 		bison
 		libcap-devel
 		libedit-devel
+		nettle-devel
 		readline-devel
 		shadow-utils
 		texinfo
@@ -50,16 +53,9 @@ build
 		install -m 640 -p %{DIR_SOURCE}/chrony.keys %{BUILDROOT}/etc/chrony.keys
 		chown -v root.chrony %{BUILDROOT}/etc/chrony.keys
 
-		mkdir -pv %{BUILDROOT}/etc/dhcp/dhclient.d
-		install -m 755 -p %{DIR_SOURCE}/chrony.dhclient \
-			%{BUILDROOT}/etc/dhcp/dhclient.d/chrony.sh
-
 		mkdir -pv %{BUILDROOT}/etc/logrotate.d
 		install -m 644 -p %{DIR_SOURCE}/chrony.logrotate \
 			%{BUILDROOT}/etc/logrotate.d/chrony
-
-		mkdir -pv %{BUILDROOT}/usr/lib/chrony
-		install -m 755 -p %{DIR_SOURCE}/chrony-helper %{BUILDROOT}/usr/lib/chrony-helper
 
 		chown -Rv chrony.chrony %{BUILDROOT}/var/{lib,log}/chrony
 	end

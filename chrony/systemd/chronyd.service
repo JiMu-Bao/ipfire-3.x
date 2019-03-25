@@ -5,9 +5,7 @@ Conflicts=ntpd.service
 
 [Service]
 EnvironmentFile=-/etc/sysconfig/chronyd
-ExecStartPre=/usr/lib/chrony-helper generate-commandkey
 ExecStart=/usr/sbin/chronyd -n -u chrony $OPTIONS
-ExecStartPost=/usr/lib/chrony-helper add-dhclient-servers
 
 [Install]
 WantedBy=multi-user.target
