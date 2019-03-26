@@ -3,8 +3,8 @@
 # Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
 ###############################################################################
 
-tzdata_version = 2018i
-tzcode_version = 2018i
+tzdata_version = 2019a
+tzcode_version = 2019a
 
 name       = tzdata
 version    = %{tzdata_version}
