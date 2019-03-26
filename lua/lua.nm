@@ -4,8 +4,9 @@
 ###############################################################################
 
 name       = lua
-version    = 5.1.4
-release    = 3
+major_version = 5.3
+version    = %{major_version}.5
+release    = 1
 
 groups     = Development/Languages
 url        = http://www.lua.org/
@@ -23,41 +24,47 @@ description
 	configuration, scripting, and rapid prototyping.
 end
 
-source_dl  =
+source_dl  = http://www.lua.org/ftp/
 
 build
 	requires
-		perl-Carp
-		autoconf
-		automake
-		libtool
-		ncurses-devel
 		readline-devel
 	end
 
 	prepare_cmds
-		chmod u+x autogen.sh config.guess config.sub configure \
-			depcomp install-sh missing
-		sh autogen.sh
+		# Lua 5.3.4 has wrong release version in its Makefile
+		sed "s/^R= \$V.4/R= \$V.5/" -i Makefile
 	end
 
-	configure_options += \
-		--mandir=/usr/share/man \
-		--with-readline
+	make_build_targets += \
+		MYCFLAGS="%{CFLAGS} -DLUA_COMPAT_5_2 -DLUA_COMPAT_5_1" \
+		MYLDFLAGS="%{LDFLAGS}" \
+		linux
 
-	# hack so that only /usr/bin/lua gets linked with readline as it is the
-	# only one which needs this and otherwise we get License troubles
-	make_build_targets =  LIBS="-ldl" luac_LDADD="liblua.la -lm -ldl"
+	test
+		make test
+	end
 
-	# Remove readline from lua.pc
-	build_cmds
-		sed -i 's/-lreadline -lncurses //g' etc/lua.pc
+	make_install_targets += \
+		TO_LIB="liblua.so.%{version}" \
+		INSTALL_TOP="%{BUILDROOT}%{prefix}" \
+		INSTALL_LIB="%{BUILDROOT}%{libdir}" \
+		INSTALL_MAN="%{BUILDROOT}%{mandir}/man1"
+
+	install_cmds
+		# Install library links
+		ln -svf liblua.so.%{version} %{BUILDROOT}%{libdir}/liblua.so.%{major_version}
+		ln -svf liblua.so.%{major_version} %{BUILDROOT}%{libdir}/liblua.so
+
+		# Install pkgconfig file
+		mkdir -pv %{BUILDROOT}%{libdir}/pkgconfig
+		sed "s/%VER%/%{major_version}/g;s/%REL%/%{version}/g" \
+			< %{DIR_SOURCE}/lua.pc > %{BUILDROOT}%{libdir}/pkgconfig/lua.pc
 	end
 end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
@@ -65,8 +72,6 @@ packages
 
 	package %{name}-libs
 		template LIBS
-
-		files += /usr/lib*/liblua-5.1.so
 	end
 
 	package %{name}-debuginfo
