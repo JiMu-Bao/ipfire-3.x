@@ -5,7 +5,7 @@
 
 name       = kernel
 version    = 4.20
-release    = 13
+release    = 14
 thisapp    = linux-%{version}
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -192,11 +192,6 @@ build
 			make ARCH=%{kernel_arch} INSTALL_MOD_PATH=%{BUILDROOT}/usr mod-fw= V=1 \
 				KERNELRELEASE=${fullversion} modules_install
 
-			# Create an empty settings file for dracut
-			mkdir -p %{BUILDROOT}/etc/ld.so.conf.d
-			echo "# Placeholder file, no vDSO hwcap entries used in this kernel." \
-				> %{BUILDROOT}/etc/ld.so.conf.d/kernel-${fullversion}.conf
-
 			# And now the scary looking part.
 			#
 			# Recreate source and build links.
@@ -323,7 +318,6 @@ packages
 			/boot/dtb-%{kernel_release}
 			/boot/vmlinuz-%{kernel_release}
 			/boot/initramfs-%{kernel_release}.img
-			/etc/ld.so.conf.d/kernel-%{kernel_release}.conf
 			/usr/lib/modules/%{kernel_release}
 		end
 
