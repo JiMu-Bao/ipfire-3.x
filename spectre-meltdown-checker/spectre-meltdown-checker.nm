@@ -1,0 +1,36 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = spectre-meltdown-checker
+version    = 0.40
+release    = 1
+
+groups     = Development/Tools
+url        = https://github.com/speed47/spectre-meltdown-checker
+license    = GPLv3
+summary    = A script to tell if your sytem is vulnerable to Spectre/Meltdown
+
+description
+	A shell script to tell if your system is vulnerable against the
+	several "speculative execution" CVEs that were made public in 2018.
+end
+
+source_dl  = https://github.com/speed47/spectre-meltdown-checker/archive/%{version}.tar.gz#/
+
+build
+	build
+		: # Nothing to do
+	end
+
+	install
+		mkdir -pv %{BUILDROOT}%{sbindir}
+		install -v -m 754 spectre-meltdown-checker.sh \
+			%{BUILDROOT}%{sbindir}/spectre-meltdown-checker
+	end
+end
+
+packages
+	package %{name}
+end
