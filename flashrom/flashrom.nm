@@ -1,0 +1,42 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = flashrom
+version    = 1.0
+release    = 1
+
+groups     = Development/Tools
+url        = https://www.flashrom.org
+license    = GPLv2
+summary    = flashrom is a utility to write flash chips
+
+description
+	flashrom is a utility for identifying, reading, writing, verifying
+	and erasing flash chips.
+	It is designed to flash BIOS/EFI/coreboot/firmware/optionROM images
+	on mainboards, network/graphics/storage controller cards, and various
+	other programmer devices.
+end
+
+source_dl  = https://download.flashrom.org/releases/
+sources    = %{thisapp}.tar.bz2
+
+build
+	requires
+		libusb-compat-devel
+		libusb-devel
+		pciutils-devel
+	end
+
+	make_install_targets += PREFIX=%{prefix} MANDIR=%{mandir}
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
