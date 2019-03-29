@@ -1,0 +1,54 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = pcengines-apu-firmware
+version    = 4.9.0.3
+release    = 1
+arch       = noarch
+
+maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
+groups     = System/Firmware
+url        = https://pcengines.github.io
+license    = GPLv2+
+summary    = Firmware binaries for PC Engines APU boards
+
+description
+	Firmware binaries for PC Engines APU boards.
+
+	This package ships the mainline branch of the firmware.
+end
+
+sources  = \
+	apu1_v%{version}.rom \
+	apu2_v%{version}.rom \
+	apu3_v%{version}.rom \
+	apu4_v%{version}.rom \
+	apu5_v%{version}.rom
+
+build
+	MACRO_EXTRACT = : # Do not attempt to extract the binary files
+
+	build
+		# XXX potentially we could compile this from source, but I am
+		# not sure how dangerous this is if that goes wrong
+	end
+
+	install
+		mkdir -pv %{BUILDROOT}%{prefix}/lib/firmware/pcengines/apu
+
+		for source in %{sources}; do
+			install -v -m 644 %{DIR_DL}/${source} \
+				%{BUILDROOT}%{prefix}/lib/firmware/pcengines/apu
+		done
+	end
+end
+
+packages
+	package %{name}
+		recommends
+			firmware-update
+		end
+	end
+end
