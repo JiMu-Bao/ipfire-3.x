@@ -1,0 +1,41 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = firmware-update
+version    = 20190329
+release    = 1
+arch       = noarch
+
+maintainer = Michael Tremer <michael.tremer@ipfire.org>
+groups     = System/Tools
+url        = https://git.ipfire.org/?p=people/ms/firmware-update.git;a=summary
+license    = GPLv3+
+summary    = A tool to automatically update firmware
+
+description
+	firmware-update automatically updates firmware on various systems
+end
+
+source_dl  = https://source.ipfire.org/releases/firmware-update/
+
+build
+	requires
+		autoconf
+		automake
+		sed
+	end
+
+	prepare_cmds
+		[ -e "configure" ] || ./autogen.sh
+	end
+end
+
+packages
+	package %{name}
+		requires
+			flashrom
+		end
+	end
+end
