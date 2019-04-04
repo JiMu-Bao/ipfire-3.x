@@ -6,7 +6,7 @@
 name       = gnutls
 version    = %{ver_maj}.%{ver_min}
 ver_maj    = 3.6
-ver_min    = 6
+ver_min    = 7
 release    = 1
 
 groups     = System/Libraries
