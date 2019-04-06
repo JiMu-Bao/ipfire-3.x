@@ -1,0 +1,32 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = ragel
+version    = 6.10
+release    = 1
+
+groups     = Development/Tools
+url        = http://www.complang.org/ragel/
+license    = GPL
+summary    = Ragel State Machine Compiler
+
+description
+	Ragel compiles executable finite state machines from regular languages.
+	Ragel targets C, C++ and ASM. Ragel state machines can not only
+	recognize byte sequences as regular expression machines do, but can
+	also execute code at arbitrary points in the recognition of a regular
+	language. Code embedding is done using inline operators that do not
+	disrupt the regular language syntax.
+end
+
+source_dl  = https://www.colm.net/files/%{name}/
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
