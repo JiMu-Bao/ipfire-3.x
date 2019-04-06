@@ -5,7 +5,7 @@
 
 name       = suricata
 version    = 4.0.6
-release    = 2
+release    = 3
 
 groups     = Networking/IDS
 url        = http://www.openinfosecfoundation.org/
@@ -23,7 +23,6 @@ source_dl  = http://www.openinfosecfoundation.org/download/
 build
 	requires
 		file-devel
-		hyperscan-devel
 		libcap-ng-devel
 		libnfnetlink-devel
 		libnetfilter_queue-devel
@@ -41,10 +40,15 @@ build
 		--enable-nfqueue \
 		--disable-gccmarch-native \
 		--disable-static \
-		--enable-hyperscan \
 		--enable-non-bundled-htp \
 		--with-libhtp-includes=%{includedir}/htp \
 		--with-libhtp-libraries=%{libdir}
+
+	# Enable hyperscan only on x86
+	if "%{DISTRO_PLATFORM}" == "x86"
+		requires += hyperscan-devel
+		configure_options += --enable-hyperscan
+	end
 
 	install_cmds
 		mkdir -pv %{BUILDROOT}%{sysconfdir}

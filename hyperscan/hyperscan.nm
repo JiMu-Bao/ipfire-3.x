@@ -5,7 +5,10 @@
 
 name       = hyperscan
 version    = 5.1.0
-release    = 1
+release    = 2
+
+# This won't build on any architectures but those
+sup_arches = x86_64 i686
 
 groups     = System/Libraries
 url        = https://github.com/intel/hyperscan
