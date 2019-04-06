@@ -1,0 +1,59 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = hyperscan
+version    = 5.1.0
+release    = 1
+
+groups     = System/Libraries
+url        = https://github.com/intel/hyperscan
+license    = BSD
+summary    = High-performance regular expression matching library
+
+description
+	Hyperscan is a high-performance multiple regex matching library. It
+	follows the regular expression syntax of the commonly-used libpcre
+	library, but is a standalone library with its own C API.
+
+	Hyperscan uses hybrid automata techniques to allow simultaneous
+	matching of large numbers (up to tens of thousands) of regular
+	expressions and for the matching of regular expressions across
+	streams of data.
+end
+
+source_dl  = https://github.com/intel/hyperscan/archive/v%{version}.tar.gz#/
+
+build
+	requires
+		boost-devel >= 1.57
+		cmake
+		gcc-c++
+		pcre-devel
+		ragel
+		sqlite-devel
+	end
+
+	build
+		%{cmake} . \
+			-DCMAKE_INSTALL_PREFIX=/usr \
+			-DCMAKE_INSTALL_LIBDIR=%{lib} \
+			-DBUILD_SHARED_LIBS:BOOL=ON \
+			-DBUILD_STATIC_AND_SHARED:BOOL=OFF
+
+		make %{PARALLELISMFLAGS}
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
