@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = clamav
-version    = 0.99.3
+version    = 0.101.2
 release    = 1
 
 groups     = System Environment/Daemons
@@ -26,28 +26,29 @@ end
 
 source_dl  = http://www.clamav.net/downloads/production/
 
-CFLAGS    += -D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE -DLDAP_DEPRECATED
-CXXFLAGS  += -std=gnu++98
-
 build
 	requires
 		bzip2-devel
 		curl-devel
 		gmp-devel
+		json-c-devel
 		libxml2-devel
 		ncurses-devel
 		openssl-devel
-		pcre-devel
+		pcre2-devel
 		shadow-utils
 		systemd-devel
 		zlib-devel
 	end
+
+	LDFLAGS += -Wl,--as-needed
 
 	configure_options += \
 	        --with-dbdir=%{localstatedir}/lib/clamav \
 	 	--enable-clamdtop \
 		--with-user=clamupdate \
 	        --with-group=clamupdate \
+		--disable-rpath \
 		have_cv_ipv6=yes
 
 	# User and group have to exist to compile the source code,
