@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = iperf
-version    = 2.0.9
+version    = 2.0.13
 release    = 1
 
 groups     = Applications/Internet
@@ -18,7 +18,7 @@ description
 	jitter, datagram loss.
 end
 
-source_dl = http://sourceforge.net/projects/iperf2/files
+source_dl = https://sourceforge.net/projects/iperf2/files
 
 build
 	requires
