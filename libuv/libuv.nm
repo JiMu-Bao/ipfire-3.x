@@ -1,0 +1,46 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libuv
+version    = 1.27.0
+release    = 1
+
+groups     = Development/Tools
+url        = https://github.com/libuv/libuv
+license    = libuv
+summary    = Multi-platform support library with a focus on asynchronous I/O
+
+description
+	libuv is a multi-platform support library with a focus on
+	asynchronous I/O.
+end
+
+source_dl  = https://github.com/libuv/libuv/archive/v%{version}/
+
+build
+	requires
+		autoconf
+		automake
+	end
+
+	prepare_cmds
+		./autogen.sh
+	end
+
+	# The test suite requires network access and does
+	# not run through in pakfire.
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
