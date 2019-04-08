@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = curl
-version    = 7.64.0
+version    = 7.64.1
 release    = 1
 
 groups     = Application/Internet
@@ -24,8 +24,6 @@ source_dl  = https://curl.haxx.se/download/
 
 build
 	requires
-		autoconf
-		automake
 		groff
 		libidn-devel
 		libssh2-devel
@@ -48,10 +46,6 @@ build
 		--enable-manual \
 		--enable-threaded-resolver
 
-	prepare_cmds
-		autoreconf -vfi
-	end
-
 	# The testsuite runs services which bind to ports and
 	# sends queries to the internet. This may fail in some
 	# occasions.
@@ -72,6 +66,13 @@ packages
 
 		provides
 			curl-devel = %{thisver}
+		end
+
+		requires
+			libssh2-devel
+			openldap-devel
+			openssl-devel
+			zlib-devel
 		end
 	end
 
