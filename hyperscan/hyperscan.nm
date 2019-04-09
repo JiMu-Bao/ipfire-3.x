@@ -5,7 +5,7 @@
 
 name       = hyperscan
 version    = 5.1.0
-release    = 2
+release    = 3
 
 # This won't build on any architectures but those
 sup_arches = x86_64 i686
@@ -40,9 +40,6 @@ build
 
 	build
 		%{cmake} . \
-			-DCMAKE_INSTALL_PREFIX=/usr \
-			-DCMAKE_INSTALL_LIBDIR=%{lib} \
-			-DBUILD_SHARED_LIBS:BOOL=ON \
 			-DBUILD_STATIC_AND_SHARED:BOOL=OFF
 
 		make %{PARALLELISMFLAGS}
