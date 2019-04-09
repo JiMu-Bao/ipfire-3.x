@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = binutils
-version    = 2.30
+version    = 2.32
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
