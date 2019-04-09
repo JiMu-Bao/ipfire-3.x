@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = screen
-version    = 4.3.1
+version    = 4.6.2
 release    = 1
 
 groups     = Application/System
@@ -19,7 +19,7 @@ description
 	one login.
 end
 
-source_dl  = http://ftp.gnu.org/gnu/screen/
+source_dl  = https://ftp.gnu.org/gnu/screen/
 
 build
 	requires
