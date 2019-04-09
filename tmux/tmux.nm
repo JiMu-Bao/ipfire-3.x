@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = tmux
-version    = 2.2
+version    = 2.8
 release    = 1
 
 groups     = Application/System
-url        = http://sourceforge.net/projects/tmux
+url        = https://github.com/tmux/tmux
 license    = ISC and BSD
 summary    = A terminal multiplexer
 
