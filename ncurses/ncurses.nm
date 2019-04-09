@@ -6,7 +6,7 @@
 name       = ncurses
 version    = 5.9
 revision   = 20150117
-release    = 11.%{revision}
+release    = 12.%{revision}
 thisapp    = %{name}-%{version}-%{revision}
 
 groups     = System/Base
@@ -97,6 +97,8 @@ end
 
 packages
 	package %{name}
+		groups += Base
+	end
 
 	package %{name}-libs
 		template LIBS
