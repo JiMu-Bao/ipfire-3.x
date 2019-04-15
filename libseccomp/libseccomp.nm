@@ -1,0 +1,42 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = libseccomp
+version    = 2.4.0
+release    = 1
+
+groups     = System/Libraries
+url        = https://github.com/seccomp/libseccomp
+license    = LGPLv2.1+
+summary    = A library for the kernel's syscall filtering
+
+description
+	The libseccomp library provides an easy to use, platform independent,
+	interface to the Linux Kernel's syscall filtering mechanism. The
+	libseccomp API is designed to abstract away the underlying BPF based
+	syscall filter language and present a more conventional function-call
+	based filtering interface that should be familiar to, and easily
+	adopted by, application developers.
+end
+
+source_dl  = https://github.com/seccomp/libseccomp/releases/download/v%{version}/
+
+build
+	test
+		make check
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
