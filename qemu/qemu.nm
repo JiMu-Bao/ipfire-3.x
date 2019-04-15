@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = qemu
-version    = 2.7.0
-release    = 2
+version    = 3.1.0
+release    = 1
 
 groups     = Applications/Virtualization
 url        = http://www.qemu.org
@@ -18,8 +18,8 @@ description
 	architectures.
 end
 
-source_dl  = http://wiki.qemu-project.org/download/
-sources    = %{thisapp}.tar.bz2
+source_dl  = https://download.qemu.org/
+sources    = %{thisapp}.tar.xz
 
 build
 	requires
@@ -35,6 +35,7 @@ build
 		libgcrypt-devel
 		libjpeg-devel
 		libpng-devel
+		libseccomp-devel
 		libtasn1-devel
 		libusb-devel
 		libuuid-devel
@@ -74,7 +75,6 @@ build
 		--enable-libusb \
 		--enable-lzo \
 		--enable-pie \
-		--enable-vhdx \
 		--enable-vnc \
 		--enable-vnc-jpeg \
 		--enable-vnc-png \
@@ -86,7 +86,7 @@ build
 
 	install_cmds
 		# Remove BIOS file which is an ELF files w/ invalid interpreter
-		rm -vf %{BUILDROOT}%{datadir}/qemu/s390-ccw.img
+		rm -vf %{BUILDROOT}%{datadir}/qemu/s390-*.img
 
 		# Remove ivshm stuff
 		rm -vf %{BUILDROOT}%{bindir}/ivshmem* %{BUILDROOT}%{mandir}/ivshmem*
