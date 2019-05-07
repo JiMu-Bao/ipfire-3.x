@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = ccache
-version    = 3.5.1
+version    = 3.7.1
 release    = 1
 
 groups     = Development/Compilers
-url        = http://ccache.samba.org/
+url        = https://ccache.dev
 license    = GPLv2+
 summary    = C/C++ compiler cache.
 
@@ -19,7 +19,7 @@ description
 	a 5 to 10 times speedup in common compilations.
 end
 
-source_dl  = https://www.samba.org/ftp/ccache/
+source_dl  = https://github.com/ccache/ccache/releases/download/v%{version}/
 sources    = %{thisapp}.tar.xz
 
 # Sets ccache max size up to 2 GB
@@ -36,9 +36,6 @@ build
 	CCACHE_CACHE = %{localstatedir}/cache/ccache
 
 	prepare_cmds
-		# The included configure script renders an incorrect Makefile
-		autoreconf -vfi
-
 		# Do not run test for pre-compiled headers
 		sed -e "/^pch$/d" -i test/run
 
