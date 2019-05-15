@@ -4,12 +4,12 @@
 ###############################################################################
 
 name       = ca-certificates
-version    = 2019.01
+version    = 2019.05
 release    = 1
 arch       = noarch
 
 groups     = System/Base
-url        = http://www.mozilla.org
+url        = https://www.mozilla.org/
 license    = Public Domain
 summary    = The Mozilla CA root certificate bundle.
 
