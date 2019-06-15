@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kernel
-version    = 4.20
-release    = 15
+version    = 5.0
+release    = 1
 thisapp    = linux-%{version}
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
@@ -25,7 +25,7 @@ end
 localversion = %{release}.%{DISTRO_DISTTAG}.%{DISTRO_ARCH}
 fullver      = %{version}-%{localversion}
 
-source_dl    = http://www.kernel.org/pub/linux/kernel/v4.x/
+source_dl    = http://www.kernel.org/pub/linux/kernel/v5.x/
 sources      = %{thisapp}.tar.xz
 
 build
