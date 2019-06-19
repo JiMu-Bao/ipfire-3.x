@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 242
-release    = 1
+release    = 2
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -263,6 +263,7 @@ packages
 			dracut < 019
 			filesystem < 002
 			rsyslog < 5.8.6-4
+			setup < 3.0-13
 			upstart
 		end
 
