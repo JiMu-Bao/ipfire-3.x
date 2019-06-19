@@ -5,7 +5,7 @@
 
 name       = setup
 version    = 3.0
-release    = 12
+release    = 13
 arch       = noarch
 
 groups     = Base Build System/Base
@@ -45,7 +45,7 @@ build
 			cp -vf %{DIR_APP}/${i} %{BUILDROOT}/etc || exit 1; \
 		done
 
-		touch %{BUILDROOT}%{sysconfdir}/{environment,fstab}
+		touch %{BUILDROOT}%{sysconfdir}/fstab
 		chmod -v 0400 %{BUILDROOT}%{sysconfdir}/{,g}shadow
 
 		mkdir -pv %{BUILDROOT}%{sysconfdir}/sysctl.d
