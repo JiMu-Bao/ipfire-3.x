@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = systemd
-version    = 239
+version    = 242
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
