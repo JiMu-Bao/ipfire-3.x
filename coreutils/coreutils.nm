@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = coreutils
-version    = 8.30
+version    = 8.31
 release    = 1
 
 groups     = System/Base
@@ -23,7 +23,7 @@ sources    = %{thisapp}.tar.xz
 build
 	requires
 		autoconf
-		automake
+		automake >= 1.15
 		e2fsprogs-devel
 		gettext-devel
 		gmp-devel
@@ -42,6 +42,10 @@ build
 		--enable-install-program=arch \
 		--enable-no-install-program=hostname,kill,uptime \
 		--with-tty-group
+
+	prepare_cmds
+		autoreconf -vfi
+	end
 
 	test
 		make check RUN_VERY_EXPENSIVE_TESTS=yes || true
