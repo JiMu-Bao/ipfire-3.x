@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = glib2
-ver_major  = 2.55
+ver_major  = 2.61
 ver_minor  = 1
 version    = %{ver_major}.%{ver_minor}
 release    = 1
@@ -29,18 +29,40 @@ sources    = %{thisapp}.tar.xz
 
 build
 	requires
+		docbook-xsl
 		gettext
 		libffi-devel
-		libmount-devel
+		libmount-devel >= 2.34-2
+		meson >= 0.50.1
 		pcre-devel
 		pkg-config
 		zlib-devel
 	end
 
-	configure_options += \
-		--with-pcre=system
+	prepare_cmds
+		# Explicitly remove PCRE sources since we use --with-pcre=system
+		rm glib/pcre/*.[ch]
+	end
 
-	install_cmds
+	build
+		%{meson} \
+			--default-library=both \
+			-Dselinux=disabled \
+			-Dman=true \
+			-Ddtrace=false \
+			-Delf=false \
+			-Dfam=false \
+			-Dsystemtap=true \
+			-Dgtk_doc=false \
+			-Dinstalled_tests=false
+
+
+		%{meson_build}
+	end
+
+	install
+		%{meson_install}
+
 		mkdir -pv %{BUILDROOT}/etc/profile.d/
 		cp -vf %{DIR_SOURCE}/glib2-locale.sh %{BUILDROOT}/etc/profile.d/
 	end
