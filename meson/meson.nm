@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = meson
-version    = 0.48.1
+version    = 0.50.1
 release    = 1
 arch	   = noarch
 
@@ -40,12 +40,18 @@ build
 
 	install
 		%{python3} setup.py install -O1 --skip-build --root %{BUILDROOT}
+
+		# Install pakfire macro.
+		mkdir -p %{BUILDROOT}/usr/lib/pakfire/macros
+		install -v -m 644 %{DIR_SOURCE}/%{name}.macro \
+			%{BUILDROOT}/usr/lib/pakfire/macros
 	end
 end
 
 packages
 	package %{name}
 		requires
+			ninja-build >= 1.9.0
 			python3-setuptools
 		end
 	end

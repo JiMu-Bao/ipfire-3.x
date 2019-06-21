@@ -1,0 +1,42 @@
+#
+# Meson macros
+#
+
+
+__meson = %{bindir}/meson
+__meson_wrap_mode = nodownload
+__meson_auto_features = enabled
+
+_smp_mesonflags = %{PARALLELISMFLAGS}
+
+meson = \
+    %{__meson} \
+	--buildtype=plain \
+	--prefix=%{prefix} \
+	--libdir=%{libdir} \
+	--libexecdir=%{libexecdir} \
+	--bindir=%{bindir} \
+	--sbindir=%{sbindir} \
+	--includedir=%{includedir} \
+	--datadir=%{datadir} \
+	--mandir=%{mandir} \
+	--infodir=%{infodir} \
+	--localedir=%{datadir}/locale \
+	--sysconfdir=%{sysconfdir} \
+	--localstatedir=%{localstatedir} \
+	--sharedstatedir=%{sharedstatedir} \
+	--wrap-mode=%{__meson_wrap_mode} \
+	--auto-features=%{__meson_auto_features} \
+        . %{DISTRO_MACHINE}
+
+meson_build = \
+	%{ninja_build} -C %{DISTRO_MACHINE}
+
+meson_install = \
+	%{ninja_install} -C %{DISTRO_MACHINE}
+
+meson_test = \
+    %{__meson} test \
+	-C %{DISTRO_MACHINE} \
+	%{PARALLELISMFLAGS} \
+	--print-errorlogs
