@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = sed
-version    = 4.2.2
-release    = 2
+version    = 4.7
+release    = 1
 
 groups     = Applications/Text
 url        = http://sed.sourceforge.net/
@@ -21,12 +21,19 @@ description
 end
 
 source_dl  = ftp://ftp.gnu.org/gnu/sed/
+sources    = %{thisapp}.tar.xz
 
 build
 	configure_options += \
 		--without-included-regex
 
 	test
+		# Disable broken tests.
+		sed \
+			-e 's|testsuite/inplace-selinux.sh||g' \
+			-e 's|testsuite/panic-tests.sh||g' \
+		-i Makefile
+
 		make check
 	end
 end
