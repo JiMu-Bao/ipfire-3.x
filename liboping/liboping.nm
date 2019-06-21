@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = liboping
-version    = 1.8.0
-release    = 1
+version    = 1.10.0
+release    = 2
 
 groups     = Development/Tools
-url        = http://noping.cc/
+url        = https://noping.cc/
 license    = LGPLv2.1 and GPLv2
 summary    = liboping is a C library to generate ICMP echo requests
 
@@ -21,7 +21,7 @@ description
 	fping rolled into one.
 end
 
-source_dl  = http://noping.cc/files/
+source_dl  = https://noping.cc/files/
 
 build
 	requires
