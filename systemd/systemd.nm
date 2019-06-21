@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 242
-release    = 2
+release    = 3
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -52,15 +52,16 @@ build
 		libblkid-devel
 		libcap-devel
 		libgcrypt-devel
-		libmount-devel
-		libuuid-devel
+		libmount-devel >= 2.34-2
+		libuuid-devel >= 2.34-2
 		m4
-		meson
-		ninja >= 1.5
+		meson >= 0.50.1
+		ninja >= 1.9.0
 		pam-devel
 		pciutils-devel
 		python3-devel
 		python3-lxml
+		setup >= 3.0-13
 		usbutils
 		vala
 		xz-devel
@@ -95,10 +96,10 @@ build
 
 	build
 		# Call meson and pass configure options.
-		meson --buildtype=plain %{configure_options} . build
+		%{meson} %{configure_options}
 
 		# Call ninja to start build
-		ninja -v %{PARALLELISMFLAGS} -C build
+		%{meson_build}
 	end
 
 	test
@@ -113,11 +114,8 @@ build
 	end
 
 	install
-		# Export destdir.
-		export DESTDIR=%{BUILDROOT}
-
-		# Call ninja to perform installation
-		ninja install -v %{PARALLELISMFLAGS} -C build
+		# Install systemd.
+		%{meson_install}
 
 		# Create folder in log to store the journal.
 		mkdir -pv %{BUILDROOT}/var/log/journal
@@ -242,7 +240,6 @@ packages
 			python-dbus
 			python-gobject3
 			%{name}-libs=%{thisver}
-			%{name}-units=%{thisver}
 			util-linux>=2.19
 		end
 
@@ -269,6 +266,7 @@ packages
 
 		obsoletes
 			udev < 183
+			systemd-units <= 242
 		end
 
 		configfiles
@@ -336,43 +334,6 @@ packages
 		# Be sure to start the new udev after everything is done.
 		script posttransup
 			/usr/bin/systemctl start systemd-udev.service  >/dev/null 2>&1 || :
-		end
-	end
-
-	# Package information for systemd-units
-	package %{name}-units
-		summary =  Configuration files, directories and installation tool for systemd.
-		description
-			This package contains all needed configuration files, directories
-			and installation / configuration tool for systemd.
-		end
-
-		prerequires
-			/bin/sh
-			coreutils
-		end
-
-		provides
-			/bin/systemctl
-		end
-
-		conflicts
-			filesystem < 002
-		end
-
-		files
-			%{sysconfdir}/etc/systemd/system
-			%{sysconfdir}/tmpfiles.d
-			%{sysconfdir}/bash_completion.d/systemctl-bash-completion.sh
-			%{unitdir}
-			%{bindir}/systemctl
-			%{bindir}/systemd-tmpfiles
-			%{mandir}/man1/systemctl.*
-		end
-
-		script postup
-			# Reload service files
-			/usr/bin/systemctl daemon-reload > /dev/null 2>&1 || :
 		end
 	end
 
