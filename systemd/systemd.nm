@@ -5,7 +5,7 @@
 
 name       = systemd
 version    = 242
-release    = 3
+release    = 4
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -53,6 +53,7 @@ build
 		libcap-devel
 		libgcrypt-devel
 		libmount-devel >= 2.34-2
+		libseccomp-devel
 		libuuid-devel >= 2.34-2
 		m4
 		meson >= 0.50.1
