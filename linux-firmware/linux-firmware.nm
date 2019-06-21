@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = linux-firmware
-version    = 20180918
-git_ver    = 44d4fca
+version    = 20190620
+git_ver    = 7ae3a09
 release    = 1.git%{git_ver}
 arch       = noarch
 thisapp    = %{name}-%{git_ver}
