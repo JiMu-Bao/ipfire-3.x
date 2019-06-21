@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = strongswan
-version    = 5.7.2
+version    = 5.8.0
 release    = 1
 
 groups     = Networking/VPN
@@ -84,8 +84,6 @@ build
 	#end
 
 	install_cmds
-		mv -v %{BUILDROOT}%{unitdir}/strongswan{-swanctl,}.service
-
 		# Install network settings
 		install -v -m 644 %{DIR_SOURCE}/network.conf \
 			%{BUILDROOT}%{sysconfdir}/strongswan.d/
