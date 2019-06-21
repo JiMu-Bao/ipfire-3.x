@@ -5,7 +5,7 @@
 
 name       = bash-completion
 version    = 2.4
-release    = 2
+release    = 3
 arch       = noarch
 
 groups     = Development/Languages
@@ -25,8 +25,8 @@ build
 	install_cmds
 		rm -rvf %{BUILDROOT}%{datadir}/bash-completion/completions/{cawsay,cowthink}
 
-		# Drop files which are provided by util-linux >= 2.28
-		rm -rvf %{BUILDROOT}%{datadir}/bash-completion/completions/{mount,umount}
+		# Drop files which are provided by util-linux >= 2.28 and 2.34
+		rm -rvf %{BUILDROOT}%{datadir}/bash-completion/completions/{mount,umount,rfkill}
 
 		install -Dpm 644 %{DIR_SOURCE}/bash-completion-1.99-redefine_filedir.bash \
 			%{BUILDROOT}%{sysconfdir}/bash_completion.d/redefine_filedir
