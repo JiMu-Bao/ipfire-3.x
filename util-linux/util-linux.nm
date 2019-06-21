@@ -4,10 +4,7 @@
 ###############################################################################
 
 name       = util-linux
-major_ver  = 2.30
-minor_ver  = 1
-#version    = %{major_ver}
-version    = %{major_ver}.%{minor_ver}
+version    = 2.34
 release    = 1
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
@@ -23,10 +20,11 @@ description
 	program.
 end
 
-source_dl  = https://www.kernel.org/pub/linux/utils/%{name}/v%{major_ver}/
+source_dl  = https://www.kernel.org/pub/linux/utils/%{name}/v%{version}/
 
 build
 	requires
+		autoconf >= 1.16
 		automake >= 1.15
 		coreutils >= 8.19
 		gettext
