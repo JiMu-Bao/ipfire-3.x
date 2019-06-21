@@ -5,7 +5,7 @@
 
 name       = grub
 version    = 2.02
-release    = 1
+release    = 2
 
 sup_arches = aarch64 x86_64 i686
 thisapp    = %{name}-%{version}
