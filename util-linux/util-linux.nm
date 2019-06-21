@@ -5,7 +5,7 @@
 
 name       = util-linux
 version    = 2.34
-release    = 1
+release    = 2
 
 maintainer = Stefan Schantl <stefan.schantl@ipfire.org>
 groups     = System/Base
@@ -235,6 +235,10 @@ packages
 	package libmount-devel
 		summary =  Development library and header of libmount.
 		description = %{summary}
+
+		requires
+			libblkid-devel = %{thisver}
+		end
 
 		files
 			%{includedir}/libmount/
