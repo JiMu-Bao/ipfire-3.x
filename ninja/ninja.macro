@@ -1,0 +1,21 @@
+#
+# ninja-build macros
+#
+
+
+__ninja = %{bindir}/ninja
+__ninja_common_opts = -v %{PARALLELISMFLAGS}
+
+ninja_build = \
+	%{__ninja} \
+	%{__ninja_common_opts}
+
+ninja_install = \
+	DESTDIR=%{BUILDROOT} \
+	%{__ninja} install \
+	%{__ninja_common_opts}
+
+ninja_test = \
+	%{__ninja} test \
+	%{__ninja_common_opts}
+

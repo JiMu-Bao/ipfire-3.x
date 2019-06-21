@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = ninja
-version    = 1.8.2
+version    = 1.9.0
 release    = 1
 
 groups     = Applications/System
@@ -55,6 +55,12 @@ build
 
 		# Install ninja syntax highlighting for vim.
 		install -Dpm0644 misc/ninja.vim %{BUILDROOT}%{datadir}/vim/vimfiles/syntax/ninja.vim
+
+		# Install pakfire macro.
+		mkdir -p %{BUILDROOT}/usr/lib/pakfire/macros
+		install -v -m 644 %{DIR_SOURCE}/%{name}.macro \
+			%{BUILDROOT}/usr/lib/pakfire/macros
+
 	end
 end
 
