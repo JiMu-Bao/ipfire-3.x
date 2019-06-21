@@ -1,0 +1,44 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = kernel-updater
+version    = 20190621
+release    = 1
+arch       = noarch
+
+maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
+groups     = System/Tools
+url        = https://git.ipfire.org/?p=people/arne_f/kernel-updater.git;a=summary
+license    = GPLv3+
+summary    = Configures the system for new installed kernels
+
+description
+	This script makes sure that the system is updated properly when
+	a new kernel is installed or uninstalled.
+end
+
+source_dl  = https://source.ipfire.org/releases/%{name}/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		autoconf
+		automake
+		sed
+	end
+
+	prepare_cmds
+		[ -e "configure" ] || ./autogen.sh
+	end
+end
+
+packages
+	package %{name}
+		requires
+			/sbin/depmod
+			dracut
+		end
+	end
+end
