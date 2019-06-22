@@ -1,10 +1,21 @@
-diff -up dhcp-4.3.5/omapip/errwarn.c.errwarn dhcp-4.3.5/omapip/errwarn.c
---- dhcp-4.3.5/omapip/errwarn.c.errwarn	2016-09-27 21:16:50.000000000 +0200
-+++ dhcp-4.3.5/omapip/errwarn.c	2016-11-29 19:44:03.515031147 +0100
-@@ -49,6 +49,41 @@ void (*log_cleanup) (void);
+From 31ef6eadb15c3773b81256a8617eccc7657fd2fd Mon Sep 17 00:00:00 2001
+From: Pavel Zhukov <pzhukov@redhat.com>
+Date: Thu, 21 Feb 2019 10:09:57 +0100
+Subject: [PATCH 01/21] change bug url
+Cc: pzhukov@redhat.com
+
+---
+ omapip/errwarn.c | 47 ++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 42 insertions(+), 5 deletions(-)
+
+diff --git a/omapip/errwarn.c b/omapip/errwarn.c
+index e30f8a0..09a3004 100644
+--- a/omapip/errwarn.c
++++ b/omapip/errwarn.c
+@@ -48,6 +48,41 @@ void (*log_cleanup) (void);
  static char mbuf [CVT_BUF_MAX + 1];
  static char fbuf [CVT_BUF_MAX + 1];
- 
+
 +// get BUG_REPORT_URL from /etc/os-release
 +char * bug_report_url(void) {
 +    FILE * file = fopen("/etc/os-release", "r");
@@ -41,17 +52,17 @@ diff -up dhcp-4.3.5/omapip/errwarn.c.errwarn dhcp-4.3.5/omapip/errwarn.c
 +
 +
  /* Log an error message, then exit... */
- 
+
  void log_fatal (const char * fmt, ... )
-@@ -75,11 +110,13 @@ void log_fatal (const char * fmt, ... )
+@@ -74,11 +109,13 @@ void log_fatal (const char * fmt, ... )
    }
- 
+
    log_error ("%s", "");
 -  log_error ("If you think you have received this message due to a bug rather");
 -  log_error ("than a configuration issue please read the section on submitting");
 -  log_error ("bugs on either our web page at www.isc.org or in the README file");
 -  log_error ("before submitting a bug.  These pages explain the proper");
--  log_error ("process and the information we find helpful for debugging..");
+-  log_error ("process and the information we find helpful for debugging.");
 +  log_error ("This version of ISC DHCP is based on the release available");
 +  log_error ("on ftp.isc.org. Features have been added and other changes");
 +  log_error ("have been made to the base software release in order to make");
@@ -61,4 +72,6 @@ diff -up dhcp-4.3.5/omapip/errwarn.c.errwarn dhcp-4.3.5/omapip/errwarn.c
 +  log_error ("%s", bug_report_url());
    log_error ("%s", "");
    log_error ("exiting.");
- 
+
+--
+2.14.5

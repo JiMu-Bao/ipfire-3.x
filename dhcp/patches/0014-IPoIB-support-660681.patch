@@ -1,19 +1,36 @@
-diff -up dhcp-4.3.4/client/dhclient.c.lpf-ib dhcp-4.3.4/client/dhclient.c
---- dhcp-4.3.4/client/dhclient.c.lpf-ib	2016-05-02 14:37:36.945128001 +0200
-+++ dhcp-4.3.4/client/dhclient.c	2016-05-02 14:37:36.952128005 +0200
-@@ -163,6 +163,8 @@ static const char use_noarg[] = "No argu
- static const char use_v6command[] = "Command not used for DHCPv4: %s";
- #endif
- 
+From de8468cf16c0fa9d01412446fcf1d44ccd0fd411 Mon Sep 17 00:00:00 2001
+From: Pavel Zhukov <pzhukov@redhat.com>
+Date: Thu, 21 Feb 2019 10:34:21 +0100
+Subject: [PATCH 14/21] IPoIB support (#660681)
+Cc: pzhukov@redhat.com
+
+(Submitted to dhcp-bugs@isc.org - [ISC-Bugs #24249])
+---
+ client/dhclient.c |  32 +++++++
+ common/bpf.c      |  32 +++++++
+ common/discover.c |   4 +-
+ common/lpf.c      | 262 +++++++++++++++++++++++++++++++++++++++++++++++++-----
+ common/socket.c   |   8 +-
+ includes/dhcpd.h  |   6 +-
+ 6 files changed, 315 insertions(+), 29 deletions(-)
+
+diff --git a/client/dhclient.c b/client/dhclient.c
+index 301132c..dc9080e 100644
+--- a/client/dhclient.c
++++ b/client/dhclient.c
+@@ -205,6 +205,8 @@ static const char use_v6command[] = "Command not used for DHCPv4: %s";
+
+ #define DHCLIENT_USAGEH "{--version|--help|-h}"
+
 +static void setup_ib_interface(struct interface_info *ip);
 +
  static void
  usage(const char *sfmt, const char *sarg)
  {
-@@ -1066,6 +1068,13 @@ main(int argc, char **argv) {
- 	}
- 	srandom(seed + cur_time + (unsigned)getpid());
- 
+@@ -1191,6 +1193,13 @@ main(int argc, char **argv) {
+	}
+	srandom(seed + cur_time + (unsigned)getpid());
+
 +	/* Setup specific Infiniband options */
 +	for (ip = interfaces; ip; ip = ip->next) {
 +		if (ip->client &&
@@ -21,13 +38,13 @@ diff -up dhcp-4.3.4/client/dhclient.c.lpf-ib dhcp-4.3.4/client/dhclient.c
 +			setup_ib_interface(ip);
 +		}
 +	}
- 
- 	/*
- 	 * Establish a default DUID.  We always do so for v6 and
-@@ -1361,6 +1370,29 @@ int find_subnet (struct subnet **sp,
- 	return 0;
+
+	/*
+	 * Establish a default DUID.  We always do so for v6 and
+@@ -1486,6 +1495,29 @@ int find_subnet (struct subnet **sp,
+	return 0;
  }
- 
+
 +static void setup_ib_interface(struct interface_info *ip)
 +{
 +	struct group *g;
@@ -54,13 +71,14 @@ diff -up dhcp-4.3.4/client/dhclient.c.lpf-ib dhcp-4.3.4/client/dhclient.c
  /* Individual States:
   *
   * Each routine is called from the dhclient_state_machine() in one of
-diff -up dhcp-4.3.4/common/bpf.c.lpf-ib dhcp-4.3.4/common/bpf.c
---- dhcp-4.3.4/common/bpf.c.lpf-ib	2016-05-02 14:37:36.946128001 +0200
-+++ dhcp-4.3.4/common/bpf.c	2016-05-02 14:37:36.952128005 +0200
-@@ -198,11 +198,43 @@ struct bpf_insn dhcp_bpf_filter [] = {
- 	BPF_STMT(BPF_RET+BPF_K, 0),
- };
- 
+diff --git a/common/bpf.c b/common/bpf.c
+index ffbd09a..568e3d9 100644
+--- a/common/bpf.c
++++ b/common/bpf.c
+@@ -237,11 +237,43 @@ int dhcp_bpf_relay_filter_len =
+	sizeof dhcp_bpf_relay_filter / sizeof (struct bpf_insn);
+ #endif
+
 +/* Packet filter program for DHCP over Infiniband.
 + *
 + * XXX
@@ -95,37 +113,39 @@ diff -up dhcp-4.3.4/common/bpf.c.lpf-ib dhcp-4.3.4/common/bpf.c
  #if defined (DEC_FDDI)
  struct bpf_insn *bpf_fddi_filter = NULL;
  #endif
- 
+
  int dhcp_bpf_filter_len = sizeof dhcp_bpf_filter / sizeof (struct bpf_insn);
 +int dhcp_ib_bpf_filter_len = sizeof dhcp_ib_bpf_filter / sizeof (struct bpf_insn);
  #if defined (HAVE_TR_SUPPORT)
  struct bpf_insn dhcp_bpf_tr_filter [] = {
          /* accept all token ring packets due to variable length header */
-diff -up dhcp-4.3.4/common/discover.c.lpf-ib dhcp-4.3.4/common/discover.c
---- dhcp-4.3.4/common/discover.c.lpf-ib	2016-03-22 14:16:51.000000000 +0100
-+++ dhcp-4.3.4/common/discover.c	2016-05-02 14:38:08.257147982 +0200
-@@ -1235,7 +1235,7 @@ discover_interfaces(int state) {
- 				if_register_send(tmp);
- 			} else {
- 				/* get_hw_addr() was called by register. */
+diff --git a/common/discover.c b/common/discover.c
+index 6ef8852..65881fc 100644
+--- a/common/discover.c
++++ b/common/discover.c
+@@ -894,7 +894,7 @@ discover_interfaces(int state) {
+				if_register_send(tmp);
+			} else {
+				/* get_hw_addr() was called by register. */
 -				get_hw_addr(tmp->name, &tmp->hw_address);
 +				get_hw_addr(tmp);
- 			}
- 			break;
+			}
+			break;
  #ifdef DHCPv6
-@@ -1248,7 +1248,7 @@ discover_interfaces(int state) {
- 				   so now we have to call it explicitly
- 				   to not leave the hardware address unknown
- 				   (some code expects it cannot be. */
+@@ -907,7 +907,7 @@ discover_interfaces(int state) {
+				   so now we have to call it explicitly
+				   to not leave the hardware address unknown
+				   (some code expects it cannot be. */
 -				get_hw_addr(tmp->name, &tmp->hw_address);
 +				get_hw_addr(tmp);
- 			} else {
- 				if_register_linklocal6(tmp);
- 			}
-diff -up dhcp-4.3.4/common/lpf.c.lpf-ib dhcp-4.3.4/common/lpf.c
---- dhcp-4.3.4/common/lpf.c.lpf-ib	2016-05-02 14:37:36.947128002 +0200
-+++ dhcp-4.3.4/common/lpf.c	2016-05-02 14:37:36.953128006 +0200
-@@ -47,6 +47,17 @@
+			} else {
+				if_register_linklocal6(tmp);
+			}
+diff --git a/common/lpf.c b/common/lpf.c
+index b0ed01c..b732a86 100644
+--- a/common/lpf.c
++++ b/common/lpf.c
+@@ -45,6 +45,17 @@
  #include <sys/ioctl.h>
  #include <sys/socket.h>
  #include <net/if.h>
@@ -141,12 +161,12 @@ diff -up dhcp-4.3.4/common/lpf.c.lpf-ib dhcp-4.3.4/common/lpf.c
 +};
 +
  #endif
- 
+
  #if defined (USE_LPF_SEND) || defined (USE_LPF_RECEIVE)
-@@ -80,10 +91,20 @@ int if_register_lpf (info)
- 		struct sockaddr common;
- 		} sa;
- 	struct ifreq ifr;
+@@ -78,10 +89,20 @@ int if_register_lpf (info)
+		struct sockaddr common;
+		} sa;
+	struct ifreq ifr;
 +	int type;
 +	int protocol;
 +
@@ -158,44 +178,44 @@ diff -up dhcp-4.3.4/common/lpf.c.lpf-ib dhcp-4.3.4/common/lpf.c
 +		type = SOCK_RAW;
 +		protocol = ETH_P_ALL;
 +	}
- 
- 	/* Make an LPF socket. */
+
+	/* Make an LPF socket. */
 -	if ((sock = socket(PF_PACKET, SOCK_RAW,
 -			   htons((short)ETH_P_ALL))) < 0) {
 +	if ((sock = socket(PF_PACKET, type, htons((short)protocol))) < 0) {
- 		if (errno == ENOPROTOOPT || errno == EPROTONOSUPPORT ||
- 		    errno == ESOCKTNOSUPPORT || errno == EPFNOSUPPORT ||
- 		    errno == EAFNOSUPPORT || errno == EINVAL) {
-@@ -106,6 +127,7 @@ int if_register_lpf (info)
- 	/* Bind to the interface name */
- 	memset (&sa, 0, sizeof sa);
- 	sa.ll.sll_family = AF_PACKET;
+		if (errno == ENOPROTOOPT || errno == EPROTONOSUPPORT ||
+		    errno == ESOCKTNOSUPPORT || errno == EPFNOSUPPORT ||
+		    errno == EAFNOSUPPORT || errno == EINVAL) {
+@@ -104,6 +125,7 @@ int if_register_lpf (info)
+	/* Bind to the interface name */
+	memset (&sa, 0, sizeof sa);
+	sa.ll.sll_family = AF_PACKET;
 +	sa.ll.sll_protocol = htons(protocol);
- 	sa.ll.sll_ifindex = ifr.ifr_ifindex;
- 	if (bind (sock, &sa.common, sizeof sa)) {
- 		if (errno == ENOPROTOOPT || errno == EPROTONOSUPPORT ||
-@@ -122,8 +144,6 @@ int if_register_lpf (info)
- 
- 	}
- 
+	sa.ll.sll_ifindex = ifr.ifr_ifindex;
+	if (bind (sock, &sa.common, sizeof sa)) {
+		if (errno == ENOPROTOOPT || errno == EPROTONOSUPPORT ||
+@@ -120,8 +142,6 @@ int if_register_lpf (info)
+
+	}
+
 -	get_hw_addr(info->name, &info->hw_address);
 -
- 	return sock;
+	return sock;
  }
  #endif /* USE_LPF_SEND || USE_LPF_RECEIVE */
-@@ -178,6 +198,8 @@ void if_deregister_send (info)
+@@ -176,6 +196,8 @@ void if_deregister_send (info)
     in bpf includes... */
  extern struct sock_filter dhcp_bpf_filter [];
  extern int dhcp_bpf_filter_len;
 +extern struct sock_filter dhcp_ib_bpf_filter [];
 +extern int dhcp_ib_bpf_filter_len;
- 
- #if defined (HAVE_TR_SUPPORT)
- extern struct sock_filter dhcp_bpf_tr_filter [];
-@@ -196,11 +218,12 @@ void if_register_receive (info)
+
+ #if defined(RELAY_PORT)
+ extern struct sock_filter dhcp_bpf_relay_filter [];
+@@ -199,11 +221,12 @@ void if_register_receive (info)
  #ifdef PACKET_AUXDATA
- 	{
- 	int val = 1;
+	{
+	int val = 1;
 -
 -	if (setsockopt(info->rfdesc, SOL_PACKET, PACKET_AUXDATA,
 -		       &val, sizeof(val)) < 0) {
@@ -207,50 +227,12 @@ diff -up dhcp-4.3.4/common/lpf.c.lpf-ib dhcp-4.3.4/common/lpf.c
 +			if (errno != ENOPROTOOPT) {
 +				log_fatal ("Failed to set auxiliary packet data: %m");
 +			}
- 		}
- 	}
- 	}
-@@ -250,15 +273,28 @@ static void lpf_gen_filter_setup (info)
- 
- 	memset(&p, 0, sizeof(p));
- 
--	/* Set up the bpf filter program structure.    This is defined in
--	   bpf.c */
--	p.len = dhcp_bpf_filter_len;
--	p.filter = dhcp_bpf_filter;
--
--        /* Patch the server port into the LPF  program...
--	   XXX changes to filter program may require changes
--	   to the insn number(s) used below! XXX */
--	dhcp_bpf_filter [8].k = ntohs ((short)local_port);
-+	if (info->hw_address.hbuf[0] == HTYPE_INFINIBAND) {
-+		/* Set up the bpf filter program structure. */
-+		p.len = dhcp_ib_bpf_filter_len;
-+		p.filter = dhcp_ib_bpf_filter;
-+
-+		/* Patch the server port into the LPF program...
-+		   XXX
-+		   changes to filter program may require changes
-+		   to the insn number(s) used below!
-+		   XXX */
-+		dhcp_ib_bpf_filter[6].k = ntohs ((short)local_port);
-+	} else {
-+		/* Set up the bpf filter program structure.
-+		   This is defined in bpf.c */
-+		p.len = dhcp_bpf_filter_len;
-+		p.filter = dhcp_bpf_filter;
-+
-+		/* Patch the server port into the LPF  program...
-+		   XXX changes to filter program may require changes
-+		   to the insn number(s) used below! XXX */
-+		dhcp_bpf_filter [8].k = ntohs ((short)local_port);
-+	}
- 
- 	if (setsockopt (info -> rfdesc, SOL_SOCKET, SO_ATTACH_FILTER, &p,
- 			sizeof p) < 0) {
-@@ -315,6 +351,54 @@ static void lpf_tr_filter_setup (info)
+		}
+	}
+	}
+@@ -330,6 +353,54 @@ static void lpf_tr_filter_setup (info)
  #endif /* USE_LPF_RECEIVE */
- 
+
  #ifdef USE_LPF_SEND
 +ssize_t send_packet_ib(interface, packet, raw, len, from, to, hto)
 +	struct interface_info *interface;
@@ -301,23 +283,23 @@ diff -up dhcp-4.3.4/common/lpf.c.lpf-ib dhcp-4.3.4/common/lpf.c
 +}
 +
  ssize_t send_packet (interface, packet, raw, len, from, to, hto)
- 	struct interface_info *interface;
- 	struct packet *packet;
-@@ -335,6 +419,11 @@ ssize_t send_packet (interface, packet,
- 		return send_fallback (interface, packet, raw,
- 				      len, from, to, hto);
- 
+	struct interface_info *interface;
+	struct packet *packet;
+@@ -350,6 +421,11 @@ ssize_t send_packet (interface, packet, raw, len, from, to, hto)
+		return send_fallback (interface, packet, raw,
+				      len, from, to, hto);
+
 +	if (interface->hw_address.hbuf[0] == HTYPE_INFINIBAND) {
 +		return send_packet_ib(interface, packet, raw, len, from,
 +				      to, hto);
 +	}
 +
- 	if (hto == NULL && interface->anycast_mac_addr.hlen)
- 		hto = &interface->anycast_mac_addr;
- 
-@@ -355,6 +444,42 @@ ssize_t send_packet (interface, packet,
+	if (hto == NULL && interface->anycast_mac_addr.hlen)
+		hto = &interface->anycast_mac_addr;
+
+@@ -370,6 +446,42 @@ ssize_t send_packet (interface, packet, raw, len, from, to, hto)
  #endif /* USE_LPF_SEND */
- 
+
  #ifdef USE_LPF_RECEIVE
 +ssize_t receive_packet_ib (interface, buf, len, from, hfrom)
 +	struct interface_info *interface;
@@ -356,22 +338,22 @@ diff -up dhcp-4.3.4/common/lpf.c.lpf-ib dhcp-4.3.4/common/lpf.c
 +}
 +
  ssize_t receive_packet (interface, buf, len, from, hfrom)
- 	struct interface_info *interface;
- 	unsigned char *buf;
-@@ -393,6 +518,10 @@ ssize_t receive_packet (interface, buf,
- 	};
+	struct interface_info *interface;
+	unsigned char *buf;
+@@ -408,6 +520,10 @@ ssize_t receive_packet (interface, buf, len, from, hfrom)
+	};
  #endif /* PACKET_AUXDATA */
- 
+
 +	if (interface->hw_address.hbuf[0] == HTYPE_INFINIBAND) {
 +		return receive_packet_ib(interface, buf, len, from, hfrom);
 +	}
 +
- 	length = recvmsg (interface->rfdesc, &msg, 0);
- 	if (length <= 0)
- 		return length;
-@@ -506,11 +635,33 @@ void maybe_setup_fallback ()
+	length = recvmsg (interface->rfdesc, &msg, 0);
+	if (length <= 0)
+		return length;
+@@ -521,11 +637,33 @@ void maybe_setup_fallback ()
  #endif
- 
+
  #if defined (USE_LPF_RECEIVE) || defined (USE_LPF_HWADDR)
 -void
 -get_hw_addr(const char *name, struct hardware *hw) {
@@ -398,25 +380,25 @@ diff -up dhcp-4.3.4/common/lpf.c.lpf-ib dhcp-4.3.4/common/lpf.c
 +struct sockaddr_ll *
 +ioctl_get_ll(char *name)
 +{
- 	int sock;
- 	struct ifreq tmp;
+	int sock;
+	struct ifreq tmp;
 -	struct sockaddr *sa;
 +	struct sockaddr *sa = NULL;
 +	struct sockaddr_ll *sll = NULL;
- 
- 	if (strlen(name) >= sizeof(tmp.ifr_name)) {
- 		log_fatal("Device name too long: \"%s\"", name);
-@@ -524,16 +675,61 @@ get_hw_addr(const char *name, struct har
- 	memset(&tmp, 0, sizeof(tmp));
- 	strcpy(tmp.ifr_name, name);
- 	if (ioctl(sock, SIOCGIFHWADDR, &tmp) < 0) {
--		log_fatal("Error getting hardware address for \"%s\": %m", 
+
+	if (strlen(name) >= sizeof(tmp.ifr_name)) {
+		log_fatal("Device name too long: \"%s\"", name);
+@@ -539,16 +677,61 @@ get_hw_addr(const char *name, struct hardware *hw) {
+	memset(&tmp, 0, sizeof(tmp));
+	strcpy(tmp.ifr_name, name);
+	if (ioctl(sock, SIOCGIFHWADDR, &tmp) < 0) {
+-		log_fatal("Error getting hardware address for \"%s\": %m",
 +		log_fatal("Error getting hardware address for \"%s\": %m",
- 			  name);
- 	}
+			  name);
+	}
 +	close(sock);
- 
- 	sa = &tmp.ifr_hwaddr;
+
+	sa = &tmp.ifr_hwaddr;
 -	switch (sa->sa_family) {
 +	// needs to be freed outside this function
 +	sll = dmalloc (sizeof (struct sockaddr_ll), MDL);
@@ -463,24 +445,24 @@ diff -up dhcp-4.3.4/common/lpf.c.lpf-ib dhcp-4.3.4/common/lpf.c
 +	}
 +
 +	switch (sll->sll_hatype) {
- 		case ARPHRD_ETHER:
- 			hw->hlen = 7;
- 			hw->hbuf[0] = HTYPE_ETHER;
+		case ARPHRD_ETHER:
+			hw->hlen = 7;
+			hw->hbuf[0] = HTYPE_ETHER;
 -			memcpy(&hw->hbuf[1], sa->sa_data, 6);
 +			memcpy(&hw->hbuf[1], sll->sll_addr, 6);
- 			break;
- 		case ARPHRD_IEEE802:
+			break;
+		case ARPHRD_IEEE802:
  #ifdef ARPHRD_IEEE802_TR
-@@ -541,18 +737,50 @@ get_hw_addr(const char *name, struct har
+@@ -556,18 +739,50 @@ get_hw_addr(const char *name, struct hardware *hw) {
  #endif /* ARPHRD_IEEE802_TR */
- 			hw->hlen = 7;
- 			hw->hbuf[0] = HTYPE_IEEE802;
+			hw->hlen = 7;
+			hw->hbuf[0] = HTYPE_IEEE802;
 -			memcpy(&hw->hbuf[1], sa->sa_data, 6);
 +			memcpy(&hw->hbuf[1], sll->sll_addr, 6);
- 			break;
- 		case ARPHRD_FDDI:
- 			hw->hlen = 7;
- 			hw->hbuf[0] = HTYPE_FDDI;
+			break;
+		case ARPHRD_FDDI:
+			hw->hlen = 7;
+			hw->hbuf[0] = HTYPE_FDDI;
 -			memcpy(&hw->hbuf[1], sa->sa_data, 6);
 +			memcpy(&hw->hbuf[1], sll->sll_addr, 6);
 +			break;
@@ -515,100 +497,104 @@ diff -up dhcp-4.3.4/common/lpf.c.lpf-ib dhcp-4.3.4/common/lpf.c
 +			memcpy(&hw->hbuf[1],
 +			       &sll->sll_addr[sll->sll_halen - HARDWARE_ADDR_LEN_IOCTL],
 +			       HARDWARE_ADDR_LEN_IOCTL);
- 			break;
+			break;
  #if defined(ARPHRD_PPP)
- 		case ARPHRD_PPP:
- 			if (local_family != AF_INET6)
+		case ARPHRD_PPP:
+			if (local_family != AF_INET6)
 -				log_fatal("Unsupported device type %d for \"%s\"",
 -				           sa->sa_family, name);
 +				log_fatal("local_family != AF_INET6 for \"%s\"",
 +					  name);
- 			hw->hlen = 0;
- 			hw->hbuf[0] = HTYPE_RESERVED;
- 			/* 0xdeadbeef should never occur on the wire,
-@@ -565,10 +793,13 @@ get_hw_addr(const char *name, struct har
- 			break;
+			hw->hlen = 0;
+			hw->hbuf[0] = HTYPE_RESERVED;
+			/* 0xdeadbeef should never occur on the wire,
+@@ -580,10 +795,13 @@ get_hw_addr(const char *name, struct hardware *hw) {
+			break;
  #endif
- 		default:
+		default:
 -			log_fatal("Unsupported device type %ld for \"%s\"",
 -				  (long int)sa->sa_family, name);
 +			freeifaddrs(ifaddrs);
 +			log_fatal("Unsupported device type %hu for \"%s\"",
 +				  sll->sll_hatype, name);
- 	}
- 
+	}
+
 -	close(sock);
 +	if (sll_allocated)
 +		dfree(sll, MDL);
 +	freeifaddrs(ifaddrs);
  }
  #endif
-diff -up dhcp-4.3.4/common/socket.c.lpf-ib dhcp-4.3.4/common/socket.c
---- dhcp-4.3.4/common/socket.c.lpf-ib	2016-03-22 14:16:51.000000000 +0100
-+++ dhcp-4.3.4/common/socket.c	2016-05-02 14:37:36.953128006 +0200
-@@ -328,7 +328,7 @@ void if_register_send (info)
- 	info->wfdesc = if_register_socket(info, AF_INET, 0, NULL);
- 	/* If this is a normal IPv4 address, get the hardware address. */
- 	if (strcmp(info->name, "fallback") != 0)
+diff --git a/common/socket.c b/common/socket.c
+index 483eb9c..6e1caac 100644
+--- a/common/socket.c
++++ b/common/socket.c
+@@ -350,7 +350,7 @@ void if_register_send (info)
+	info->wfdesc = if_register_socket(info, AF_INET, 0, NULL);
+	/* If this is a normal IPv4 address, get the hardware address. */
+	if (strcmp(info->name, "fallback") != 0)
 -		get_hw_addr(info->name, &info->hw_address);
 +		get_hw_addr(info);
  #if defined (USE_SOCKET_FALLBACK)
- 	/* Fallback only registers for send, but may need to receive as
- 	   well. */
-@@ -391,7 +391,7 @@ void if_register_receive (info)
+	/* Fallback only registers for send, but may need to receive as
+	   well. */
+@@ -413,7 +413,7 @@ void if_register_receive (info)
  #endif /* IP_PKTINFO... */
- 	/* If this is a normal IPv4 address, get the hardware address. */
- 	if (strcmp(info->name, "fallback") != 0)
+	/* If this is a normal IPv4 address, get the hardware address. */
+	if (strcmp(info->name, "fallback") != 0)
 -		get_hw_addr(info->name, &info->hw_address);
 +		get_hw_addr(info);
- 
- 	if (!quiet_interface_discovery)
- 		log_info ("Listening on Socket/%s%s%s",
-@@ -505,7 +505,7 @@ if_register6(struct interface_info *info
- 	if (req_multi)
- 		if_register_multicast(info);
- 
+
+	if (!quiet_interface_discovery)
+		log_info ("Listening on Socket/%s%s%s",
+@@ -567,7 +567,7 @@ if_register6(struct interface_info *info, int do_multicast) {
+	if (req_multi)
+		if_register_multicast(info);
+
 -	get_hw_addr(info->name, &info->hw_address);
 +	get_hw_addr(info);
- 
- 	if (!quiet_interface_discovery) {
- 		if (info->shared_network != NULL) {
-@@ -561,7 +561,7 @@ if_register_linklocal6(struct interface_
- 	info->rfdesc = sock;
- 	info->wfdesc = sock;
- 
+
+	if (!quiet_interface_discovery) {
+		if (info->shared_network != NULL) {
+@@ -623,7 +623,7 @@ if_register_linklocal6(struct interface_info *info) {
+	info->rfdesc = sock;
+	info->wfdesc = sock;
+
 -	get_hw_addr(info->name, &info->hw_address);
 +	get_hw_addr(info);
- 
- 	if (!quiet_interface_discovery) {
- 		if (info->shared_network != NULL) {
-diff -up dhcp-4.3.4/includes/dhcpd.h.lpf-ib dhcp-4.3.4/includes/dhcpd.h
---- dhcp-4.3.4/includes/dhcpd.h.lpf-ib	2016-05-02 14:37:36.948128002 +0200
-+++ dhcp-4.3.4/includes/dhcpd.h	2016-05-02 14:37:36.954128006 +0200
-@@ -482,6 +482,9 @@ struct packet {
- 
+
+	if (!quiet_interface_discovery) {
+		if (info->shared_network != NULL) {
+diff --git a/includes/dhcpd.h b/includes/dhcpd.h
+index faa9251..0c1a0aa 100644
+--- a/includes/dhcpd.h
++++ b/includes/dhcpd.h
+@@ -485,6 +485,9 @@ struct packet {
+
  #define HARDWARE_ADDR_LEN 20
- 
+
 +/* ioctl limits hardware addresses to 8 bytes */
 +#define HARDWARE_ADDR_LEN_IOCTL	8
 +
  struct hardware {
- 	u_int8_t hlen;
- 	u_int8_t hbuf[HARDWARE_ADDR_LEN + 1];
-@@ -1343,6 +1346,7 @@ struct interface_info {
- 	struct shared_network *shared_network;
- 				/* Networks connected to this interface. */
- 	struct hardware hw_address;	/* Its physical address. */
+	u_int8_t hlen;
+	u_int8_t hbuf[HARDWARE_ADDR_LEN + 1];
+@@ -1365,6 +1368,7 @@ struct interface_info {
+	struct shared_network *shared_network;
+				/* Networks connected to this interface. */
+	struct hardware hw_address;	/* Its physical address. */
 +	u_int8_t bcast_addr[20];	/* Infiniband broadcast address */
- 	struct in_addr *addresses;	/* Addresses associated with this
- 					 * interface.
- 					 */
-@@ -2580,7 +2584,7 @@ void print_dns_status (int, struct dhcp_
+	struct in_addr *addresses;	/* Addresses associated with this
+					 * interface.
+					 */
+@@ -2633,7 +2637,7 @@ void print_dns_status (int, struct dhcp_ddns_cb *, isc_result_t);
  #endif
  const char *print_time(TIME);
- 
+
 -void get_hw_addr(const char *name, struct hardware *hw);
 +void get_hw_addr(struct interface_info *info);
  char *buf_to_hex (const unsigned char *s, unsigned len,
                     const char *file, int line);
  char *format_lease_id(const unsigned char *s, unsigned len, int format,
+--
+2.14.5
