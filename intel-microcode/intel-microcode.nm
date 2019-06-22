@@ -1,0 +1,40 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = intel-microcode
+version    = 20190618
+release    = 1
+arch       = noarch
+thisapp    = microcode-%{version}
+
+maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
+groups     = System/Libraries
+url        = https://github.com/intel/Intel-Linux-Processor-Microcode-Data-Files/releases
+license    = Non-GPL
+summary    = Microcode update for Intel CPU's.
+
+description
+	intel-microcode provides some binaries that
+	are loaded into the Intel CPU at startup.
+end
+
+source_dl  = https://github.com/intel/Intel-Linux-Processor-Microcode-Data-Files/archive/
+
+build
+	build
+		: # Nothing to do.
+	end
+
+	DIR_APP = %{DIR_SRC}/Intel-Linux-Processor-Microcode-Data-Files-%{thisapp}
+
+	install
+		mkdir -pv %{BUILDROOT}%{prefix}/lib/firmware
+		cp -prv intel-ucode %{BUILDROOT}%{prefix}/lib/firmware
+	end
+end
+
+packages
+	package %{name}
+end
