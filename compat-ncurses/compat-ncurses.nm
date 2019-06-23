@@ -1,0 +1,106 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = compat-ncurses
+version    = 5.9
+revision   = 20150117
+release    = 12.%{revision}
+thisapp    = ncurses-%{version}-%{revision}
+
+groups     = System/Base
+url        = http://invisible-island.net/ncurses/ncurses.html
+license    = MIT
+summary    = Ncurses support utilities.
+
+description
+	The curses library routines are a terminal-independent method of
+	updating character screens with reasonable optimization. The ncurses
+	(new curses) library is a freely distributable replacement for the
+	discontinued 4.4 BSD classic curses library.
+end
+
+source_dl  = ftp://invisible-island.net/ncurses/current/
+sources    = %{thisapp}.tgz
+
+build
+	requires
+		gcc-c++
+	end
+
+	configure_options += \
+		--with-shared \
+		--without-debug \
+		--without-ada \
+		--with-ospeed=unsigned \
+		--with-chtype=long \
+		--enable-hard-tabs \
+		--enable-xmc-glitch \
+		--enable-colorfgbg \
+		--with-terminfo-dirs=%{sysconfdir}/terminfo:%{datadir}/terminfo \
+		--enable-overwrite \
+		--enable-pc-files \
+		--with-termlib=tinfo
+
+	export PKG_CONFIG_LIBDIR=%{libdir}/pkgconfig
+
+	build
+		mkdir -pv narrowc widec
+
+		# Build narrowc version.
+		cd narrowc
+		ln -svf ../configure .
+		./configure %{configure_options} --with-ticlib
+		make %{PARALLELISMFLAGS} libs
+		make %{PARALLELISMFLAGS} -C progs
+
+		# Build widec version.
+		cd ../widec
+		ln -svf ../configure .
+		./configure %{configure_options} --enable-widec --without-progs
+		make %{PARALLELISMFLAGS} libs
+		cd ..
+	end
+
+	install
+		make -C narrowc DESTDIR=%{BUILDROOT} install.libs
+		rm -rvf %{BUILDROOT}%{libdir}/libtinfo.*
+		make -C widec DESTDIR=%{BUILDROOT} install.libs
+
+		chmod -v 755 %{BUILDROOT}%{libdir}/lib*.so.*.*
+
+		# don't require -ltinfo when linking with --no-add-needed
+		for l in %{BUILDROOT}%{libdir}/libncurses{,w}.so; do
+			soname=$(basename $(readlink $l))
+			rm -f $l
+			echo "INPUT($soname -ltinfo)" > $l
+		done
+
+		rm -f %{BUILDROOT}%{libdir}/libcurses{,w}.so
+		echo "INPUT(-lncurses)" > %{BUILDROOT}%{libdir}/libcurses.so
+		echo "INPUT(-lncursesw)" > %{BUILDROOT}%{libdir}/libcursesw.so
+		echo "INPUT(-ltinfo)" > %{BUILDROOT}%{libdir}/libtermcap.so
+
+		rm -vf %{BUILDROOT}%{libdir}/terminfo
+		rm -vf %{BUILDROOT}%{libdir}/pkgconfig/{*_g,ncurses++*}.pc
+	end
+end
+
+packages
+	package %{name}
+		template LIBS
+
+		provides
+			ncurses-libs = %{thisver}
+		end
+
+		obsoletes
+			ncurses-libs <= %{thisver}
+		end
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
