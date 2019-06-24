@@ -1,0 +1,45 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = python-yaml
+version    = 5.1
+release    = 1
+
+groups     = Development/Libraries
+url        = https://pyyaml.org/wiki/PyYAML
+license    = MIT
+summary    = PyYAML is a YAML parser and emitter for Python.
+
+description
+	PyYAML is a YAML parser and emitter for the Python programming language.
+end
+
+source_dl  = http://pyyaml.org/download/pyyaml/
+sources    = PyYAML-%{version}.tar.gz
+
+build
+	requires
+		libyaml-devel
+		python-devel
+	end
+
+	DIR_APP = %{DIR_SRC}/PyYAML-%{version}
+
+	build
+		python setup.py build
+	end
+
+	install
+		python setup.py install --root=%{BUILDROOT}
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end

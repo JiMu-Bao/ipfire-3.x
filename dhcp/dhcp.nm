@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = dhcp
-version    = 4.3.5b1
+version    = 4.4.1
 release    = 1
 
 groups     = Networking/Daemons
@@ -37,6 +37,8 @@ build
 
 	CFLAGS += -fno-strict-aliasing
 
+	PARALLELISMFLAGS = # No parallel build.
+
 	configure_options += \
 		--sysconfdir=%{sysconfdir}/dhcp \
 		--with-srv-lease-file=/var/lib/dhcpd/dhcpd.leases \
@@ -50,8 +52,6 @@ build
 		--with-relay-pid-file=/run/dhcrelay.pid \
 		--with-ldap \
 		--with-ldapcrypto \
-		--with-libbind=/usr/include/ \
-		--with-libbind-libs=/usr/lib/ \
 		--disable-static \
 		--enable-paranoia \
 		--enable-early-chroot \
@@ -59,9 +59,6 @@ build
 		--with-systemd
 
 	prepare_cmds
-		# Remove bundled BIND source
-		rm -rvf %{DIR_APP}/bind/bind.tar.gz
-
 		# Regenerate build environment
 		autoreconf --verbose --force --install
 

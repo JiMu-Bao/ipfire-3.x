@@ -4,10 +4,9 @@
 ###############################################################################
 
 name       = ncurses
-version    = 5.9
-revision   = 20150117
-release    = 12.%{revision}
-thisapp    = %{name}-%{version}-%{revision}
+version    = 6.1
+release    = 1
+thisapp    = %{name}-%{version}
 
 groups     = System/Base
 url        = http://invisible-island.net/ncurses/ncurses.html
@@ -21,8 +20,7 @@ description
 	discontinued 4.4 BSD classic curses library.
 end
 
-source_dl  = ftp://invisible-island.net/ncurses/current/
-sources    = %{thisapp}.tgz
+source_dl  = https://github.com/mirror/%{name}/archive/v%{version}.tar.gz#/
 
 build
 	requires

@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = less
-version    = 530
+version    = 551
 release    = 1
 
 groups     = Applications/Text
@@ -13,10 +13,10 @@ license    = GPLv3+
 summary    = A text file browser similar to more, but better.
 
 description
-	The less utility is a text file browser that resembles more, but has \
-	more capabilities. Less allows you to move backwards in the file as \
-	well as forwards. Since less doesn't have to read the entire input file \
-	before it starts, less starts up more quickly than text editors (for \
+	The less utility is a text file browser that resembles more, but has
+	more capabilities. Less allows you to move backwards in the file as
+	well as forwards. Since less doesn't have to read the entire input file
+	before it starts, less starts up more quickly than text editors (for
 	example, vi).
 end
 
@@ -24,7 +24,7 @@ source_dl  = http://www.greenwoodsoftware.com/less/
 
 build
 	requires
-		ncurses-devel
+		ncurses-devel >= 6.1
 		pcre-devel
 	end
 

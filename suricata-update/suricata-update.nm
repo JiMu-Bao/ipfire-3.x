@@ -1,0 +1,40 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = suricata-update
+version    = 1.0.5
+release    = 1
+thisapp    = %{name}-%{version}
+arch       = noarch
+
+groups     = Development/Tools
+url        = https://github.com/OISF/suricata-update
+license    = LGPLv2+
+summary    = A tool for updating Suricata rules.
+
+description
+	This package contains a Python written tool to update the used rules for
+	suricata.
+end
+
+source_dl  = https://github.com/OISF/%{name}/archive/%{version}.tar.gz#/
+
+build
+	build
+		%{python3} setup.py build
+	end
+
+	install
+		%{python3} setup.py install --root=%{BUILDROOT}
+	end
+end
+
+packages
+	package %{name}
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
