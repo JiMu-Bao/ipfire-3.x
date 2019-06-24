@@ -5,10 +5,10 @@
 
 name       = boost
 ver_major  = 1
-ver_minor  = 60
+ver_minor  = 70
 ver_plevel = 0
 version    = %{ver_major}.%{ver_minor}.%{ver_plevel}
-release    = 2
+release    = 1
 
 groups     = System/Libraries
 url        = http://www.boost.org/
@@ -43,23 +43,27 @@ build
 	# Obtain python3 abiflags.
 	python3_abiflags = %(python3-config --abiflags)
 
+	CFLAGS   += -I/usr/include/python%{python3_version}%{python3_abiflags}
+	CXXFLAGS += -I/usr/include/python%{python3_version}%{python3_abiflags}
+
 	# Don't build in parallel on any architecture.
 	# The C++ compiles consumes too much memory, so
 	# we cannot run multiple instances at once.
 	PARALLELISMFLAGS = -j2
 
 	configure_options = \
-		--layout=tagged \
-		--without-mpi \
-		--without-graph_parallel \
+		--layout=system \
 		--build-dir=serial \
 		\
 		cflags="%{CFLAGS}" \
 		cxxflags="%{CXXFLAGS}" \
+		linkflags="%{LDFLAGS}" \
 		variant=release \
-		threading=single,multi \
+		threading=multi \
+		runtime-link=shared \
+		link=shared,static \
 		debug-symbols=on \
-		python=%{python_version} \
+		python=%{python3_version} \
 		pch=off
 
 	# Get python3 abi flags.
@@ -70,13 +74,11 @@ build
 		mkdir -pv %{DIR_APP}/serial
 
 		# Bootstrap build environment.
-		./bootstrap.sh --with-toolset=gcc --with-icu
+		./bootstrap.sh --with-toolset=gcc --with-icu \
+			--with-python=%{python3}
 
-		# Enable boost lib for python3.
-		cat >> ./tools/build/src/user-config.jam << EOF
-		using python : %{python_version} : %{python2} : %{includedir}/python%{python_version} : : : : ;
-		using python : %{python3_version} : %{python3} : %{includedir}/python%{python3_version}%{python3_abiflags} : : : : %{python3_abiflags} ;
-		EOF
+		# Support for OpenMPI
+		echo "using mpi ;" >> project-config.jam
 	end
 
 	build
