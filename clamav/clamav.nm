@@ -5,7 +5,7 @@
 
 name       = clamav
 version    = 0.101.2
-release    = 1
+release    = 2
 
 groups     = System Environment/Daemons
 url        = http://www.clamav.net
@@ -49,6 +49,7 @@ build
 		--with-user=clamupdate \
 	        --with-group=clamupdate \
 		--disable-rpath \
+		--disable-llvm \
 		have_cv_ipv6=yes
 
 	# User and group have to exist to compile the source code,
