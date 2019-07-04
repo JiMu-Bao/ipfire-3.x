@@ -6,7 +6,7 @@
 name       = cmake
 version    = %{ver_maj}.%{ver_min}
 ver_maj    = 3.14
-ver_min    = 1
+ver_min    = 5
 release    = 1
 
 groups     = Development/Tools
@@ -15,11 +15,11 @@ license    = BSD
 summary    = Cross-platform make system.
 
 description
-	CMake is used to control the software compilation process using simple \
-	platform and compiler independent configuration files. CMake generates \
-	native makefiles and workspaces that can be used in the compiler \
-	environment of your choice. CMake is quite sophisticated: it is possible \
-	to support complex environments requiring system configuration, pre-processor \
+	CMake is used to control the software compilation process using simple
+	platform and compiler independent configuration files. CMake generates
+	native makefiles and workspaces that can be used in the compiler
+	environment of your choice. CMake is quite sophisticated: it is possible
+	to support complex environments requiring system configuration, pre-processor
 	generation, code generation, and template instantiation.
 end
 
