@@ -1,0 +1,113 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = llvm
+version    = 8.0.0
+release    = 1
+
+groups     = Applications/System
+url        = http://llvm.org
+license    = NCSA
+summary    = The Low Level Virtual Machine.
+
+description
+	LLVM is a compiler infrastructure designed for compile-time, link-time,
+	runtime, and idle-time optimization of programs from arbitrary programming
+	languages. The compiler infrastructure includes mirror sets of programming
+	tools as well as libraries with equivalent functionality.
+end
+
+source_dl  = http://releases.llvm.org/%{version}/
+sources    = %{thisapp}.src.tar.xz
+
+build
+	requires
+		binutils >= 2.32
+		cmake >= 3.14.5
+		gcc
+		gcc-c++
+		libedit-devel >= 3.1-20190324
+		libffi-devel
+		libxml2-devel
+		zlib-devel
+	end
+
+	DIR_APP = %{DIR_SRC}/%{thisapp}.src
+
+	# Limit parallelization to only 2 jobs at the same time.
+	PARALLELISMFLAGS = -j2
+
+	# Set suffix for libdir based on the build architecture.
+	llvm_libdir_suffix =
+
+	if "%{DISTRO_ARCH}" == "x86_64"
+		llvm_libdir_suffix = 64
+	end
+
+	if "%{DISTRO_ARCH}" == "aarch64"
+		llvm_libdir_suffix = 64
+	end
+
+	build
+		# Create and switch into build directory.
+		mkdir -pv %{DIR_APP}/build
+		cd %{DIR_APP}/build
+
+		%{cmake} .. \
+			-DLLVM_BUILD_TOOLS=ON \
+			-DLLVM_BUILD_UTILS=ON \
+			-DLLVM_BUILD_TESTS=OFF \
+			-DLLVM_BUILD_EXAMPLES=OFF \
+			-DLLVM_BUILD_BENCHMARKS=OFF \
+			-DCMAKE_BUILD_TYPE=Release \
+			-DCMAKE_INSTALL_RPATH=";" \
+			-DLLVM_BUILD_LLVM_DYLIB=OFF \
+			-DLLVM_LINK_LLVM_DYLIB=OFF \
+			-DBUILD_SHARED_LIBS=ON \
+			-DLLVM_ENABLE_FFI=ON \
+			-DLLVM_ENABLE_RTTI=ON \
+			-DLLVM_ENABLE_LIBCXX=OFF \
+			-DLLVM_TARGETS_TO_BUILD="host;" \
+			-DCMAKE_C_COMPILER=gcc \
+			-DCMAKE_CXX_COMPILER=g++ \
+			-DCMAKE_CXX_FLAGS_RELEASE:STRING="%{CFLAGS}" \
+			-DCMAKE_EXE_LINKER_FLAGS="%{LDFLAGS}" \
+			-DENABLE_PIC=1 \
+			-DLLVM_PARALLEL_LINK_JOBS=1 \
+			-DLLVM_ENABLE_DUMP=ON \
+			-DLLVM_LIBDIR_SUFFIX=%{llvm_libdir_suffix} \
+			-Wno-dev
+
+		make %{PARALELLISMFLAGS}
+	end
+
+	test
+		cd %{DIR_APP}/build
+
+		make check-all %{PARALELLISMFLAGS}
+	end
+
+	install
+		cd %{DIR_APP}/build
+
+		make install DESTDIR=%{BUILDROOT}
+	end
+end
+
+packages
+	package llvm
+
+	package llvm-libs
+		template LIBS
+	end
+
+	package llvm-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
