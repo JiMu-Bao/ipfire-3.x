@@ -5,7 +5,7 @@
 
 name       = libedit
 version    = 3.1-%{version_date}
-version_date = 20141030
+version_date = 20190324
 release    = 1
 thisapp    = %{name}-%{version_date}-3.1
 
@@ -28,7 +28,7 @@ build
 	end
 
 	# The timestamp in the tarball differs from the name
-	DIR_APP = %{DIR_SRC}/%{name}-20141029-3.1
+	DIR_APP = %{DIR_SRC}/%{name}-20190324-3.1
 
 	configure_options += \
 		--disable-static \
