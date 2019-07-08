@@ -36,17 +36,36 @@ f.close()
 
 f = open(filelist[1])
 
+printed_sections = []
 section = None
 for line in f.readlines():
-	m = re.match("^# (.*)$", line)
+	line = line.rstrip()
+
+	# Ignore some stuff
+	if not line or line == "#":
+		continue
+
+	if line.startswith("# Automatically generated file;"):
+		continue
+
+	if line.endswith("Kernel Configuration"):
+		continue
+
+	# End of section
+	m = re.match("# end of (.*)$", line)
 	if m:
 		_section = m.group(1)
-		if not _section.startswith("CONFIG_") and \
-				not _section.endswith("Kernel Configuration") and \
-				not _section.startswith("Automatically generated file;"):
-			section = _section
-	elif not line:
-		section = None
+
+		if _section in printed_sections:
+			print "# end of %s" % _section
+
+		continue
+
+	# New section
+	m = re.match("^# (.*)$", line)
+	if m and not "CONFIG_" in line:
+		section = m.group(1)
+		continue
 
 	option = None
 	value  = None
@@ -71,12 +90,12 @@ for line in f.readlines():
 
 	option_value = "%s=%s" % (option, value)
 	if not option_value in options:
-		if section:
+		if section and not section in printed_sections:
 			print
 			print "#"
 			print "# %s" % section
 			print "#"
-			section = None
+			printed_sections.append(section)
 
 		if value == "n":
 			print "# %s is not set" % option

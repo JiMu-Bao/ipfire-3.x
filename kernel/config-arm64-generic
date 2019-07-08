@@ -4,9 +4,10 @@ CONFIG_THREAD_INFO_IN_TASK=y
 # Timers subsystem
 #
 # CONFIG_CONTEXT_TRACKING_FORCE is not set
+# end of Timers subsystem
 
 #
-# end of RCU Subsystem
+# RCU Subsystem
 #
 CONFIG_ARCH_SUPPORTS_NUMA_BALANCING=y
 CONFIG_ARCH_SUPPORTS_INT128=y
@@ -14,7 +15,7 @@ CONFIG_ARCH_SUPPORTS_INT128=y
 CONFIG_SYSCTL_EXCEPTION_TRACE=y
 
 #
-# end of General setup
+# Kernel Performance Events And Counters
 #
 CONFIG_ARM64=y
 CONFIG_64BIT=y
@@ -59,6 +60,7 @@ CONFIG_ARCH_SEATTLE=y
 # CONFIG_ARCH_THUNDER2 is not set
 CONFIG_ARCH_XGENE=y
 # CONFIG_ARCH_ZYNQMP is not set
+# end of Platform selection
 
 #
 # ARM errata workarounds via the alternatives framework
@@ -90,10 +92,7 @@ CONFIG_QCOM_QDF2400_ERRATUM_0065=y
 # CONFIG_HISILICON_ERRATUM_161600802 is not set
 CONFIG_QCOM_FALKOR_ERRATUM_E1041=y
 CONFIG_FUJITSU_ERRATUM_010001=y
-
-#
 # end of ARM errata workarounds via the alternatives framework
-#
 # CONFIG_ARM64_4K_PAGES is not set
 # CONFIG_ARM64_16K_PAGES is not set
 CONFIG_ARM64_64K_PAGES=y
@@ -137,6 +136,7 @@ CONFIG_ARM64_HW_AFDBM=y
 CONFIG_ARM64_PAN=y
 CONFIG_ARM64_LSE_ATOMICS=y
 CONFIG_ARM64_VHE=y
+# end of ARMv8.1 architectural features
 
 #
 # ARMv8.2 architectural features
@@ -145,15 +145,13 @@ CONFIG_ARM64_UAO=y
 CONFIG_ARM64_PMEM=y
 CONFIG_ARM64_RAS_EXTN=y
 CONFIG_ARM64_CNP=y
+# end of ARMv8.2 architectural features
 
 #
 # ARMv8.3 architectural features
 #
 CONFIG_ARM64_PTR_AUTH=y
-
-#
 # end of ARMv8.3 architectural features
-#
 CONFIG_ARM64_SVE=y
 CONFIG_ARM64_MODULE_PLTS=y
 CONFIG_RELOCATABLE=y
@@ -168,10 +166,7 @@ CONFIG_CMDLINE=""
 CONFIG_EFI_STUB=y
 CONFIG_EFI=y
 CONFIG_DMI=y
-
-#
 # end of Boot options
-#
 CONFIG_SYSVIPC_COMPAT=y
 
 #
@@ -203,14 +198,12 @@ CONFIG_EFI_ARMSTUB_DTB_LOADER=y
 # CONFIG_EFI_CAPSULE_LOADER is not set
 # CONFIG_EFI_TEST is not set
 # CONFIG_RESET_ATTACK_MITIGATION is not set
-
-#
 # end of EFI (Extensible Firmware Interface) Support
-#
 CONFIG_EFI_EARLYCON=y
+# end of Firmware Drivers
 
 #
-# end of Firmware Drivers
+# Tegra firmware driver
 #
 CONFIG_ARCH_SUPPORTS_ACPI=y
 CONFIG_ACPI=y
@@ -286,14 +279,15 @@ CONFIG_ARCH_MMAP_RND_COMPAT_BITS=8
 CONFIG_COMPAT_OLD_SIGACTION=y
 CONFIG_VMAP_STACK=y
 CONFIG_ARCH_USE_MEMREMAP_PROT=y
+# end of General architecture-dependent options
 
 #
-# end of Partition Types
+# Partition Types
 #
 CONFIG_BLOCK_COMPAT=y
 
 #
-# end of IO Schedulers
+# IO Schedulers
 #
 CONFIG_PREEMPT_NOTIFIERS=y
 CONFIG_ARCH_INLINE_SPIN_TRYLOCK=y
@@ -352,6 +346,7 @@ CONFIG_ARCH_HAS_SYSCALL_WRAPPER=y
 # Executable file formats
 #
 CONFIG_COMPAT_BINFMT_ELF=y
+# end of Executable file formats
 
 #
 # Memory Management options
@@ -370,10 +365,7 @@ CONFIG_ARCH_SUPPORTS_MEMORY_FAILURE=y
 # CONFIG_TRANSPARENT_HUGEPAGE is not set
 # CONFIG_DEFERRED_STRUCT_PAGE_INIT is not set
 CONFIG_ARCH_HAS_PTE_SPECIAL=y
-
-#
 # end of Memory Management options
-#
 CONFIG_COMPAT_NETLINK_MESSAGES=y
 
 #
@@ -384,7 +376,7 @@ CONFIG_HOTPLUG_PCI_ACPI=y
 CONFIG_HOTPLUG_PCI_ACPI_IBM=y
 
 #
-# end of Cadence PCIe controllers support
+# Cadence PCIe controllers support
 #
 CONFIG_PCI_FTPCI100=y
 CONFIG_PCI_XGENE=y
@@ -398,25 +390,20 @@ CONFIG_PCI_HOST_THUNDER_ECAM=y
 #
 CONFIG_PCI_HISI=y
 # CONFIG_PCIE_KIRIN is not set
+# end of DesignWare PCI Core Support
 
 #
 # Firmware loader
 #
 # CONFIG_FW_LOADER_USER_HELPER_FALLBACK is not set
-
-#
 # end of Firmware loader
-#
 CONFIG_GENERIC_CPU_VULNERABILITIES=y
 
 #
 # Bus devices
 #
 # CONFIG_BRCMSTB_GISB_ARB is not set
-
-#
 # end of Bus devices
-#
 CONFIG_OF_NUMA=y
 CONFIG_PNP=y
 # CONFIG_PNP_DEBUG_MESSAGES is not set
@@ -428,19 +415,15 @@ CONFIG_PNPACPI=y
 CONFIG_BLK_DEV_SKD=m
 
 #
-# end of Intel MIC & related support
+# VOP Driver
 #
 # CONFIG_GENWQE is not set
 
 #
-# end of SCSI Transports
+# SCSI Transports
 #
 CONFIG_SCSI_HISI_SAS=m
 CONFIG_SCSI_HISI_SAS_PCI=m
-
-#
-# end of SCSI device support
-#
 CONFIG_ATA_ACPI=y
 CONFIG_SATA_ZPODD=y
 
@@ -456,7 +439,7 @@ CONFIG_SATA_AHCI_SEATTLE=m
 CONFIG_PATA_ACPI=m
 
 #
-# end of Distributed Switch Architecture drivers
+# Distributed Switch Architecture drivers
 #
 CONFIG_VORTEX=m
 CONFIG_AMD_XGBE=m
@@ -493,14 +476,16 @@ CONFIG_MDIO_XGENE=m
 # Input device support
 #
 CONFIG_INPUT_MATRIXKMAP=m
+# end of Input device support
 
 #
 # Serial drivers
 #
 CONFIG_SERIAL_8250_PNP=y
+# end of Serial drivers
 
 #
-# end of Serial drivers
+# Non-8250 serial port support
 #
 CONFIG_HVC_DCC=y
 CONFIG_IPMI_DMI_DECODE=y
@@ -536,9 +521,10 @@ CONFIG_I2C_THUNDERX=m
 # Other I2C/SMBus bus drivers
 #
 CONFIG_I2C_XGENE_SLIMPRO=m
+# end of I2C support
 
 #
-# end of PTP clock support
+# Enable PHYLIB and NETWORK_PHY_TIMESTAMPING to see the additional clocks.
 #
 CONFIG_PINCTRL_AS3722=m
 CONFIG_PINCTRL_AMD=m
@@ -560,19 +546,22 @@ CONFIG_GPIO_DWAPB=m
 CONFIG_GPIO_XGENE=y
 CONFIG_GPIO_XGENE_SB=m
 CONFIG_GPIO_XILINX=m
+# end of Memory mapped GPIO drivers
 
 #
 # MFD GPIO expanders
 #
 # CONFIG_GPIO_TPS68470 is not set
+# end of MFD GPIO expanders
 
 #
 # PCI GPIO expanders
 #
 CONFIG_GPIO_MLXBF=m
+# end of PCI GPIO expanders
 
 #
-# end of USB GPIO expanders
+# USB GPIO expanders
 #
 CONFIG_POWER_RESET_XGENE=y
 
@@ -581,10 +570,6 @@ CONFIG_POWER_RESET_XGENE=y
 #
 CONFIG_SENSORS_MLXREG_FAN=m
 CONFIG_SENSORS_XGENE=m
-
-#
-# ACPI drivers
-#
 CONFIG_SENSORS_ACPI_POWER=m
 
 #
@@ -601,13 +586,10 @@ CONFIG_ARM_SBSA_WATCHDOG=m
 # CONFIG_ABX500_CORE is not set
 
 #
-# end of STMicroelectronics STMPE Interface Drivers
+# STMicroelectronics STMPE Interface Drivers
 #
 CONFIG_MFD_TPS68470=y
-
-#
 # end of Multifunction device drivers
-#
 # CONFIG_REGULATOR_88PM8607 is not set
 # CONFIG_REGULATOR_GPIO is not set
 CONFIG_REGULATOR_HI6421V530=m
@@ -620,13 +602,13 @@ CONFIG_REGULATOR_HI6421V530=m
 # CONFIG_IR_NUVOTON is not set
 
 #
-# end of Display Engine Configuration
+# Display Engine Configuration
 #
 # CONFIG_HSA_AMD is not set
 CONFIG_DRM_RCAR_WRITEBACK=y
 
 #
-# end of Display Interface Bridges
+# Display Interface Bridges
 #
 CONFIG_DRM_HISI_KIRIN=m
 CONFIG_HISI_KIRIN_DW_DSI=m
@@ -642,14 +624,11 @@ CONFIG_FB_EFI=y
 #
 CONFIG_DUMMY_CONSOLE_COLUMNS=80
 CONFIG_DUMMY_CONSOLE_ROWS=25
-
-#
-# end of Graphics support
-#
+# end of Console display driver support
 # CONFIG_SND_LX6464ES is not set
 
 #
-# end of HD-Audio
+# HD-Audio
 #
 # CONFIG_SND_DESIGNWARE_PCM is not set
 
@@ -659,7 +638,7 @@ CONFIG_DUMMY_CONSOLE_ROWS=25
 CONFIG_SND_SOC_FSL_MICFIL=m
 
 #
-# end of STMicroelectronics STM32 SOC audio support
+# STMicroelectronics STM32 SOC audio support
 #
 # CONFIG_SND_SOC_XILINX_I2S is not set
 # CONFIG_SND_SOC_XTFPGA_I2S is not set
@@ -710,10 +689,7 @@ CONFIG_XGENE_DMA=m
 # Xen driver support
 #
 CONFIG_XEN_EFI=y
-
-#
 # end of Xen driver support
-#
 CONFIG_MELLANOX_PLATFORM=y
 CONFIG_MLXREG_HOTPLUG=m
 CONFIG_MLXREG_IO=m
@@ -731,6 +707,7 @@ CONFIG_COMMON_CLK_MESON_EE_CLKC=y
 CONFIG_COMMON_CLK_GXBB=y
 CONFIG_COMMON_CLK_AXG=y
 CONFIG_COMMON_CLK_G12A=y
+# end of Common Clock Framework
 
 #
 # Clock Source drivers
@@ -740,16 +717,13 @@ CONFIG_ARM_ARCH_TIMER_OOL_WORKAROUND=y
 CONFIG_FSL_ERRATUM_A008585=y
 CONFIG_HISILICON_ERRATUM_161010101=y
 CONFIG_ARM64_ERRATUM_858921=y
-
-#
 # end of Clock Source drivers
-#
 # CONFIG_PL320_MBOX is not set
 CONFIG_PCC=y
 CONFIG_XGENE_SLIMPRO_MBOX=m
 
 #
-# end of Generic IOMMU Pagetable Support
+# Generic IOMMU Pagetable Support
 #
 # CONFIG_ARM_SMMU is not set
 CONFIG_ARM_SMMU_V3=y
@@ -758,11 +732,13 @@ CONFIG_ARM_SMMU_V3=y
 # Remoteproc drivers
 #
 # CONFIG_REMOTEPROC is not set
+# end of Remoteproc drivers
 
 #
 # Broadcom SoC drivers
 #
 # CONFIG_SOC_BRCMSTB is not set
+# end of Broadcom SoC drivers
 
 #
 # DEVFREQ Governors
@@ -774,11 +750,13 @@ CONFIG_DEVFREQ_GOV_PASSIVE=m
 # Light sensors
 #
 # CONFIG_ACPI_ALS is not set
+# end of Light sensors
 
 #
 # PHY Subsystem
 #
 CONFIG_PHY_XGENE=m
+# end of PHY Subsystem
 
 #
 # Performance monitor support
@@ -789,9 +767,10 @@ CONFIG_ARM_SMMU_V3_PMU=m
 # CONFIG_HISI_PMU is not set
 CONFIG_XGENE_PMU=y
 # CONFIG_ARM_SPE_PMU is not set
+# end of Performance monitor support
 
 #
-# end of Android
+# Android
 #
 CONFIG_LIBNVDIMM=y
 CONFIG_BLK_DEV_PMEM=m
@@ -806,10 +785,7 @@ CONFIG_DAX_DRIVER=y
 # HW tracing support
 #
 # CONFIG_INTEL_TH_ACPI is not set
-
-#
 # end of HW tracing support
-#
 CONFIG_TEE=m
 
 #
@@ -817,6 +793,7 @@ CONFIG_TEE=m
 #
 CONFIG_OPTEE=m
 CONFIG_OPTEE_SHM_NUM_PRIV_PAGES=1
+# end of TEE drivers
 
 #
 # Multiplexer drivers
@@ -824,6 +801,8 @@ CONFIG_OPTEE_SHM_NUM_PRIV_PAGES=1
 CONFIG_MUX_ADG792A=m
 CONFIG_MUX_GPIO=m
 CONFIG_MUX_MMIO=m
+# end of Multiplexer drivers
+# end of Device Drivers
 
 #
 # File systems
@@ -837,6 +816,8 @@ CONFIG_MUX_MMIO=m
 # CONFIG_HUGETLBFS is not set
 CONFIG_ARCH_HAS_GIGANTIC_PAGE=y
 CONFIG_EFIVAR_FS=y
+# end of Pseudo filesystems
+# end of File systems
 
 #
 # Security options
@@ -850,10 +831,8 @@ CONFIG_GCC_PLUGIN_STACKLEAK=y
 CONFIG_STACKLEAK_TRACK_MIN_SIZE=100
 # CONFIG_STACKLEAK_METRICS is not set
 # CONFIG_STACKLEAK_RUNTIME_DISABLE is not set
-
-#
+# end of Memory initialization
 # end of Security options
-#
 CONFIG_ASYNC_TX_DISABLE_PQ_VAL_DMA=y
 CONFIG_ASYNC_TX_DISABLE_XOR_VAL_DMA=y
 
@@ -890,20 +869,23 @@ CONFIG_UCS2_STRING=y
 CONFIG_SG_SPLIT=y
 CONFIG_ARCH_HAS_PMEM_API=y
 CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE=y
+# end of Library routines
 
 #
 # Compile-time checks and compiler options
 #
 CONFIG_ARCH_WANT_FRAME_POINTERS=y
 CONFIG_FRAME_POINTER=y
+# end of Compile-time checks and compiler options
 
 #
 # Memory Debugging
 #
 # CONFIG_KASAN is not set
+# end of Memory Debugging
 
 #
-# end of RCU Debugging
+# RCU Debugging
 #
 CONFIG_FUNCTION_GRAPH_TRACER=y
 # CONFIG_HIST_TRIGGERS is not set

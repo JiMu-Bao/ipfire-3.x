@@ -16,10 +16,7 @@ CONFIG_KERNEL_XZ=y
 CONFIG_GENERIC_PENDING_IRQ=y
 CONFIG_GENERIC_IRQ_MATRIX_ALLOCATOR=y
 CONFIG_GENERIC_IRQ_RESERVATION_MODE=y
-
-#
 # end of IRQ subsystem
-#
 CONFIG_CLOCKSOURCE_WATCHDOG=y
 CONFIG_ARCH_CLOCKSOURCE_INIT=y
 CONFIG_CLOCKSOURCE_VALIDATE_LAST_CYCLE=y
@@ -30,9 +27,10 @@ CONFIG_GENERIC_CMOS_UPDATE=y
 # Timers subsystem
 #
 CONFIG_CONTEXT_TRACKING_FORCE=y
+# end of Timers subsystem
 
 #
-# end of RCU Subsystem
+# RCU Subsystem
 #
 CONFIG_ARCH_SUPPORTS_NUMA_BALANCING=y
 CONFIG_ARCH_WANT_BATCHED_UNMAP_TLB_FLUSH=y
@@ -41,9 +39,10 @@ CONFIG_ARCH_SUPPORTS_INT128=y
 CONFIG_SYSCTL_EXCEPTION_TRACE=y
 CONFIG_PCSPKR_PLATFORM=y
 CONFIG_KALLSYMS_ABSOLUTE_PERCPU=y
+# end of General setup
 
 #
-# end of General setup
+# Kernel Performance Events And Counters
 #
 CONFIG_64BIT=y
 CONFIG_X86_64=y
@@ -151,10 +150,7 @@ CONFIG_PERF_EVENTS_INTEL_UNCORE=y
 CONFIG_PERF_EVENTS_INTEL_RAPL=y
 CONFIG_PERF_EVENTS_INTEL_CSTATE=y
 CONFIG_PERF_EVENTS_AMD_POWER=m
-
-#
 # end of Performance monitoring
-#
 CONFIG_X86_VSYSCALL_EMULATION=y
 CONFIG_I8K=m
 CONFIG_MICROCODE=y
@@ -215,10 +211,7 @@ CONFIG_RANDOMIZE_MEMORY_PHYSICAL_PADDING=0x0
 CONFIG_LEGACY_VSYSCALL_NONE=y
 # CONFIG_CMDLINE_BOOL is not set
 # CONFIG_MODIFY_LDT_SYSCALL is not set
-
-#
 # end of Processor type and features
-#
 CONFIG_ARCH_HAS_ADD_PAGES=y
 CONFIG_ARCH_ENABLE_MEMORY_HOTPLUG=y
 CONFIG_USE_PERCPU_NUMA_NODE_ID=y
@@ -309,9 +302,10 @@ CONFIG_X86_P4_CLOCKMOD=m
 CONFIG_X86_SPEEDSTEP_LIB=m
 
 #
-# end of CPU Idle
+# CPU Idle
 #
 CONFIG_INTEL_IDLE=y
+# end of Power management and ACPI options
 
 #
 # Bus options (PCI etc.)
@@ -325,6 +319,7 @@ CONFIG_MMCONF_FAM10H=y
 CONFIG_ISA_DMA_API=y
 CONFIG_AMD_NB=y
 # CONFIG_X86_SYSFB is not set
+# end of Bus options (PCI etc.)
 
 #
 # Binary Emulations
@@ -335,10 +330,7 @@ CONFIG_COMPAT_32=y
 CONFIG_COMPAT=y
 CONFIG_COMPAT_FOR_U64_ALIGNMENT=y
 CONFIG_SYSVIPC_COMPAT=y
-
-#
 # end of Binary Emulations
-#
 CONFIG_X86_DEV_DMA_OPS=y
 
 #
@@ -369,17 +361,15 @@ CONFIG_EFI_RUNTIME_WRAPPERS=y
 # CONFIG_EFI_TEST is not set
 CONFIG_APPLE_PROPERTIES=y
 # CONFIG_RESET_ATTACK_MITIGATION is not set
-
-#
 # end of EFI (Extensible Firmware Interface) Support
-#
 CONFIG_UEFI_CPER=y
 CONFIG_UEFI_CPER_X86=y
 CONFIG_EFI_DEV_PATH_PARSER=y
 CONFIG_EFI_EARLYCON=y
+# end of Firmware Drivers
 
 #
-# end of Firmware Drivers
+# Tegra firmware driver
 #
 CONFIG_KVM_MMIO=y
 CONFIG_KVM_ASYNC_PF=y
@@ -412,14 +402,15 @@ CONFIG_COMPAT_OLD_SIGACTION=y
 CONFIG_VMAP_STACK=y
 CONFIG_ARCH_HAS_REFCOUNT=y
 CONFIG_ARCH_USE_MEMREMAP_PROT=y
+# end of General architecture-dependent options
 
 #
-# end of Partition Types
+# Partition Types
 #
 CONFIG_BLOCK_COMPAT=y
 
 #
-# end of IO Schedulers
+# IO Schedulers
 #
 CONFIG_PREEMPT_NOTIFIERS=y
 CONFIG_ARCH_USE_QUEUED_SPINLOCKS=y
@@ -433,6 +424,7 @@ CONFIG_ARCH_HAS_SYSCALL_WRAPPER=y
 # Executable file formats
 #
 CONFIG_COMPAT_BINFMT_ELF=y
+# end of Executable file formats
 
 #
 # Memory Management options
@@ -463,10 +455,7 @@ CONFIG_ARCH_HAS_HMM_MIRROR=y
 CONFIG_ARCH_USES_HIGH_VMA_FLAGS=y
 CONFIG_ARCH_HAS_PKEYS=y
 CONFIG_ARCH_HAS_PTE_SPECIAL=y
-
-#
 # end of Memory Management options
-#
 CONFIG_COMPAT_NETLINK_MESSAGES=y
 
 #
@@ -476,7 +465,7 @@ CONFIG_VMWARE_VMCI_VSOCKETS=m
 CONFIG_HYPERV_VSOCKETS=m
 
 #
-# end of Networking options
+# Network testing
 #
 CONFIG_RFKILL_GPIO=m
 
@@ -501,13 +490,13 @@ CONFIG_HOTPLUG_PCI_ACPI=y
 CONFIG_HOTPLUG_PCI_ACPI_IBM=m
 
 #
-# end of Cadence PCIe controllers support
+# Cadence PCIe controllers support
 #
 CONFIG_PCI_FTPCI100=y
 CONFIG_VMD=m
 
 #
-# end of PCI switch controller drivers
+# PCI switch controller drivers
 #
 CONFIG_PCCARD=m
 # CONFIG_PCMCIA is not set
@@ -527,14 +516,11 @@ CONFIG_YENTA_TOSHIBA=y
 # Firmware loader
 #
 # CONFIG_FW_LOADER_USER_HELPER_FALLBACK is not set
-
-#
 # end of Firmware loader
-#
 CONFIG_GENERIC_CPU_VULNERABILITIES=y
 
 #
-# end of Bus devices
+# Bus devices
 #
 CONFIG_ARCH_MIGHT_HAVE_PC_PARPORT=y
 CONFIG_PNP=y
@@ -564,7 +550,7 @@ CONFIG_VMWARE_BALLOON=m
 CONFIG_PVPANIC=m
 
 #
-# end of Texas Instruments shared transport line discipline
+# Texas Instruments shared transport line discipline
 #
 CONFIG_INTEL_MEI=m
 CONFIG_INTEL_MEI_ME=m
@@ -583,17 +569,14 @@ CONFIG_INTEL_MIC_BUS=m
 # CONFIG_SCIF_BUS is not set
 
 #
-# end of Intel MIC & related support
+# VOP Driver
 #
 # CONFIG_GENWQE is not set
-
-#
 # end of Misc devices
-#
 # CONFIG_IDE is not set
 
 #
-# end of SCSI Transports
+# SCSI Transports
 #
 CONFIG_AIC79XX_RESET_DELAY_MS=4000
 # CONFIG_AIC79XX_REG_PRETTY_PRINT is not set
@@ -609,10 +592,6 @@ CONFIG_VMWARE_PVSCSI=m
 CONFIG_HYPERV_STORAGE=m
 CONFIG_FCOE_FNIC=m
 CONFIG_SCSI_ISCI=m
-
-#
-# end of SCSI device support
-#
 CONFIG_ATA_ACPI=y
 # CONFIG_SATA_ZPODD is not set
 
@@ -627,7 +606,7 @@ CONFIG_PATA_OF_PLATFORM=m
 CONFIG_PATA_ACPI=m
 
 #
-# end of IEEE 1394 (FireWire) support
+# IEEE 1394 (FireWire) support
 #
 # CONFIG_MACINTOSH_DRIVERS is not set
 CONFIG_MII=m
@@ -651,7 +630,7 @@ CONFIG_ATM_HE=m
 CONFIG_ATM_SOLOS=m
 
 #
-# end of Distributed Switch Architecture drivers
+# Distributed Switch Architecture drivers
 #
 CONFIG_VORTEX=m
 CONFIG_AMD8111_ETH=m
@@ -743,6 +722,8 @@ CONFIG_ARCH_MIGHT_HAVE_PC_SERIO=y
 CONFIG_SERIO_I8042=y
 # CONFIG_SERIO_CT82C710 is not set
 CONFIG_HYPERV_KEYBOARD=m
+# end of Hardware I/O ports
+# end of Input device support
 
 #
 # Character devices
@@ -775,10 +756,7 @@ CONFIG_SERIAL_ARC=m
 CONFIG_SERIAL_ARC_NR_PORTS=1
 CONFIG_SERIAL_RP2=m
 CONFIG_SERIAL_RP2_NR_UARTS=32
-
-#
 # end of Serial drivers
-#
 CONFIG_IPMI_DMI_DECODE=y
 CONFIG_HW_RANDOM_INTEL=m
 CONFIG_HW_RANDOM_AMD=m
@@ -789,10 +767,7 @@ CONFIG_HPET=y
 # CONFIG_HPET_MMAP is not set
 CONFIG_HANGCHECK_TIMER=m
 # CONFIG_TELCLOCK is not set
-
-#
 # end of Character devices
-#
 # CONFIG_RANDOM_TRUST_CPU is not set
 
 #
@@ -804,6 +779,7 @@ CONFIG_ACPI_I2C_OPREGION=y
 # Multiplexer I2C Chip support
 #
 CONFIG_I2C_ARB_GPIO_CHALLENGE=m
+# end of Multiplexer I2C Chip support
 
 #
 # PC SMBus host controller drivers
@@ -835,15 +811,12 @@ CONFIG_I2C_DESIGNWARE_BAYTRAIL=y
 # Other I2C/SMBus bus drivers
 #
 CONFIG_I2C_MLXCPLD=m
+# end of I2C support
 
 #
 # Enable PHYLIB and NETWORK_PHY_TIMESTAMPING to see the additional clocks.
 #
 CONFIG_PTP_1588_CLOCK_KVM=m
-
-#
-# end of PTP clock support
-#
 # CONFIG_PINCTRL_AS3722 is not set
 CONFIG_PINCTRL_AMD=y
 CONFIG_PINCTRL_MCP23S08=m
@@ -872,6 +845,7 @@ CONFIG_GPIO_ICH=m
 # CONFIG_GPIO_LYNXPOINT is not set
 # CONFIG_GPIO_VX855 is not set
 CONFIG_GPIO_XILINX=m
+# end of Memory mapped GPIO drivers
 
 #
 # Port-mapped I/O GPIO drivers
@@ -882,6 +856,7 @@ CONFIG_GPIO_SCH=m
 # CONFIG_GPIO_SCH311X is not set
 # CONFIG_GPIO_WINBOND is not set
 # CONFIG_GPIO_WS16C48 is not set
+# end of Port-mapped I/O GPIO drivers
 
 #
 # MFD GPIO expanders
@@ -890,6 +865,7 @@ CONFIG_GPIO_CRYSTAL_COVE=m
 CONFIG_GPIO_TC3589X=y
 # CONFIG_GPIO_TPS68470 is not set
 # CONFIG_GPIO_WHISKEY_COVE is not set
+# end of MFD GPIO expanders
 
 #
 # PCI GPIO expanders
@@ -897,9 +873,10 @@ CONFIG_GPIO_TC3589X=y
 # CONFIG_GPIO_AMD8111 is not set
 # CONFIG_GPIO_ML_IOH is not set
 CONFIG_GPIO_SODAVILLE=y
+# end of PCI GPIO expanders
 
 #
-# end of USB GPIO expanders
+# USB GPIO expanders
 #
 CONFIG_MAX8925_POWER=m
 CONFIG_WM831X_BACKUP=m
@@ -930,10 +907,6 @@ CONFIG_SENSORS_I5500=m
 CONFIG_SENSORS_CORETEMP=m
 CONFIG_SENSORS_VIA_CPUTEMP=m
 CONFIG_SENSORS_XGENE=m
-
-#
-# ACPI drivers
-#
 CONFIG_SENSORS_ACPI_POWER=m
 CONFIG_SENSORS_ATK0110=m
 
@@ -951,12 +924,10 @@ CONFIG_INTEL_SOC_DTS_THERMAL=m
 CONFIG_INT340X_THERMAL=m
 CONFIG_ACPI_THERMAL_REL=m
 CONFIG_INT3406_THERMAL=m
-
-#
 # end of ACPI INT340X thermal drivers
-#
 CONFIG_INTEL_BXT_PMIC_THERMAL=m
 CONFIG_INTEL_PCH_THERMAL=m
+# end of Intel thermal drivers
 
 #
 # Watchdog Device Drivers
@@ -1020,14 +991,11 @@ CONFIG_MFD_INTEL_LPSS_PCI=m
 # CONFIG_ABX500_CORE is not set
 
 #
-# end of STMicroelectronics STMPE Interface Drivers
+# STMicroelectronics STMPE Interface Drivers
 #
 CONFIG_MFD_TPS68470=y
 CONFIG_MFD_VX855=m
-
-#
 # end of Multifunction device drivers
-#
 CONFIG_REGULATOR_FIXED_VOLTAGE=m
 CONFIG_REGULATOR_VIRTUAL_CONSUMER=m
 CONFIG_REGULATOR_USERSPACE_CONSUMER=m
@@ -1201,16 +1169,14 @@ CONFIG_VGA_SWITCHEROO=y
 # I2C encoder or helper chips
 #
 CONFIG_DRM_I2C_NXP_TDA998X=m
+# end of I2C encoder or helper chips
 
 #
 # Display Engine Configuration
 #
 CONFIG_DRM_AMD_DC_DCN1_0=y
 CONFIG_DRM_AMD_DC_DCN1_01=y
-
-#
 # end of Display Engine Configuration
-#
 CONFIG_HSA_AMD=y
 CONFIG_DRM_I915=m
 CONFIG_DRM_I915_ALPHA_SUPPORT=y
@@ -1231,16 +1197,13 @@ CONFIG_DRM_I915_USERPTR=y
 # CONFIG_DRM_I915_LOW_LEVEL_TRACEPOINTS is not set
 # CONFIG_DRM_I915_DEBUG_VBLANK_EVADE is not set
 # CONFIG_DRM_I915_DEBUG_RUNTIME_PM is not set
-
-#
 # end of drm/i915 Debugging
-#
 CONFIG_DRM_VMWGFX=m
 # CONFIG_DRM_VMWGFX_FBCON is not set
 # CONFIG_DRM_GMA500 is not set
 
 #
-# end of Display Interface Bridges
+# Display Interface Bridges
 #
 CONFIG_DRM_VBOXVIDEO=m
 # CONFIG_DRM_I810 is not set
@@ -1265,6 +1228,7 @@ CONFIG_FB_EFI=y
 # CONFIG_FB_INTEL is not set
 # CONFIG_FB_VIA is not set
 # CONFIG_FB_HYPERV is not set
+# end of Frame buffer Devices
 
 #
 # Backlight & LCD device support
@@ -1272,6 +1236,7 @@ CONFIG_FB_EFI=y
 CONFIG_LCD_PLATFORM=m
 CONFIG_BACKLIGHT_APPLE=m
 # CONFIG_BACKLIGHT_SAHARA is not set
+# end of Backlight & LCD device support
 
 #
 # Console display driver support
@@ -1280,10 +1245,8 @@ CONFIG_VGA_CONSOLE=y
 # CONFIG_VGACON_SOFT_SCROLLBACK is not set
 CONFIG_DUMMY_CONSOLE_COLUMNS=80
 CONFIG_DUMMY_CONSOLE_ROWS=25
-
-#
+# end of Console display driver support
 # end of Graphics support
-#
 CONFIG_SND_DMA_SGBUF=y
 CONFIG_SND_PCSP=m
 CONFIG_SND_SB_COMMON=m
@@ -1306,7 +1269,7 @@ CONFIG_SND_SONICVIBES=m
 CONFIG_SND_TRIDENT=m
 
 #
-# end of HD-Audio
+# HD-Audio
 #
 CONFIG_SND_HDA_COMPONENT=y
 CONFIG_SND_HDA_I915=y
@@ -1321,11 +1284,13 @@ CONFIG_SND_SYNTH_EMUX=m
 # Special HID drivers
 #
 # CONFIG_HID_HYPERV_MOUSE is not set
+# end of Special HID drivers
 
 #
 # Intel ISH HID support
 #
 # CONFIG_INTEL_ISH_HID is not set
+# end of Intel ISH HID support
 
 #
 # MUSB DMA mode
@@ -1338,7 +1303,7 @@ CONFIG_MUSB_PIO_ONLY=y
 CONFIG_USB_DWC3_PCI=m
 
 #
-# end of USB Type-C Alternate Mode drivers
+# USB Type-C Alternate Mode drivers
 #
 CONFIG_USB_ROLES_INTEL_XHCI=m
 
@@ -1407,7 +1372,7 @@ CONFIG_DW_DMAC_PCI=y
 CONFIG_HSU_DMA=m
 
 #
-# end of DMABUF options
+# DMABUF options
 #
 CONFIG_DCA=m
 # CONFIG_UIO_HV_GENERIC is not set
@@ -1421,6 +1386,7 @@ CONFIG_HYPERV=m
 CONFIG_HYPERV_TSCPAGE=y
 CONFIG_HYPERV_UTILS=m
 CONFIG_HYPERV_BALLOON=m
+# end of Microsoft Hyper-V guest support
 
 #
 # Xen driver support
@@ -1435,10 +1401,7 @@ CONFIG_XEN_EFI=y
 CONFIG_XEN_ACPI=y
 # CONFIG_XEN_SYMS is not set
 CONFIG_XEN_HAVE_VPMU=y
-
-#
 # end of Xen driver support
-#
 CONFIG_X86_PLATFORM_DEVICES=y
 CONFIG_ACER_WMI=m
 # CONFIG_ACER_WIRELESS is not set
@@ -1528,6 +1491,7 @@ CONFIG_PMC_ATOM=y
 #
 CONFIG_COMMON_CLK_WM831X=m
 CONFIG_COMMON_CLK_MAX77686=m
+# end of Common Clock Framework
 
 #
 # Clock Source drivers
@@ -1535,14 +1499,11 @@ CONFIG_COMMON_CLK_MAX77686=m
 CONFIG_CLKEVT_I8253=y
 CONFIG_I8253_LOCK=y
 CONFIG_CLKBLD_I8253=y
-
-#
 # end of Clock Source drivers
-#
 CONFIG_PCC=y
 
 #
-# end of Generic IOMMU Pagetable Support
+# Generic IOMMU Pagetable Support
 #
 CONFIG_AMD_IOMMU=y
 CONFIG_AMD_IOMMU_V2=m
@@ -1558,6 +1519,7 @@ CONFIG_HYPERV_IOMMU=y
 # Remoteproc drivers
 #
 # CONFIG_REMOTEPROC is not set
+# end of Remoteproc drivers
 
 #
 # DEVFREQ Governors
@@ -1576,20 +1538,21 @@ CONFIG_EXTCON_INTEL_CHT_WC=m
 # Light sensors
 #
 # CONFIG_ACPI_ALS is not set
+# end of Light sensors
 
 #
-# end of Temperature sensors
+# Temperature sensors
 #
 # CONFIG_PWM is not set
 
 #
-# end of Performance monitor support
+# Performance monitor support
 #
 # CONFIG_RAS_CEC is not set
 CONFIG_THUNDERBOLT=m
 
 #
-# end of Android
+# Android
 #
 CONFIG_LIBNVDIMM=y
 CONFIG_BLK_DEV_PMEM=m
@@ -1605,6 +1568,7 @@ CONFIG_DAX_DRIVER=y
 # HW tracing support
 #
 # CONFIG_INTEL_TH_ACPI is not set
+# end of HW tracing support
 
 #
 # Multiplexer drivers
@@ -1612,11 +1576,9 @@ CONFIG_DAX_DRIVER=y
 # CONFIG_MUX_ADG792A is not set
 # CONFIG_MUX_GPIO is not set
 # CONFIG_MUX_MMIO is not set
-
-#
 # end of Multiplexer drivers
-#
 # CONFIG_UNISYS_VISORBUS is not set
+# end of Device Drivers
 
 #
 # File systems
@@ -1633,6 +1595,8 @@ CONFIG_PROC_VMCORE=y
 # CONFIG_HUGETLBFS is not set
 CONFIG_ARCH_HAS_GIGANTIC_PAGE=y
 CONFIG_EFIVAR_FS=m
+# end of Pseudo filesystems
+# end of File systems
 
 #
 # Security options
@@ -1648,6 +1612,8 @@ CONFIG_GCC_PLUGIN_STACKLEAK=y
 CONFIG_STACKLEAK_TRACK_MIN_SIZE=100
 # CONFIG_STACKLEAK_METRICS is not set
 # CONFIG_STACKLEAK_RUNTIME_DISABLE is not set
+# end of Memory initialization
+# end of Security options
 
 #
 # Crypto core or helper
@@ -1742,18 +1708,21 @@ CONFIG_ARCH_HAS_PMEM_API=y
 CONFIG_ARCH_HAS_UACCESS_FLUSHCACHE=y
 CONFIG_ARCH_HAS_UACCESS_MCSAFE=y
 CONFIG_ARCH_STACKWALK=y
+# end of Library routines
 
 #
 # Compile-time checks and compiler options
 #
 CONFIG_OPTIMIZE_INLINING=y
 CONFIG_STACK_VALIDATION=y
+# end of Compile-time checks and compiler options
 
 #
 # Memory Debugging
 #
 CONFIG_DEBUG_RODATA_TEST=y
 # CONFIG_KASAN is not set
+# end of Memory Debugging
 
 #
 # Debug Lockups and Hangs
@@ -1767,15 +1736,13 @@ CONFIG_HARDLOCKUP_CHECK_TIMESTAMP=y
 CONFIG_HARDLOCKUP_DETECTOR=y
 # CONFIG_BOOTPARAM_HARDLOCKUP_PANIC is not set
 CONFIG_BOOTPARAM_HARDLOCKUP_PANIC_VALUE=0
+# end of Debug Lockups and Hangs
 
 #
 # RCU Debugging
 #
 CONFIG_RCU_CPU_STALL_TIMEOUT=60
-
-#
 # end of RCU Debugging
-#
 CONFIG_USER_STACKTRACE_SUPPORT=y
 CONFIG_FUNCTION_GRAPH_TRACER=y
 CONFIG_FTRACE_SYSCALLS=y
