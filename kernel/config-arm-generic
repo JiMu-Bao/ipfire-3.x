@@ -4,18 +4,24 @@
 #
 CONFIG_GENERIC_IRQ_SHOW_LEVEL=y
 CONFIG_HARDIRQS_SW_RESEND=y
+CONFIG_IRQ_MSI_IOMMU=y
 CONFIG_HANDLE_DOMAIN_IRQ=y
+
+#
+# end of IRQ subsystem
+#
 CONFIG_GENERIC_IRQ_MULTI_HANDLER=y
 CONFIG_ARCH_HAS_TICK_BROADCAST=y
 
 #
-# RCU Subsystem
+# end of RCU Subsystem
 #
 CONFIG_GENERIC_SCHED_CLOCK=y
 
 #
-# Kernel Performance Events And Counters
+# end of General setup
 #
+CONFIG_GENERIC_HWEIGHT=y
 CONFIG_KERNEL_MODE_NEON=y
 CONFIG_PGTABLE_LEVELS=2
 
@@ -33,11 +39,12 @@ CONFIG_ARCH_VEXPRESS=y
 # CONFIG_ARCH_ZX is not set
 
 #
-# ARM errata workarounds via the alternatives framework
+# end of ARM errata workarounds via the alternatives framework
 #
 # CONFIG_CPU_BIG_ENDIAN is not set
 CONFIG_HW_PERF_EVENTS=y
 CONFIG_HARDEN_BRANCH_PREDICTOR=y
+CONFIG_KUSER_HELPERS=y
 
 #
 # Boot options
@@ -70,16 +77,16 @@ CONFIG_QORIQ_CPUFREQ=m
 #
 # Firmware Drivers
 #
-CONFIG_ARM_PSCI_FW=y
-# CONFIG_ARM_PSCI_CHECKER is not set
 CONFIG_ARM_SCMI_PROTOCOL=y
 CONFIG_ARM_SCMI_POWER_DOMAIN=m
 CONFIG_ARM_SCPI_PROTOCOL=m
 CONFIG_ARM_SCPI_POWER_DOMAIN=m
 # CONFIG_FIRMWARE_MEMMAP is not set
+CONFIG_ARM_PSCI_FW=y
+# CONFIG_ARM_PSCI_CHECKER is not set
 
 #
-# Tegra firmware driver
+# end of Firmware Drivers
 #
 CONFIG_CRYPTO_CHACHA20_NEON=m
 CONFIG_CRYPTO_NHPOLY1305_NEON=m
@@ -88,10 +95,16 @@ CONFIG_CRYPTO_NHPOLY1305_NEON=m
 # General architecture-dependent options
 #
 CONFIG_GENERIC_IDLE_POLL_SETUP=y
+CONFIG_ARCH_HAS_KEEPINITRD=y
 CONFIG_CLONE_BACKWARDS=y
 
 #
-# Network testing
+# Memory Management options
+#
+CONFIG_ARCH_KEEP_MEMBLOCK=y
+
+#
+# end of Networking options
 #
 # CONFIG_RFKILL_GPIO is not set
 
@@ -109,12 +122,12 @@ CONFIG_PCI_SYSCALL=y
 # CONFIG_PCI_PASID is not set
 
 #
-# PCI switch controller drivers
+# end of PCI switch controller drivers
 #
 # CONFIG_PCCARD is not set
 
 #
-# Firmware loader
+# end of Firmware loader
 #
 CONFIG_SOC_BUS=y
 CONFIG_GENERIC_ARCH_TOPOLOGY=y
@@ -125,6 +138,10 @@ CONFIG_GENERIC_ARCH_TOPOLOGY=y
 CONFIG_ARM_CCI=y
 CONFIG_ARM_CCI400_COMMON=y
 CONFIG_VEXPRESS_CONFIG=y
+
+#
+# end of Bus devices
+#
 CONFIG_OF_EARLY_FLATTREE=y
 CONFIG_OF_RESERVED_MEM=y
 
@@ -147,7 +164,7 @@ CONFIG_VEXPRESS_SYSCFG=y
 # CONFIG_PVPANIC is not set
 
 #
-# SCSI Transports
+# end of SCSI Transports
 #
 CONFIG_AIC79XX_RESET_DELAY_MS=5000
 CONFIG_AIC79XX_REG_PRETTY_PRINT=y
@@ -161,7 +178,7 @@ CONFIG_AIC79XX_REG_PRETTY_PRINT=y
 # CONFIG_PATA_OF_PLATFORM is not set
 
 #
-# IEEE 1394 (FireWire) support
+# end of IEEE 1394 (FireWire) support
 #
 CONFIG_MII=y
 # CONFIG_ATM_LANAI is not set
@@ -172,7 +189,7 @@ CONFIG_MII=y
 # CONFIG_ATM_SOLOS is not set
 
 #
-# Distributed Switch Architecture drivers
+# end of Distributed Switch Architecture drivers
 #
 CONFIG_AMD8111_ETH=y
 # CONFIG_CHELSIO_T1_1G is not set
@@ -197,6 +214,7 @@ CONFIG_SMC91X=m
 CONFIG_DWMAC_MESON=m
 # CONFIG_STMMAC_PCI is not set
 # CONFIG_VIA_RHINE_MMIO is not set
+CONFIG_MDIO_BUS_MUX_MESON_G12A=m
 
 #
 # MII PHY device drivers
@@ -251,6 +269,10 @@ CONFIG_SERIAL_MESON=m
 # CONFIG_SERIAL_XILINX_PS_UART is not set
 # CONFIG_SERIAL_ARC is not set
 # CONFIG_SERIAL_RP2 is not set
+
+#
+# end of Serial drivers
+#
 CONFIG_HW_RANDOM_MESON=y
 
 #
@@ -274,7 +296,7 @@ CONFIG_I2C_MESON=m
 CONFIG_I2C_VERSATILE=m
 
 #
-# Enable PHYLIB and NETWORK_PHY_TIMESTAMPING to see the additional clocks.
+# end of PTP clock support
 #
 CONFIG_PINCTRL_MESON=y
 CONFIG_PINCTRL_MESON8_PMX=y
@@ -291,7 +313,7 @@ CONFIG_GPIO_PL061=y
 # CONFIG_GPIO_TC3589X is not set
 
 #
-# USB GPIO expanders
+# end of USB GPIO expanders
 #
 CONFIG_POWER_RESET_BRCMSTB=y
 CONFIG_POWER_RESET_VEXPRESS=y
@@ -311,6 +333,8 @@ CONFIG_POWER_RESET_VEXPRESS=y
 #
 CONFIG_SENSORS_ARM_SCMI=m
 CONFIG_SENSORS_ARM_SCPI=m
+CONFIG_SENSORS_OCC_P8_I2C=m
+CONFIG_SENSORS_OCC=m
 CONFIG_SENSORS_PWM_FAN=m
 CONFIG_SENSORS_VEXPRESS=m
 
@@ -318,6 +342,7 @@ CONFIG_SENSORS_VEXPRESS=m
 # Watchdog Device Drivers
 #
 CONFIG_ARM_SP805_WATCHDOG=m
+CONFIG_IMX_SC_WDT=m
 CONFIG_MESON_GXBB_WATCHDOG=m
 CONFIG_MESON_WATCHDOG=m
 
@@ -333,10 +358,14 @@ CONFIG_MESON_WATCHDOG=m
 # CONFIG_LPC_ICH is not set
 
 #
-# STMicroelectronics STMPE Interface Drivers
+# end of STMicroelectronics STMPE Interface Drivers
 #
 # CONFIG_MFD_VX855 is not set
 CONFIG_MFD_VEXPRESS_SYSREG=y
+
+#
+# end of Multifunction device drivers
+#
 CONFIG_REGULATOR_FIXED_VOLTAGE=y
 # CONFIG_REGULATOR_VIRTUAL_CONSUMER is not set
 # CONFIG_REGULATOR_USERSPACE_CONSUMER is not set
@@ -411,14 +440,24 @@ CONFIG_DRM_MALI_DISPLAY=m
 # Display Interface Bridges
 #
 CONFIG_DRM_DW_HDMI_I2S_AUDIO=m
+
+#
+# end of Display Interface Bridges
+#
 CONFIG_DRM_MESON=m
 CONFIG_DRM_MESON_DW_HDMI=m
 CONFIG_DRM_PL111=m
+CONFIG_DRM_LIMA=m
+CONFIG_DRM_PANFROST=m
 
 #
 # Frame buffer hardware drivers
 #
 # CONFIG_FB_ARMCLCD is not set
+
+#
+# Backlight & LCD device support
+#
 # CONFIG_LCD_PLATFORM is not set
 # CONFIG_BACKLIGHT_PWM is not set
 # CONFIG_BACKLIGHT_LM3630A is not set
@@ -426,12 +465,12 @@ CONFIG_DRM_PL111=m
 # CONFIG_BACKLIGHT_LP8788 is not set
 
 #
-# Console display driver support
+# end of Graphics support
 #
 CONFIG_SND_DMAENGINE_PCM=m
 
 #
-# HD-Audio
+# end of HD-Audio
 #
 CONFIG_SND_SOC=m
 CONFIG_SND_SOC_AC97_BUS=y
@@ -448,10 +487,15 @@ CONFIG_SND_DESIGNWARE_I2S=m
 #
 CONFIG_SND_SOC_FSL_ASRC=m
 CONFIG_SND_SOC_FSL_SAI=m
+CONFIG_SND_SOC_FSL_AUDMIX=m
 CONFIG_SND_SOC_FSL_SSI=m
 CONFIG_SND_SOC_FSL_SPDIF=m
 CONFIG_SND_SOC_FSL_ESAI=m
 CONFIG_SND_SOC_IMX_AUDMUX=m
+
+#
+# end of SoC Audio for Freescale CPUs
+#
 CONFIG_SND_I2S_HI6210_I2S=m
 # CONFIG_SND_SOC_IMG is not set
 CONFIG_SND_SOC_MTK_BTCVSD=m
@@ -472,7 +516,12 @@ CONFIG_SND_MESON_AXG_SPDIFIN=m
 CONFIG_SND_MESON_AXG_PDM=m
 
 #
-# STMicroelectronics STM32 SOC audio support
+# end of ASoC support for Amlogic platforms
+#
+# CONFIG_SND_SOC_SOF_TOPLEVEL is not set
+
+#
+# end of STMicroelectronics STM32 SOC audio support
 #
 CONFIG_SND_SOC_XILINX_AUDIO_FORMATTER=m
 CONFIG_SND_SOC_XILINX_SPDIF=m
@@ -618,9 +667,18 @@ CONFIG_SND_SOC_NAU8810=m
 CONFIG_SND_SOC_NAU8822=m
 CONFIG_SND_SOC_NAU8824=m
 CONFIG_SND_SOC_TPA6130A2=m
+
+#
+# end of CODEC drivers
+#
 CONFIG_SND_SIMPLE_CARD_UTILS=m
 CONFIG_SND_SIMPLE_CARD=m
 CONFIG_SND_AUDIO_GRAPH_CARD=m
+
+#
+# Platform Glue Driver Support
+#
+CONFIG_USB_DWC3_MESON_G12A=m
 
 #
 # USB Physical Layer drivers
@@ -694,8 +752,11 @@ CONFIG_TIMER_PROBE=y
 CONFIG_CLKSRC_MMIO=y
 CONFIG_ARM_ARCH_TIMER=y
 CONFIG_ARM_ARCH_TIMER_EVTSTREAM=y
-CONFIG_ARM_TIMER_SP804=y
 CONFIG_CLKSRC_VERSATILE=y
+
+#
+# end of Clock Source drivers
+#
 CONFIG_ARM_MHU=m
 
 #
@@ -706,6 +767,10 @@ CONFIG_IOMMU_IO_PGTABLE_LPAE=y
 # CONFIG_IOMMU_IO_PGTABLE_LPAE_SELFTEST is not set
 CONFIG_IOMMU_IO_PGTABLE_ARMV7S=y
 # CONFIG_IOMMU_IO_PGTABLE_ARMV7S_SELFTEST is not set
+
+#
+# end of Generic IOMMU Pagetable Support
+#
 CONFIG_IOMMU_DMA=y
 
 #
@@ -728,7 +793,7 @@ CONFIG_ARM_PL172_MPMC=m
 CONFIG_MESON_SARADC=m
 
 #
-# Temperature sensors
+# end of Temperature sensors
 #
 CONFIG_PWM=y
 CONFIG_PWM_SYSFS=y
@@ -750,6 +815,10 @@ CONFIG_ARM_GIC_V3_ITS=y
 CONFIG_ARM_GIC_V3_ITS_PCI=y
 CONFIG_PARTITION_PERCPU=y
 CONFIG_MESON_IRQ_GPIO=y
+
+#
+# end of IRQ chip support
+#
 CONFIG_RESET_MESON=y
 CONFIG_RESET_MESON_AUDIO_ARB=m
 
@@ -759,6 +828,8 @@ CONFIG_RESET_MESON_AUDIO_ARB=m
 CONFIG_PHY_MESON8B_USB2=y
 CONFIG_PHY_MESON_GXL_USB2=y
 CONFIG_PHY_MESON_GXL_USB3=m
+CONFIG_PHY_MESON_G12A_USB2=y
+CONFIG_PHY_MESON_G12A_USB3_PCIE=y
 
 #
 # Performance monitor support
@@ -770,7 +841,7 @@ CONFIG_ARM_CCI5xx_PMU=y
 CONFIG_ARM_PMU=y
 
 #
-# Android
+# end of Android
 #
 CONFIG_MESON_MX_EFUSE=m
 
@@ -781,6 +852,11 @@ CONFIG_ZLIB_DEFLATE=m
 CONFIG_ARCH_HAS_SETUP_DMA_OPS=y
 CONFIG_ARCH_HAS_TEARDOWN_DMA_OPS=y
 CONFIG_DMA_REMAP=y
+
+#
+# Compile-time checks and compiler options
+#
+# CONFIG_OPTIMIZE_INLINING is not set
 
 #
 # Memory Debugging
@@ -796,6 +872,10 @@ CONFIG_DMA_REMAP=y
 # RCU Debugging
 #
 CONFIG_RCU_CPU_STALL_TIMEOUT=21
+
+#
+# end of RCU Debugging
+#
 # CONFIG_FTRACE_SYSCALLS is not set
 # CONFIG_PID_IN_CONTEXTIDR is not set
 # CONFIG_CORESIGHT is not set
