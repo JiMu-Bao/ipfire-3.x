@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = pcengines-apu-firmware
-version    = 4.9.0.6
+version    = 4.9.0.7
 release    = 1
 arch       = noarch
 
@@ -19,6 +19,13 @@ description
 
 	This package ships the mainline branch of the firmware.
 end
+
+source_dl = \
+	https://3mdeb.com/open-source-firmware/pcengines/apu1 \
+	https://3mdeb.com/open-source-firmware/pcengines/apu2 \
+	https://3mdeb.com/open-source-firmware/pcengines/apu3 \
+	https://3mdeb.com/open-source-firmware/pcengines/apu4 \
+	https://3mdeb.com/open-source-firmware/pcengines/apu5
 
 sources  = \
 	apu1_v%{version}.rom \
