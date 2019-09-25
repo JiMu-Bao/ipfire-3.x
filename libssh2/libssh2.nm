@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libssh2
-version    = 1.7.0
+version    = 1.9.0
 release    = 1
 
 groups     = System/Libraries
@@ -29,10 +29,6 @@ build
 		zlib-devel
 	end
 
-	prepare_cmds
-		autoreconf -vfi # for aarch64
-	end
-
 	configure_options += \
 		--disable-static \
 		--disable-rpath
@@ -44,7 +40,6 @@ end
 
 packages
 	package %{name}
-	end
 
 	package %{name}-devel
 		template DEVEL
