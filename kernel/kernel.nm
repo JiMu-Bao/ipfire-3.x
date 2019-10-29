@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = kernel
-version    = 5.2.11
+version    = 5.3.7
 release    = 1
 thisapp    = linux-%{version}
 
@@ -50,6 +50,7 @@ build
 		pciutils-devel
 		perl
 		python-devel
+		rsync
 		openssl-devel
 		slang-devel
 		xmlto
