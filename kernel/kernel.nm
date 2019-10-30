@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = kernel
-version    = 5.3.7
-release    = 1
+version    = 5.3.8
+release    = 0.1
 thisapp    = linux-%{version}
 
 maintainer = Arne Fitzenreiter <arne.fitzenreiter@ipfire.org>
