@@ -5,7 +5,7 @@
 
 name       = setup
 version    = 3.0
-release    = 14
+release    = 15
 arch       = noarch
 
 groups     = Base Build System/Base
