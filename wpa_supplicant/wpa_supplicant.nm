@@ -4,13 +4,13 @@
 ###############################################################################
 
 name       = wpa_supplicant
-version    = 2.6
-release    = 2
+version    = 2.9
+release    = 1
 
 groups     = Sytem/Base
-url        = http://hostap.epitest.fi/releases/
+url        = https://w1.fi/wpa_supplicant/
 license    = BSD
-summary    = WPA/WPA2/IEEE 802.1X Supplicant.
+summary    = WPA/WPA2/IEEE 802.1X Supplicant
 
 description
 	wpa_supplicant is a WPA Supplicant for Linux, BSD and Windows with support
@@ -20,10 +20,11 @@ description
 	authentication/association of the wlan driver.
 end
 
-source_dl  = http://hostap.epitest.fi/releases/
+source_dl  = https://w1.fi/releases/
 
 build
 	requires
+		dbus-devel
 		libnl3-devel
 		ncurses-devel
 		openssl-devel
