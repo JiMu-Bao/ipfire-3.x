@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = libmpc
-version    = 1.0.3
+version    = 1.1.0
 release    = 1
 thisapp    = mpc-%{version}
 
@@ -19,12 +19,12 @@ description
 	It is built upon and follows the same principles as Mpfr.
 end
 
-source_dl  = http://www.multiprecision.org/mpc/download/
+source_dl  = https://ftp.gnu.org/gnu/mpc/
 
 build
 	requires
-		gmp-devel >= 4.3.2
-		mpfr-devel >= 2.4.2
+		gmp-devel >= 5.0.0
+		mpfr-devel >= 3.0.0
 	end
 
 	configure_options += \
