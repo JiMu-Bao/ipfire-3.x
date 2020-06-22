@@ -1,0 +1,53 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = lz4
+version    = 1.9.2
+release    = 1
+
+groups     = System/Libraries
+url        = http://www.lz4.org/
+license    = GPLv2
+summary    = Extremely fast compression algorithm
+
+description
+	LZ4 is lossless compression algorithm, providing compression speed
+	> 500 MB/s per core (>0.15 Bytes/cycle).
+	It features an extremely fast decoder, with speed in multiple GB/s
+	per core (~1 Byte/cycle). A high compression derivative, called
+	LZ4_HC, is available, trading customizable CPU time for compression
+	ratio.
+end
+
+source_dl  = https://github.com/lz4/lz4/archive/v%{version}.tar.gz#/
+
+build
+	build
+		make -C lib PREFIX=%{prefix} %{PARALLELISMFLAGS}
+		make -C programs PREFIX=%{prefix} lz4 lz4c
+	end
+
+	test
+		make check
+	end
+
+	make_install_targets += PREFIX=%{prefix} libdir=%{libdir}
+end
+
+packages
+	package %{name}
+
+	package %{name}-libs
+		template LIBS
+	end
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
