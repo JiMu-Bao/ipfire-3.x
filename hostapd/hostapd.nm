@@ -4,11 +4,11 @@
 ###############################################################################
 
 name       = hostapd
-version    = 2.8
+version    = 2.9
 release    = 1
 
 groups     = Networking/Tools
-url        = http://hostap.epitest.fi/hostapd/
+url        = https://w1.fi/hostapd/
 license    = GPLv2+
 summary    = User space daemon to create Wifi Access points.
 
@@ -19,12 +19,12 @@ description
 	RADIUS authentication server.
 end
 
-source_dl  = http://hostap.epitest.fi/releases/
+source_dl  = https://w1.fi/releases/
 
 build
 	requires
 		libnl3-devel
-		openssl-devel
+		openssl-devel >= 1.1.1
 	end
 
 	prepare_cmds
