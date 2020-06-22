@@ -4,7 +4,7 @@
 ###############################################################################
 
 name       = openssl
-version    = 1.1.0g
+version    = 1.1.1g
 release    = 1
 
 maintainer = Michael Tremer <michael.tremer@ipfire.org>
@@ -89,9 +89,6 @@ build
 	end
 
 	test
-		# Revert ca-dir patch. Otherwise the tests will fail.
-		patch -Np1 -R < %{DIR_PATCHES}/openssl-1.1.0-ca-dir.patch
-
 		make test
 	end
 
@@ -118,9 +115,6 @@ build
 
 		# Remove dist config
 		rm -vf %{BUILDROOT}%{sysconfdir}/pki/tls/openssl.cnf.dist
-
-		# Move executable stuff to %{bindir}
-		mv -v %{BUILDROOT}%{sysconfdir}/pki/tls/misc/{CA.pl,tsget} %{BUILDROOT}%{bindir}
 	end
 end
 
