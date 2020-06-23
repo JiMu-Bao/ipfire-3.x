@@ -1,0 +1,52 @@
+###############################################################################
+# IPFire.org    - An Open Source Firewall Solution                            #
+# Copyright (C) - IPFire Development Team <info@ipfire.org>                   #
+###############################################################################
+
+name       = zstd
+version    = 1.4.5
+release    = 1
+
+groups     = System/Libraries
+url        = http://facebook.github.io/zstd/
+license    = GPLv2
+summary    = Zstandard is a fast lossless compression algorithm
+
+description
+	Zstandard, or zstd as short version, is a fast lossless compression
+	algorithm, targeting real-time compression scenarios at zlib-level
+	and better compression ratios. It's backed by a very fast entropy
+	stage, provided by Huff0 and FSE library.
+end
+
+source_dl  = https://github.com/facebook/zstd/releases/download/v%{version}/
+
+build
+	requires
+		lz4-devel
+		xz-devel
+		zlib-devel
+	end
+
+	test
+		make check
+	end
+
+	make_install_targets += prefix=%{prefix} libdir=%{libdir}
+end
+
+packages
+	package %{name}
+
+	package %{name}-libs
+		template LIBS
+	end
+
+	package %{name}-devel
+		template DEVEL
+	end
+
+	package %{name}-debuginfo
+		template DEBUGINFO
+	end
+end
