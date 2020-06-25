@@ -4,8 +4,8 @@
 ###############################################################################
 
 name       = rsync
-version    = 3.1.2
-release    = 2
+version    = 3.2.1
+release    = 1
 
 groups     = Applications/Internet
 url        = http://rsync.samba.org/
@@ -30,8 +30,11 @@ build
 		autoconf
 		libacl-devel
 		libattr-devel
+		lz4-devel
+		openssl-devel
 		popt-devel
 		zlib-devel
+		zstd-devel
 
 		# Testsuite.
 		%{bindir}/setfacl
@@ -39,8 +42,10 @@ build
 
 	configure_options += \
 		--without-included-popt \
-		--without-included-zlib
-
+		--without-included-zlib \
+		--enable-openssl \
+		--enable-zstd \
+		--disable-xxhash
 
 	prepare_cmds
 		# Fix permission issure.
@@ -76,7 +81,6 @@ build
 		INSTALLMAN="install -p"
 
 	install_cmds
-
 		# Install config file.
 		mkdir -pv %{BUILDROOT}%{sysconfdir}
 
@@ -85,6 +89,10 @@ build
 
 		# Create directory for pidfile.
 		mkdir -pv %{BUILDROOT}/run/rsyncd
+
+		# Replace shebanh in rsync-ssl
+		sed -i -e "s@^#!.*@#!/bin/bash@" \
+			%{BUILDROOT}%{bindir}/rsync-ssl
 	end
 
 end
@@ -93,6 +101,11 @@ packages
 	package %{name}
 		configfiles
 			%{sysconfdir}/rsyncd.conf
+		end
+
+		requires
+			# For rsync-ssl
+			%{bindir}/openssl
 		end
 
 		script postin
