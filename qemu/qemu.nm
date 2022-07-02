@@ -5,7 +5,7 @@
 
 name       = qemu
 version    = 3.1.0
-release    = 1
+release    = 2
 
 groups     = Applications/Virtualization
 url        = http://www.qemu.org
@@ -23,7 +23,6 @@ sources    = %{thisapp}.tar.xz
 
 build
 	requires
-		SDL-devel
 		autoconf
 		automake
 		bison
@@ -78,7 +77,8 @@ build
 		--enable-vnc \
 		--enable-vnc-jpeg \
 		--enable-vnc-png \
-		--disable-xen
+		--disable-xen \
+		--disable-sdl
 
 	configure_cmds
 		sed -e "s@-Wl,-rpath,%{libdir}@@g" -i config-host.mak
