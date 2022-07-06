@@ -7,7 +7,7 @@ name       = gdk-pixbuf2
 version    = %{ver_major}.%{ver_minor}
 ver_major  = 2.33
 ver_minor  = 2
-release    = 2
+release    = 3
 
 groups     = System/Libraries
 url        = http://www.gtk.org/
@@ -31,13 +31,12 @@ build
 		libpng-devel
 		libjpeg-devel
 		libtiff-devel
-		libX11-devel
 	end
 
 	export LD_LIBRARY_PATH = %{DIR_APP}/gdk-pixbuf/.libs
 
 	configure_options += \
-		--with-x11 \
+		--without-x11 \
 		--with-included-loaders=png
 
 	make_install_targets += RUN_QUERY_LOADER_TEST=false
